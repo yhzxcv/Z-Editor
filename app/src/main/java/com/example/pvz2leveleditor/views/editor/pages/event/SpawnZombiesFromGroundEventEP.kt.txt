@@ -1,0 +1,226 @@
+package com.example.pvz2leveleditor.views.editor.pages.event
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.pvz2leveleditor.data.*
+import com.example.pvz2leveleditor.views.editor.*
+import com.google.gson.Gson
+
+private val gson = Gson()
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SpawnZombiesFromGroundEventEP(
+    rtid: String,
+    onBack: () -> Unit,
+    rootLevelFile: PvzLevelFile,
+    onRequestZombieSelection: ((String) -> Unit) -> Unit
+) {
+    val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
+    val focusManager = LocalFocusManager.current
+
+    val actionDataState = remember {
+        val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
+        val data = try {
+            gson.fromJson(obj?.objData, SpawnZombiesFromGroundData::class.java)
+        } catch (e: Exception) {
+            SpawnZombiesFromGroundData()
+        }
+
+        data.zombies.forEach { zombie ->
+            val realTypeAlias = RtidParser.parse(zombie.type)?.alias ?: zombie.type
+            val typeName = ZombiePropertiesRepository.getTypeNameByAlias(realTypeAlias)
+
+            zombie.isElite = ZombieRepository.isElite(typeName)
+
+            if (zombie.isElite) {
+                zombie.level = null
+            } else if ((zombie.level ?: 1) < 1) {
+                zombie.level = 1
+            }
+        }
+
+        mutableStateOf(data)
+    }
+
+    var addingToRowIndex by remember { mutableStateOf<Int?>(null) }
+    var editingZombie by remember { mutableStateOf<ZombieSpawnData?>(null) }
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    fun sync(newData: SpawnZombiesFromGroundData) {
+        actionDataState.value = newData
+        rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }?.let {
+            it.objData = gson.toJsonTree(newData)
+        }
+    }
+
+    fun handleAddZombie() {
+        onRequestZombieSelection { selectedId ->
+            val alias = RtidParser.parse(selectedId)?.alias ?: selectedId
+            val typeName = ZombiePropertiesRepository.getTypeNameByAlias(alias)
+            val isElite = ZombieRepository.isElite(typeName)
+
+            val newZombie = ZombieSpawnData(
+                type = typeName,
+                row = addingToRowIndex,
+                level = if (isElite) null else 1,
+                isElite = isElite
+            )
+
+            val newList = actionDataState.value.zombies.toMutableList()
+            newList.add(newZombie)
+            sync(actionDataState.value.copy(zombies = newList))
+        }
+    }
+
+    // 底部编辑抽屉
+    if (showBottomSheet && editingZombie != null) {
+        ModalBottomSheet(
+            onDismissRequest = { showBottomSheet = false; editingZombie = null },
+            containerColor = Color.White
+        ) {
+            ZombieEditSheetContent(
+                originalZombie = editingZombie!!,
+                onValueChange = { updatedZombie ->
+                    val currentList = actionDataState.value.zombies.toMutableList()
+                    val index = currentList.indexOf(editingZombie!!)
+                    if (index != -1) {
+                        currentList[index] = updatedZombie
+                        editingZombie = updatedZombie
+                        sync(actionDataState.value.copy(zombies = currentList))
+                    }
+                },
+                onDelete = {
+                    val currentList = actionDataState.value.zombies.toMutableList()
+                    currentList.remove(editingZombie!!)
+                    sync(actionDataState.value.copy(zombies = currentList))
+                    showBottomSheet = false
+                    editingZombie = null
+                }
+            )
+        }
+    }
+
+    Scaffold(
+        modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = {
+                focusManager.clearFocus() // 点击空白处清除焦点
+            })
+        },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Column {
+                        Text("编辑 $currentAlias", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                        Text("事件类型：地下突袭", fontSize = 14.sp, fontWeight = FontWeight.Normal)
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF936457), // 褐色代表泥土/地下
+                    titleContentColor = Color.White
+                )
+            )
+        }
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .background(Color(0xFFF5F5F5)),
+            contentPadding = PaddingValues(bottom = 32.dp)
+        ) {
+            // === 区域 1: 出怪范围设置 ===
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("出怪范围 (列数)", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF936457))
+                        Spacer(Modifier.height(12.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            NumberInputInt(
+                                value = actionDataState.value.columnStart,
+                                onValueChange = {
+                                    sync(actionDataState.value.copy(columnStart = it))
+                                },
+                                label = "起始列 (ColumnStart)",
+                                modifier = Modifier.weight(1f)
+                            )
+                            NumberInputInt(
+                                value = actionDataState.value.columnEnd,
+                                onValueChange = {
+                                    sync(actionDataState.value.copy(columnEnd = it))
+                                },
+                                label = "结束列 (ColumnEnd)",
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Text("场地左边界为0列，右边界为9列，起始列要小于结束列。", fontSize = 12.sp, color = Color.Gray)
+                    }
+                }
+            }
+
+            // === 区域 2: 僵尸列表 (按行分组) ===
+            // 1-5 行
+            items(5) { index ->
+                val rowNum = index + 1
+                val zombiesInRow = actionDataState.value.zombies.filter { it.row == rowNum }
+
+                LaneRow(
+                    laneLabel = "第 $rowNum 行",
+                    laneColor = Color(0xFF936457), // 使用主题色
+                    zombies = zombiesInRow,
+                    onAddClick = {
+                        addingToRowIndex = rowNum
+                        handleAddZombie()
+                    },
+                    onZombieClick = { zombie ->
+                        editingZombie = zombie
+                        showBottomSheet = true
+                    }
+                )
+            }
+
+            // 随机行
+            item {
+                val randomZombies = actionDataState.value.zombies.filter { it.row == null || it.row == 0 }
+                LaneRow(
+                    laneLabel = "随机行",
+                    laneColor = Color(0xFF9E9E9E),
+                    zombies = randomZombies,
+                    onAddClick = {
+                        addingToRowIndex = null
+                        handleAddZombie()
+                    },
+                    onZombieClick = { zombie ->
+                        editingZombie = zombie
+                        showBottomSheet = true
+                    }
+                )
+            }
+        }
+    }
+}

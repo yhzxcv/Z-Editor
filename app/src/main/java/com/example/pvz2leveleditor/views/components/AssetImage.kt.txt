@@ -1,0 +1,78 @@
+package com.example.pvz2leveleditor.views.components
+
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.QuestionMark
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+
+@Composable
+fun AssetImage(
+    path: String?,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Crop,
+    // 【新增】允许设置过滤质量，默认为 High (抗锯齿，最清晰)
+    filterQuality: FilterQuality = FilterQuality.High,
+    placeholder: @Composable (() -> Unit) = {
+        Image(
+            painter = rememberVectorPainter(Icons.Default.QuestionMark),
+            contentDescription = "Placeholder"
+        )
+    }
+) {
+    val context = LocalContext.current
+
+    // 使用 remember 缓存 Bitmap，避免重组时重复解码
+    val imageBitmap: ImageBitmap? = remember(path) {
+        if (path.isNullOrBlank()) {
+            null
+        } else {
+            try {
+                context.assets.open(path).use { inputStream ->
+                    // 【核心修复】使用 BitmapFactory.Options 配置
+                    val options = BitmapFactory.Options().apply {
+                        // 1. 禁止系统根据屏幕密度自动缩放图片
+                        // 这样我们拿到的就是原汁原味的 120x120 像素
+                        inScaled = false
+
+                        // 2. 尝试使用最高色彩配置 (ARGB_8888)，防止色彩抖动导致的模糊
+                        inPreferredConfig = android.graphics.Bitmap.Config.ARGB_8888
+                    }
+
+                    // 解码为 Bitmap
+                    val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+                    bitmap?.asImageBitmap()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
+    if (imageBitmap != null) {
+        Image(
+            bitmap = imageBitmap,
+            contentDescription = contentDescription,
+            modifier = modifier,
+            contentScale = contentScale,
+            // 【核心修复】设置过滤质量为 High
+            // 当图片尺寸与显示尺寸不完全一致时，开启高质量双线性/双三次插值
+            filterQuality = filterQuality
+        )
+    } else {
+        Box(modifier = modifier) {
+            placeholder()
+        }
+    }
+}

@@ -1,0 +1,4244 @@
+[
+    {
+        "id": "mummy",
+        "name": "木乃伊僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_mummy.jpg"
+    },
+    {
+        "id": "mummy_armor1",
+        "name": "木乃伊路障僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_mummy_armor1.jpg"
+    },
+    {
+        "id": "mummy_armor2",
+        "name": "木乃伊铁桶僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_mummy_armor2.jpg"
+    },
+    {
+        "id": "mummy_flag",
+        "name": "木乃伊旗子僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_mummy_flag.jpg"
+    },
+    {
+        "id": "egypt_gargantuar",
+        "name": "埃及巨人僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Gargantuar"
+        ],
+        "icon": "zombie_egypt_gargantuar.jpg"
+    },
+    {
+        "id": "egypt_imp",
+        "name": "埃及小鬼僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Imp"
+        ],
+        "icon": "zombie_egypt_imp.jpg"
+    },
+    {
+        "id": "explorer",
+        "name": "探险家僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_explorer.jpg"
+    },
+    {
+        "id": "ra",
+        "name": "太阳神僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_ra.jpg"
+    },
+    {
+        "id": "tomb_raiser",
+        "name": "死神僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_tomb_raiser.jpg"
+    },
+    {
+        "id": "camel_onehump",
+        "name": "单驼峰骆驼牌",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_camel_onehump.jpg"
+    },
+    {
+        "id": "camel_twohump",
+        "name": "双驼峰骆驼牌",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_camel_onehump.jpg"
+    },
+    {
+        "id": "camel_manyhump",
+        "name": "多驼峰骆驼牌",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_camel_onehump.jpg"
+    },
+    {
+        "id": "pharaoh",
+        "name": "法老僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_pharaoh.jpg"
+    },
+    {
+        "id": "pirate",
+        "name": "海盗僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_pirate.jpg"
+    },
+    {
+        "id": "pirate_armor1",
+        "name": "海盗路障僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_pirate._armor1.jpg"
+    },
+    {
+        "id": "pirate_armor2",
+        "name": "海盗铁桶僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_pirate._armor2.jpg"
+    },
+    {
+        "id": "pirate_flag",
+        "name": "旗子海盗僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_pirate_flag.jpg"
+    },
+    {
+        "id": "pirate_gargantuar",
+        "name": "海盗巨人僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Gargantuar"
+        ],
+        "icon": "zombie_pirate_gargantuar.jpg"
+    },
+    {
+        "id": "pirate_imp",
+        "name": "海盗小鬼僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Imp"
+        ],
+        "icon": "zombie_pirate_imp.jpg"
+    },
+    {
+        "id": "swashbuckler",
+        "name": "飞索僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_swashbuckler.jpg"
+    },
+    {
+        "id": "seagull",
+        "name": "海鸥僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_seagull.jpg"
+    },
+    {
+        "id": "barrelroller",
+        "name": "滚桶僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic",
+            "Imp"
+        ],
+        "icon": "zombie_barrelroller.jpg"
+    },
+    {
+        "id": "pirate_captain",
+        "name": "海盗船长僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_pirate_captain.jpg"
+    },
+    {
+        "id": "pirate_captain_parrot",
+        "name": "鹦鹉僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Pet"
+        ],
+        "icon": "zombie_pirate_captain_parrot.jpg"
+    },
+    {
+        "id": "cannon",
+        "name": "小鬼僵尸炮",
+        "tags": [
+            "Egypt_Pirate",
+            "Imp"
+        ],
+        "icon": "zombie_cannon.jpg"
+    },
+    {
+        "id": "cowboy",
+        "name": "牛仔僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_cowboy.jpg"
+    },
+    {
+        "id": "cowboy_armor1",
+        "name": "牛仔路障僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_cowboy_armor1.jpg"
+    },
+    {
+        "id": "cowboy_armor2",
+        "name": "牛仔铁桶僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_cowboy_armor2.jpg"
+    },
+    {
+        "id": "cowboy_flag",
+        "name": "旗子牛仔僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_cowboy_flag.jpg"
+    },
+    {
+        "id": "cowboy_gargantuar",
+        "name": "西部巨人僵尸",
+        "tags": [
+            "West_Future",
+            "Gargantuar"
+        ],
+        "icon": "zombie_cowboy_gargantuar.jpg"
+    },
+    {
+        "id": "west_bullrider",
+        "name": "骑牛小鬼僵尸",
+        "tags": [
+            "West_Future",
+            "Imp"
+        ],
+        "icon": "zombie_west_bullrider.jpg"
+    },
+    {
+        "id": "prospector",
+        "name": "淘金僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_prospector.jpg"
+    },
+    {
+        "id": "chicken_farmer",
+        "name": "鸡贼僵尸",
+        "tags": [
+            "West_Future",
+            "Basic",
+            "Pet"
+        ],
+        "icon": "zombie_chicken_farmer.jpg"
+    },
+    {
+        "id": "chicken",
+        "name": "僵尸鸡",
+        "tags": [
+            "West_Future",
+            "Pet"
+        ],
+        "icon": "zombie_chicken.jpg"
+    },
+    {
+        "id": "piano",
+        "name": "钢琴僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_piano.jpg"
+    },
+    {
+        "id": "poncho",
+        "name": "斗篷僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_poncho.jpg"
+    },
+    {
+        "id": "poncho_plate",
+        "name": "有钢板斗篷僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_poncho.jpg"
+    },
+    {
+        "id": "poncho_no_plate",
+        "name": "无钢板斗篷僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_poncho.jpg"
+    },
+    {
+        "id": "west_bull",
+        "name": "机器牛",
+        "tags": [
+            "West_Future",
+            "Pet"
+        ],
+        "icon": "zombie_west_bull.jpg"
+    },
+    {
+        "id": "kongfu_basic",
+        "name": "功夫普通僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_basic.jpg"
+    },
+    {
+        "id": "kongfu_flag",
+        "name": "功夫旗子僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_flag.jpg"
+    },
+    {
+        "id": "kongfu_hammer",
+        "name": "锤子僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_hammer.jpg"
+    },
+    {
+        "id": "kongfu_selfexplode",
+        "name": "自爆僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_selfexplode.jpg"
+    },
+    {
+        "id": "kongfu_torch",
+        "name": "功夫火把僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_torch.jpg"
+    },
+    {
+        "id": "kongfu_gong",
+        "name": "功夫铜锣僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_gong.jpg"
+    },
+    {
+        "id": "kongfu_drink",
+        "name": "喝酒僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_drink.jpg"
+    },
+    {
+        "id": "kongfu_qigong",
+        "name": "功夫气功僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_qigong.jpg"
+    },
+    {
+        "id": "kongfu_rocket",
+        "name": "火箭小鬼僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Imp"
+        ],
+        "icon": "zombie_kongfu_rocket.jpg"
+    },
+    {
+        "id": "kongfu_monk_basic",
+        "name": "武僧僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_monk_basic.jpg"
+    },
+    {
+        "id": "kongfu_monk_flag",
+        "name": "旗子武僧僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_monk_flag.jpg"
+    },
+    {
+        "id": "kongfu_monk_cone",
+        "name": "路障武僧僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_monk_cone.jpg"
+    },
+    {
+        "id": "kongfu_monk_bucket",
+        "name": "铁茶壶武僧僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_monk_bucket.jpg"
+    },
+    {
+        "id": "kongfu_monk_imp",
+        "name": "武僧小鬼僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Imp"
+        ],
+        "icon": "zombie_kongfu_monk_imp.jpg"
+    },
+    {
+        "id": "kongfu_monk_torch",
+        "name": "火把武僧僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_monk_torch.jpg"
+    },
+    {
+        "id": "kongfu_monk_blade",
+        "name": "大刀武僧僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_monk_blade.jpg"
+    },
+    {
+        "id": "kongfu_monk_drink",
+        "name": "喝酒武僧僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_monk_drink.jpg"
+    },
+    {
+        "id": "kongfu_monk_nunchaku",
+        "name": "双截棍武僧僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_monk_nunchaku.jpg"
+    },
+    {
+        "id": "kongfu_strong_bronze",
+        "name": "大汉铜人僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Gargantuar"
+        ],
+        "icon": "zombie_kongfu_strong_bronze.jpg"
+    },
+    {
+        "id": "kongfu_magic_bronze",
+        "name": "气功铜人僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Gargantuar"
+        ],
+        "icon": "zombie_kongfu_magic_bronze.jpg"
+    },
+    {
+        "id": "kongfu_agile_bronze",
+        "name": "侠客铜人僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Gargantuar"
+        ],
+        "icon": "zombie_kongfu_agile_bronze.jpg"
+    },
+    {
+        "id": "future",
+        "name": "未来僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_future.jpg"
+    },
+    {
+        "id": "future_armor1",
+        "name": "未来路障僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_future_armor1.jpg"
+    },
+    {
+        "id": "future_armor2",
+        "name": "未来铁桶僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_future_armor2.jpg"
+    },
+    {
+        "id": "future_flag",
+        "name": "旗子未来僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_future_flag.jpg"
+    },
+    {
+        "id": "future_gargantuar",
+        "name": "机甲巨人僵尸",
+        "tags": [
+            "West_Future",
+            "Gargantuar"
+        ],
+        "icon": "zombie_future_gargantuar.jpg"
+    },
+    {
+        "id": "future_imp",
+        "name": "机器虫小鬼僵尸",
+        "tags": [
+            "West_Future",
+            "Imp"
+        ],
+        "icon": "zombie_future_imp.jpg"
+    },
+    {
+        "id": "future_jetpack",
+        "name": "喷射器僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_future_jetpack.jpg"
+    },
+    {
+        "id": "future_jetpack_veteran",
+        "name": "宇航员喷射器僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_future_jetpack_veteran.jpg"
+    },
+    {
+        "id": "future_protector",
+        "name": "电磁盾僵尸",
+        "tags": [
+            "West_Future"
+        ],
+        "icon": "zombie_future_protector.jpg"
+    },
+    {
+        "id": "mech_cone",
+        "name": "机甲路障僵尸",
+        "tags": [
+            "West_Future"
+        ],
+        "icon": "zombie_mech_cone.jpg"
+    },
+    {
+        "id": "football_mech",
+        "name": "机甲橄榄球僵尸",
+        "tags": [
+            "West_Future"
+        ],
+        "icon": "zombie_football_mech.jpg"
+    },
+    {
+        "id": "disco_mech",
+        "name": "迪斯科3000",
+        "tags": [
+            "West_Future"
+        ],
+        "icon": "zombie_disco_mech.jpg"
+    },
+    {
+        "id": "future_jetpack_disco",
+        "name": "喷射器舞者",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_future_jetpack_disco.jpg"
+    },
+    {
+        "id": "dark",
+        "name": "农夫僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_dark.jpg"
+    },
+    {
+        "id": "dark_armor1",
+        "name": "路障农夫僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_dark_armor1.jpg"
+    },
+    {
+        "id": "dark_armor2",
+        "name": "铁桶农夫僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_dark_armor2.jpg"
+    },
+    {
+        "id": "dark_armor3",
+        "name": "骑士僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_dark_armor3.jpg"
+    },
+    {
+        "id": "dark_flag",
+        "name": "旗子黑暗僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_dark_flag.jpg"
+    },
+    {
+        "id": "dark_imp",
+        "name": "僧侣小鬼僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Imp"
+        ],
+        "icon": "zombie_dark_imp.jpg"
+    },
+    {
+        "id": "dark_gargantuar",
+        "name": "黑暗巨人僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Gargantuar"
+        ],
+        "icon": "zombie_dark_gargantuar.jpg"
+    },
+    {
+        "id": "dark_juggler",
+        "name": "小丑僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_dark_juggler.jpg"
+    },
+    {
+        "id": "dark_rogue",
+        "name": "盗贼僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_dark_rogue.jpg"
+    },
+    {
+        "id": "dark_cavalry",
+        "name": "骑兵僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Pet"
+        ],
+        "icon": "zombie_dark_cavalry.jpg"
+    },
+    {
+        "id": "dark_cavalry_rider",
+        "name": "下马骑兵僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_dark_armor3.jpg"
+    },
+    {
+        "id": "dark_king",
+        "name": "国王僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Fat"
+        ],
+        "icon": "zombie_dark_king.jpg"
+    },
+    {
+        "id": "dark_wizard",
+        "name": "魔法师僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_dark_wizard.jpg"
+    },
+    {
+        "id": "dark_imp_dragon",
+        "name": "恶龙小鬼僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Imp",
+            "Pet"
+        ],
+        "icon": "zombie_dark_imp_dragon.jpg"
+    },
+    {
+        "id": "dark_archmage",
+        "name": "大法师僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_dark_archmage.jpg"
+    },
+    {
+        "id": "dark_king_elite",
+        "name": "精英国王僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Elite",
+            "Fat"
+        ],
+        "icon": "zombie_dark_king_elite.jpg"
+    },
+    {
+        "id": "dark_wizard_elite",
+        "name": "精英魔法师",
+        "tags": [
+            "Dark_Beach",
+            "Elite",
+            "Basic"
+        ],
+        "icon": "zombie_dark_wizard_elite.jpg"
+    },
+    {
+        "id": "beach",
+        "name": "飞机头僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_beach.jpg"
+    },
+    {
+        "id": "beach_armor1",
+        "name": "路障飞机头僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_beach_armor1.jpg"
+    },
+    {
+        "id": "beach_armor2",
+        "name": "铁桶飞机头僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_beach_armor2.jpg"
+    },
+    {
+        "id": "beach_fem",
+        "name": "比基尼僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_beach_fem.jpg"
+    },
+    {
+        "id": "beach_fem_armor1",
+        "name": "路障比基尼僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_beach_fem_armor1.jpg"
+    },
+    {
+        "id": "beach_fem_armor2",
+        "name": "铁桶比基尼僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_beach_fem_armor2.jpg"
+    },
+    {
+        "id": "beach_flag",
+        "name": "旗子沙滩僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_beach_flag.jpg"
+    },
+    {
+        "id": "beach_gargantuar",
+        "name": "深海巨人僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Gargantuar"
+        ],
+        "icon": "zombie_beach_gargantuar.jpg"
+    },
+    {
+        "id": "beach_imp",
+        "name": "美人鱼小鬼僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Imp"
+        ],
+        "icon": "zombie_beach_imp.jpg"
+    },
+    {
+        "id": "beach_octopus",
+        "name": "章鱼僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Pet",
+            "Strong"
+        ],
+        "icon": "zombie_beach_octopus.jpg"
+    },
+    {
+        "id": "beach_fisherman",
+        "name": "渔夫僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_beach_fisherman.jpg"
+    },
+    {
+        "id": "beach_surfer",
+        "name": "冲浪僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_beach_surfer.jpg"
+    },
+    {
+        "id": "beach_snorkel",
+        "name": "浮潜僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_beach_snorkel.jpg"
+    },
+    {
+        "id": "beach_shell",
+        "name": "贝壳僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_beach_shell.jpg"
+    },
+    {
+        "id": "iceage",
+        "name": "洞穴僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_iceage.jpg"
+    },
+    {
+        "id": "iceage_armor1",
+        "name": "洞穴路障僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_iceage_armor1.jpg"
+    },
+    {
+        "id": "iceage_armor2",
+        "name": "洞穴铁桶僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_iceage_armor2.jpg"
+    },
+    {
+        "id": "iceage_armor3",
+        "name": "冰砖僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_iceage_armor3.jpg"
+    },
+    {
+        "id": "iceage_flag",
+        "name": "洞穴旗子僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_iceage_flag.jpg"
+    },
+    {
+        "id": "iceage_gargantuar",
+        "name": "地懒巨人僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Gargantuar"
+        ],
+        "icon": "zombie_iceage_gargantuar.jpg"
+    },
+    {
+        "id": "iceage_imp",
+        "name": "雪人小鬼僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Imp"
+        ],
+        "icon": "zombie_iceage_imp.jpg"
+    },
+    {
+        "id": "iceage_troglobite",
+        "name": "穴居僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Strong"
+        ],
+        "icon": "zombie_iceage_troglobite.jpg"
+    },
+    {
+        "id": "iceage_hunter",
+        "name": "猎人僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_iceage_hunter.jpg"
+    },
+    {
+        "id": "iceage_walrus",
+        "name": "海象僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Pet"
+        ],
+        "icon": "zombie_iceage_walrus.jpg"
+    },
+    {
+        "id": "iceage_ski",
+        "name": "滑雪僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_iceage_ski.jpg"
+    },
+    {
+        "id": "iceage_chief",
+        "name": "冰风酋长僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Strong"
+        ],
+        "icon": "zombie_iceage_chief.jpg"
+    },
+    {
+        "id": "iceage_weaselhoarder",
+        "name": "冰鼬僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Pet",
+            "Basic"
+        ],
+        "icon": "zombie_iceage_weaselhoarder.jpg"
+    },
+    {
+        "id": "iceage_weasel",
+        "name": "冰鼬",
+        "tags": [
+            "Iceage_Lostcity",
+            "Pet"
+        ],
+        "icon": "zombie_iceage_weasel.jpg"
+    },
+    {
+        "id": "iceage_dodo",
+        "name": "渡渡鸟骑士僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Pet"
+        ],
+        "icon": "zombie_iceage_dodo.jpg"
+    },
+    {
+        "id": "iceage_armor3_elite",
+        "name": "洞穴猛犸头僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_iceage_armor3_elite.jpg"
+    },
+    {
+        "id": "iceage_hunter_elite",
+        "name": "精英猎人僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Elite",
+            "Basic"
+        ],
+        "icon": "zombie_iceage_hunter_elite.jpg"
+    },
+    {
+        "id": "iceage_weaselhoarder_elite",
+        "name": "精英冰鼬僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Elite",
+            "Pet",
+            "Basic"
+        ],
+        "icon": "zombie_iceage_weaselhoarder_elite.jpg"
+    },
+    {
+        "id": "iceage_weasel_elite",
+        "name": "精英冰鼬",
+        "tags": [
+            "Iceage_Lostcity",
+            "Elite",
+            "Pet"
+        ],
+        "icon": "zombie_iceage_weasel_elite.jpg"
+    },
+    {
+        "id": "iceage_chief_elite",
+        "name": "精英冰风酋长僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Elite",
+            "Strong"
+        ],
+        "icon": "zombie_iceage_chief_elite.jpg"
+    },
+    {
+        "id": "skycity",
+        "name": "天空飞行员僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_skycity.jpg"
+    },
+    {
+        "id": "skycity_armor1",
+        "name": "路障飞行员僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_skycity_armor1.jpg"
+    },
+    {
+        "id": "skycity_armor2",
+        "name": "铁桶飞行员僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_skycity_armor2.jpg"
+    },
+    {
+        "id": "skycity_armor3",
+        "name": "强化铁桶飞行员",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_skycity_armor2.jpg"
+    },
+    {
+        "id": "skycity_flag",
+        "name": "旗子飞行员僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_skycity_flag.jpg"
+    },
+    {
+        "id": "skycity_gargantuar",
+        "name": "飞行巨人僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Gargantuar"
+        ],
+        "icon": "zombie_skycity_gargantuar.jpg"
+    },
+    {
+        "id": "skycity_ggtimp",
+        "name": "飞行小鬼僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Imp"
+        ],
+        "icon": "zombie_skycity_ggtimp.jpg"
+    },
+    {
+        "id": "skycity_electric",
+        "name": "闪电枪僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_skycity_electric.jpg"
+    },
+    {
+        "id": "elite_skycity_electric",
+        "name": "精英闪电枪僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Memory",
+            "Basic",
+            "Elite"
+        ],
+        "icon": "zombie_elite_skycity_electric.jpg"
+    },
+    {
+        "id": "skycity_battleplane",
+        "name": "战斗机僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Imp"
+        ],
+        "icon": "zombie_skycity_battleplane.jpg"
+    },
+    {
+        "id": "skycity_twinsplane",
+        "name": "双舱飞机僵尸",
+        "tags": [
+            "Kongfu_Skycity"
+        ],
+        "icon": "zombie_skycity_twinsplane.jpg"
+    },
+    {
+        "id": "invisible_plane",
+        "name": "仲裁者-X型",
+        "tags": [
+            "Kongfu_Skycity"
+        ],
+        "icon": "zombie_invisible_plane.jpg"
+    },
+    {
+        "id": "air_missile_launcher",
+        "name": "飞弹僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Imp"
+        ],
+        "icon": "zombie_air_missile_launcher.jpg"
+    },
+    {
+        "id": "skycity_protector",
+        "name": "飞行电磁盾僵尸",
+        "tags": [
+            "Kongfu_Skycity"
+        ],
+        "icon": "zombie_skycity_protector.jpg"
+    },
+    {
+        "id": "lostcity",
+        "name": "失落僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_lostcity.jpg"
+    },
+    {
+        "id": "lostcity_armor1",
+        "name": "路障失落僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_lostcity_armor1.jpg"
+    },
+    {
+        "id": "lostcity_armor2",
+        "name": "铁桶失落僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_lostcity_armor2.jpg"
+    },
+    {
+        "id": "lostcity_bug",
+        "name": "昆虫僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Pet"
+        ],
+        "icon": "zombie_lostcity_bug.jpg"
+    },
+    {
+        "id": "lostcity_bug_armor1",
+        "name": "路障昆虫僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Pet"
+        ],
+        "icon": "zombie_lostcity_bug.jpg"
+    },
+    {
+        "id": "lostcity_bug_armor2",
+        "name": "铁桶昆虫僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Pet"
+        ],
+        "icon": "zombie_lostcity_bug.jpg"
+    },
+    {
+        "id": "lostcity_flag",
+        "name": "旗子失落僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_lostcity_flag.jpg"
+    },
+    {
+        "id": "lostcity_gargantuar",
+        "name": "失落巨人僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Gargantuar"
+        ],
+        "icon": "zombie_lostcity_gargantuar.jpg"
+    },
+    {
+        "id": "lostcity_imp",
+        "name": "失落小鬼僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Imp"
+        ],
+        "icon": "zombie_lostcity_imp.jpg"
+    },
+    {
+        "id": "lostcity_jane",
+        "name": "洋伞僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_lostcity_jane.jpg"
+    },
+    {
+        "id": "lostcity_excavator",
+        "name": "发掘者僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_lostcity_excavator.jpg"
+    },
+    {
+        "id": "lostcity_impporter",
+        "name": "小鬼搬运工僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Imp"
+        ],
+        "icon": "zombie_lostcity_impporter.jpg"
+    },
+    {
+        "id": "lostcity_lostpilot",
+        "name": "飞行员僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_lostcity_lostpilot.jpg"
+    },
+    {
+        "id": "lostcity_relichunter",
+        "name": "遗迹猎人僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_lostcity_relichunter.jpg"
+    },
+    {
+        "id": "lostcity_crystalskull",
+        "name": "考古学家僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_lostcity_crystalskull.jpg"
+    },
+    {
+        "id": "lostcity_doctor",
+        "name": "医生僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_lostcity_doctor.jpg"
+    },
+    {
+        "id": "lostcity_guide",
+        "name": "向导僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_lostcity_guide.jpg"
+    },
+    {
+        "id": "eighties",
+        "name": "摇滚僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties.jpg"
+    },
+    {
+        "id": "eighties_armor1",
+        "name": "路障摇滚僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_armor1.jpg"
+    },
+    {
+        "id": "eighties_armor2",
+        "name": "铁桶摇滚僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_armor2.jpg"
+    },
+    {
+        "id": "eighties_flag",
+        "name": "旗子摇滚僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_flag.jpg"
+    },
+    {
+        "id": "eighties_gargantuar",
+        "name": "重金属巨人僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Gargantuar"
+        ],
+        "icon": "zombie_eighties_gargantuar.jpg"
+    },
+    {
+        "id": "eighties_imp",
+        "name": "摇滚小鬼僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Imp"
+        ],
+        "icon": "zombie_eighties_imp.jpg"
+    },
+    {
+        "id": "eighties_punk",
+        "name": "朋克僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_punk.jpg"
+    },
+    {
+        "id": "eighties_mc",
+        "name": "说唱僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_mc.jpg"
+    },
+    {
+        "id": "eighties_glitter",
+        "name": "闪动僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_glitter.jpg"
+    },
+    {
+        "id": "eighties_arcade",
+        "name": "街机僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Strong"
+        ],
+        "icon": "zombie_eighties_arcade.jpg"
+    },
+    {
+        "id": "eighties_8bit",
+        "name": "8位僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_8bit.jpg"
+    },
+    {
+        "id": "eighties_8bit_armor1",
+        "name": "8位路障僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_8bit.jpg"
+    },
+    {
+        "id": "eighties_8bit_armor2",
+        "name": "8位铁桶僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_8bit.jpg"
+    },
+    {
+        "id": "eighties_breakdancer",
+        "name": "霹雳舞僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_breakdancer.jpg"
+    },
+    {
+        "id": "eighties_bass",
+        "name": "贝斯手僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_bass.jpg"
+    },
+    {
+        "id": "eighties_boombox",
+        "name": "录音机僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_boombox.jpg"
+    },
+    {
+        "id": "dino",
+        "name": "侏罗纪僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_dino.jpg"
+    },
+    {
+        "id": "dino_armor1",
+        "name": "路障侏罗纪僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_dino_armor1.jpg"
+    },
+    {
+        "id": "dino_armor2",
+        "name": "铁桶侏罗纪僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_dino_armor2.jpg"
+    },
+    {
+        "id": "dino_armor3",
+        "name": "龙骨化石僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_dino_armor3.jpg"
+    },
+    {
+        "id": "dino_flag",
+        "name": "旗子侏罗纪僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_dino_flag.jpg"
+    },
+    {
+        "id": "dino_gargantuar",
+        "name": "侏罗纪巨人僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Gargantuar"
+        ],
+        "icon": "zombie_dino_gargantuar.jpg"
+    },
+    {
+        "id": "dino_imp",
+        "name": "侏罗纪小鬼僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Imp"
+        ],
+        "icon": "zombie_dino_imp.jpg"
+    },
+    {
+        "id": "dino_bully",
+        "name": "野人僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Strong"
+        ],
+        "icon": "zombie_dino_bully.jpg"
+    },
+    {
+        "id": "dino_pushegg",
+        "name": "推蛋小鬼僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Imp"
+        ],
+        "icon": "zombie_dino_pushegg.jpg"
+    },
+    {
+        "id": "dino_pushptero",
+        "name": "推翼龙蛋小鬼僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Imp"
+        ],
+        "icon": "zombie_dino_pushegg.jpg"
+    },
+    {
+        "id": "dino_pushbronto",
+        "name": "推雷龙蛋小鬼僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Imp"
+        ],
+        "icon": "zombie_dino_pushegg.jpg"
+    },
+    {
+        "id": "dino_pushtyranno",
+        "name": "推霸王龙蛋小鬼僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Imp"
+        ],
+        "icon": "zombie_dino_pushegg.jpg"
+    },
+    {
+        "id": "dino_pushzomshell",
+        "name": "推蛋壳小鬼蛋小鬼僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Imp"
+        ],
+        "icon": "zombie_dino_pushegg.jpg"
+    },
+    {
+        "id": "dino_stealegg",
+        "name": "偷蛋小鬼僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Imp"
+        ],
+        "icon": "zombie_dino_stealegg.jpg"
+    },
+    {
+        "id": "dino_stealptero",
+        "name": "偷翼龙蛋小鬼僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Imp"
+        ],
+        "icon": "zombie_dino_stealegg.jpg"
+    },
+    {
+        "id": "dino_stealbronto",
+        "name": "偷雷龙蛋小鬼僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Imp"
+        ],
+        "icon": "zombie_dino_stealegg.jpg"
+    },
+    {
+        "id": "dino_stealtyranno",
+        "name": "偷霸王龙蛋小鬼僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Imp"
+        ],
+        "icon": "zombie_dino_stealegg.jpg"
+    },
+    {
+        "id": "dino_stealzomshell",
+        "name": "偷小鬼蛋小鬼僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Imp"
+        ],
+        "icon": "zombie_dino_stealegg.jpg"
+    },
+    {
+        "id": "dino_eggshell",
+        "name": "蛋壳小鬼僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Imp"
+        ],
+        "icon": "zombie_dino_eggshell.jpg"
+    },
+    {
+        "id": "tutorial",
+        "name": "普通僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Basic"
+        ],
+        "icon": "zombie_tutorial.jpg"
+    },
+    {
+        "id": "tutorial_armor1",
+        "name": "路障僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Basic"
+        ],
+        "icon": "zombie_tutorial_armor1.jpg"
+    },
+    {
+        "id": "tutorial_armor2",
+        "name": "铁桶僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Basic"
+        ],
+        "icon": "zombie_tutorial_armor2.jpg"
+    },
+    {
+        "id": "tutorial_flag",
+        "name": "旗子僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Basic"
+        ],
+        "icon": "zombie_tutorial_flag.jpg"
+    },
+    {
+        "id": "tutorial_gargantuar",
+        "name": "巨人僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Gargantuar"
+        ],
+        "icon": "zombie_tutorial_gargantuar.jpg"
+    },
+    {
+        "id": "vase_gargantuar",
+        "name": "花瓶巨人",
+        "tags": [
+            "Modern_Pvz1",
+            "Gargantuar"
+        ],
+        "icon": "zombie_vase_gargantuar.jpg"
+    },
+    {
+        "id": "tutorial_imp",
+        "name": "小鬼僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Imp"
+        ],
+        "icon": "zombie_tutorial_imp.jpg"
+    },
+    {
+        "id": "modern_newspaper",
+        "name": "报纸僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Basic"
+        ],
+        "icon": "zombie_modern_newspaper.jpg"
+    },
+    {
+        "id": "newspaper_veteran",
+        "name": "周日版僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Basic"
+        ],
+        "icon": "zombie_newspaper_veteran.jpg"
+    },
+    {
+        "id": "modern_balloon",
+        "name": "气球僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Basic"
+        ],
+        "icon": "zombie_modern_balloon.jpg"
+    },
+    {
+        "id": "modern_allstar",
+        "name": "全明星僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Strong"
+        ],
+        "icon": "zombie_modern_allstar.jpg"
+    },
+    {
+        "id": "modern_superfanimp",
+        "name": "粉丝小鬼僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Imp"
+        ],
+        "icon": "zombie_modern_superfanimp.jpg"
+    },
+    {
+        "id": "explosion_proof",
+        "name": "防爆警察僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Basic"
+        ],
+        "icon": "zombie_explosion_proof.jpg"
+    },
+    {
+        "id": "modern_solar_truck",
+        "name": "太阳能车僵尸",
+        "tags": [
+            "Modern_Pvz1"
+        ],
+        "icon": "zombie_modern_solar_truck.jpg"
+    },
+    {
+        "id": "modern_miner",
+        "name": "矿工僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Fat"
+        ],
+        "icon": "zombie_modern_miner.jpg"
+    },
+    {
+        "id": "neuropathy",
+        "name": "玩偶匣僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_neuropathy.jpg"
+    },
+    {
+        "id": "catapult",
+        "name": "投篮车僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Fat"
+        ],
+        "icon": "zombie_catapult.jpg"
+    },
+    {
+        "id": "dancer_king",
+        "name": "舞王僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_dancer_king.jpg"
+    },
+    {
+        "id": "dancer",
+        "name": "伴舞僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_dancer.jpg"
+    },
+    {
+        "id": "pole_vaulting",
+        "name": "撑杆跳僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_pole_vaulting.jpg"
+    },
+    {
+        "id": "ladder",
+        "name": "扶梯僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_ladder.jpg"
+    },
+    {
+        "id": "treasureyeti",
+        "name": "宝藏雪人",
+        "tags": [
+            "Modern_Pvz1",
+            "Fat"
+        ],
+        "icon": "zombie_treasureyeti.jpg"
+    },
+    {
+        "id": "steam_worker",
+        "name": "工人僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_steam_worker.jpg"
+    },
+    {
+        "id": "steam_armor1",
+        "name": "路障工人僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_steam_armor1.jpg"
+    },
+    {
+        "id": "steam_armor2",
+        "name": "铁桶工人僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_steam_armor2.jpg"
+    },
+    {
+        "id": "steam_flag",
+        "name": "旗子工人僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_steam_flag.jpg"
+    },
+    {
+        "id": "steam_gargantuar",
+        "name": "监工巨人僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Gargantuar"
+        ],
+        "icon": "zombie_steam_gargantuar.jpg"
+    },
+    {
+        "id": "steam_imp",
+        "name": "工业小鬼僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Imp"
+        ],
+        "icon": "zombie_steam_imp.jpg"
+    },
+    {
+        "id": "steam_gentleman",
+        "name": "绅士僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_steam_gentleman.jpg"
+    },
+    {
+        "id": "steam_stove",
+        "name": "锅炉僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_steam_stove.jpg"
+    },
+    {
+        "id": "steam_coal_miner",
+        "name": "煤矿僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_steam_coal_miner.jpg"
+    },
+    {
+        "id": "renai_worker",
+        "name": "贵族僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_renai_worker.jpg"
+    },
+    {
+        "id": "renai_armor1",
+        "name": "路障贵族僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_renai_armor1.jpg"
+    },
+    {
+        "id": "renai_armor2",
+        "name": "铁桶贵族僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_renai_armor2.jpg"
+    },
+    {
+        "id": "renai_flag",
+        "name": "旗子贵族僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_renai_flag.jpg"
+    },
+    {
+        "id": "renai_gargantuar",
+        "name": "贵族巨人僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Gargantuar"
+        ],
+        "icon": "zombie_renai_gargantuar.jpg"
+    },
+    {
+        "id": "renai_carver",
+        "name": "雕刻家小鬼僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Imp"
+        ],
+        "icon": "zombie_renai_carver.jpg"
+    },
+    {
+        "id": "renai_perfumer",
+        "name": "调香师僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_renai_perfumer.jpg"
+    },
+    {
+        "id": "renai_gliding",
+        "name": "飞行器僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_renai_gliding.jpg"
+    },
+    {
+        "id": "renai_ballet",
+        "name": "芭蕾舞舞团",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_renai_ballet_mid.jpg"
+    },
+    {
+        "id": "renai_ballet_mid",
+        "name": "芭蕾舞僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_renai_ballet_mid.jpg"
+    },
+    {
+        "id": "renai_sherlock",
+        "name": "夏洛克僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Elite",
+            "Basic"
+        ],
+        "icon": "zombie_renai_sherlock.jpg"
+    },
+    {
+        "id": "renai_hamlet",
+        "name": "哈姆雷特僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Elite",
+            "Basic"
+        ],
+        "icon": "zombie_renai_hamlet.jpg"
+    },
+    {
+        "id": "renai_juliet",
+        "name": "朱丽叶僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Elite",
+            "Basic"
+        ],
+        "icon": "zombie_renai_juliet.jpg"
+    },
+    {
+        "id": "renai_romeo",
+        "name": "罗密欧僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Elite",
+            "Basic"
+        ],
+        "icon": "zombie_renai_romeo.jpg"
+    },
+    {
+        "id": "heian_worker",
+        "name": "武士僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_heian_worker.jpg"
+    },
+    {
+        "id": "heian_armor1",
+        "name": "路障武士僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_heian_armor1.jpg"
+    },
+    {
+        "id": "heian_armor2",
+        "name": "铁桶武士僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_heian_armor2.jpg"
+    },
+    {
+        "id": "heian_flag",
+        "name": "旗子武士僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_heian_flag.jpg"
+    },
+    {
+        "id": "heian_gargantuar",
+        "name": "将军巨人僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Gargantuar"
+        ],
+        "icon": "zombie_heian_gargantuar.jpg"
+    },
+    {
+        "id": "heian_ninja",
+        "name": "忍者小鬼僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Imp"
+        ],
+        "icon": "zombie_heian_ninja.jpg"
+    },
+    {
+        "id": "heian_hanabi",
+        "name": "花火僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_heian_hanabi.jpg"
+    },
+    {
+        "id": "heian_akinndo",
+        "name": "蓑衣僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_heian_akinndo.jpg"
+    },
+    {
+        "id": "heian_sushi",
+        "name": "寿司师傅僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Strong"
+        ],
+        "icon": "zombie_heian_sushi.jpg"
+    },
+    {
+        "id": "heian_onmyoji",
+        "name": "阴阳师僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_heian_onmyoji.jpg"
+    },
+    {
+        "id": "elite_heian_onmyoji",
+        "name": "精英阴阳师僵尸",
+        "tags": [
+            "Memory",
+            "Basic",
+            "Elite"
+        ],
+        "icon": "zombie_elite_heian_onmyoji.jpg"
+    },
+    {
+        "id": "atlantis_basic",
+        "name": "海洋普通僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_atlantis_basic.jpg"
+    },
+    {
+        "id": "atlantis_flag",
+        "name": "海洋旗子僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_atlantis_flag.jpg"
+    },
+    {
+        "id": "atlantis_armor1",
+        "name": "海洋路障僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_atlantis_armor1.jpg"
+    },
+    {
+        "id": "atlantis_armor2",
+        "name": "海洋铁桶僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_atlantis_armor2.jpg"
+    },
+    {
+        "id": "atlantis_land_basic",
+        "name": "遗迹普通僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_atlantis_land_basic.jpg"
+    },
+    {
+        "id": "atlantis_land_armor1",
+        "name": "遗迹路障僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_atlantis_land_armor1.jpg"
+    },
+    {
+        "id": "atlantis_land_armor2",
+        "name": "遗迹铁桶僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_atlantis_land_armor2.jpg"
+    },
+    {
+        "id": "atlantis_land_flag",
+        "name": "遗迹旗子僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_atlantis_land_flag.jpg"
+    },
+    {
+        "id": "atlantis_gargantuar",
+        "name": "游泳遗迹巨人僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Gargantuar"
+        ],
+        "icon": "zombie_atlantis_gargantuar.jpg"
+    },
+    {
+        "id": "atlantis_land_gargantuar",
+        "name": "行走遗迹巨人僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Gargantuar"
+        ],
+        "icon": "zombie_atlantis_gargantuar.jpg"
+    },
+    {
+        "id": "atlantis_imp",
+        "name": "遗迹小鬼僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Imp"
+        ],
+        "icon": "zombie_atlantis_imp.jpg"
+    },
+    {
+        "id": "fat_dive",
+        "name": "深潜僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Fat"
+        ],
+        "icon": "zombie_fat_dive.jpg"
+    },
+    {
+        "id": "lanternfish_rider",
+        "name": "旗鱼骑士僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic",
+            "Pet"
+        ],
+        "icon": "zombie_lanternfish_rider.jpg"
+    },
+    {
+        "id": "priest",
+        "name": "祭司僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_priest.jpg"
+    },
+    {
+        "id": "poseidon_assistant",
+        "name": "执政官僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Strong",
+            "Pet"
+        ],
+        "icon": "zombie_poseidon_assistant.jpg"
+    },
+    {
+        "id": "seaurchinpitcher",
+        "name": "海胆投手僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Strong",
+            "Pet"
+        ],
+        "icon": "zombie_seaurchinpitcher.jpg"
+    },
+    {
+        "id": "fairy_tale",
+        "name": "扑克牌僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_fairy_tale.jpg"
+    },
+    {
+        "id": "fairy_tale_armor1",
+        "name": "扑克牌路障僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_fairy_tale_armor1.jpg"
+    },
+    {
+        "id": "fairy_tale_armor2",
+        "name": "扑克牌铁桶僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_fairy_tale_armor2.jpg"
+    },
+    {
+        "id": "fairy_tale_flag",
+        "name": "扑克牌旗帜僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_fairy_tale_flag.jpg"
+    },
+    {
+        "id": "fairy_tale_gargantuar",
+        "name": "近卫巨人僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Gargantuar"
+        ],
+        "icon": "zombie_fairy_tale_gargantuar.jpg"
+    },
+    {
+        "id": "fairy_tale_armed_gargantuar",
+        "name": "带王座近卫巨人僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Gargantuar"
+        ],
+        "icon": "zombie_fairy_tale_gargantuar.jpg"
+    },
+    {
+        "id": "fairy_tale_imp",
+        "name": "红皇后小鬼僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Imp"
+        ],
+        "icon": "zombie_fairy_tale_imp.jpg"
+    },
+    {
+        "id": "fairy_tale_witch",
+        "name": "女巫僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_fairy_tale_witch.jpg"
+    },
+    {
+        "id": "fairy_tale_knight",
+        "name": "近卫骑士僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Pet"
+        ],
+        "icon": "zombie_fairy_tale_knight.jpg"
+    },
+    {
+        "id": "fairy_tale_knight_rider",
+        "name": "无马近卫骑士僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_fairy_tale_knight.jpg"
+    },
+    {
+        "id": "mirror_queen_phase1",
+        "name": "第一阶段魔镜皇后",
+        "tags": [
+            "Tale_ZCorp",
+            "Elite",
+            "Basic"
+        ],
+        "icon": "zombie_mirror_queen_phase1.jpg"
+    },
+    {
+        "id": "mirror_queen_phase2",
+        "name": "第二阶段魔镜皇后",
+        "tags": [
+            "Tale_ZCorp",
+            "Elite",
+            "Basic"
+        ],
+        "icon": "zombie_mirror_queen_phase1.jpg"
+    },
+    {
+        "id": "mirror_queen_phase3",
+        "name": "第三阶段魔镜皇后",
+        "tags": [
+            "Tale_ZCorp",
+            "Elite",
+            "Basic"
+        ],
+        "icon": "zombie_mirror_queen_phase1.jpg"
+    },
+    {
+        "id": "plantwars_mirror_queen_phase3",
+        "name": "精英魔镜皇后",
+        "tags": [
+            "Tale_ZCorp",
+            "Elite",
+            "Basic"
+        ],
+        "icon": "zombie_plantwars_mirror_queen_phase3.jpg"
+    },
+    {
+        "id": "zcorp",
+        "name": "新雇员僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_zcorp.jpg"
+    },
+    {
+        "id": "zcorp_armor1",
+        "name": "新雇员路障僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_zcorp_armor1.jpg"
+    },
+    {
+        "id": "zcorp_armor2",
+        "name": "新雇员铁桶僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_zcorp_armor2.jpg"
+    },
+    {
+        "id": "zcorp_flag",
+        "name": "新雇员旗帜僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_zcorp_flag.jpg"
+    },
+    {
+        "id": "zcorp_fem",
+        "name": "合同工僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_zcorp_fem.jpg"
+    },
+    {
+        "id": "zcorp_fem_armor1",
+        "name": "合同工路障僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_zcorp_fem_armor1.jpg"
+    },
+    {
+        "id": "zcorp_fem_armor2",
+        "name": "合同工铁桶僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_zcorp_fem_armor2.jpg"
+    },
+    {
+        "id": "zcorp_consultant",
+        "name": "顾问僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_zcorp_consultant.jpg"
+    },
+    {
+        "id": "zcorp_racer_chair",
+        "name": "办公室赛车手僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_zcorp_racer.jpg"
+    },
+    {
+        "id": "zcorp_racer",
+        "name": "无椅赛车手僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_zcorp_racer.jpg"
+    },
+    {
+        "id": "zcorp_helpdesk",
+        "name": "技术支持僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_zcorp_helpdesk.jpg"
+    },
+    {
+        "id": "zcorp_gargantuar",
+        "name": "总部巨型小鬼僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Gargantuar"
+        ],
+        "icon": "zombie_zcorp_gargantuar.jpg"
+    },
+    {
+        "id": "zcorp_imp",
+        "name": "法律部小巨人僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Imp",
+            "Gargantuar"
+        ],
+        "icon": "zombie_zcorp_imp.jpg"
+    },
+    {
+        "id": "general_zmech_phase1",
+        "name": "第一阶段Z机甲",
+        "tags": [
+            "Tale_ZCorp",
+            "Elite",
+            "Imp"
+        ],
+        "icon": "zombie_general_zmech_phase1.jpg"
+    },
+    {
+        "id": "general_zmech_phase2",
+        "name": "第二阶段Z机甲",
+        "tags": [
+            "Tale_ZCorp",
+            "Elite",
+            "Imp"
+        ],
+        "icon": "zombie_general_zmech_phase1.jpg"
+    },
+    {
+        "id": "general_zmech_phase3",
+        "name": "第三阶段Z机甲",
+        "tags": [
+            "Tale_ZCorp",
+            "Elite",
+            "Imp"
+        ],
+        "icon": "zombie_general_zmech_phase1.jpg"
+    },
+    {
+        "id": "parkour",
+        "name": "保安普通僵尸",
+        "tags": [
+            "Parkour_Speed",
+            "Basic"
+        ],
+        "icon": "zombie_parkour.jpg"
+    },
+    {
+        "id": "parkour_armor1",
+        "name": "保安路障僵尸",
+        "tags": [
+            "Parkour_Speed",
+            "Basic"
+        ],
+        "icon": "zombie_parkour_armor1.jpg"
+    },
+    {
+        "id": "parkour_armor2",
+        "name": "保安铁桶僵尸",
+        "tags": [
+            "Parkour_Speed",
+            "Basic"
+        ],
+        "icon": "zombie_parkour_armor2.jpg"
+    },
+    {
+        "id": "parkour_flag",
+        "name": "保安旗帜僵尸",
+        "tags": [
+            "Parkour_Speed",
+            "Basic"
+        ],
+        "icon": "zombie_parkour_flag.jpg"
+    },
+    {
+        "id": "parkour_gargantuar",
+        "name": "保安巨人僵尸",
+        "tags": [
+            "Parkour_Speed",
+            "Gargantuar"
+        ],
+        "icon": "zombie_parkour_gargantuar.jpg"
+    },
+    {
+        "id": "parkour_imp",
+        "name": "保安小鬼僵尸",
+        "tags": [
+            "Parkour_Speed",
+            "Imp"
+        ],
+        "icon": "zombie_parkour_imp.jpg"
+    },
+    {
+        "id": "parkour_runner",
+        "name": "街头跑酷僵尸",
+        "tags": [
+            "Parkour_Speed",
+            "Strong"
+        ],
+        "icon": "zombie_parkour_runner.jpg"
+    },
+    {
+        "id": "needforspeed",
+        "name": "竞速普通僵尸",
+        "tags": [
+            "Parkour_Speed",
+            "Basic"
+        ],
+        "icon": "zombie_needforspeed.jpg"
+    },
+    {
+        "id": "needforspeed_armor1",
+        "name": "竞速路障僵尸",
+        "tags": [
+            "Parkour_Speed",
+            "Basic"
+        ],
+        "icon": "zombie_needforspeed_armor1.jpg"
+    },
+    {
+        "id": "needforspeed_armor2",
+        "name": "竞速铁桶僵尸",
+        "tags": [
+            "Parkour_Speed",
+            "Basic"
+        ],
+        "icon": "zombie_needforspeed_armor2.jpg"
+    },
+    {
+        "id": "needforspeed_flag",
+        "name": "竞速旗帜僵尸",
+        "tags": [
+            "Parkour_Speed",
+            "Basic"
+        ],
+        "icon": "zombie_needforspeed_flag.jpg"
+    },
+    {
+        "id": "needforspeed_gargantuar",
+        "name": "街头巨人僵尸",
+        "tags": [
+            "Parkour_Speed",
+            "Gargantuar"
+        ],
+        "icon": "zombie_needforspeed_gargantuar.jpg"
+    },
+    {
+        "id": "needforspeed_imp",
+        "name": "街头小鬼僵尸",
+        "tags": [
+            "Parkour_Speed",
+            "Imp"
+        ],
+        "icon": "zombie_needforspeed_imp.jpg"
+    },
+    {
+        "id": "zombie_van",
+        "name": "飞驰巨兽",
+        "tags": [
+            "Parkour_Speed",
+            "Elite",
+            "Imp"
+        ],
+        "icon": "zombie_zombie_van.jpg"
+    },
+    {
+        "id": "universe_uncharted_mini_gargantuar",
+        "name": "迷你巨人僵尸",
+        "tags": [
+            "Universe",
+            "Imp",
+            "Gargantuar"
+        ],
+        "icon": "zombie_universe_uncharted_mini_gargantuar.jpg"
+    },
+    {
+        "id": "universe_uncharted_armor1",
+        "name": "坚固路障僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_universe_uncharted_armor1.jpg"
+    },
+    {
+        "id": "universe_uncharted_armor2",
+        "name": "比基尼假发僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_universe_uncharted_armor2.jpg"
+    },
+    {
+        "id": "universe_uncharted_gargantuar_basic",
+        "name": "巨型普通僵尸",
+        "tags": [
+            "Universe",
+            "Gargantuar"
+        ],
+        "icon": "zombie_universe_uncharted_gargantuar_basic.jpg"
+    },
+    {
+        "id": "universe_uncharted_lostcity_excavator",
+        "name": "洋铲僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_universe_uncharted_lostcity_excavator.jpg"
+    },
+    {
+        "id": "universe_uncharted_lostcity_jane",
+        "name": "挖掘伞僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_universe_uncharted_lostcity_jane.jpg"
+    },
+    {
+        "id": "universe_uncharted_doctor",
+        "name": "毒奶医生僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_universe_uncharted_doctor.jpg"
+    },
+    {
+        "id": "universe_uncharted_allstar",
+        "name": "闪电型全明星僵尸",
+        "tags": [
+            "Universe",
+            "Strong"
+        ],
+        "icon": "zombie_universe_uncharted_allstar.jpg"
+    },
+    {
+        "id": "universe_uncharted_kongfu_selfexplode",
+        "name": "治愈自爆僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_universe_uncharted_kongfu_selfexplode.jpg"
+    },
+    {
+        "id": "universe_uncharted_ra",
+        "name": "反转太阳神僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_universe_uncharted_ra.jpg"
+    },
+    {
+        "id": "universe_uncharted_heian_akinndo",
+        "name": "反转蓑衣僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_universe_uncharted_heian_akinndo.jpg"
+    },
+    {
+        "id": "universe_uncharted_prospector",
+        "name": "淘金狂僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_universe_uncharted_prospector.jpg"
+    },
+    {
+        "id": "universe_uncharted_modern_newspaper",
+        "name": "弹性报纸僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_universe_uncharted_modern_newspaper.jpg"
+    },
+    {
+        "id": "universe_uncharted_juggler",
+        "name": "易怒小丑僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_universe_uncharted_juggler.jpg"
+    },
+    {
+        "id": "universe_uncharted_chicken",
+        "name": "巨型僵尸鸡",
+        "tags": [
+            "Universe",
+            "Pet"
+        ],
+        "icon": "zombie_universe_uncharted_chicken.jpg"
+    },
+    {
+        "id": "universe_uncharted_iceage_weasel",
+        "name": "巨型冰鼬",
+        "tags": [
+            "Universe",
+            "Pet"
+        ],
+        "icon": "zombie_universe_uncharted_iceage_weasel.jpg"
+    },
+    {
+        "id": "uncharted_crystalskull",
+        "name": "龟派气功僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_uncharted_crystalskull.jpg"
+    },
+    {
+        "id": "uncharted_qigong",
+        "name": "植物学家僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_uncharted_qigong.jpg"
+    },
+    {
+        "id": "uncharted_glitter",
+        "name": "反转闪动僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_uncharted_glitter.jpg"
+    },
+    {
+        "id": "uncharted_miner",
+        "name": "黄金矿工僵尸",
+        "tags": [
+            "Universe",
+            "Fat"
+        ],
+        "icon": "zombie_uncharted_miner.jpg"
+    },
+    {
+        "id": "uncharted_gentleman",
+        "name": "落魄绅士僵尸",
+        "tags": [
+            "Universe",
+            "Basic"
+        ],
+        "icon": "zombie_uncharted_gentleman.jpg"
+    },
+    {
+        "id": "uncharted_cannon",
+        "name": "推进小鬼炮",
+        "tags": [
+            "Universe",
+            "Gargantuar"
+        ],
+        "icon": "zombie_uncharted_cannon.jpg"
+    },
+    {
+        "id": "iceage_fat_weasel_elite",
+        "name": "肥鼬",
+        "tags": [
+            "Universe",
+            "Pet",
+            "Fat",
+            "Elite"
+        ],
+        "icon": "zombie_iceage_fat_weasel_elite.jpg"
+    },
+    {
+        "id": "gargantuar_uncharted_imp",
+        "name": "巨鬼僵尸",
+        "tags": [
+            "Universe",
+            "Gargantuar",
+            "Elite"
+        ],
+        "icon": "zombie_gargantuar_uncharted_imp.jpg"
+    },
+    {
+        "id": "lny",
+        "name": "新春僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_lny.jpg"
+    },
+    {
+        "id": "lny_armor1",
+        "name": "新春路障僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_lny_armor1.jpg"
+    },
+    {
+        "id": "lny_armor2",
+        "name": "新春铁桶僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_lny_armor2.jpg"
+    },
+    {
+        "id": "lny_flag",
+        "name": "新春旗帜僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_lny_flag.jpg"
+    },
+    {
+        "id": "lny_camel_onehump",
+        "name": "单驼峰新年骆驼牌",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_lny_camel_onehump.jpg"
+    },
+    {
+        "id": "lny_camel_twohump",
+        "name": "双驼新年峰骆驼牌",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_lny_camel_onehump.jpg"
+    },
+    {
+        "id": "lny_camel_manyhump",
+        "name": "多驼峰新年骆驼牌",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_lny_camel_onehump.jpg"
+    },
+    {
+        "id": "lny_imp",
+        "name": "新年粉丝小鬼僵尸",
+        "tags": [
+            "Festival",
+            "Imp"
+        ],
+        "icon": "zombie_lny_imp.jpg"
+    },
+    {
+        "id": "zombie_moneytree",
+        "name": "摇钱树僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_zombie_moneytree.jpg"
+    },
+    {
+        "id": "endlesswealth",
+        "name": "财神",
+        "tags": [
+            "Festival",
+            "Fat"
+        ],
+        "icon": "zombie_endlesswealth.jpg"
+    },
+    {
+        "id": "feastivus_swashbuckler",
+        "name": "神偷僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_feastivus_swashbuckler.jpg"
+    },
+    {
+        "id": "zombie_yearmonster",
+        "name": "年兽僵尸",
+        "tags": [
+            "Festival",
+            "Elite",
+            "Imp",
+            "Pet"
+        ],
+        "icon": "zombie_zombie_yearmonster.jpg"
+    },
+    {
+        "id": "iceyearmonster",
+        "name": "寒冰年兽僵尸",
+        "tags": [
+            "Festival",
+            "Elite",
+            "Imp",
+            "Pet"
+        ],
+        "icon": "zombie_iceyearmonster.jpg"
+    },
+    {
+        "id": "childrensday",
+        "name": "儿童节普通僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_childrensday.jpg"
+    },
+    {
+        "id": "childrensday_armor1",
+        "name": "儿童节路障僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_childrensday_armor1.jpg"
+    },
+    {
+        "id": "childrensday_armor2",
+        "name": "儿童节铁桶僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_childrensday_armor2.jpg"
+    },
+    {
+        "id": "childrensday_flag",
+        "name": "儿童节旗帜僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_childrensday_flag.jpg"
+    },
+    {
+        "id": "childrensday_gargantuar",
+        "name": "儿童节粉熊巨人僵尸",
+        "tags": [
+            "Festival",
+            "Gargantuar"
+        ],
+        "icon": "zombie_childrensday_gargantuar.jpg"
+    },
+    {
+        "id": "childrensday_imp",
+        "name": "儿童节粉熊小鬼僵尸",
+        "tags": [
+            "Festival",
+            "Imp"
+        ],
+        "icon": "zombie_childrensday_imp.jpg"
+    },
+    {
+        "id": "children_ballon",
+        "name": "儿童节气球小鬼僵尸",
+        "tags": [
+            "Festival",
+            "Imp"
+        ],
+        "icon": "zombie_children_ballon.jpg"
+    },
+    {
+        "id": "children_schoolbag",
+        "name": "儿童节小鬼僵尸",
+        "tags": [
+            "Festival",
+            "Imp"
+        ],
+        "icon": "zombie_children_schoolbag.jpg"
+    },
+    {
+        "id": "children_toycar",
+        "name": "儿童节玩具车小鬼僵尸",
+        "tags": [
+            "Festival",
+            "Imp"
+        ],
+        "icon": "zombie_children_toycar.jpg"
+    },
+    {
+        "id": "children_toygun",
+        "name": "儿童节泡泡枪小鬼僵尸",
+        "tags": [
+            "Festival",
+            "Imp"
+        ],
+        "icon": "zombie_children_toygun.jpg"
+    },
+    {
+        "id": "children_lollipops",
+        "name": "儿童节棒棒糖僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_children_lollipops.jpg"
+    },
+    {
+        "id": "bumpercar",
+        "name": "碰碰车僵尸",
+        "tags": [
+            "Festival",
+            "Elite",
+            "Imp"
+        ],
+        "icon": "zombie_bumpercar.jpg"
+    },
+    {
+        "id": "bumpercar_elite",
+        "name": "精英碰碰车僵尸",
+        "tags": [
+            "Festival",
+            "Elite",
+            "Imp"
+        ],
+        "icon": "zombie_bumpercar_elite.jpg"
+    },
+    {
+        "id": "summer_basic",
+        "name": "夏夜僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_summer_basic.jpg"
+    },
+    {
+        "id": "summer_armor1",
+        "name": "夏夜路障僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_summer_armor1.jpg"
+    },
+    {
+        "id": "summer_armor2",
+        "name": "夏夜铁桶僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_summer_armor2.jpg"
+    },
+    {
+        "id": "summer_flag",
+        "name": "夏夜旗帜僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_summer_flag.jpg"
+    },
+    {
+        "id": "summer_gargantuar",
+        "name": "夏夜巨人僵尸",
+        "tags": [
+            "Festival",
+            "Gargantuar"
+        ],
+        "icon": "zombie_summer_gargantuar.jpg"
+    },
+    {
+        "id": "summer_imp",
+        "name": "夏夜小鬼僵尸",
+        "tags": [
+            "Festival",
+            "Imp"
+        ],
+        "icon": "zombie_summer_imp.jpg"
+    },
+    {
+        "id": "summer_bug",
+        "name": "夏夜昆虫僵尸",
+        "tags": [
+            "Festival",
+            "Basic",
+            "Pet"
+        ],
+        "icon": "zombie_summer_bug.jpg"
+    },
+    {
+        "id": "summer_bug_armor1",
+        "name": "夏夜昆虫路障僵尸",
+        "tags": [
+            "Festival",
+            "Basic",
+            "Pet"
+        ],
+        "icon": "zombie_summer_bug.jpg"
+    },
+    {
+        "id": "summer_bug_armor2",
+        "name": "夏夜昆虫铁桶僵尸",
+        "tags": [
+            "Festival",
+            "Basic",
+            "Pet"
+        ],
+        "icon": "zombie_summer_bug.jpg"
+    },
+    {
+        "id": "birthday",
+        "name": "周年庆僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_birthday.jpg"
+    },
+    {
+        "id": "birthday_flag",
+        "name": "周年庆旗帜僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_birthday_flag.jpg"
+    },
+    {
+        "id": "birthday_gargantuar",
+        "name": "周年庆巨人僵尸",
+        "tags": [
+            "Festival",
+            "Gargantuar"
+        ],
+        "icon": "zombie_birthday_gargantuar.jpg"
+    },
+    {
+        "id": "birthday_pharaoh",
+        "name": "周年庆法老僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_birthday_pharaoh.jpg"
+    },
+    {
+        "id": "birthday_barrelroller",
+        "name": "周年庆滚桶僵尸",
+        "tags": [
+            "Festival",
+            "Basic",
+            "Imp"
+        ],
+        "icon": "zombie_birthday_barrelroller.jpg"
+    },
+    {
+        "id": "birthday_jetpack",
+        "name": "周年庆飞行器僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_birthday_jetpack.jpg"
+    },
+    {
+        "id": "birthday_juggler",
+        "name": "周年庆小丑僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_birthday_juggler.jpg"
+    },
+    {
+        "id": "birthday_troglobite",
+        "name": "周年庆穴居僵尸",
+        "tags": [
+            "Festival",
+            "Strong"
+        ],
+        "icon": "zombie_birthday_troglobite.jpg"
+    },
+    {
+        "id": "caketank",
+        "name": "蛋糕坦克",
+        "tags": [
+            "Festival",
+            "Elite"
+        ],
+        "icon": "zombie_caketank.jpg"
+    },
+    {
+        "id": "halloween",
+        "name": "万圣节僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_halloween.jpg"
+    },
+    {
+        "id": "halloween_armor1",
+        "name": "万圣节路障僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_halloween_armor1.jpg"
+    },
+    {
+        "id": "halloween_armor2",
+        "name": "万圣节铁桶僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_halloween_armor2.jpg"
+    },
+    {
+        "id": "halloween_flag",
+        "name": "万圣节旗帜僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_halloween_flag.jpg"
+    },
+    {
+        "id": "halloween_gargantuar",
+        "name": "万圣节巨人僵尸",
+        "tags": [
+            "Festival",
+            "Gargantuar"
+        ],
+        "icon": "zombie_halloween_gargantuar.jpg"
+    },
+    {
+        "id": "halloween_imp",
+        "name": "万圣节小鬼僵尸",
+        "tags": [
+            "Festival",
+            "Imp"
+        ],
+        "icon": "zombie_halloween_imp.jpg"
+    },
+    {
+        "id": "pumpkin_knight_ghost",
+        "name": "南瓜幽灵僵尸",
+        "tags": [
+            "Festival",
+            "Imp",
+            "Pet"
+        ],
+        "icon": "zombie_pumpkin_knight_ghost.jpg"
+    },
+    {
+        "id": "pumpkin_scarecrow_bird",
+        "name": "僵尸乌鸦",
+        "tags": [
+            "Festival",
+            "Pet"
+        ],
+        "icon": "zombie_pumpkin_scarecrow_bird.jpg"
+    },
+    {
+        "id": "pumpkin_house_ghost",
+        "name": "南瓜屋南瓜幽灵僵尸",
+        "tags": [
+            "Festival",
+            "Elite",
+            "Pet"
+        ],
+        "icon": "zombie_pumpkin_house_ghost.jpg"
+    },
+    {
+        "id": "pumpkin_knight",
+        "name": "南瓜骑士僵尸",
+        "tags": [
+            "Festival",
+            "Elite",
+            "Basic",
+            "Pet"
+        ],
+        "icon": "zombie_pumpkin_knight.jpg"
+    },
+    {
+        "id": "pumpkin_necromancer",
+        "name": "南瓜术士僵尸",
+        "tags": [
+            "Festival",
+            "Elite",
+            "Strong"
+        ],
+        "icon": "zombie_pumpkin_necromancer.jpg"
+    },
+    {
+        "id": "christmas",
+        "name": "圣诞节普通僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_christmas.jpg"
+    },
+    {
+        "id": "christmas_armor1",
+        "name": "圣诞节路障僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_christmas_armor1.jpg"
+    },
+    {
+        "id": "christmas_armor2",
+        "name": "圣诞节铁桶僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_christmas_armor2.jpg"
+    },
+    {
+        "id": "giftbox",
+        "name": "礼物头僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_giftbox.jpg"
+    },
+    {
+        "id": "giftbox_armor1",
+        "name": "礼物头路障僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_giftbox.jpg"
+    },
+    {
+        "id": "giftbox_armor2",
+        "name": "礼物头铁桶僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_giftbox.jpg"
+    },
+    {
+        "id": "christmas_flag",
+        "name": "圣诞节旗帜僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_christmas_flag.jpg"
+    },
+    {
+        "id": "christmas_gargantuar",
+        "name": "圣诞节巨人僵尸",
+        "tags": [
+            "Festival",
+            "Gargantuar"
+        ],
+        "icon": "zombie_christmas_gargantuar.jpg"
+    },
+    {
+        "id": "christmas_gargantuar2",
+        "name": "圣诞节驯鹿巨人僵尸",
+        "tags": [
+            "Festival",
+            "Gargantuar"
+        ],
+        "icon": "zombie_christmas_gargantuar2.jpg"
+    },
+    {
+        "id": "christmas_imp",
+        "name": "圣诞节小鬼僵尸",
+        "tags": [
+            "Festival",
+            "Imp"
+        ],
+        "icon": "zombie_christmas_imp.jpg"
+    },
+    {
+        "id": "christmas_imp2",
+        "name": "圣诞节精灵小鬼僵尸",
+        "tags": [
+            "Festival",
+            "Imp"
+        ],
+        "icon": "zombie_christmas_imp2.jpg"
+    },
+    {
+        "id": "christmas_camel_onehump",
+        "name": "单驼峰圣诞节骆驼牌",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_christmas_camel_onehump.jpg"
+    },
+    {
+        "id": "christmas_camel_twohump",
+        "name": "双驼峰圣诞节骆驼牌",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_christmas_camel_onehump.jpg"
+    },
+    {
+        "id": "christmas_camel_manyhump",
+        "name": "多驼峰圣诞节骆驼牌",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_christmas_camel_onehump.jpg"
+    },
+    {
+        "id": "christmas_swashbuckler",
+        "name": "圣诞节飞索僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_christmas_swashbuckler.jpg"
+    },
+    {
+        "id": "christmas_poncho",
+        "name": "圣诞节斗篷僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_christmas_poncho.jpg"
+    },
+    {
+        "id": "christmas_poncho_no_plate",
+        "name": "无钢板圣诞节斗篷僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_christmas_poncho.jpg"
+    },
+    {
+        "id": "christmas_poncho_plate",
+        "name": "有钢板圣诞节斗篷僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_christmas_poncho.jpg"
+    },
+    {
+        "id": "christmas_piano",
+        "name": "圣诞节钢琴僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_christmas_piano.jpg"
+    },
+    {
+        "id": "nutcracker",
+        "name": "胡桃夹子僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_nutcracker.jpg"
+    },
+    {
+        "id": "nutcracker_gargantuar",
+        "name": "胡桃夹子巨人僵尸",
+        "tags": [
+            "Festival",
+            "Gargantuar"
+        ],
+        "icon": "zombie_nutcracker_gargantuar.jpg"
+    },
+    {
+        "id": "nutcracker_gargantuar_white",
+        "name": "白皇后护卫胡桃夹子巨人僵尸",
+        "tags": [
+            "Festival",
+            "Gargantuar"
+        ],
+        "icon": "zombie_nutcracker_gargantuar.jpg"
+    },
+    {
+        "id": "bobsled",
+        "name": "圣诞节冰车僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_bobsled.jpg"
+    },
+    {
+        "id": "sled",
+        "name": "圣诞节雪橇车小队",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_sled.jpg"
+    },
+    {
+        "id": "sled_armor",
+        "name": "圣诞节雪橇车小队队员",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_sled.jpg"
+    },
+    {
+        "id": "pole_vaulting_feastivus",
+        "name": "圣诞节撑杆僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_pole_vaulting_feastivus.jpg"
+    },
+    {
+        "id": "ladder_festival",
+        "name": "圣诞节扶梯僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_ladder_festival.jpg"
+    },
+    {
+        "id": "snow_ballroller",
+        "name": "滚雪球僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_snow_ballroller.jpg"
+    },
+    {
+        "id": "figure_skating",
+        "name": "花样滑冰僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_figure_skating.jpg"
+    },
+    {
+        "id": "santa",
+        "name": "驯鹿僵尸",
+        "tags": [
+            "Festival",
+            "Pet",
+            "Imp"
+        ],
+        "icon": "zombie_santa.jpg"
+    },
+    {
+        "id": "christmas_caketank",
+        "name": "圣诞节蛋糕坦克",
+        "tags": [
+            "Festival",
+            "Elite"
+        ],
+        "icon": "zombie_christmas_caketank.jpg"
+    },
+    {
+        "id": "dark_juggler_elite",
+        "name": "圣诞节小丑僵尸",
+        "tags": [
+            "Festival",
+            "Elite",
+            "Basic"
+        ],
+        "icon": "zombie_dark_juggler_elite.jpg"
+    },
+    {
+        "id": "fairy_tale_imp_elite",
+        "name": "圣诞节白皇后小鬼僵尸",
+        "tags": [
+            "Festival",
+            "Elite"
+        ],
+        "icon": "zombie_fairy_tale_imp_elite.jpg"
+    },
+    {
+        "id": "izombie_sunflower",
+        "name": "ZVZ-向日葵僵尸",
+        "tags": [
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_izombie_sunflower.jpg"
+    },
+    {
+        "id": "izombie_zombie_gatlingpea",
+        "name": "ZVZ-豌豆射手僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_izombie_zombie_gatlingpea.jpg"
+    },
+    {
+        "id": "izombie_zombie_wallnut",
+        "name": "ZVZ-坚果僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_izombie_zombie_wallnut.jpg"
+    },
+    {
+        "id": "izombie_chicken_farmer",
+        "name": "ZVZ-豆腐贼鸡僵尸",
+        "tags": [
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_izombie_chicken_farmer.jpg"
+    },
+    {
+        "id": "izombie_tutorial_gargantuar",
+        "name": "ZVZ-高坚果巨人僵尸",
+        "tags": [
+            "Memory",
+            "Gargantuar"
+        ],
+        "icon": "zombie_izombie_tutorial_gargantuar.jpg"
+    },
+    {
+        "id": "izombie_lostcity_doctor",
+        "name": "ZVZ-仙桃僵尸",
+        "tags": [
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_izombie_lostcity_doctor.jpg"
+    },
+    {
+        "id": "zombie_jalapeno",
+        "name": "火爆辣椒僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_zombie_jalapeno.jpg"
+    },
+    {
+        "id": "zombie_explodenut",
+        "name": "爆炸坚果僵尸",
+        "tags": [
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_zombie_explodenut.jpg"
+    },
+    {
+        "id": "zombie_snowpea",
+        "name": "寒冰豌豆僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_zombie_snowpea.jpg"
+    },
+    {
+        "id": "zombie_gatlingpea",
+        "name": "机枪豌豆僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_zombie_gatlingpea.jpg"
+    },
+    {
+        "id": "slimes",
+        "name": "史莱姆僵尸",
+        "tags": [
+            "Memory"
+        ],
+        "icon": "zombie_slimes.jpg"
+    },
+    {
+        "id": "slimes_gargantuar_memo",
+        "name": "恐怖史莱姆僵尸",
+        "tags": [
+            "Memory"
+        ],
+        "icon": "zombie_slimes.jpg"
+    },
+    {
+        "id": "roman",
+        "name": "罗马僵尸",
+        "tags": [
+            "Roman",
+            "Basic"
+        ],
+        "icon": "zombie_roman.jpg"
+    },
+    {
+        "id": "roman_armor1",
+        "name": "路障罗马僵尸",
+        "tags": [
+            "Roman",
+            "Basic"
+        ],
+        "icon": "zombie_roman_armor1.jpg"
+    },
+    {
+        "id": "roman_armor2",
+        "name": "铁桶罗马僵尸",
+        "tags": [
+            "Roman",
+            "Basic"
+        ],
+        "icon": "zombie_roman_armor2.jpg"
+    },
+    {
+        "id": "roman_armor3",
+        "name": "百夫长罗马僵尸",
+        "tags": [
+            "Roman",
+            "Basic"
+        ],
+        "icon": "zombie_roman_armor3.jpg"
+    },
+    {
+        "id": "roman_armor4",
+        "name": "罗马石像僵尸",
+        "tags": [
+            "Roman",
+            "Basic"
+        ],
+        "icon": "zombie_roman_armor4.jpg"
+    },
+    {
+        "id": "roman_flag",
+        "name": "旗子罗马僵尸",
+        "tags": [
+            "Roman",
+            "Basic"
+        ],
+        "icon": "zombie_roman_flag.jpg"
+    },
+    {
+        "id": "roman_gargantuar",
+        "name": "罗马巨人僵尸",
+        "tags": [
+            "Roman",
+            "Gargantuar"
+        ],
+        "icon": "zombie_roman_gargantuar.jpg"
+    },
+    {
+        "id": "roman_imp",
+        "name": "罗马小鬼僵尸",
+        "tags": [
+            "Roman",
+            "Imp"
+        ],
+        "icon": "zombie_roman_imp.jpg"
+    },
+    {
+        "id": "roman_healer",
+        "name": "治愈者僵尸",
+        "tags": [
+            "Roman",
+            "Basic"
+        ],
+        "icon": "zombie_roman_healer.jpg"
+    },
+    {
+        "id": "elite_roman_healer",
+        "name": "精英治愈者僵尸",
+        "tags": [
+            "Roman",
+            "Memory",
+            "Basic",
+            "Elite"
+        ],
+        "icon": "zombie_elite_roman_healer.jpg"
+    },
+    {
+        "id": "roman_shield_top",
+        "name": "罗马举盾僵尸",
+        "tags": [
+            "Roman",
+            "Basic"
+        ],
+        "icon": "zombie_roman_shield_top.jpg"
+    },
+    {
+        "id": "roman_shield_almanac",
+        "name": "单牌罗马盾牌僵尸",
+        "tags": [
+            "Roman",
+            "Basic"
+        ],
+        "icon": "zombie_roman_shield_top.jpg"
+    },
+    {
+        "id": "roman_shield_pair",
+        "name": "双牌罗马盾牌僵尸",
+        "tags": [
+            "Roman",
+            "Basic"
+        ],
+        "icon": "zombie_roman_shield_top.jpg"
+    },
+    {
+        "id": "roman_shield_triad",
+        "name": "三牌罗马盾牌僵尸",
+        "tags": [
+            "Roman",
+            "Basic"
+        ],
+        "icon": "zombie_roman_shield_top.jpg"
+    },
+    {
+        "id": "roman_ballista",
+        "name": "罗马攻城车僵尸",
+        "tags": [
+            "Roman",
+            "Imp"
+        ],
+        "icon": "zombie_roman_ballista.jpg"
+    },
+    {
+        "id": "elite_roman_ballista",
+        "name": "精英罗马攻城车",
+        "tags": [
+            "Roman",
+            "Memory",
+            "Elite",
+            "Imp"
+        ],
+        "icon": "zombie_elite_roman_ballista.jpg"
+    },
+    {
+        "id": "roman_medusa",
+        "name": "美杜莎僵尸",
+        "tags": [
+            "Roman",
+            "Strong"
+        ],
+        "icon": "zombie_roman_medusa.jpg"
+    },
+    {
+        "id": "general_caesar_phase1",
+        "name": "凯撒僵尸一形态",
+        "tags": [
+            "Roman",
+            "Elite",
+            "Imp",
+            "Strong"
+        ],
+        "icon": "zombie_general_caesar_phase1.jpg"
+    },
+    {
+        "id": "general_caesar_phase2",
+        "name": "凯撒僵尸二形态",
+        "tags": [
+            "Roman",
+            "Elite",
+            "Imp",
+            "Strong"
+        ],
+        "icon": "zombie_general_caesar_phase1.jpg"
+    },
+    {
+        "id": "general_caesar_phase3",
+        "name": "凯撒僵尸三形态",
+        "tags": [
+            "Roman",
+            "Elite",
+            "Imp",
+            "Strong"
+        ],
+        "icon": "zombie_general_caesar_phase1.jpg"
+    },
+    {
+        "id": "journey_to_the_west",
+        "name": "西游普通僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_journey_to_the_west.jpg"
+    },
+    {
+        "id": "journey_to_the_west_armor1",
+        "name": "西游路障僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_journey_to_the_west_armor1.jpg"
+    },
+    {
+        "id": "journey_to_the_west_armor2",
+        "name": "西游铁桶僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_journey_to_the_west_armor2.jpg"
+    },
+    {
+        "id": "journey_to_the_west_flag",
+        "name": "西游旗子僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_journey_to_the_west_flag.jpg"
+    },
+    {
+        "id": "journey_to_the_west_gargantuar",
+        "name": "重锤巨人僵尸",
+        "tags": [
+            "Tothewest",
+            "Gargantuar"
+        ],
+        "icon": "zombie_journey_to_the_west_gargantuar.jpg"
+    },
+    {
+        "id": "journey_to_the_west_trident",
+        "name": "鱼叉小妖僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_journey_to_the_west_trident.jpg"
+    },
+    {
+        "id": "journey_to_the_west_balloon",
+        "name": "孔明灯僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_journey_to_the_west_balloon.jpg"
+    },
+    {
+        "id": "journey_to_the_west_allstar",
+        "name": "元帅明星僵尸",
+        "tags": [
+            "Tothewest",
+            "Strong"
+        ],
+        "icon": "zombie_journey_to_the_west_allstar.jpg"
+    },
+    {
+        "id": "journey_to_the_west_superfan",
+        "name": "火药小鬼僵尸",
+        "tags": [
+            "Tothewest",
+            "Imp"
+        ],
+        "icon": "zombie_journey_to_the_west_superfan.jpg"
+    },
+    {
+        "id": "journey_to_the_west_catapult",
+        "name": "投石车僵尸",
+        "tags": [
+            "Tothewest",
+            "Fat"
+        ],
+        "icon": "zombie_journey_to_the_west_catapult.jpg"
+    },
+    {
+        "id": "journey_to_the_west_miner",
+        "name": "土地公僵尸",
+        "tags": [
+            "Tothewest",
+            "Fat"
+        ],
+        "icon": "zombie_journey_to_the_west_miner.jpg"
+    },
+    {
+        "id": "journey_to_the_west_poncho",
+        "name": "铁锅僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_journey_to_the_west_poncho.jpg"
+    },
+    {
+        "id": "journey_to_the_west_red_boy",
+        "name": "红孩儿僵尸",
+        "tags": [
+            "Tothewest",
+            "Elite",
+            "Imp"
+        ],
+        "icon": "zombie_journey_to_the_west_red_boy.jpg"
+    },
+    {
+        "id": "journey_to_the_west_huangmei",
+        "name": "黄眉大亡僵尸",
+        "tags": [
+            "Tothewest",
+            "Elite",
+            "Gargantuar"
+        ],
+        "icon": "zombie_journey_to_the_west_huangmei.jpg"
+    }
+]
