@@ -3712,15 +3712,6 @@
         "icon": "zombie_nutcracker_gargantuar.jpg"
     },
     {
-        "id": "bobsled",
-        "name": "圣诞节冰车僵尸",
-        "tags": [
-            "Festival",
-            "Basic"
-        ],
-        "icon": "zombie_bobsled.jpg"
-    },
-    {
         "id": "sled",
         "name": "圣诞节雪橇车小队",
         "tags": [
@@ -3737,6 +3728,15 @@
             "Basic"
         ],
         "icon": "zombie_sled.jpg"
+    },
+    {
+        "id": "bobsled",
+        "name": "圣诞节冰车僵尸",
+        "tags": [
+            "Festival",
+            "Basic"
+        ],
+        "icon": "zombie_bobsled.jpg"
     },
     {
         "id": "pole_vaulting_feastivus",

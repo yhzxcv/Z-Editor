@@ -52,10 +52,10 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pvz2leveleditor.data.Repository.ZombieCategory
-import com.example.pvz2leveleditor.data.Repository.ZombieInfo
-import com.example.pvz2leveleditor.data.Repository.ZombieRepository
-import com.example.pvz2leveleditor.data.Repository.ZombieTag
+import com.example.pvz2leveleditor.data.repository.ZombieCategory
+import com.example.pvz2leveleditor.data.repository.ZombieInfo
+import com.example.pvz2leveleditor.data.repository.ZombieRepository
+import com.example.pvz2leveleditor.data.repository.ZombieTag
 import com.example.pvz2leveleditor.views.components.AssetImage
 
 @Composable
@@ -68,7 +68,7 @@ fun ZombieSelectionScreen(
     var selectedTag by remember { mutableStateOf(ZombieTag.All) }
 
     val currentVisibleTags = remember(selectedCategory) {
-        listOf(ZombieTag.All) + ZombieTag.values().filter {
+        listOf(ZombieTag.All) + ZombieTag.entries.filter {
             it.category == selectedCategory && it != ZombieTag.All
         }
     }
@@ -147,7 +147,7 @@ fun ZombieSelectionScreen(
                             .padding(horizontal = 8.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        ZombieCategory.values().forEach { category ->
+                        ZombieCategory.entries.forEach { category ->
                             val isSelected = selectedCategory == category
 
                             Box(

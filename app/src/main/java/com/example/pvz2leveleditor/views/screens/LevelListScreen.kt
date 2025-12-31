@@ -57,7 +57,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pvz2leveleditor.data.Repository.LevelRepository
+import com.example.pvz2leveleditor.data.repository.LevelRepository
+import androidx.core.content.edit
+import androidx.core.net.toUri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,7 +113,7 @@ fun LevelListScreen(
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
             )
             context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
-                .edit().putString("folder_uri", uri.toString()).apply()
+                .edit { putString("folder_uri", uri.toString()) }
             folderUri = uri.toString()
             showNoFolderDialog = false
             reload()
@@ -134,7 +136,7 @@ fun LevelListScreen(
 
     fun handleTemplateSelected(templateName: String) {
         selectedTemplate = templateName
-        newLevelNameInput = "${templateName}"
+        newLevelNameInput = templateName
         showTemplateDialog = false
         showCreateNameDialog = true
     }
@@ -430,11 +432,11 @@ fun FileItemCard(
 private fun getReadablePath(uriString: String?): String {
     if (uriString == null) return "未选择目录"
     return try {
-        val uri = android.net.Uri.parse(uriString)
+        val uri = uriString.toUri()
         val decodedPath = android.net.Uri.decode(uri.path)
         val segment = decodedPath.substringAfterLast(":")
         segment.replace("/", " > ")
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         "已同步目录"
     }
 }

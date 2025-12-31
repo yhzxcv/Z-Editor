@@ -1,4 +1,4 @@
-package com.example.pvz2leveleditor.data.Repository
+package com.example.pvz2leveleditor.data.repository
 
 import android.content.Context
 import android.net.Uri
@@ -8,6 +8,7 @@ import com.example.pvz2leveleditor.data.PvzLevelFile
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import java.io.File
+import androidx.core.net.toUri
 
 object LevelRepository {
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
@@ -16,7 +17,7 @@ object LevelRepository {
     private fun getRootUri(context: Context): Uri? {
         val uriString = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
             .getString("folder_uri", null)
-        return uriString?.let { Uri.parse(it) }
+        return uriString?.toUri()
     }
 
     fun copyLevelToTarget(context: Context, srcFileName: String, targetFileName: String): Boolean {
@@ -142,7 +143,7 @@ object LevelRepository {
         if (!file.exists()) return null
         return try {
             file.reader().use { gson.fromJson(it, PvzLevelFile::class.java) }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }
@@ -166,7 +167,7 @@ object LevelRepository {
             .getString("folder_uri", null) ?: return false
 
         try {
-            val folderUri = Uri.parse(folderUriStr)
+            val folderUri = folderUriStr.toUri()
             val folder = DocumentFile.fromTreeUri(context, folderUri)
                 ?: return false
 

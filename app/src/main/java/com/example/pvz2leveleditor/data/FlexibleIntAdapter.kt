@@ -24,7 +24,7 @@ class FlexibleIntAdapter : JsonDeserializer<Int>, JsonSerializer<Int> {
                 primitive.isString -> primitive.asString.toIntOrNull()
                 else -> null
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }

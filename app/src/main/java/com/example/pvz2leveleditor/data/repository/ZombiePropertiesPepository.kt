@@ -1,4 +1,4 @@
-package com.example.pvz2leveleditor.data.Repository
+package com.example.pvz2leveleditor.data.repository
 
 import android.content.Context
 import com.example.pvz2leveleditor.data.PvzLevelFile
@@ -32,7 +32,7 @@ object ZombiePropertiesRepository {
                     val typeData = gson.fromJson(typeObj.objData, ZombieTypeData::class.java)
                     val typeName = typeData.typeName
 
-                    if (!typeName.isNullOrBlank()) {
+                    if (typeName.isNotBlank()) {
                         aliasToTypeCache[alias] = typeName
                         aliasToTypeCache[typeName] = typeName
 
@@ -82,5 +82,4 @@ object ZombiePropertiesRepository {
     fun getStats(typeName: String): ZombieStats =
         statsCache[typeName] ?: ZombieStats(typeName, 0.0, 0, 0, 0.0, 0.0, "unknown")
 
-    fun getZombiePoints(typeName: String): Int = getStats(typeName).cost
 }

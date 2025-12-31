@@ -58,12 +58,12 @@ import com.example.pvz2leveleditor.data.ModuleRegistry
 import com.example.pvz2leveleditor.data.ParsedLevelData
 import com.example.pvz2leveleditor.data.PvzLevelFile
 import com.example.pvz2leveleditor.data.PvzObject
-import com.example.pvz2leveleditor.data.Repository.ChallengeTypeInfo
-import com.example.pvz2leveleditor.data.Repository.LevelRepository
-import com.example.pvz2leveleditor.data.Repository.PlantRepository
-import com.example.pvz2leveleditor.data.Repository.ReferenceRepository
-import com.example.pvz2leveleditor.data.Repository.ZombiePropertiesRepository
-import com.example.pvz2leveleditor.data.Repository.ZombieRepository
+import com.example.pvz2leveleditor.data.repository.ChallengeTypeInfo
+import com.example.pvz2leveleditor.data.repository.LevelRepository
+import com.example.pvz2leveleditor.data.repository.PlantRepository
+import com.example.pvz2leveleditor.data.repository.ReferenceRepository
+import com.example.pvz2leveleditor.data.repository.ZombiePropertiesRepository
+import com.example.pvz2leveleditor.data.repository.ZombieRepository
 import com.example.pvz2leveleditor.data.RtidParser
 import com.example.pvz2leveleditor.data.StarChallengeModuleData
 import com.example.pvz2leveleditor.data.WaveManagerData
@@ -437,7 +437,7 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
             if (challengeModObj != null) {
                 val modData = try {
                     gson.fromJson(challengeModObj.objData, StarChallengeModuleData::class.java)
-                } catch (e: Exception) { StarChallengeModuleData() }
+                } catch (_: Exception) { StarChallengeModuleData() }
 
                 val newChallengeRtid = RtidParser.build(alias, "CurrentLevel")
 
@@ -781,7 +781,7 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                         ReferenceRepository.getObjClass(alias)
                     }
                     objClass == "ConveyorSeedBankProperties"
-                } ?: false
+                } == true
                 WaveManagerPropertiesEP(
                     waveManager = parsedData?.waveManager!!,
                     hasConveyor = hasConveyor,

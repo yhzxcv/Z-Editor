@@ -1,4 +1,4 @@
-package com.example.pvz2leveleditor.data.Repository
+package com.example.pvz2leveleditor.data.repository
 
 import android.content.Context
 import com.google.gson.Gson
@@ -85,7 +85,7 @@ object PlantRepository {
                     name = raw.name,
                     icon = raw.icon,
                     tags = raw.tags?.mapNotNull { tagStr ->
-                        PlantTag.values().find { it.name.equals(tagStr, ignoreCase = true) }
+                        PlantTag.entries.find { it.name.equals(tagStr, ignoreCase = true) }
                     } ?: listOf(PlantTag.Other)
                 )
             }

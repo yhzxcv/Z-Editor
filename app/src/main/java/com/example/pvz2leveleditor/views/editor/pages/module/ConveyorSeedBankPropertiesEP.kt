@@ -44,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,10 +63,10 @@ import com.example.pvz2leveleditor.data.ConveyorBeltData
 import com.example.pvz2leveleditor.data.DropDelayConditionData
 import com.example.pvz2leveleditor.data.InitialPlantListData
 import com.example.pvz2leveleditor.data.LevelDefinitionData
-import com.example.pvz2leveleditor.data.Repository.PlantRepository
-import com.example.pvz2leveleditor.data.Repository.PlantTag
+import com.example.pvz2leveleditor.data.repository.PlantRepository
+import com.example.pvz2leveleditor.data.repository.PlantTag
 import com.example.pvz2leveleditor.data.PvzLevelFile
-import com.example.pvz2leveleditor.data.Repository.ReferenceRepository
+import com.example.pvz2leveleditor.data.repository.ReferenceRepository
 import com.example.pvz2leveleditor.data.RtidParser
 import com.example.pvz2leveleditor.data.SpeedConditionData
 import com.example.pvz2leveleditor.views.components.AssetImage
@@ -114,7 +115,7 @@ fun ConveyorSeedBankPropertiesEP(
                 } else {
                     parsed
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 createDefaultConveyorData()
             }
         } else {
@@ -333,8 +334,7 @@ fun ConveyorPlantListEditor(
                 listKey.intValue++ // 强制列表重组
                 onListChanged(items)
                 showEditDialog = null
-            },
-            onRequestPlantSelection = onRequestPlantSelection
+            }
         )
     }
 
@@ -465,20 +465,19 @@ fun PlantRow(
 fun PlantDetailDialog(
     data: InitialPlantListData,
     onDismiss: () -> Unit,
-    onConfirm: (InitialPlantListData) -> Unit,
-    onRequestPlantSelection: ((String) -> Unit) -> Unit
+    onConfirm: (InitialPlantListData) -> Unit
 ) {
     // 如果是编辑模式，直接使用原数据ID；如果是新建，使用临时状态
     var tempType by remember { mutableStateOf(data.plantType) }
 
-    var tempWeight by remember { mutableStateOf(data.weight) }
-    var tempLevel by remember { mutableStateOf(data.iLevel ?: 0) }
+    var tempWeight by remember { mutableIntStateOf(data.weight) }
+    var tempLevel by remember { mutableIntStateOf(data.iLevel ?: 0) }
 
-    var tempMaxCount by remember { mutableStateOf(data.maxCount) }
-    var tempMaxWeightFactor by remember { mutableStateOf(data.maxWeightFactor) }
+    var tempMaxCount by remember { mutableIntStateOf(data.maxCount) }
+    var tempMaxWeightFactor by remember { mutableDoubleStateOf(data.maxWeightFactor) }
 
-    var tempMinCount by remember { mutableStateOf(data.minCount) }
-    var tempMinWeightFactor by remember { mutableStateOf(data.minWeightFactor) }
+    var tempMinCount by remember { mutableIntStateOf(data.minCount) }
+    var tempMinWeightFactor by remember { mutableDoubleStateOf(data.minWeightFactor) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -539,8 +538,8 @@ fun PlantDetailDialog(
                         )
                     }
                     Text(
-                        text = if (tempMaxWeightFactor == 0.0) "达到 ${tempMaxCount} 株后停止刷新"
-                        else if (tempMaxCount > 0) "达到 ${tempMaxCount} 株后权重变为 ${(tempWeight * tempMaxWeightFactor).toInt()}"
+                        text = if (tempMaxWeightFactor == 0.0) "达到 $tempMaxCount 株后停止刷新"
+                        else if (tempMaxCount > 0) "达到 $tempMaxCount 株后权重变为 ${(tempWeight * tempMaxWeightFactor).toInt()}"
                         else "",
                         fontSize = 12.sp,
                         color = Color(0xFF1976D2),
@@ -571,7 +570,7 @@ fun PlantDetailDialog(
                         )
                     }
                     Text(
-                        text = if (tempMinCount > 0) "不满 ${tempMinCount} 株前权重变为 ${(tempWeight * tempMinWeightFactor).toInt()}"
+                        text = if (tempMinCount > 0) "不满 $tempMinCount 株前权重变为 ${(tempWeight * tempMinWeightFactor).toInt()}"
                         else "",
                         fontSize = 12.sp,
                         color = Color(0xFF1976D2),

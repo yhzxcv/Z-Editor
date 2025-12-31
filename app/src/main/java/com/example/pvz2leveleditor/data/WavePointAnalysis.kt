@@ -1,6 +1,6 @@
 package com.example.pvz2leveleditor.data
 
-import com.example.pvz2leveleditor.data.Repository.ZombiePropertiesRepository
+import com.example.pvz2leveleditor.data.repository.ZombiePropertiesRepository
 
 object WavePointAnalysis {
 
@@ -16,7 +16,7 @@ object WavePointAnalysis {
             val safePoints = totalPoints.coerceAtMost(20000)
             val numTypes = validEntries.size
             // exp[僵尸索引][当前点数]
-            val exp = Array(numTypes) { DoubleArray(safePoints + 1) { 0.0 } }
+            val exp = Array(numTypes) { DoubleArray(safePoints + 1) }
 
             for (p in 1..safePoints) {
                 var weightSum = 0.0

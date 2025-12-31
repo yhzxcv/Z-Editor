@@ -28,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Remove
@@ -65,10 +66,10 @@ import com.example.pvz2leveleditor.data.EventRegistry
 import com.example.pvz2leveleditor.data.LevelParser
 import com.example.pvz2leveleditor.data.PvzObject
 import com.example.pvz2leveleditor.data.RtidParser
-import com.example.pvz2leveleditor.data.Repository.ZombiePropertiesRepository
-import com.example.pvz2leveleditor.data.Repository.ZombieRepository
+import com.example.pvz2leveleditor.data.repository.ZombiePropertiesRepository
+import com.example.pvz2leveleditor.data.repository.ZombieRepository
 import com.example.pvz2leveleditor.data.ZombieSpawnData
-import com.example.pvz2leveleditor.data.Repository.ZombieTag
+import com.example.pvz2leveleditor.data.repository.ZombieTag
 import com.example.pvz2leveleditor.views.components.AssetImage
 
 @Composable
@@ -88,7 +89,7 @@ fun EventChip(rtid: String, objectMap: Map<String, PvzObject>, onClick: () -> Un
     }
 
     // 3. 获取摘要文字 (例如 "5 僵尸")
-    val summaryText = if (!isInvalid && obj != null) {
+    val summaryText = if (!isInvalid) {
         meta?.summaryProvider?.invoke(obj)
     } else null
 
@@ -344,6 +345,7 @@ fun CompactZombieCard(zombie: ZombieSpawnData, onClick: () -> Unit) {
 fun ZombieEditSheetContent(
     originalZombie: ZombieSpawnData,
     onValueChange: (ZombieSpawnData) -> Unit,
+    onCopy: (() -> Unit)? = null,
     onDelete: () -> Unit
 ) {
     val realTypeName = remember(originalZombie.type) {
@@ -393,29 +395,45 @@ fun ZombieEditSheetContent(
             )
             Spacer(Modifier.width(12.dp))
             Column {
-                Text(displayName, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text(displayName, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 if (isElite) {
                     Text(
-                        "精英僵尸 (不可调整等级)",
-                        fontSize = 15.sp,
+                        "精英僵尸",
+                        fontSize = 14.sp,
                         color = Color(0xFF673AB7),
                         fontWeight = FontWeight.Bold
                     )
                 } else {
-                    Text(realTypeName, fontSize = 15.sp, color = Color.Gray)
+                    Text(realTypeName, fontSize = 14.sp, color = Color.Gray)
                 }
             }
             Spacer(Modifier.weight(1f))
+            if (onCopy != null) {
+                Button(
+                    onClick = onCopy,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFE3F2FD), // 浅蓝色背景
+                        contentColor = Color(0xFF1976D2)    // 深蓝色文字/图标
+                    ),
+                    contentPadding = PaddingValues(horizontal = 12.dp),
+                    modifier = Modifier.padding(end = 4.dp)
+                ) {
+                    Icon(Icons.Default.ContentCopy, null, modifier = Modifier.size(14.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("复制")
+                }
+            }
             Button(
                 onClick = onDelete,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFFFEBEE),
                     contentColor = Color.Red
                 ),
-                contentPadding = PaddingValues(horizontal = 16.dp)
+                contentPadding = PaddingValues(horizontal = 12.dp),
+                modifier = Modifier.padding(end = 4.dp)
             ) {
-                Icon(Icons.Default.Delete, null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
+                Icon(Icons.Default.Delete, null, modifier = Modifier.size(14.dp))
+                Spacer(Modifier.width(4.dp))
                 Text("删除")
             }
         }

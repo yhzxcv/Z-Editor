@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -36,7 +35,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -52,13 +50,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pvz2leveleditor.data.LevelDefinitionData
-import com.example.pvz2leveleditor.data.Repository.PlantRepository
+import com.example.pvz2leveleditor.data.repository.PlantRepository
 import com.example.pvz2leveleditor.data.PvzLevelFile
-import com.example.pvz2leveleditor.data.Repository.ReferenceRepository
+import com.example.pvz2leveleditor.data.repository.ReferenceRepository
 import com.example.pvz2leveleditor.data.RtidParser
 import com.example.pvz2leveleditor.data.SeedBankData
 import com.example.pvz2leveleditor.views.editor.EditorHelpDialog
@@ -99,7 +96,7 @@ fun SeedBankPropertiesEP(
         val data = if (localObj != null) {
             try {
                 gson.fromJson(localObj.objData, SeedBankData::class.java)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 SeedBankData()
             }
         } else {
@@ -158,6 +155,10 @@ fun SeedBankPropertiesEP(
                 HelpSection(
                     title = "黑白名单",
                     body = "白名单为空时不作限制，若白名单有植物则只能从白名单内选择。黑名单为额外禁用植物，优先级高于白名单。"
+                )
+                HelpSection(
+                    title = "进阶玩法",
+                    body = "当选择模式是preset时，将选卡模块放在传送带前面可以让传送带中文消耗阳光种植，放在后面可以让预选卡种植不消耗阳光。"
                 )
             }
         }

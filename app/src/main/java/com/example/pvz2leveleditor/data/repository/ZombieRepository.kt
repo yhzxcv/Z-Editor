@@ -1,4 +1,4 @@
-package com.example.pvz2leveleditor.data.Repository
+package com.example.pvz2leveleditor.data.repository
 
 import android.content.Context
 import com.google.gson.Gson
@@ -80,7 +80,7 @@ object ZombieRepository {
                     name = raw.name,
                     icon = raw.icon,
                     tags = raw.tags?.mapNotNull { tagStr ->
-                        ZombieTag.values().find { it.name.equals(tagStr, ignoreCase = true) }
+                        ZombieTag.entries.find { it.name.equals(tagStr, ignoreCase = true) }
                     } ?: listOf(ZombieTag.Other)
                 )
             }

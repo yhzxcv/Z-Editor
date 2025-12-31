@@ -9,6 +9,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -19,7 +20,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
@@ -66,8 +69,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pvz2leveleditor.data.InitialPlantData
 import com.example.pvz2leveleditor.data.InitialPlantEntryData
-import com.example.pvz2leveleditor.data.Repository.PlantRepository
-import com.example.pvz2leveleditor.data.Repository.PlantTag
+import com.example.pvz2leveleditor.data.repository.PlantRepository
+import com.example.pvz2leveleditor.data.repository.PlantTag
 import com.example.pvz2leveleditor.data.PvzLevelFile
 import com.example.pvz2leveleditor.data.RtidParser
 import com.example.pvz2leveleditor.views.components.AssetImage
@@ -94,7 +97,7 @@ fun InitialPlantEntryEP(
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
             gson.fromJson(obj?.objData, InitialPlantEntryData::class.java)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             InitialPlantEntryData()
         }
         mutableStateOf(data)
@@ -131,7 +134,7 @@ fun InitialPlantEntryEP(
                 gridX = selectedX,
                 gridY = selectedY,
                 level = 1,
-                plantType = mutableListOf(plantType),
+                plantTypes = mutableListOf(plantType),
                 avatar = false // 默认无装扮
             )
             newList.add(newPlant)
@@ -166,7 +169,7 @@ fun InitialPlantEntryEP(
         AlertDialog(
             onDismissRequest = { editingPlant = null },
             title = {
-                val name = PlantRepository.getName(editingPlant!!.plantType.firstOrNull() ?: "")
+                val name = PlantRepository.getName(editingPlant!!.plantTypes.firstOrNull() ?: "")
                 Text("编辑 $name")
             },
             text = {
@@ -273,110 +276,116 @@ fun InitialPlantEntryEP(
                 )
             }
         }
-        Column(
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 100.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(16.dp),
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
                 .background(Color(0xFFF5F5F5))
         ) {
-            // === 上半部分：网格选择器 ===
-            Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(2.dp),
-                shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    // 状态栏：简化为只显示坐标和添加按钮
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Column {
-                            Text("选中位置", fontSize = 12.sp, color = Color.Gray)
-                            Text(
-                                "R${selectedY + 1} : C${selectedX + 1}",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp,
-                                color = Color(0xFF4CAF50)
-                            )
-                        }
-                        Spacer(Modifier.weight(1f))
-
-                        // 无论该位置有无植物，按钮始终为“在此放置”
-                        Button(
-                            onClick = { handleSelectPlant() },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(
-                                    0xFF4CAF50
-                                )
-                            )
-                        ) {
-                            Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text("在此放置")
-                        }
-                    }
-
-                    Spacer(Modifier.height(16.dp))
-
-                    // 9x5 网格绘制
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1.8f)
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(Color(0xFFE8F5E9))
-                            .border(1.dp, Color(0xFFC8E6C9), RoundedCornerShape(6.dp))
+            // === 区域 1: 网格选择器 (跨满全宽) ===
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Box(contentAlignment = Alignment.Center) {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(2.dp),
+                        modifier = Modifier.widthIn(max = 480.dp) // 限制最大宽度
                     ) {
-                        Column(Modifier.fillMaxSize()) {
-                            for (row in 0..4) {
-                                Row(Modifier.weight(1f)) {
-                                    for (col in 0..8) {
-                                        val isSelected = (row == selectedY && col == selectedX)
-                                        // 获取该格子的所有植物
-                                        val cellPlants =
-                                            moduleDataState.value.plants.filter { it.gridX == col && it.gridY == row }
-                                        val firstPlant = cellPlants.firstOrNull()
-                                        var count = cellPlants.size
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            // 状态栏
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Column {
+                                    Text("选中位置", fontSize = 12.sp, color = Color.Gray)
+                                    Text(
+                                        "R${selectedY + 1} : C${selectedX + 1}",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 20.sp,
+                                        color = Color(0xFF4CAF50)
+                                    )
+                                }
+                                Spacer(Modifier.weight(1f))
 
-                                        Box(
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .fillMaxHeight()
-                                                .border(0.5.dp, Color(0xFFA5D6A7))
-                                                .background(
-                                                    if (isSelected) Color(0xFFFFEB3B).copy(
-                                                        alpha = 0.5f
-                                                    ) else Color.Transparent
-                                                )
-                                                .clickable {
-                                                    selectedX = col
-                                                    selectedY = row
-                                                },
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            if (count > 0) {
-                                                if (firstPlant != null) {
-                                                    val type =
-                                                        firstPlant.plantType.firstOrNull() ?: ""
-                                                    PlantIconSmall(type)
-                                                }
-                                                if (count > 1) {
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .align(Alignment.TopEnd)
-                                                            .background(
-                                                                color = Color.Gray,
-                                                                shape = RoundedCornerShape(
-                                                                    bottomStart = 4.dp
-                                                                )
-                                                            )
-                                                            .padding(horizontal = 2.dp)
-                                                    ) {
-                                                        Text(
-                                                            text = "+$count",
-                                                            color = Color.White,
-                                                            fontSize = 8.sp,
-                                                            fontWeight = FontWeight.Bold,
-                                                            textAlign = TextAlign.Center
+                                Button(
+                                    onClick = { handleSelectPlant() },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF4CAF50)
+                                    )
+                                ) {
+                                    Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
+                                    Spacer(Modifier.width(8.dp))
+                                    Text("在此放置")
+                                }
+                            }
+
+                            Spacer(Modifier.height(16.dp))
+
+                            // 9x5 网格绘制
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .aspectRatio(1.8f) // 限制宽度后，这个高度也会被限制
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(Color(0xFFE8F5E9))
+                                    .border(1.dp, Color(0xFFC8E6C9), RoundedCornerShape(6.dp))
+                            ) {
+                                Column(Modifier.fillMaxSize()) {
+                                    for (row in 0..4) {
+                                        Row(Modifier.weight(1f)) {
+                                            for (col in 0..8) {
+                                                val isSelected =
+                                                    (row == selectedY && col == selectedX)
+                                                val cellPlants =
+                                                    moduleDataState.value.plants.filter { it.gridX == col && it.gridY == row }
+                                                val firstPlant = cellPlants.firstOrNull()
+                                                var count = cellPlants.size
+
+                                                Box(
+                                                    modifier = Modifier
+                                                        .weight(1f)
+                                                        .fillMaxHeight()
+                                                        .border(0.5.dp, Color(0xFFA5D6A7))
+                                                        .background(
+                                                            if (isSelected) Color(0xFFFFEB3B).copy(
+                                                                alpha = 0.5f
+                                                            ) else Color.Transparent
                                                         )
+                                                        .clickable {
+                                                            selectedX = col
+                                                            selectedY = row
+                                                        },
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    if (count > 0) {
+                                                        if (firstPlant != null) {
+                                                            val type =
+                                                                firstPlant.plantTypes.firstOrNull()
+                                                                    ?: ""
+                                                            PlantIconSmall(type)
+                                                        }
+                                                        if (count > 1) {
+                                                            Box(
+                                                                modifier = Modifier
+                                                                    .align(Alignment.TopEnd)
+                                                                    .background(
+                                                                        color = Color.Gray,
+                                                                        shape = RoundedCornerShape(
+                                                                            bottomStart = 4.dp
+                                                                        )
+                                                                    )
+                                                                    .padding(horizontal = 2.dp)
+                                                            ) {
+                                                                Text(
+                                                                    text = "+$count",
+                                                                    color = Color.White,
+                                                                    fontSize = 8.sp,
+                                                                    fontWeight = FontWeight.Bold,
+                                                                    textAlign = TextAlign.Center
+                                                                )
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
@@ -389,34 +398,28 @@ fun InitialPlantEntryEP(
                 }
             }
 
-            // === 下半部分：已配置植物列表 ===
-            Text(
-                "植物分布列表 (列优先排序)",
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
-                fontWeight = FontWeight.Bold,
-                color = Color.Gray,
-                fontSize = 14.sp
-            )
+            // === 区域 2: 标题 (跨满全宽) ===
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Text(
+                    "植物分布列表 (列优先排序)",
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray,
+                    fontSize = 14.sp
+                )
+            }
 
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 100.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                // 使用排序后的列表
-                items(sortedPlants) { plant ->
-                    InitialPlantCard(
-                        plant = plant,
-                        isSelected = (plant.gridX == selectedX && plant.gridY == selectedY),
-                        onClick = {
-                            // 点击卡片：选中网格并弹出编辑框
-                            selectedX = plant.gridX
-                            selectedY = plant.gridY
-                            editingPlant = plant
-                        }
-                    )
-                }
+            // === 区域 3: 物品列表 ===
+            items(sortedPlants) { plant ->
+                InitialPlantCard(
+                    plant = plant,
+                    isSelected = (plant.gridX == selectedX && plant.gridY == selectedY),
+                    onClick = {
+                        selectedX = plant.gridX
+                        selectedY = plant.gridY
+                        editingPlant = plant
+                    }
+                )
             }
         }
     }
@@ -461,7 +464,7 @@ fun InitialPlantCard(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val plantType = plant.plantType.firstOrNull() ?: "Unknown"
+    val plantType = plant.plantTypes.firstOrNull() ?: "Unknown"
     val info = remember(plantType) { PlantRepository.search(plantType, PlantTag.All).firstOrNull() }
 
     Card(

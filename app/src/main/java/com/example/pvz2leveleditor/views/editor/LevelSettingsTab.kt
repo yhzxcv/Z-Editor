@@ -51,7 +51,7 @@ import com.example.pvz2leveleditor.data.LevelDefinitionData
 import com.example.pvz2leveleditor.data.ModuleMetadata
 import com.example.pvz2leveleditor.data.ModuleRegistry
 import com.example.pvz2leveleditor.data.PvzObject
-import com.example.pvz2leveleditor.data.Repository.ReferenceRepository
+import com.example.pvz2leveleditor.data.repository.ReferenceRepository
 import com.example.pvz2leveleditor.data.RtidParser
 
 // ModuleUIInfo 保持不变

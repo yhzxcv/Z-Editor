@@ -2,7 +2,6 @@ package com.example.pvz2leveleditor.views.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -22,8 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pvz2leveleditor.data.Repository.ChallengeRepository
-import com.example.pvz2leveleditor.data.Repository.ChallengeTypeInfo
+import com.example.pvz2leveleditor.data.repository.ChallengeRepository
+import com.example.pvz2leveleditor.data.repository.ChallengeTypeInfo
 
 @Composable
 fun ChallengeSelectionScreen(

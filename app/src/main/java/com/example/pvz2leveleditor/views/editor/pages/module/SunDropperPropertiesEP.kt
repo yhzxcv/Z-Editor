@@ -52,7 +52,7 @@ import androidx.compose.ui.unit.sp
 import com.example.pvz2leveleditor.data.LevelDefinitionData
 import com.example.pvz2leveleditor.data.PvzLevelFile
 import com.example.pvz2leveleditor.data.PvzObject
-import com.example.pvz2leveleditor.data.Repository.ReferenceRepository
+import com.example.pvz2leveleditor.data.repository.ReferenceRepository
 import com.example.pvz2leveleditor.data.RtidParser
 import com.example.pvz2leveleditor.data.SunDropperPropertiesData
 import com.example.pvz2leveleditor.views.editor.EditorHelpDialog
@@ -90,7 +90,7 @@ fun SunDropperPropertiesEP(
         val data = if (localObj != null) {
             try {
                 gson.fromJson(localObj.objData, SunDropperPropertiesData::class.java)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 SunDropperPropertiesData()
             }
         } else {

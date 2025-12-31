@@ -52,10 +52,10 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pvz2leveleditor.data.Repository.PlantCategory
-import com.example.pvz2leveleditor.data.Repository.PlantInfo
-import com.example.pvz2leveleditor.data.Repository.PlantRepository
-import com.example.pvz2leveleditor.data.Repository.PlantTag
+import com.example.pvz2leveleditor.data.repository.PlantCategory
+import com.example.pvz2leveleditor.data.repository.PlantInfo
+import com.example.pvz2leveleditor.data.repository.PlantRepository
+import com.example.pvz2leveleditor.data.repository.PlantTag
 import com.example.pvz2leveleditor.views.components.AssetImage
 
 @Composable
@@ -68,7 +68,7 @@ fun PlantSelectionScreen(
     var selectedCategory by remember { mutableStateOf(PlantCategory.Quality) }
 
     val currentVisibleTags = remember(selectedCategory) {
-        listOf(PlantTag.All) + PlantTag.values().filter {
+        listOf(PlantTag.All) + PlantTag.entries.filter {
             it.category == selectedCategory && it != PlantTag.All
         }
     }
@@ -147,7 +147,7 @@ fun PlantSelectionScreen(
                             .padding(horizontal = 8.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        PlantCategory.values().forEach { category ->
+                        PlantCategory.entries.forEach { category ->
                             val isSelected = selectedCategory == category
 
                             Box(

@@ -46,6 +46,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,8 +65,8 @@ import androidx.compose.ui.unit.sp
 import com.example.pvz2leveleditor.data.ModifyConveyorPlantData
 import com.example.pvz2leveleditor.data.ModifyConveyorRemoveData
 import com.example.pvz2leveleditor.data.ModifyConveyorWaveActionData
-import com.example.pvz2leveleditor.data.Repository.PlantRepository
-import com.example.pvz2leveleditor.data.Repository.PlantTag
+import com.example.pvz2leveleditor.data.repository.PlantRepository
+import com.example.pvz2leveleditor.data.repository.PlantTag
 import com.example.pvz2leveleditor.data.PvzLevelFile
 import com.example.pvz2leveleditor.data.RtidParser
 import com.example.pvz2leveleditor.views.components.AssetImage
@@ -95,7 +96,7 @@ fun ModifyConveyorEventEP(
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
             gson.fromJson(obj?.objData, ModifyConveyorWaveActionData::class.java)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ModifyConveyorWaveActionData()
         }
         mutableStateOf(data)
@@ -114,7 +115,7 @@ fun ModifyConveyorEventEP(
     }
 
     // RTID 处理工具
-    fun wrapRtid(plantId: String): String = "RTID($plantId@CurrentLevel)"
+    fun wrapRtid(plantId: String): String = "RTID($plantId@PlantTypes)"
     fun unwrapRtid(rtidStr: String): String = RtidParser.parse(rtidStr)?.alias ?: rtidStr
 
     Scaffold(
@@ -221,8 +222,7 @@ fun ModifyConveyorEventEP(
                 onRequestPlantSelection = { callback ->
                     onRequestPlantSelection { id -> callback(wrapRtid(id)) }
                 },
-                unwrapRtid = ::unwrapRtid,
-                wrapRtid = ::wrapRtid
+                unwrapRtid = ::unwrapRtid
             )
 
             // === 区域 2: 移除植物列表 (Remove) ===
@@ -274,8 +274,7 @@ fun ModifyConveyorList(
     items: MutableList<ModifyConveyorPlantData>,
     onListChanged: (MutableList<ModifyConveyorPlantData>) -> Unit,
     onRequestPlantSelection: ((String) -> Unit) -> Unit,
-    unwrapRtid: (String) -> String,
-    wrapRtid: (String) -> String
+    unwrapRtid: (String) -> String
 ) {
     var showEditDialog by remember { mutableStateOf<ModifyConveyorPlantData?>(null) }
     // 强制刷新 Key
@@ -427,14 +426,14 @@ fun ModifyConveyorPlantDialog(
     onConfirm: (ModifyConveyorPlantData) -> Unit,
     unwrapRtid: (String) -> String
 ) {
-    var tempWeight by remember { mutableStateOf(data.weight) }
+    var tempWeight by remember { mutableIntStateOf(data.weight) }
 
     var tempLevel by remember { mutableStateOf(data.iLevel) }
 
-    var tempMaxCount by remember { mutableStateOf(data.maxCount) }
-    var tempMaxWeightFactor by remember { mutableStateOf(data.maxWeightFactor) }
-    var tempMinCount by remember { mutableStateOf(data.minCount) }
-    var tempMinWeightFactor by remember { mutableStateOf(data.minWeightFactor) }
+    var tempMaxCount by remember { mutableIntStateOf(data.maxCount) }
+    var tempMaxWeightFactor by remember { mutableDoubleStateOf(data.maxWeightFactor) }
+    var tempMinCount by remember { mutableIntStateOf(data.minCount) }
+    var tempMinWeightFactor by remember { mutableDoubleStateOf(data.minWeightFactor) }
 
     val plantName = PlantRepository.getName(unwrapRtid(data.type))
 
@@ -496,8 +495,8 @@ fun ModifyConveyorPlantDialog(
                         )
                     }
                     Text(
-                        text = if (tempMaxWeightFactor == 0.0) "达到 ${tempMaxCount} 株后停止刷新"
-                        else if (tempMaxCount > 0) "达到 ${tempMaxCount} 株后权重变为 ${(tempWeight * tempMaxWeightFactor).toInt()}"
+                        text = if (tempMaxWeightFactor == 0.0) "达到 $tempMaxCount 株后停止刷新"
+                        else if (tempMaxCount > 0) "达到 $tempMaxCount 株后权重变为 ${(tempWeight * tempMaxWeightFactor).toInt()}"
                         else "",
                         fontSize = 12.sp,
                         color = Color(0xFF1976D2),
@@ -528,7 +527,7 @@ fun ModifyConveyorPlantDialog(
                         )
                     }
                     Text(
-                        text = if (tempMinCount > 0) "不满 ${tempMinCount} 株前权重变为 ${(tempWeight * tempMinWeightFactor).toInt()}"
+                        text = if (tempMinCount > 0) "不满 $tempMinCount 株前权重变为 ${(tempWeight * tempMinWeightFactor).toInt()}"
                         else "",
                         fontSize = 12.sp,
                         color = Color(0xFF1976D2),

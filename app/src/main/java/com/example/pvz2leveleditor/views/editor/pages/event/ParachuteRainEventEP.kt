@@ -45,7 +45,7 @@ fun ParachuteRainEventEP(
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
             gson.fromJson(obj?.objData, ParachuteRainEventData::class.java)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             ParachuteRainEventData()
         }
         mutableStateOf(data)

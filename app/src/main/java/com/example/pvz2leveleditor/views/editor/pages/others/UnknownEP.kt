@@ -32,7 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pvz2leveleditor.data.LevelParser
 import com.example.pvz2leveleditor.views.editor.EditorHelpDialog
 import com.example.pvz2leveleditor.views.editor.HelpSection
 
@@ -40,7 +39,6 @@ import com.example.pvz2leveleditor.views.editor.HelpSection
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UnknownEP(rtid: String, onBack: () -> Unit, scrollState: ScrollState) {
-    val alias = LevelParser.extractAlias(rtid)
     var showHelpDialog by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {

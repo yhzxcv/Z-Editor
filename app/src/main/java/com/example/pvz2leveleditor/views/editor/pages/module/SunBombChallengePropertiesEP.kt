@@ -71,7 +71,7 @@ fun SunBombChallengePropertiesEP(
             } else {
                 SunBombChallengeData()
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             SunBombChallengeData()
         }
         mutableStateOf(data)

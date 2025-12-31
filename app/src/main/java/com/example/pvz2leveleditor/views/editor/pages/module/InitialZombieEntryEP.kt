@@ -9,6 +9,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -20,7 +21,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
@@ -73,10 +76,10 @@ import androidx.compose.ui.unit.sp
 import com.example.pvz2leveleditor.data.InitialZombieData
 import com.example.pvz2leveleditor.data.InitialZombieEntryData
 import com.example.pvz2leveleditor.data.PvzLevelFile
+import com.example.pvz2leveleditor.data.repository.ZombiePropertiesRepository
+import com.example.pvz2leveleditor.data.repository.ZombieRepository
+import com.example.pvz2leveleditor.data.repository.ZombieTag
 import com.example.pvz2leveleditor.data.RtidParser
-import com.example.pvz2leveleditor.data.Repository.ZombiePropertiesRepository
-import com.example.pvz2leveleditor.data.Repository.ZombieRepository
-import com.example.pvz2leveleditor.data.Repository.ZombieTag
 import com.example.pvz2leveleditor.views.components.AssetImage
 import com.example.pvz2leveleditor.views.editor.EditorHelpDialog
 import com.example.pvz2leveleditor.views.editor.HelpSection
@@ -107,7 +110,7 @@ fun InitialZombieEntryEP(
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
             gson.fromJson(obj?.objData, InitialZombieEntryData::class.java)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             InitialZombieEntryData()
         }
         mutableStateOf(data)
@@ -351,129 +354,142 @@ fun InitialZombieEntryEP(
                 )
             }
         }
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 110.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(16.dp),
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .background(Color(0xFFF5F5F5))
+        ) {
+            // === 区域 1: 网格选择器 (跨满全宽) ===
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Box(contentAlignment = Alignment.Center) {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(2.dp),
+                        modifier = Modifier.widthIn(max = 480.dp) // 限制宽度
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            // 状态栏
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Column {
+                                    Text("选中位置", fontSize = 12.sp, color = Color.Gray)
+                                    Text(
+                                        "R${selectedY + 1} : C${selectedX + 1}",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 20.sp,
+                                        color = themeColor
+                                    )
+                                }
+                                Spacer(Modifier.weight(1f))
 
-        val objectExists = rootLevelFile.objects.any { it.aliases?.contains(currentAlias) == true }
-
-        if (!objectExists) {
-            Box(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("未找到本地对象\n请尝试重新添加模块", color = Color.Gray)
-            }
-        } else {
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-                    .fillMaxSize()
-                    .background(Color(0xFFF5F5F5))
-            ) {
-                // === 上半部分：网格选择器 ===
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(2.dp),
-                    shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        // 状态栏
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Column {
-                                Text("选中位置", fontSize = 12.sp, color = Color.Gray)
-                                Text(
-                                    "R${selectedY + 1} : C${selectedX + 1}",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 20.sp,
-                                    color = themeColor
-                                )
+                                Button(
+                                    onClick = { handleAddZombie() },
+                                    colors = ButtonDefaults.buttonColors(containerColor = themeColor)
+                                ) {
+                                    Icon(
+                                        Icons.Default.Add,
+                                        null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(Modifier.width(8.dp))
+                                    Text("放置僵尸")
+                                }
                             }
-                            Spacer(Modifier.weight(1f))
 
-                            Button(
-                                onClick = { handleAddZombie() },
-                                colors = ButtonDefaults.buttonColors(containerColor = themeColor)
+                            Spacer(Modifier.height(16.dp))
+
+                            // 9x5 网格绘制
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .aspectRatio(1.8f) // 保持 9:5 比例，因为宽度被限制，高度也会被限制
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(Color(0xFFE1F5FE))
+                                    .border(
+                                        1.dp,
+                                        Color(0xFFB3E5FC),
+                                        RoundedCornerShape(6.dp)
+                                    )
                             ) {
-                                Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
-                                Spacer(Modifier.width(8.dp))
-                                Text("放置僵尸")
-                            }
-                        }
-
-                        Spacer(Modifier.height(16.dp))
-
-                        // 9x5 网格绘制
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .aspectRatio(1.8f) // 保持 9:5 比例
-                                .clip(RoundedCornerShape(6.dp))
-                                .background(Color(0xFFE1F5FE)) // 浅蓝背景
-                                .border(1.dp, Color(0xFFB3E5FC), RoundedCornerShape(6.dp))
-                        ) {
-                            Column(Modifier.fillMaxSize()) {
-                                for (row in 0..4) {
-                                    Row(Modifier.weight(1f)) {
-                                        for (col in 0..8) {
-                                            val isSelected = (row == selectedY && col == selectedX)
-                                            val cellZombies =
-                                                moduleDataState.value.placements.filter {
-                                                    it.gridX == col && it.gridY == row
-                                                }
-                                            val firstZombie = cellZombies.firstOrNull()
-                                            var count = cellZombies.size
-
-                                            Box(
-                                                modifier = Modifier
-                                                    .weight(1f)
-                                                    .fillMaxHeight()
-                                                    .border(0.5.dp, Color(0xFF81D4FA))
-                                                    .background(
-                                                        if (isSelected) Color(0xFFFFEB3B).copy(alpha = 0.5f)
-                                                        else Color.Transparent
-                                                    )
-                                                    .clickable {
-                                                        selectedX = col
-                                                        selectedY = row
-                                                    },
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                if (count > 0 && firstZombie != null) {
-                                                    ZombieIconSmall(firstZombie.typeName)
-
-                                                    // 如果是冰块状态，加一个蓝色遮罩效果
-                                                    if (firstZombie.condition == "ice_block") {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .fillMaxSize(0.9f)
-                                                                .background(
-                                                                    Color(0x6629B6F6),
-                                                                    RoundedCornerShape(3.dp)
-                                                                )
-                                                        )
-                                                        Icon(
-                                                            Icons.Default.AcUnit, null,
-                                                            tint = Color.White.copy(0.8f),
-                                                            modifier = Modifier.size(12.dp)
-                                                        )
+                                Column(Modifier.fillMaxSize()) {
+                                    for (row in 0..4) {
+                                        Row(Modifier.weight(1f)) {
+                                            for (col in 0..8) {
+                                                val isSelected =
+                                                    (row == selectedY && col == selectedX)
+                                                val cellZombies =
+                                                    moduleDataState.value.placements.filter {
+                                                        it.gridX == col && it.gridY == row
                                                     }
+                                                val firstZombie =
+                                                    cellZombies.firstOrNull()
+                                                var count = cellZombies.size
 
-                                                    if (count > 1) {
-                                                        Box(
-                                                            modifier = Modifier
-                                                                .align(Alignment.TopEnd)
-                                                                .background(
-                                                                    Color.Gray,
-                                                                    RoundedCornerShape(bottomStart = 4.dp)
-                                                                )
-                                                                .padding(horizontal = 2.dp)
-                                                        ) {
-                                                            Text(
-                                                                text = "+$count",
-                                                                color = Color.White,
-                                                                fontSize = 8.sp,
-                                                                fontWeight = FontWeight.Bold
+                                                Box(
+                                                    modifier = Modifier
+                                                        .weight(1f)
+                                                        .fillMaxHeight()
+                                                        .border(
+                                                            0.5.dp,
+                                                            Color(0xFF81D4FA)
+                                                        )
+                                                        .background(
+                                                            if (isSelected) Color(0xFFFFEB3B).copy(
+                                                                alpha = 0.5f
                                                             )
+                                                            else Color.Transparent
+                                                        )
+                                                        .clickable {
+                                                            selectedX = col
+                                                            selectedY = row
+                                                        },
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    if (count > 0 && firstZombie != null) {
+                                                        ZombieIconSmall(firstZombie.typeName)
+
+                                                        if (firstZombie.condition == "ice_block") {
+                                                            Box(
+                                                                modifier = Modifier
+                                                                    .fillMaxSize(0.9f)
+                                                                    .background(
+                                                                        Color(0x6629B6F6),
+                                                                        RoundedCornerShape(3.dp)
+                                                                    )
+                                                            )
+                                                            Icon(
+                                                                Icons.Default.AcUnit,
+                                                                null,
+                                                                tint = Color.White.copy(
+                                                                    0.8f
+                                                                ),
+                                                                modifier = Modifier.size(12.dp)
+                                                            )
+                                                        }
+
+                                                        if (count > 1) {
+                                                            Box(
+                                                                modifier = Modifier
+                                                                    .align(Alignment.TopEnd)
+                                                                    .background(
+                                                                        Color.Gray,
+                                                                        RoundedCornerShape(
+                                                                            bottomStart = 4.dp
+                                                                        )
+                                                                    )
+                                                                    .padding(horizontal = 2.dp)
+                                                            ) {
+                                                                Text(
+                                                                    text = "+$count",
+                                                                    color = Color.White,
+                                                                    fontSize = 8.sp,
+                                                                    fontWeight = FontWeight.Bold
+                                                                )
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -485,38 +501,35 @@ fun InitialZombieEntryEP(
                         }
                     }
                 }
+            }
 
-                // === 下半部分：已配置列表 ===
+            // === 区域 2: 标题 (跨满全宽) ===
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
                     "僵尸分布列表 (列优先排序)",
-                    modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
+                    modifier = Modifier.padding(vertical = 8.dp),
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,
                     fontSize = 14.sp
                 )
+            }
 
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 110.dp), // 稍微宽一点以显示Condition
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(sortedPlacements) { item ->
-                        InitialZombieCard(
-                            item = item,
-                            isSelected = (item.gridX == selectedX && item.gridY == selectedY),
-                            onClick = {
-                                selectedX = item.gridX
-                                selectedY = item.gridY
-                                editingPlacement = item
-                            }
-                        )
+            // === 区域 3: 物品列表 ===
+            items(sortedPlacements) { item ->
+                InitialZombieCard(
+                    item = item,
+                    isSelected = (item.gridX == selectedX && item.gridY == selectedY),
+                    onClick = {
+                        selectedX = item.gridX
+                        selectedY = item.gridY
+                        editingPlacement = item
                     }
-                }
+                )
             }
         }
     }
 }
+
 
 // === 辅助 UI 组件 ===
 
@@ -551,7 +564,9 @@ fun InitialZombieCard(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val info = remember(item.typeName) { ZombieRepository.search(item.typeName, ZombieTag.All).firstOrNull() }
+    val info = remember(item.typeName) {
+        ZombieRepository.search(item.typeName, ZombieTag.All).firstOrNull()
+    }
 
     Card(
         onClick = onClick,
@@ -575,9 +590,13 @@ fun InitialZombieCard(
                         .clip(CircleShape)
                         .background(Color(0xFFEFEBE9))
                         .border(0.5.dp, Color.LightGray, CircleShape),
-                    placeholder = { Box(Modifier
-                        .fillMaxSize()
-                        .background(Color.Gray)) }
+                    placeholder = {
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .background(Color.Gray)
+                        )
+                    }
                 )
                 // 状态角标
                 if (item.condition == "ice_block") {

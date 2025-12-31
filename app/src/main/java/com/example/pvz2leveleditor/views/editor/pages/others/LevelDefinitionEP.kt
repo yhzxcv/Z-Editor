@@ -89,8 +89,8 @@ fun LevelDefinitionEP(
     val currentLootLabel =
         lootOptions.find { it.first == currentLootRtid}?.second ?: levelDef.loot
 
-    var disablePeavine by remember { mutableStateOf(levelDef.disablePeavine ?: false) }
-    var isArtifactDisabled by remember { mutableStateOf(levelDef.isArtifactDisabled ?: false) }
+    var disablePeavine by remember { mutableStateOf(levelDef.disablePeavine == true) }
+    var isArtifactDisabled by remember { mutableStateOf(levelDef.isArtifactDisabled == true) }
 
     val currentStageInfo = remember(levelDef.stageModule) {
         RtidParser.parse(levelDef.stageModule)

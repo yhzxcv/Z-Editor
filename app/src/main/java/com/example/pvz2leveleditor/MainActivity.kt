@@ -1,10 +1,8 @@
 package com.example.pvz2leveleditor
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -22,26 +20,8 @@ import com.example.pvz2leveleditor.views.screens.LevelListScreen
 
 class MainActivity : ComponentActivity() {
 
-    private val openDocumentTreeLauncher = registerForActivityResult(
-        ActivityResultContracts.OpenDocumentTree()
-    ) { uri ->
-        if (uri != null) {
-            contentResolver.takePersistableUriPermission(
-                uri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            )
-            getSharedPreferences("prefs", MODE_PRIVATE)
-                .edit()
-                .putString("folder_uri", uri.toString())
-                .apply()
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val savedUri = getSharedPreferences("prefs", MODE_PRIVATE)
-            .getString("folder_uri", null)
 
         setContent {
             PVZ2LevelEditorTheme {

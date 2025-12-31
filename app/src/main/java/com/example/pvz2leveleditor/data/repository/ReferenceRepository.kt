@@ -1,4 +1,4 @@
-package com.example.pvz2leveleditor.data.Repository
+package com.example.pvz2leveleditor.data.repository
 
 import android.content.Context
 import com.example.pvz2leveleditor.data.PvzLevelFile
@@ -34,10 +34,4 @@ object ReferenceRepository {
         return moduleCache?.get(alias)?.objClass
     }
 
-    /**
-     * 获取参考对象的完整数据（用于克隆到本地）
-     */
-    fun getReferencedObject(alias: String): PvzObject? {
-        return moduleCache?.get(alias)
-    }
 }

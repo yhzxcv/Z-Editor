@@ -1,11 +1,11 @@
 package com.example.pvz2leveleditor.data
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.automirrored.filled.FactCheck
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.BrightnessHigh
 import androidx.compose.material.icons.filled.Dangerous
-import androidx.compose.material.icons.filled.DirectionsWalk
 import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
@@ -253,6 +253,43 @@ object ModuleRegistry {
 
     // 注册表：Key = objClass (字符串)
     private val registry = mapOf(
+        "CustomLevelModuleProperties" to ModuleMetadata(
+        title = "庭院模块",
+        description = "开启后关卡适配庭院框架",
+        icon = Icons.Default.Home,
+        isCore = false,
+        defaultAlias = "DefaultCustomLevel",
+        defaultSource = "LevelModules",
+        navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
+        ),
+        "StandardLevelIntroProperties" to ModuleMetadata(
+            title = "转场动画",
+            description = "关卡开始时的摄像机平移",
+            icon = Icons.Default.MovieFilter,
+            isCore = false,
+            defaultAlias = "StandardIntro",
+            defaultSource = "LevelModules",
+            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
+        ),
+        "ZombiesAteYourBrainsProperties" to ModuleMetadata(
+            title = "失败判定",
+            description = "僵尸进屋判负的位置",
+            icon = Icons.Default.Dangerous,
+            isCore = false,
+            defaultAlias = "DefaultZombieWinCondition",
+            defaultSource = "LevelModules",
+            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
+        ),
+        "ZombiesDeadWinConProperties" to ModuleMetadata(
+            title = "死亡掉落",
+            description = "关卡稳定运行必须模块",
+            icon = Icons.Default.Redeem,
+            isCore = false,
+            defaultAlias = "ZombiesDeadWinCon",
+            defaultSource = "LevelModules",
+            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
+        ),
+
         "SunDropperProperties" to ModuleMetadata(
             title = "阳光掉落",
             description = "控制天上掉落阳光的频率",
@@ -315,7 +352,7 @@ object ModuleRegistry {
         "InitialZombieProperties" to ModuleMetadata(
             title = "预置僵尸",
             description = "关卡开始时场上已存在的僵尸",
-            icon = Icons.Default.DirectionsWalk,
+            icon = Icons.AutoMirrored.Filled.DirectionsWalk,
             isCore = true,
             defaultAlias = "FrozenZombiePlacement",
             defaultSource = "CurrentLevel",
@@ -351,44 +388,6 @@ object ModuleRegistry {
             defaultSource = "CurrentLevel",
             initialDataFactory = { StarChallengeModuleData() },
             navigationFactory = { rtid -> EditorSubScreen.StarChallenge(rtid) }
-        ),
-
-
-        "CustomLevelModuleProperties" to ModuleMetadata(
-            title = "庭院模块",
-            description = "开启后关卡适配庭院框架",
-            icon = Icons.Default.Home,
-            isCore = false,
-            defaultAlias = "DefaultCustomLevel",
-            defaultSource = "LevelModules",
-            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
-        ),
-        "StandardLevelIntroProperties" to ModuleMetadata(
-            title = "转场动画",
-            description = "关卡开始时的摄像机平移",
-            icon = Icons.Default.MovieFilter,
-            isCore = false,
-            defaultAlias = "StandardIntro",
-            defaultSource = "LevelModules",
-            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
-        ),
-        "ZombiesAteYourBrainsProperties" to ModuleMetadata(
-            title = "失败判定",
-            description = "僵尸进屋判负的位置",
-            icon = Icons.Default.Dangerous,
-            isCore = false,
-            defaultAlias = "DefaultZombieWinCondition",
-            defaultSource = "LevelModules",
-            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
-        ),
-        "ZombiesDeadWinConProperties" to ModuleMetadata(
-            title = "死亡掉落",
-            description = "关卡稳定运行必须模块",
-            icon = Icons.Default.Redeem,
-            isCore = false,
-            defaultAlias = "ZombiesDeadWinCon",
-            defaultSource = "LevelModules",
-            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         // 可以在此继续添加更多模块...
     )

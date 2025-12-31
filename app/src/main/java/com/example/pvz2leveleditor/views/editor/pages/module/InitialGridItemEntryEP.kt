@@ -9,6 +9,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -19,7 +20,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -85,7 +88,7 @@ fun InitialGridItemEntryEP(
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
             gson.fromJson(obj?.objData, InitialGridItemEntryData::class.java)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             InitialGridItemEntryData()
         }
         mutableStateOf(data)
@@ -202,93 +205,102 @@ fun InitialGridItemEntryEP(
                 )
             }
         }
-        Column(
+
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 100.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(16.dp),
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
                 .background(Color(0xFFF5F5F5))
         ) {
-            // === 上半部分：网格选择器 ===
-            Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(2.dp),
-                shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Column {
-                            Text("选中位置", fontSize = 12.sp, color = Color.Gray)
-                            Text(
-                                "R${selectedY + 1} : C${selectedX + 1}",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp,
-                                color = Color(0xFF795548)
-                            )
-                        }
-                        Spacer(Modifier.weight(1f))
-                        Button(
-                            onClick = { handleSelectItem() },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF795548))
-                        ) {
-                            Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text("添加物品")
-                        }
-                    }
-
-                    Spacer(Modifier.height(16.dp))
-
-                    // 9x5 网格绘制
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1.8f)
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(Color(0xFFD7CCC8))
-                            .border(1.dp, Color(0xFFA1887F), RoundedCornerShape(6.dp))
+            // === 区域 1: 网格选择器 (作为列表头，跨满全宽) ===
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Box(contentAlignment = Alignment.Center) {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(2.dp),
+                        modifier = Modifier.widthIn(max = 480.dp)
                     ) {
-                        Column(Modifier.fillMaxSize()) {
-                            for (row in 0..4) {
-                                Row(Modifier.weight(1f)) {
-                                    for (col in 0..8) {
-                                        val isSelected = (row == selectedY && col == selectedX)
-                                        val cellItems =
-                                            moduleDataState.value.placements.filter { it.gridX == col && it.gridY == row }
-                                        val count = cellItems.size
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Column {
+                                    Text("选中位置", fontSize = 12.sp, color = Color.Gray)
+                                    Text(
+                                        "R${selectedY + 1} : C${selectedX + 1}",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 20.sp,
+                                        color = Color(0xFF795548)
+                                    )
+                                }
+                                Spacer(Modifier.weight(1f))
+                                Button(
+                                    onClick = { handleSelectItem() },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF795548))
+                                ) {
+                                    Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
+                                    Spacer(Modifier.width(8.dp))
+                                    Text("添加物品")
+                                }
+                            }
 
-                                        Box(
-                                            modifier = Modifier
-                                                .weight(1f)
-                                                .fillMaxHeight()
-                                                .border(0.5.dp, Color(0xFF8D6E63))
-                                                .background(
-                                                    if (isSelected) Color(0xFFFFEB3B).copy(alpha = 0.5f) else Color.Transparent
-                                                )
-                                                .clickable {
-                                                    selectedX = col
-                                                    selectedY = row
-                                                },
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            if (count > 0) {
-                                                // 简易显示
+                            Spacer(Modifier.height(16.dp))
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .aspectRatio(1.8f)
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(Color(0xFFD7CCC8))
+                                    .border(1.dp, Color(0xFFA1887F), RoundedCornerShape(6.dp))
+                            ) {
+                                Column(Modifier.fillMaxSize()) {
+                                    for (row in 0..4) {
+                                        Row(Modifier.weight(1f)) {
+                                            for (col in 0..8) {
+                                                val isSelected = (row == selectedY && col == selectedX)
+                                                val cellItems =
+                                                    moduleDataState.value.placements.filter { it.gridX == col && it.gridY == row }
+                                                val count = cellItems.size
+
                                                 Box(
                                                     modifier = Modifier
-                                                        .fillMaxSize(0.9f)
+                                                        .weight(1f)
+                                                        .fillMaxHeight()
+                                                        .border(0.5.dp, Color(0xFF8D6E63))
                                                         .background(
-                                                            Color(0xFF5D4037),
-                                                            RoundedCornerShape(4.dp)
-                                                        ),
+                                                            if (isSelected) Color(0xFFFFEB3B).copy(
+                                                                alpha = 0.5f
+                                                            ) else Color.Transparent
+                                                        )
+                                                        .clickable {
+                                                            selectedX = col
+                                                            selectedY = row
+                                                        },
                                                     contentAlignment = Alignment.Center
                                                 ) {
-                                                    Text(
-                                                        text = if (count > 1) "+$count" else cellItems[0].typeName.take(
-                                                            1
-                                                        ).uppercase(),
-                                                        color = Color.White,
-                                                        fontSize = 12.sp,
-                                                        fontWeight = FontWeight.Bold
-                                                    )
+                                                    if (count > 0) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .fillMaxSize(0.9f)
+                                                                .background(
+                                                                    Color(0xFF5D4037),
+                                                                    RoundedCornerShape(4.dp)
+                                                                ),
+                                                            contentAlignment = Alignment.Center
+                                                        ) {
+                                                            Text(
+                                                                text = if (count > 1) "+$count" else cellItems[0].typeName.take(
+                                                                    1
+                                                                ).uppercase(),
+                                                                color = Color.White,
+                                                                fontSize = 12.sp,
+                                                                fontWeight = FontWeight.Bold
+                                                            )
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -300,34 +312,28 @@ fun InitialGridItemEntryEP(
                 }
             }
 
-            // === 下半部分：已配置列表 ===
-            Text(
-                "物品分布列表 (列优先排序)",
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
-                fontWeight = FontWeight.Bold,
-                color = Color.Gray,
-                fontSize = 14.sp
-            )
+            // === 区域 2: 标题 (作为列表头，跨满全宽) ===
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Text(
+                    "物品分布列表 (列优先排序)",
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray,
+                    fontSize = 14.sp
+                )
+            }
 
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 100.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp)
-            ) {
-                items(sortedItems) { item ->
-                    GridItemCard(
-                        item = item,
-                        isSelected = (item.gridX == selectedX && item.gridY == selectedY),
-                        onClick = {
-                            selectedX = item.gridX
-                            selectedY = item.gridY
-                        },
-                        onDelete = { itemToDelete = item }
-                    )
-                }
+            // === 区域 3: 物品列表 (正常的 Grid Items) ===
+            items(sortedItems) { item ->
+                GridItemCard(
+                    item = item,
+                    isSelected = (item.gridX == selectedX && item.gridY == selectedY),
+                    onClick = {
+                        selectedX = item.gridX
+                        selectedY = item.gridY
+                    },
+                    onDelete = { itemToDelete = item }
+                )
             }
         }
     }

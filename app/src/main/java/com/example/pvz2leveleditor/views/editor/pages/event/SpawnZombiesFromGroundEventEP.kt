@@ -60,12 +60,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.pvz2leveleditor.data.Repository.PlantRepository
+import com.example.pvz2leveleditor.data.repository.PlantRepository
 import com.example.pvz2leveleditor.data.PvzLevelFile
 import com.example.pvz2leveleditor.data.RtidParser
 import com.example.pvz2leveleditor.data.SpawnZombiesFromGroundData
-import com.example.pvz2leveleditor.data.Repository.ZombiePropertiesRepository
-import com.example.pvz2leveleditor.data.Repository.ZombieRepository
+import com.example.pvz2leveleditor.data.repository.ZombiePropertiesRepository
+import com.example.pvz2leveleditor.data.repository.ZombieRepository
 import com.example.pvz2leveleditor.data.ZombieSpawnData
 import com.example.pvz2leveleditor.views.editor.EditorHelpDialog
 import com.example.pvz2leveleditor.views.editor.HelpSection
@@ -99,7 +99,7 @@ fun SpawnZombiesFromGroundEventEP(
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
             gson.fromJson(obj?.objData, SpawnZombiesFromGroundData::class.java)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             SpawnZombiesFromGroundData()
         }
 
@@ -167,7 +167,7 @@ fun SpawnZombiesFromGroundEventEP(
         showBatchConfirmDialog = false
         Toast.makeText(
             context,
-            "已将 $changeCount 只僵尸设为 ${targetLevel} 阶",
+            "已将 $changeCount 只僵尸设为 $targetLevel 阶",
             Toast.LENGTH_SHORT
         ).show()
     }
@@ -188,6 +188,14 @@ fun SpawnZombiesFromGroundEventEP(
                         editingZombie = updatedZombie
                         sync(actionDataState.value.copy(zombies = currentList))
                     }
+                },
+                onCopy = {
+                    val newZombie = editingZombie!!.copy()
+                    val currentList = actionDataState.value.zombies.toMutableList()
+                    currentList.add(newZombie)
+                    sync(actionDataState.value.copy(zombies = currentList))
+                    showBottomSheet = false
+                    editingZombie = null
                 },
                 onDelete = {
                     val currentList = actionDataState.value.zombies.toMutableList()

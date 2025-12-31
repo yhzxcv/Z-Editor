@@ -64,7 +64,7 @@ fun WaveManagerPropertiesEP(
     var minHealth by remember { mutableStateOf(waveManager.minNextWaveHealthPercentage.toString()) }
 
     // SuppressFlagZombie
-    var suppressFlag by remember { mutableStateOf(waveManager.suppressFlagZombie ?: false) }
+    var suppressFlag by remember { mutableStateOf(waveManager.suppressFlagZombie == true) }
 
     // LevelJam
     var jamExpanded by remember { mutableStateOf(false) }

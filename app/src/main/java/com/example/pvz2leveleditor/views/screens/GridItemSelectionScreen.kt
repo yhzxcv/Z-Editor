@@ -182,11 +182,11 @@ fun GridItemSelectionScreen(
 
                     // --- Tab 分类 ---
                     TabRow(
-                        selectedTabIndex = GridItemCategory.values().indexOf(selectedCategory),
+                        selectedTabIndex = GridItemCategory.entries.indexOf(selectedCategory),
                         containerColor = Color.Transparent,
                         contentColor = Color.White,
                         indicator = { tabPositions ->
-                            val index = GridItemCategory.values().indexOf(selectedCategory)
+                            val index = GridItemCategory.entries.indexOf(selectedCategory)
                             if (index < tabPositions.size) {
                                 SecondaryIndicator(
                                     Modifier.tabIndicatorOffset(tabPositions[index]),
@@ -196,7 +196,7 @@ fun GridItemSelectionScreen(
                             }
                         },
                     ) {
-                        GridItemCategory.values().forEach { category ->
+                        GridItemCategory.entries.forEach { category ->
                             Tab(
                                 selected = selectedCategory == category,
                                 onClick = { selectedCategory = category },

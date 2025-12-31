@@ -60,7 +60,7 @@ fun RaidingPartyEventEP(
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val initialData = try {
             gson.fromJson(obj?.objData, RaidingPartyEventData::class.java)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             RaidingPartyEventData()
         }
         mutableStateOf(initialData)

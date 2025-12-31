@@ -119,7 +119,7 @@ data class InitialPlantData(
     @SerializedName("GridY") var gridY: Int = 0,
     @SerializedName("Level") var level: Int = 1,
     @SerializedName("Avatar") var avatar: Boolean = false,
-    @SerializedName("PlantType") var plantType: MutableList<String> = mutableListOf()
+    @SerializedName("PlantTypes") var plantTypes: MutableList<String> = mutableListOf()
 )
 
 // === 初始僵尸模块 ===

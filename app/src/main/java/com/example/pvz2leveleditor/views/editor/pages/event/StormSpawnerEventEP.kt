@@ -56,9 +56,9 @@ import com.example.pvz2leveleditor.data.PvzLevelFile
 import com.example.pvz2leveleditor.data.RtidParser
 import com.example.pvz2leveleditor.data.StormZombieData
 import com.example.pvz2leveleditor.data.StormZombieSpawnerPropsData
-import com.example.pvz2leveleditor.data.Repository.ZombiePropertiesRepository
-import com.example.pvz2leveleditor.data.Repository.ZombieRepository
-import com.example.pvz2leveleditor.data.Repository.ZombieTag
+import com.example.pvz2leveleditor.data.repository.ZombiePropertiesRepository
+import com.example.pvz2leveleditor.data.repository.ZombieRepository
+import com.example.pvz2leveleditor.data.repository.ZombieTag
 import com.example.pvz2leveleditor.views.components.AssetImage
 import com.example.pvz2leveleditor.views.editor.EditorHelpDialog
 import com.example.pvz2leveleditor.views.editor.HelpSection
@@ -84,7 +84,7 @@ fun StormZombieSpawnerPropsEP(
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val initialData = try {
             gson.fromJson(obj?.objData, StormZombieSpawnerPropsData::class.java)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             StormZombieSpawnerPropsData()
         }
         mutableStateOf(initialData)

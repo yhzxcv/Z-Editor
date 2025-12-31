@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -61,9 +62,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pvz2leveleditor.data.PortalEventData
 import com.example.pvz2leveleditor.data.PvzLevelFile
+import com.example.pvz2leveleditor.data.repository.ZombieRepository
+import com.example.pvz2leveleditor.data.repository.ZombieTag
 import com.example.pvz2leveleditor.data.RtidParser
-import com.example.pvz2leveleditor.data.Repository.ZombieRepository
-import com.example.pvz2leveleditor.data.Repository.ZombieTag
 import com.example.pvz2leveleditor.views.components.AssetImage
 import com.example.pvz2leveleditor.views.editor.EditorHelpDialog
 import com.example.pvz2leveleditor.views.editor.HelpSection
@@ -114,7 +115,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
             } else {
                 PortalEventData()
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             PortalEventData()
         }
 
@@ -263,94 +264,112 @@ fun SpawnModernPortalsWaveActionPropsEP(
             )
 
             // === 区域 2: 类型选择 (极简卡片 + 弹窗入口) ===
-            Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(1.dp)
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        "世界类型",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-                    Spacer(Modifier.height(12.dp))
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(2.dp),
+                    modifier = Modifier
+                        .widthIn(max = 480.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            "世界类型",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                            color = Color.Gray
+                        )
+                        Spacer(Modifier.height(12.dp))
 
-                    LazyVerticalGrid(
-                        columns = GridCells.Adaptive(minSize = 100.dp), // 更小的宽度，一行能放3个左右
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.height(260.dp)
-                    ) {
-                        items(PORTAL_DEFINITIONS) { def ->
-                            val isSelected = def.typeCode == portalDataState.value.portalType
-                            MinimalPortalCard(
-                                def = def,
-                                isSelected = isSelected,
-                                onClick = {
-                                    portalDataState.value =
-                                        portalDataState.value.copy(portalType = def.typeCode)
-                                    sync()
-                                },
-                                onInfoClick = {
-                                    previewWorldDef = def
-                                }
-                            )
+                        LazyVerticalGrid(
+                            columns = GridCells.Adaptive(minSize = 100.dp), // 更小的宽度，一行能放3个左右
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.height(260.dp)
+                        ) {
+                            items(PORTAL_DEFINITIONS) { def ->
+                                val isSelected = def.typeCode == portalDataState.value.portalType
+                                MinimalPortalCard(
+                                    def = def,
+                                    isSelected = isSelected,
+                                    onClick = {
+                                        portalDataState.value =
+                                            portalDataState.value.copy(portalType = def.typeCode)
+                                        sync()
+                                    },
+                                    onInfoClick = {
+                                        previewWorldDef = def
+                                    }
+                                )
+                            }
                         }
                     }
                 }
             }
 
             // === 区域 3: 高级属性 ===
-            Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(1.dp)
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Default.Settings,
-                            null,
-                            tint = Color(0xFFFF9800),
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text("高级属性", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    }
-
-                    Spacer(Modifier.height(16.dp))
-
-                    // IgnoreGraveStone
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable {
-                                val current = portalDataState.value.ignoreGraveStone
-                                portalDataState.value =
-                                    portalDataState.value.copy(ignoreGraveStone = !current)
-                                sync()
-                            }
-                            .padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text("无视墓碑 (IgnoreGraveStone)", fontSize = 14.sp)
-                            Text("开启后裂缝可无视障碍物生成", fontSize = 11.sp, color = Color.Gray)
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(2.dp),
+                    modifier = Modifier
+                        .widthIn(max = 480.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Settings,
+                                null,
+                                tint = Color(0xFFFF9800),
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text("高级属性", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                         }
-                        Switch(
-                            checked = portalDataState.value.ignoreGraveStone,
-                            onCheckedChange = {
-                                portalDataState.value =
-                                    portalDataState.value.copy(ignoreGraveStone = it)
-                                sync()
-                            },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color.White,
-                                checkedTrackColor = Color(0xFFFF9800)
-                            ),
-                            modifier = Modifier.scale(0.8f)
-                        )
+
+                        Spacer(Modifier.height(16.dp))
+
+                        // IgnoreGraveStone
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(8.dp))
+                                .clickable {
+                                    val current = portalDataState.value.ignoreGraveStone
+                                    portalDataState.value =
+                                        portalDataState.value.copy(ignoreGraveStone = !current)
+                                    sync()
+                                }
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text("无视墓碑 (IgnoreGraveStone)", fontSize = 14.sp)
+                                Text(
+                                    "开启后裂缝可无视障碍物生成",
+                                    fontSize = 11.sp,
+                                    color = Color.Gray
+                                )
+                            }
+                            Switch(
+                                checked = portalDataState.value.ignoreGraveStone,
+                                onCheckedChange = {
+                                    portalDataState.value =
+                                        portalDataState.value.copy(ignoreGraveStone = it)
+                                    sync()
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = Color.White,
+                                    checkedTrackColor = Color(0xFFFF9800)
+                                ),
+                                modifier = Modifier.scale(0.8f)
+                            )
+                        }
                     }
                 }
             }
@@ -419,50 +438,62 @@ fun SimplePortalPositionCard(
     val displayRow = currentRow + 1
     val displayCol = currentCol + 1
 
-    Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(1.dp)
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row {
-                Text("生成位置", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Gray)
-                Spacer(Modifier.weight(1f))
-                Text(
-                    "R$displayRow : C$displayCol",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    color = Color(0xFFFF9800)
-                )
-            }
-            Spacer(Modifier.height(12.dp))
+        Card(
+            colors = CardDefaults.cardColors(containerColor = Color.White),
+            elevation = CardDefaults.cardElevation(2.dp),
+            modifier = Modifier
+                .widthIn(max = 480.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row {
+                    Text(
+                        "生成位置",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Text(
+                        "R$displayRow : C$displayCol",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = Color(0xFFFF9800)
+                    )
+                }
+                Spacer(Modifier.height(12.dp))
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(9f / 5f)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(Color(0xFFEEEEEE))
-            ) {
-                for (r in 1..5) {
-                    Row(modifier = Modifier.weight(1f)) {
-                        for (c in 1..9) {
-                            val isSelected = r == displayRow && c == displayCol
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxHeight()
-                                    .padding(1.dp)
-                                    .background(if (isSelected) Color(0xFFFF9800) else Color.White)
-                                    .clickable { onPositionSelected(r, c) },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (isSelected) {
-                                    Icon(
-                                        Icons.Default.Check,
-                                        null,
-                                        tint = Color.White,
-                                        modifier = Modifier.size(12.dp)
-                                    )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(9f / 5f)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color(0xFFEEEEEE))
+                ) {
+                    for (r in 1..5) {
+                        Row(modifier = Modifier.weight(1f)) {
+                            for (c in 1..9) {
+                                val isSelected = r == displayRow && c == displayCol
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxHeight()
+                                        .padding(1.dp)
+                                        .background(if (isSelected) Color(0xFFFF9800) else Color.White)
+                                        .clickable { onPositionSelected(r, c) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (isSelected) {
+                                        Icon(
+                                            Icons.Default.Check,
+                                            null,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(12.dp)
+                                        )
+                                    }
                                 }
                             }
                         }

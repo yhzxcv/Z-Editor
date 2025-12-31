@@ -1,6 +1,7 @@
 package com.example.pvz2leveleditor.views.editor
 
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -29,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.DriveFileMove
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.ContentCopy
@@ -79,18 +81,19 @@ import com.example.pvz2leveleditor.data.LevelParser
 import com.example.pvz2leveleditor.data.ParsedLevelData
 import com.example.pvz2leveleditor.data.PvzLevelFile
 import com.example.pvz2leveleditor.data.PvzObject
+import com.example.pvz2leveleditor.data.repository.ZombieRepository
+import com.example.pvz2leveleditor.data.repository.ZombieTag
 import com.example.pvz2leveleditor.data.RtidParser
 import com.example.pvz2leveleditor.data.WaveManagerData
 import com.example.pvz2leveleditor.data.WaveManagerModuleData
 import com.example.pvz2leveleditor.data.WavePointAnalysis
-import com.example.pvz2leveleditor.data.Repository.ZombieRepository
-import com.example.pvz2leveleditor.data.Repository.ZombieTag
 import com.example.pvz2leveleditor.views.components.AssetImage
 
 /**
  * 波次时间轴 Tab 页面内容
  * 交互：右滑管理，左滑删除，点数实时计算，引用校验
  */
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WaveTimelineTab(
@@ -166,6 +169,10 @@ fun WaveTimelineTab(
     var eventToDeleteRtid by remember { mutableStateOf<String?>(null) }
     val context = androidx.compose.ui.platform.LocalContext.current
 
+    var eventToMove by remember { mutableStateOf<String?>(null) }
+    var moveSourceWaveIndex by remember { mutableStateOf<Int?>(null) }
+    var moveTargetInput by remember { mutableStateOf("") }
+
     val interval = if (waveManager.flagWaveInterval <= 0) 10 else waveManager.flagWaveInterval
 
     // ======================== 2. 核心业务逻辑 ========================
@@ -183,7 +190,7 @@ fun WaveTimelineTab(
 
     // 重命名
     fun performGlobalRename(oldRtid: String, newAlias: String) {
-        if (newAlias.isBlank() || rootLevelFile == null || waveManager == null) return
+        if (newAlias.isBlank() || rootLevelFile == null) return
 
         val oldAlias = LevelParser.extractAlias(oldRtid)
 
@@ -191,10 +198,10 @@ fun WaveTimelineTab(
         val isAliasTaken = rootLevelFile.objects.any { it.aliases?.contains(newAlias) == true }
 
         if (isAliasTaken) {
-            android.widget.Toast.makeText(
+            Toast.makeText(
                 context,
                 "错误：代号 \"$newAlias\" 已存在，请使用其他名称",
-                android.widget.Toast.LENGTH_SHORT
+                Toast.LENGTH_SHORT
             ).show()
             return
         }
@@ -223,7 +230,7 @@ fun WaveTimelineTab(
 
     // 全局删除实体
     fun performSmartDelete(rtid: String, waveIdx: Int) {
-        if (rootLevelFile == null || waveManager == null) return
+        if (rootLevelFile == null) return
 
         val alias = LevelParser.extractAlias(rtid)
         val allReferences = waveManager.waves.flatten()
@@ -232,18 +239,18 @@ fun WaveTimelineTab(
         if (refCount > 1) {
             val currentWave = waveManager.waves.getOrNull(waveIdx - 1)
             currentWave?.remove(rtid)
-            android.widget.Toast.makeText(
+            Toast.makeText(
                 context,
                 "已移除当前波次的引用 (剩余引用: ${refCount - 1})",
-                android.widget.Toast.LENGTH_SHORT
+                Toast.LENGTH_SHORT
             ).show()
         } else {
             waveManager.waves.forEach { wave -> wave.removeAll { it == rtid } }
             rootLevelFile.objects.removeAll { it.aliases?.contains(alias) == true }
-            android.widget.Toast.makeText(
+            Toast.makeText(
                 context,
                 "这是最后一份引用，已彻底删除实体数据",
-                android.widget.Toast.LENGTH_SHORT
+                Toast.LENGTH_SHORT
             ).show()
         }
 
@@ -464,7 +471,7 @@ fun WaveTimelineTab(
         )
     }
 
-    // --- D. 删除事件确认 (抽屉内触发) ---
+    // --- D. 删除事件确认 ---
     var eventToDeleteSourceWave by remember { mutableStateOf<Int?>(null) }
 
     if (eventToDeleteRtid != null && eventToDeleteSourceWave != null) {
@@ -477,7 +484,7 @@ fun WaveTimelineTab(
             title = { Text(if (count > 1) "移除事件引用" else "彻底删除事件") },
             text = {
                 if (count > 1) {
-                    Text("该事件在关卡中被引用了 $count 次。当前操作仅会从第 ${eventToDeleteSourceWave} 波中移除此引用，不会删除事件实体数据。")
+                    Text("该事件在关卡中被引用了 $count 次。当前操作仅会从第 $eventToDeleteSourceWave 波中移除此引用，不会删除事件实体数据。")
                 } else {
                     Text("这是该事件的最后一份引用。删除后将同时从文件中彻底抹除该事件的实体配置，不可恢复。")
                 }
@@ -504,7 +511,65 @@ fun WaveTimelineTab(
         )
     }
 
-    // --- E. 删除波次确认 ---
+    // --- E. 移动事件弹窗 ---
+    if (eventToMove != null && moveSourceWaveIndex != null) {
+        AlertDialog(
+            onDismissRequest = { eventToMove = null; moveSourceWaveIndex = null },
+            title = { Text("移动事件") },
+            text = {
+                OutlinedTextField(
+                    value = moveTargetInput,
+                    onValueChange = { moveTargetInput = it },
+                    label = { Text("移动至波次序号") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number)
+                )
+            },
+            dismissButton = {
+                TextButton(onClick = { eventToMove = null; moveSourceWaveIndex = null }) { Text("取消") }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    val target = moveTargetInput.toIntOrNull()
+                    val sourceIdx = moveSourceWaveIndex!! - 1 // 注意：这里需要确保非空
+
+                    if (target != null && target in 1..waveManager.waves.size) {
+                        val targetIdx = target - 1
+
+                        if (targetIdx == sourceIdx) {
+                            Toast.makeText(context, "目标波次与当前波次相同", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // === 核心修改开始 ===
+                            // 1. 创建源波次和目标波次的新副本 (Deep Copy)
+                            // 这样修改后的 List 内存地址会改变，Compose 才能检测到变化
+                            val newSourceList = waveManager.waves[sourceIdx].toMutableList()
+                            val newTargetList = waveManager.waves[targetIdx].toMutableList()
+
+                            // 2. 在新副本上操作
+                            // 只移除第一个匹配项（防止有重复引用时误删）
+                            newSourceList.remove(eventToMove!!)
+                            newTargetList.add(eventToMove!!)
+
+                            // 3. 将新副本赋值回主数据
+                            waveManager.waves[sourceIdx] = newSourceList
+                            waveManager.waves[targetIdx] = newTargetList
+                            // === 核心修改结束 ===
+
+                            onWavesChanged() // 触发刷新
+                            Toast.makeText(context, "已移动至第 $target 波", Toast.LENGTH_SHORT).show()
+
+                            eventToMove = null
+                            moveSourceWaveIndex = null
+                        }
+                    } else {
+                        Toast.makeText(context, "无效波次序号", Toast.LENGTH_SHORT).show()
+                    }
+                }) { Text("移动") }
+            }
+        )
+    }
+
+    // --- F. 删除波次确认 ---
     if (waveToDeleteIndex != null) {
         AlertDialog(
             onDismissRequest = {
@@ -546,13 +611,30 @@ fun WaveTimelineTab(
             confirmButton = {
                 Button(
                     onClick = {
-                        waveManager.waves.removeAt(waveToDeleteIndex!!)
+                        val index = waveToDeleteIndex!!
+                        val eventsToRemove = waveManager.waves[index].toList()
+
+                        waveManager.waves.removeAt(index)
                         waveManager.waveCount = waveManager.waves.size
+
+                        if (rootLevelFile != null) {
+                            val remainingRefs = waveManager.waves.flatten().toSet()
+                            var cleanedCount = 0
+
+                            eventsToRemove.forEach { rtid ->
+                                if (!remainingRefs.contains(rtid)) {
+                                    val alias = LevelParser.extractAlias(rtid)
+                                    val wasRemoved =
+                                        rootLevelFile.objects.removeAll { it.aliases?.contains(alias) == true }
+                                    if (wasRemoved) cleanedCount++
+                                }
+                            }
+                            Toast.makeText(context, "已删除波次", Toast.LENGTH_SHORT).show()
+                        }
                         onWavesChanged()
                         waveToDeleteIndex = null
                         confirmCheckbox = false
                     },
-                    // 只有勾选了才能点击
                     enabled = confirmCheckbox,
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
                 ) { Text("确认删除") }
@@ -565,15 +647,17 @@ fun WaveTimelineTab(
             }
         )
     }
-    // --- F. 管理抽屉 ---
+    // --- G. 管理抽屉 ---
     if (editingWaveIndex != null) {
         val waveIdx = editingWaveIndex!!
         val currentWaveEvents = waveManager.waves.getOrNull(waveIdx - 1) ?: mutableListOf()
         ModalBottomSheet(onDismissRequest = { editingWaveIndex = null }) {
-            Column(modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth()
-                .navigationBarsPadding()) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+            ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("第 $waveIdx 波事件管理", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                     Spacer(Modifier.weight(1f))
@@ -606,6 +690,11 @@ fun WaveTimelineTab(
                         onDelete = {
                             eventToDeleteRtid = rtid
                             eventToDeleteSourceWave = waveIdx
+                        },
+                        onMove = {
+                            eventToMove = rtid
+                            moveSourceWaveIndex = waveIdx
+                            moveTargetInput = waveIdx.toString()
                         }
                     )
                 }
@@ -835,9 +924,11 @@ fun WaveRowItem(
     onEditEvent: (String, Int) -> Unit,
     onInfoClick: () -> Unit
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .background(Color.White)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -884,10 +975,11 @@ fun WaveRowItem(
             }
 
             if (points != 0) {
-                Row(modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .clickable { onInfoClick() }
-                    .padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(4.dp))
+                        .clickable { onInfoClick() }
+                        .padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "${points}pt",
                         color = Color.Gray,
@@ -915,6 +1007,7 @@ fun DrawerEventItem(
     obj: PvzObject?,
     onEdit: () -> Unit,
     onCopy: () -> Unit,
+    onMove: () -> Unit,
     onRename: () -> Unit,
     onDelete: () -> Unit
 ) {
@@ -1005,11 +1098,20 @@ fun DrawerEventItem(
                         modifier = Modifier.size(18.dp)
                     )
                 }
+                // 移动
+                IconButton(onClick = onMove, modifier = Modifier.size(32.dp)) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.DriveFileMove,
+                        null,
+                        tint = Color.Gray,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
                 // 删除
                 IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
                     Icon(
                         imageVector = Icons.Default.DeleteForever,
-                        contentDescription = null,
+                        null,
                         tint = themeColor.copy(alpha = 0.7f),
                         modifier = Modifier.size(20.dp)
                     )

@@ -47,6 +47,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,8 +65,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pvz2leveleditor.data.PvzLevelFile
 import com.example.pvz2leveleditor.data.PvzObject
-import com.example.pvz2leveleditor.data.Repository.ChallengeRepository
-import com.example.pvz2leveleditor.data.Repository.ReferenceRepository
+import com.example.pvz2leveleditor.data.repository.ChallengeRepository
+import com.example.pvz2leveleditor.data.repository.ReferenceRepository
 import com.example.pvz2leveleditor.data.RtidParser
 import com.example.pvz2leveleditor.data.StarChallengeBeatTheLevelData
 import com.example.pvz2leveleditor.data.StarChallengeBlowZombieData
@@ -103,8 +104,6 @@ fun StarChallengeModulePropertiesEP(
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
 
-    val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
-
     // === 1. 数据状态 ===
     var refreshTrigger by remember { mutableIntStateOf(0) }
 
@@ -112,7 +111,7 @@ fun StarChallengeModulePropertiesEP(
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
             gson.fromJson(obj?.objData, StarChallengeModuleData::class.java)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             StarChallengeModuleData()
         }
         if (data.challenges.isEmpty()) {
@@ -172,7 +171,6 @@ fun StarChallengeModulePropertiesEP(
         val (index, rtidStr) = editingChallenge!!
         ChallengeEditDialog(
             rtid = rtidStr,
-            objectMap = objectMap,
             rootLevelFile = rootLevelFile,
             onDismiss = { editingChallenge = null },
             onSave = { newData -> handleSaveSubObject(rtidStr, newData) }
@@ -381,7 +379,6 @@ fun AddChallengeButton(onClick: () -> Unit) {
 @Composable
 fun ChallengeEditDialog(
     rtid: String,
-    objectMap: Map<String, PvzObject>,
     rootLevelFile: PvzLevelFile,
     onDismiss: () -> Unit,
     onSave: (Any) -> Unit
@@ -651,7 +648,7 @@ fun ZombieDistanceEditDialog(
     onDismiss: () -> Unit,
     onConfirm: (StarChallengeZombieDistanceData) -> Unit
 ) {
-    var distance by remember { mutableStateOf(initialData.targetDistance) }
+    var distance by remember { mutableDoubleStateOf(initialData.targetDistance) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -964,7 +961,7 @@ fun ZombieSpeedEditDialog(
     onDismiss: () -> Unit,
     onConfirm: (StarChallengeZombieSpeedData) -> Unit
 ) {
-    var speedModifier by remember { mutableStateOf(initialData.speedModifier) }
+    var speedModifier by remember { mutableDoubleStateOf(initialData.speedModifier) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -1019,7 +1016,7 @@ fun SunReducedEditDialog(
     onDismiss: () -> Unit,
     onConfirm: (StarChallengeSunReducedData) -> Unit
 ) {
-    var sunModifier by remember { mutableStateOf(initialData.sunModifier) }
+    var sunModifier by remember { mutableDoubleStateOf(initialData.sunModifier) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
