@@ -12,8 +12,8 @@ object ObjectOrderRegistry {
         "SunBombChallengeProperties",
 
         "InitialPlantEntryProperties",
-        "InitialZombieEntryProperties",
-        "InitialGridItemEntryProperties",
+        "InitialZombieProperties",
+        "InitialGridItemProperties",
 
 
         "StarChallengeModuleProperties",

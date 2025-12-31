@@ -72,6 +72,7 @@ import com.example.pvz2leveleditor.views.editor.LevelSettingsTab
 import com.example.pvz2leveleditor.views.editor.WaveTimelineTab
 import com.example.pvz2leveleditor.views.editor.pages.event.InvalidEventEP
 import com.example.pvz2leveleditor.views.editor.pages.event.ModifyConveyorEventEP
+import com.example.pvz2leveleditor.views.editor.pages.event.ParachuteRainEventEP
 import com.example.pvz2leveleditor.views.editor.pages.event.RaidingPartyEventEP
 import com.example.pvz2leveleditor.views.editor.pages.event.SpawnModernPortalsWaveActionPropsEP
 import com.example.pvz2leveleditor.views.editor.pages.event.SpawnZombiesFromGroundEventEP
@@ -658,6 +659,9 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                                                 "RaidingPartyZombieSpawnerProps" -> currentSubScreen =
                                                     EditorSubScreen.RaidingDetail(rtid, waveIdx)
 
+                                                "ParachuteRainZombieSpawnerProps" -> currentSubScreen =
+                                                    EditorSubScreen.ParachuteRainDetail(rtid, waveIdx)
+
                                                 else -> currentSubScreen =
                                                     EditorSubScreen.UnknownDetail(rtid)
                                             }
@@ -936,6 +940,14 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                 onBack = { navigateBackToMain() },
                 rootLevelFile = rootLevelFile!!,
                 scrollState = getScrollState("RaidingDetail")
+            )
+
+            // 空袭详情
+            is EditorSubScreen.ParachuteRainDetail -> ParachuteRainEventEP(
+                rtid = targetState.rtid,
+                onBack = { navigateBackToMain() },
+                rootLevelFile = rootLevelFile!!,
+                scrollState = getLazyState(targetState.rtid)
             )
 
             is EditorSubScreen.InvalidEvent -> InvalidEventEP(

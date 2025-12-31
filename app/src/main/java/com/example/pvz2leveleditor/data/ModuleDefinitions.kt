@@ -1,28 +1,19 @@
 package com.example.pvz2leveleditor.data
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.automirrored.filled.FactCheck
+import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.BrightnessHigh
-import androidx.compose.material.icons.filled.Cyclone
 import androidx.compose.material.icons.filled.Dangerous
 import androidx.compose.material.icons.filled.DirectionsWalk
 import androidx.compose.material.icons.filled.Extension
-import androidx.compose.material.icons.filled.FactCheck
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.GppBad
-import androidx.compose.material.icons.filled.Grass
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.HourglassEmpty
-import androidx.compose.material.icons.filled.Icecream
 import androidx.compose.material.icons.filled.LinearScale
 import androidx.compose.material.icons.filled.LocalFlorist
 import androidx.compose.material.icons.filled.MovieFilter
-import androidx.compose.material.icons.filled.PestControl
-import androidx.compose.material.icons.filled.PinDrop
 import androidx.compose.material.icons.filled.Redeem
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Storm
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.Transform
@@ -71,6 +62,7 @@ sealed class EditorSubScreen {
     data class PortalDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class StormDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class RaidingDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class ParachuteRainDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class InvalidEvent(val rtid: String, val waveIndex: Int) : EditorSubScreen()
 }
 
@@ -195,7 +187,25 @@ object EventRegistry {
                     "解析错误"
                 }
             }
-        )
+        ),
+        "ParachuteRainZombieSpawnerProps" to EventMetadata(
+            title = "空降突袭",
+            description = "僵尸依靠降落伞或绳索从天而降",
+            icon = Icons.Default.Air,
+            color = Color(0xFFFF9800),
+            defaultAlias = "ParachuteRainEvent",
+            defaultObjClass = "ParachuteRainZombieSpawnerProps",
+            initialDataFactory = { ParachuteRainEventData() },
+            summaryProvider = { obj ->
+                try {
+                    val gson = com.google.gson.Gson()
+                    val data = gson.fromJson(obj.objData, ParachuteRainEventData::class.java)
+                    "${data.spiderCount} 只空降"
+                } catch (_: Exception) {
+                    "解析错误"
+                }
+            }
+        ),
     )
 
     fun getAll() = registry.values.toList()
@@ -302,7 +312,7 @@ object ModuleRegistry {
             initialDataFactory = { InitialPlantEntryData() },
             navigationFactory = { rtid -> EditorSubScreen.InitialPlantEntry(rtid) }
         ),
-        "InitialZombieEntryProperties" to ModuleMetadata(
+        "InitialZombieProperties" to ModuleMetadata(
             title = "预置僵尸",
             description = "关卡开始时场上已存在的僵尸",
             icon = Icons.Default.DirectionsWalk,
@@ -312,7 +322,7 @@ object ModuleRegistry {
             initialDataFactory = { InitialZombieEntryData() },
             navigationFactory = { rtid -> EditorSubScreen.InitialZombieEntry(rtid) }
         ),
-        "InitialGridItemEntryProperties" to ModuleMetadata(
+        "InitialGridItemProperties" to ModuleMetadata(
             title = "预置障碍物",
             description = "关卡开始时场上已存在的障碍物",
             icon = Icons.Default.Widgets,

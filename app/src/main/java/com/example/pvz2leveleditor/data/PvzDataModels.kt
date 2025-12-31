@@ -286,8 +286,8 @@ data class PortalEventData(
 
 // === 风暴突袭事件 ===
 data class StormZombieSpawnerPropsData(
-    @SerializedName("ColumnEnd") var columnEnd: Int = 9,
     @SerializedName("ColumnStart") var columnStart: Int = 5,
+    @SerializedName("ColumnEnd") var columnEnd: Int = 9,
     @SerializedName("GroupSize") var groupSize: Int = 1,
     @SerializedName("TimeBetweenGroups") var timeBetweenGroups: Int = 1,
     @SerializedName("Type") var type: String = "sandstorm",
@@ -303,6 +303,19 @@ data class RaidingPartyEventData(
     @SerializedName("GroupSize") var groupSize: Int = 5,
     @SerializedName("SwashbucklerCount") var swashbucklerCount: Int = 5,
     @SerializedName("TimeBetweenGroups") var timeBetweenGroups: Int = 2
+)
+
+// === 空降事件 ===
+data class ParachuteRainEventData(
+    @SerializedName("ColumnStart") var columnStart: Int = 5,
+    @SerializedName("ColumnEnd") var columnEnd: Int = 9,
+    @SerializedName("GroupSize") var groupSize: Int = 1,
+    @SerializedName("SpiderCount") var spiderCount: Int = 1,
+    @SerializedName("SpiderZombieName") var spiderZombieName: String = "lostcity_lostpilot",
+    @SerializedName("TimeBeforeFullSpawn") var timeBeforeFullSpawn: Double = 1.0,
+    @SerializedName("TimeBetweenGroups") var timeBetweenGroups: Double = 0.5,
+    @SerializedName("ZombieFallTime") var zombieFallTime: Double = 1.0,
+    @SerializedName("WaveStartMessage") var waveStartMessage: String = ""
 )
 
 // === 传送带变更事件 ===
