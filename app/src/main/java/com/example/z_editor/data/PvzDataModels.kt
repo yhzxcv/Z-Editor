@@ -271,6 +271,63 @@ data class TileLocationData(
     @SerializedName("mY") var my: Int = 0
 )
 
+// === 迷雾模块 ===
+data class WarMistPropertiesData(
+    @SerializedName("m_iInitMistPosX") var initMistPosX: Int = 5,
+    @SerializedName("m_iNormValX") var normValX: Int = 1000,
+    @SerializedName("m_iBloverEffectInterval") var bloverEffectInterval: Int = 15
+)
+
+// === 僵尸药水模块 ===
+data class ZombiePotionModulePropertiesData(
+    @SerializedName("InitialPotionCount") var initialPotionCount: Int = 10,
+    @SerializedName("MaxPotionCount") var maxPotionCount: Int = 60,
+    @SerializedName("PotionSpawnTimer") var potionSpawnTimer: PotionSpawnTimerData = PotionSpawnTimerData(),
+    @SerializedName("PotionTypes") var potionTypes: MutableList<String> = mutableListOf()
+)
+
+data class PotionSpawnTimerData(
+    @SerializedName("Min") var min: Int = 12,
+    @SerializedName("Max") var max: Int = 16
+)
+
+// === 通货膨胀模块 ===
+data class IncreasedCostModulePropertiesData(
+    @SerializedName("BaseCostIncreased") var baseCostIncreased: Int = 25,
+    @SerializedName("MaxIncreasedCount") var maxIncreasedCount: Int = 10
+)
+
+// === 死亡坑洞模块 ===
+data class DeathHoleModuleData(
+    @SerializedName("LifeTime") var lifeTime: Int = 10
+)
+
+// === 加速进场模块 ===
+data class ZombieMoveFastModulePropertiesData(
+    @SerializedName("StopColumn") var stopColumn: Int = 6,
+    @SerializedName("SpeedUp") var speedUp: Double = 3.0
+)
+
+// === 阳光上限覆写 ===
+data class LevelMutatorMaxSunPropsData(
+    @SerializedName("MaxSunOverride") var maxSunOverride: Int = 9900,
+    @SerializedName("DifficultyProps") var difficultyProps: String = "RTID(LevelModuleDifficultyMaxSun@LevelModulesDifficulty)",
+    @SerializedName("IconImage") var iconImage: String = "IMAGE_UI_PENNY_PURSUITS_DIFFICULTY_MODIFIER_ICONS_DIFFICULTY_MODIFIER_STARTING_SUN",
+    @SerializedName("IconText") var iconText: String = "",
+)
+
+// === 初始能量豆覆写 ===
+data class LevelMutatorStartingPlantfoodPropsData(
+    @SerializedName("StartingPlantfoodOverride") var startingPlantfoodOverride: Int = 0,
+    @SerializedName("DifficultyProps") var difficultyProps: String = "RTID(LevelModuleDifficultyStartingPlantfood@LevelModulesDifficulty)",
+    @SerializedName("IconImage") var iconImage: String = "IMAGE_UI_PENNY_PURSUITS_DIFFICULTY_MODIFIER_ICONS_DIFFICULTY_MODIFIER_PF",
+    @SerializedName("IconText") var iconText: String = "",
+)
+
+// === 坚果保龄球配置 ===
+data class BowlingMinigamePropertiesData(
+    @SerializedName("BowlingFoulLine") var bowlingFoulLine: Int = 2
+)
 
 // ======================== 2. 物体属性解析 ========================
 
@@ -465,6 +522,21 @@ data class SpawnZombiesFromGridItemData(
 data class GridItemSpawnerZombieData(
     @SerializedName("Type") var type: String = "",
     @SerializedName("Level") var level: Int = 1
+)
+
+// === 投放药水事件 ===
+data class ZombiePotionActionPropsData(
+    @SerializedName("Potions") var potions: MutableList<ZombiePotionData> = mutableListOf()
+)
+
+data class ZombiePotionData(
+    @SerializedName("Location") var location: PotionLocationData = PotionLocationData(),
+    @SerializedName("Type") var type: String = ""
+)
+
+data class PotionLocationData(
+    @SerializedName("mX") var x: Int = 0,
+    @SerializedName("mY") var y: Int = 0
 )
 
 

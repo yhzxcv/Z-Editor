@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.z_editor.data.EditorSubScreen
 import com.example.z_editor.data.EventMetadata
 import com.example.z_editor.data.ModuleMetadata
+import com.example.z_editor.data.SunDropperPropertiesData
 import com.example.z_editor.data.repository.ChallengeTypeInfo
 
 /**
@@ -54,6 +55,6 @@ data class EditorActions(
     val onSelectorResult: (Any) -> Unit,
     val onSelectorCancel: () -> Unit,
 
-    // 修复 Challenge 选择回调
+    val onToggleSunDropperMode: (Boolean, SunDropperPropertiesData) -> Unit = { _, _ -> },
     val onChallengeSelected: (ChallengeTypeInfo) -> Unit
 )

@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.automirrored.filled.FactCheck
 import androidx.compose.material.icons.automirrored.filled.NextPlan
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.AddRoad
 import androidx.compose.material.icons.filled.AirplanemodeActive
@@ -12,25 +13,28 @@ import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.BrightnessHigh
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Dangerous
+import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.EmojiPeople
 import androidx.compose.material.icons.filled.Extension
+import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.Grid4x4
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.HourglassDisabled
 import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material.icons.filled.LinearScale
 import androidx.compose.material.icons.filled.LocalFlorist
 import androidx.compose.material.icons.filled.MovieFilter
-import androidx.compose.material.icons.filled.NextPlan
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Redeem
+import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Speaker
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.Storm
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.Transform
+import androidx.compose.material.icons.filled.TripOrigin
 import androidx.compose.material.icons.filled.Tsunami
 import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material.icons.filled.Water
@@ -64,6 +68,7 @@ sealed class EditorSubScreen {
     // 具体模块页
     data class LastStandMinigame(val rtid: String) : EditorSubScreen()
     data class SunDropper(val rtid: String) : EditorSubScreen()
+    data class SunBombChallenge(val rtid: String) : EditorSubScreen()
     data class SeedBank(val rtid: String) : EditorSubScreen()
     data class ConveyorBelt(val rtid: String) : EditorSubScreen()
     data class WaveManagerModule(val rtid: String) : EditorSubScreen()
@@ -74,7 +79,15 @@ sealed class EditorSubScreen {
     data class PowerTile(val rtid: String) : EditorSubScreen()
     data class PiratePlank(val rtid: String) : EditorSubScreen()
     data class Tide(val rtid: String) : EditorSubScreen()
-    data class SunBombChallenge(val rtid: String) : EditorSubScreen()
+    data class RainDarkProperties(val rtid: String) : EditorSubScreen()
+    data class WarMistProperties(val rtid: String) : EditorSubScreen()
+    data class ZombiePotionModuleProperties(val rtid: String) : EditorSubScreen()
+    data class IncreasedCostModule(val rtid: String) : EditorSubScreen()
+    data class DeathHoleModule(val rtid: String) : EditorSubScreen()
+    data class ZombieMoveFastModule(val rtid: String) : EditorSubScreen()
+    data class MaxSunModule(val rtid: String) : EditorSubScreen()
+    data class StartingPlantfoodModule(val rtid: String) : EditorSubScreen()
+    data class BowlingMinigameModule(val rtid: String) : EditorSubScreen()
     data class StarChallenge(val rtid: String) : EditorSubScreen()
 
     // 波次事件页
@@ -95,6 +108,7 @@ sealed class EditorSubScreen {
     data class DinoEventDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class SpawnGravestonesDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class GridItemSpawnerDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class ZombiePotionActionDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class InvalidEvent(val rtid: String, val waveIndex: Int) : EditorSubScreen()
 }
 
@@ -297,6 +311,24 @@ object EventRegistry {
                 }
             }
         ),
+        "ZombiePotionActionProps" to EventMetadata(
+            title = "投放药水",
+            description = "在场地固定位置强行生成障碍物",
+            icon = Icons.Default.Science,
+            color = Color(0xFF607D8B),
+            defaultAlias = "PotionEvent",
+            defaultObjClass = "ZombiePotionActionProps",
+            initialDataFactory = { ZombiePotionActionPropsData() },
+            summaryProvider = { obj ->
+                try {
+                    val gson = Gson()
+                    val data = gson.fromJson(obj.objData, ZombiePotionActionPropsData::class.java)
+                    "${data.potions.size} 个"
+                } catch (_: Exception) {
+                    "解析错误"
+                }
+            }
+        ),
         "SpawnGravestonesWaveActionProps" to EventMetadata(
             title = "障碍物生成",
             description = "在场地的空位处生成障碍物",
@@ -450,7 +482,6 @@ data class ModuleMetadata(
  */
 object ModuleRegistry {
 
-    // 默认回退配置 (用于未知模块)
     private val DEFAULT_METADATA = ModuleMetadata(
         title = "未知模块",
         description = "通用参数编辑器",
@@ -525,6 +556,71 @@ object ModuleRegistry {
             defaultSource = "LevelModules",
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
+        "SunDropperProperties" to ModuleMetadata(
+            title = "阳光掉落",
+            description = "控制天上掉落阳光的频率",
+            icon = Icons.Default.WbSunny,
+            isCore = true,
+            category = ModuleCategory.Base,
+            defaultAlias = "DefaultSunDropper",
+            defaultSource = "LevelModules",
+            navigationFactory = { rtid -> EditorSubScreen.SunDropper(rtid) }
+        ),
+        "StarChallengeModuleProperties" to ModuleMetadata(
+            title = "挑战模块",
+            description = "设置关卡的限制条件与挑战目标",
+            icon = Icons.AutoMirrored.Filled.FactCheck,
+            isCore = true,
+            category = ModuleCategory.Base,
+            defaultAlias = "ChallengeModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { StarChallengeModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.StarChallenge(rtid) }
+        ),
+        "SeedBankProperties" to ModuleMetadata(
+            title = "种子库",
+            description = "预设卡槽植物与选卡方式",
+            icon = Icons.Default.Yard,
+            isCore = true,
+            allowMultiple = true,
+            category = ModuleCategory.Base,
+            defaultAlias = "SeedBank",
+            initialDataFactory = { SeedBankData() },
+            navigationFactory = { rtid -> EditorSubScreen.SeedBank(rtid) }
+        ),
+        "ConveyorSeedBankProperties" to ModuleMetadata(
+            title = "传送带",
+            description = "预设传送带植物种类和权重",
+            icon = Icons.Default.LinearScale,
+            isCore = true,
+            allowMultiple = true,
+            category = ModuleCategory.Base,
+            defaultAlias = "ConveyorBelt",
+            initialDataFactory = { ConveyorBeltData() },
+            navigationFactory = { rtid -> EditorSubScreen.ConveyorBelt(rtid) }
+        ),
+        "LevelMutatorMaxSunProps" to ModuleMetadata(
+            title = "阳光上限",
+            description = "覆盖关卡最大阳光存储值",
+            icon = Icons.Default.BrightnessHigh,
+            isCore = true,
+            category = ModuleCategory.Base,
+            defaultAlias = "OverrideMaxSun",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { LevelMutatorMaxSunPropsData() },
+            navigationFactory = { rtid -> EditorSubScreen.MaxSunModule(rtid) }
+        ),
+        "LevelMutatorStartingPlantfoodProps" to ModuleMetadata(
+            title = "初始能量豆",
+            description = "覆盖关卡开始时的能量豆数量",
+            icon = Icons.Default.Eco,
+            isCore = true,
+            category = ModuleCategory.Base,
+            defaultAlias = "OverrideStartingPlantFood",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { LevelMutatorStartingPlantfoodPropsData() },
+            navigationFactory = { rtid -> EditorSubScreen.StartingPlantfoodModule(rtid) }
+        ),
 
         "LastStandMinigameProperties" to ModuleMetadata(
             title = "坚不可摧",
@@ -536,6 +632,17 @@ object ModuleRegistry {
             defaultSource = "CurrentLevel",
             initialDataFactory = { LastStandMinigamePropertiesData() },
             navigationFactory = { rtid -> EditorSubScreen.LastStandMinigame(rtid) }
+        ),
+        "BowlingMinigameProperties" to ModuleMetadata(
+            title = "旧版保龄球",
+            description = "设置禁种线以及禁用铲子",
+            icon = Icons.Default.SportsEsports,
+            isCore = true,
+            category = ModuleCategory.Mode,
+            defaultAlias = "Bowling",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { BowlingMinigamePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.BowlingMinigameModule(rtid) }
         ),
         "VaseBreakerPresetProperties" to ModuleMetadata(
             title = "罐子布局",
@@ -562,7 +669,7 @@ object ModuleRegistry {
         "VaseBreakerFlowModuleProperties" to ModuleMetadata(
             title = "砸罐子流程",
             description = "控制砸罐子的游戏流程与胜负判定逻辑",
-            icon = Icons.Default.NextPlan,
+            icon = Icons.AutoMirrored.Filled.NextPlan,
             isCore = false,
             category = ModuleCategory.Mode,
             defaultAlias = "VaseBreakerFlow",
@@ -581,50 +688,51 @@ object ModuleRegistry {
             initialDataFactory = { EvilDavePropertiesData() },
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
-
-        "SunDropperProperties" to ModuleMetadata(
-            title = "阳光掉落",
-            description = "控制天上掉落阳光的频率",
-            icon = Icons.Default.WbSunny,
-            isCore = true,
-            category = ModuleCategory.Base,
-            defaultAlias = "DefaultSunDropper",
-            defaultSource = "LevelModules",
-            navigationFactory = { rtid -> EditorSubScreen.SunDropper(rtid) }
-        ),
         "SunBombChallengeProperties" to ModuleMetadata(
             title = "太阳炸弹",
             description = "配置掉落的太阳爆炸范围和伤害",
             icon = Icons.Default.BrightnessHigh,
             isCore = true,
-            category = ModuleCategory.Base,
+            category = ModuleCategory.Mode,
             defaultAlias = "SunBombs",
             defaultSource = "CurrentLevel",
             initialDataFactory = { SunBombChallengeData() },
             navigationFactory = { rtid -> EditorSubScreen.SunBombChallenge(rtid) }
         ),
-        "SeedBankProperties" to ModuleMetadata(
-            title = "种子库",
-            description = "预设卡槽植物与选卡方式",
-            icon = Icons.Default.Yard,
+        "IncreasedCostModuleProperties" to ModuleMetadata(
+            title = "通货膨胀",
+            description = "植物阳光价格随种植次数递增",
+            icon = Icons.AutoMirrored.Filled.TrendingUp,
             isCore = true,
-            allowMultiple = true,
-            category = ModuleCategory.Base,
-            defaultAlias = "SeedBank",
-            initialDataFactory = { SeedBankData() },
-            navigationFactory = { rtid -> EditorSubScreen.SeedBank(rtid) }
+            category = ModuleCategory.Mode,
+            defaultAlias = "IncreasedCostModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { IncreasedCostModulePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.IncreasedCostModule(rtid) }
         ),
-        "ConveyorSeedBankProperties" to ModuleMetadata(
-            title = "传送带",
-            description = "预设传送带植物种类和权重",
-            icon = Icons.Default.LinearScale,
+        "DeathHoleModuleProperties" to ModuleMetadata(
+            title = "遗落坑洞",
+            description = "植物消失后留下不可种植的坑洞",
+            icon = Icons.Default.TripOrigin,
             isCore = true,
-            allowMultiple = true,
-            category = ModuleCategory.Base,
-            defaultAlias = "ConveyorBelt",
-            initialDataFactory = { ConveyorBeltData() },
-            navigationFactory = { rtid -> EditorSubScreen.ConveyorBelt(rtid) }
+            category = ModuleCategory.Mode,
+            defaultAlias = "DeathHoleModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { DeathHoleModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.DeathHoleModule(rtid) }
         ),
+        "ZombieMoveFastModuleProperties" to ModuleMetadata(
+            title = "加速进场",
+            description = "僵尸入场时快速移动一段距离",
+            icon = Icons.Default.FastForward,
+            isCore = true,
+            category = ModuleCategory.Mode,
+            defaultAlias = "FastSpeed",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { ZombieMoveFastModulePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.ZombieMoveFastModule(rtid) }
+        ),
+
         "InitialPlantEntryProperties" to ModuleMetadata(
             title = "预置植物",
             description = "关卡开始时场上已存在的植物",
@@ -661,16 +769,17 @@ object ModuleRegistry {
             initialDataFactory = { InitialGridItemEntryData() },
             navigationFactory = { rtid -> EditorSubScreen.InitialGridItemEntry(rtid) }
         ),
-        "StarChallengeModuleProperties" to ModuleMetadata(
-            title = "挑战模块",
-            description = "设置关卡的限制条件与挑战目标",
-            icon = Icons.AutoMirrored.Filled.FactCheck,
+        "ZombiePotionModuleProperties" to ModuleMetadata(
+            title = "僵尸药水",
+            description = "黑暗时代药水自动生成机制配置",
+            icon = Icons.Default.Science,
             isCore = true,
-            category = ModuleCategory.Base,
-            defaultAlias = "ChallengeModule",
+            allowMultiple = true,
+            category = ModuleCategory.Scene,
+            defaultAlias = "ZombiePotions",
             defaultSource = "CurrentLevel",
-            initialDataFactory = { StarChallengeModuleData() },
-            navigationFactory = { rtid -> EditorSubScreen.StarChallenge(rtid) }
+            initialDataFactory = { ZombiePotionModulePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.ZombiePotionModuleProperties(rtid) }
         ),
         "PiratePlankProperties" to ModuleMetadata(
             title = "海盗甲板",
@@ -699,7 +808,6 @@ object ModuleRegistry {
             description = "配置矿车与轨道初始布局",
             icon = Icons.Default.AddRoad,
             isCore = true,
-            allowMultiple = true,
             category = ModuleCategory.Scene,
             defaultAlias = "Railcarts",
             defaultSource = "CurrentLevel",
@@ -711,12 +819,32 @@ object ModuleRegistry {
             description = "配置能量豆联动效果与瓷砖布局",
             icon = Icons.Default.Bolt,
             isCore = true,
-            allowMultiple = true,
             category = ModuleCategory.Scene,
             defaultAlias = "FutureLinkedTileGroups",
             defaultSource = "CurrentLevel",
             initialDataFactory = { PowerTilePropertiesData() },
             navigationFactory = { rtid -> EditorSubScreen.PowerTile(rtid) }
+        ),
+        "RainDarkProperties" to ModuleMetadata(
+            title = "环境天气",
+            description = "设置关卡的雨雪、雷电等环境特效",
+            icon = Icons.Default.AcUnit,
+            isCore = true,
+            category = ModuleCategory.Scene,
+            defaultAlias = "DefaultSnow",
+            defaultSource = "LevelModules",
+            navigationFactory = { rtid -> EditorSubScreen.RainDarkProperties(rtid) }
+        ),
+        "WarMistProperties" to ModuleMetadata(
+            title = "迷雾系统",
+            description = "设置战场迷雾覆盖范围与交互",
+            icon = Icons.Default.Cloud,
+            isCore = true,
+            category = ModuleCategory.Scene,
+            defaultAlias = "WarMist",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { WarMistPropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.WarMistProperties(rtid) }
         ),
 
     )

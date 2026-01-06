@@ -1,4 +1,4 @@
-package com.example.z_editor.views.editor.pages.module
+package com.example.z_editor.views.editor.pages.event
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
@@ -60,12 +60,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.InitialGridItemData
-import com.example.z_editor.data.InitialGridItemEntryData
+import com.example.z_editor.data.PotionLocationData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
+import com.example.z_editor.data.ZombiePotionActionPropsData
+import com.example.z_editor.data.ZombiePotionData
 import com.example.z_editor.data.repository.GridItemRepository
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
@@ -76,7 +78,7 @@ private val gson = Gson()
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InitialGridItemEntryEP(
+fun ZombiePotionActionPropsEP(
     rtid: String,
     onBack: () -> Unit,
     rootLevelFile: PvzLevelFile,
@@ -86,66 +88,61 @@ fun InitialGridItemEntryEP(
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
 
-    // 1. 数据状态初始化
-    val moduleDataState = remember {
+    val themeColor = Color(0xFF607D8B)
+
+    val eventDataState = remember {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
-            gson.fromJson(obj?.objData, InitialGridItemEntryData::class.java)
+            gson.fromJson(obj?.objData, ZombiePotionActionPropsData::class.java)
         } catch (_: Exception) {
-            InitialGridItemEntryData()
+            ZombiePotionActionPropsData()
         }
         mutableStateOf(data)
     }
 
-    // 2. UI 交互状态
     var selectedX by remember { mutableIntStateOf(0) }
     var selectedY by remember { mutableIntStateOf(0) }
 
     fun sync() {
         rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }?.let {
-            it.objData = gson.toJsonTree(moduleDataState.value)
+            it.objData = gson.toJsonTree(eventDataState.value)
         }
     }
 
-    // 3. 排序后的物品列表
-    val sortedItems = remember(moduleDataState.value.placements) {
-        moduleDataState.value.placements.sortedWith(compareBy({ it.gridY }, { it.gridX }))
+    val sortedItems = remember(eventDataState.value.potions) {
+        eventDataState.value.potions.sortedWith(compareBy({ it.location.y }, { it.location.x }))
     }
 
     fun handleSelectItem() {
         onRequestGridItemSelection { typeName ->
-            val newList = moduleDataState.value.placements.toMutableList()
-            val newItem = InitialGridItemData(
-                gridX = selectedX,
-                gridY = selectedY,
-                typeName = typeName
+            val newList = eventDataState.value.potions.toMutableList()
+            val newItem = ZombiePotionData(
+                location = PotionLocationData(x = selectedX, y = selectedY),
+                type = typeName
             )
             newList.add(newItem)
-            moduleDataState.value = moduleDataState.value.copy(placements = newList)
+            eventDataState.value = eventDataState.value.copy(potions = newList)
             sync()
         }
     }
 
-    fun deleteItem(targetItem: InitialGridItemData) {
-        val newList = moduleDataState.value.placements.toMutableList()
+    fun deleteItem(targetItem: ZombiePotionData) {
+        val newList = eventDataState.value.potions.toMutableList()
         newList.remove(targetItem)
-        moduleDataState.value = moduleDataState.value.copy(placements = newList)
+        eventDataState.value = eventDataState.value.copy(potions = newList)
         sync()
     }
 
-    // 障碍物详情弹窗 (删除确认)
-    var itemToDelete by remember { mutableStateOf<InitialGridItemData?>(null) }
+    var itemToDelete by remember { mutableStateOf<ZombiePotionData?>(null) }
 
     if (itemToDelete != null) {
         AlertDialog(
             onDismissRequest = { itemToDelete = null },
-            title = { Text("移除物品") },
+            title = { Text("移除药水") },
             text = {
                 Text(
-                    "确定要移除 R${itemToDelete!!.gridY + 1}:C${itemToDelete!!.gridX + 1} 处的 ${
-                        GridItemRepository.getName(
-                            itemToDelete!!.typeName
-                        )
+                    "确定要移除 R${itemToDelete!!.location.y + 1}:C${itemToDelete!!.location.x + 1} 处的 ${
+                        GridItemRepository.getName(itemToDelete!!.type)
                     } 吗？"
                 )
             },
@@ -169,8 +166,16 @@ fun InitialGridItemEntryEP(
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("场地物品布局", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
+            TopAppBar(title = {
+                Column {
+                    Text("编辑 $currentAlias", fontWeight = FontWeight.Bold, fontSize = 18.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(
+                        "事件类型：药水投放",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Normal
+                    )
+                }
+            },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
@@ -182,7 +187,7 @@ fun InitialGridItemEntryEP(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF795548), // 褐色主题
+                    containerColor = themeColor,
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 )
@@ -191,21 +196,21 @@ fun InitialGridItemEntryEP(
     ) { padding ->
         if (showHelpDialog) {
             EditorHelpDialog(
-                title = "场地物品模块说明",
+                title = "投放药水事件说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF795548)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
-                    body = "用于在关卡开始时在场地上预置墓碑等障碍物或其他事件物品。"
+                    body = "此事件可以在场地上强行生成药水，能无视植物，可以作为障碍物生成事件的替代。"
                 )
                 HelpSection(
-                    title = "格点坐标",
-                    body = "障碍物所在的位置用网格坐标显示，可以在同一个位置堆放多个障碍物。"
+                    title = "生成方式",
+                    body = "与障碍物生成的预选池不同，这个事件能精准地在固定格点强行生成障碍物并挤走植物。"
                 )
                 HelpSection(
-                    title = "莲叶生成",
-                    body = "巨浪沙滩地图的初始莲叶一般是靠初始障碍物设置模块生成的。"
+                    title = "自定义相关",
+                    body = "此事件内使用硬编码的障碍物类型名，只能对少部分预留了接口的障碍物进行自定义。"
                 )
             }
         }
@@ -220,7 +225,6 @@ fun InitialGridItemEntryEP(
                 .fillMaxSize()
                 .background(Color(0xFFF5F5F5))
         ) {
-            // === 区域 1: 网格选择器 (作为列表头，跨满全宽) ===
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(contentAlignment = Alignment.Center) {
                     Card(
@@ -236,17 +240,13 @@ fun InitialGridItemEntryEP(
                                         "R${selectedY + 1} : C${selectedX + 1}",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 20.sp,
-                                        color = Color(0xFF795548)
+                                        color = themeColor
                                     )
                                 }
                                 Spacer(Modifier.weight(1f))
                                 Button(
                                     onClick = { handleSelectItem() },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(
-                                            0xFF795548
-                                        )
-                                    )
+                                    colors = ButtonDefaults.buttonColors(containerColor = themeColor)
                                 ) {
                                     Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
                                     Spacer(Modifier.width(8.dp))
@@ -261,17 +261,17 @@ fun InitialGridItemEntryEP(
                                     .fillMaxWidth()
                                     .aspectRatio(1.8f)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFFD7CCC8))
-                                    .border(1.dp, Color(0xFFA1887F), RoundedCornerShape(6.dp))
+                                    .background(Color(0xFFE8E7F6))
+                                    .border(1.dp, Color(0xFF9DA0DB), RoundedCornerShape(6.dp))
                             ) {
                                 Column(Modifier.fillMaxSize()) {
                                     for (row in 0..4) {
                                         Row(Modifier.weight(1f)) {
                                             for (col in 0..8) {
-                                                val isSelected =
-                                                    (row == selectedY && col == selectedX)
-                                                val cellItems =
-                                                    moduleDataState.value.placements.filter { it.gridX == col && it.gridY == row }
+                                                val isSelected = (row == selectedY && col == selectedX)
+                                                val cellItems = eventDataState.value.potions.filter {
+                                                    it.location.x == col && it.location.y == row
+                                                }
                                                 val count = cellItems.size
                                                 val firstItem = cellItems.firstOrNull()
 
@@ -279,11 +279,10 @@ fun InitialGridItemEntryEP(
                                                     modifier = Modifier
                                                         .weight(1f)
                                                         .fillMaxHeight()
-                                                        .border(0.5.dp, Color(0xFF8D6E63))
+                                                        .border(0.5.dp, Color(0xFF9DA0DB))
                                                         .background(
-                                                            if (isSelected) Color(0xFFEBF13E).copy(
-                                                                alpha = 0.5f
-                                                            ) else Color.Transparent
+                                                            if (isSelected) Color(0xFFEBF13E).copy(alpha = 0.5f)
+                                                            else Color.Transparent
                                                         )
                                                         .clickable {
                                                             selectedX = col
@@ -292,7 +291,7 @@ fun InitialGridItemEntryEP(
                                                     contentAlignment = Alignment.Center
                                                 ) {
                                                     if (count > 0 && firstItem != null) {
-                                                        GridItemIconSmall(firstItem.typeName)
+                                                        PotionIconSmall(firstItem.type)
                                                         if (count > 1) {
                                                             Box(
                                                                 modifier = Modifier
@@ -324,7 +323,7 @@ fun InitialGridItemEntryEP(
                 }
             }
 
-            // === 区域 2: 标题 (作为列表头，跨满全宽) ===
+            // === 区域 2: 标题 ===
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
                     "物品分布列表 (行优先排序)",
@@ -335,14 +334,14 @@ fun InitialGridItemEntryEP(
                 )
             }
 
-            // === 区域 3: 物品列表 (正常的 Grid Items) ===
+            // === 区域 3: 物品列表 ===
             items(sortedItems) { item ->
-                GridItemCard(
+                PotionItemCard(
                     item = item,
-                    isSelected = (item.gridX == selectedX && item.gridY == selectedY),
+                    isSelected = (item.location.x == selectedX && item.location.y == selectedY),
                     onClick = {
-                        selectedX = item.gridX
-                        selectedY = item.gridY
+                        selectedX = item.location.x
+                        selectedY = item.location.y
                     },
                     onDelete = { itemToDelete = item }
                 )
@@ -352,26 +351,21 @@ fun InitialGridItemEntryEP(
 }
 
 @Composable
-fun GridItemIconSmall(typeName: String) {
+fun PotionIconSmall(typeName: String) {
     val iconPath = remember(typeName) { GridItemRepository.getIconPath(typeName) }
-
     val cardShape = RoundedCornerShape(3.dp)
 
     if (iconPath != null) {
         AssetImage(
             path = iconPath,
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize(0.9f)
-                .clip(cardShape),
+            modifier = Modifier.fillMaxSize(0.9f).clip(cardShape),
             contentScale = ContentScale.Fit,
             filterQuality = FilterQuality.Low
         )
     } else {
         Box(
-            modifier = Modifier
-                .fillMaxSize(0.8f)
-                .background(Color(0xFF795648), cardShape),
+            modifier = Modifier.fillMaxSize(0.8f).background(Color(0xFF3A47B7), cardShape),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -385,8 +379,8 @@ fun GridItemIconSmall(typeName: String) {
 }
 
 @Composable
-fun GridItemCard(
-    item: InitialGridItemData,
+fun PotionItemCard(
+    item: ZombiePotionData,
     isSelected: Boolean,
     onClick: () -> Unit,
     onDelete: () -> Unit
@@ -394,17 +388,18 @@ fun GridItemCard(
     Card(
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFFFFF9C4) else Color.White
+            containerColor = if (isSelected) Color(0xFFE3E4F3) else Color.White
         ),
-        border = if (isSelected) BorderStroke(1.dp, Color(0xFFFBC02D)) else null,
+        border = if (isSelected) BorderStroke(1.dp, Color(0xFF3A48B9)) else null,
         elevation = CardDefaults.cardElevation(1.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = GridItemRepository.getName(item.typeName),
+                    text = GridItemRepository.getName(item.type),
                     fontSize = 14.sp,
-                    maxLines = 1
+                    maxLines = 1,
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) {
@@ -420,24 +415,20 @@ fun GridItemCard(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 AssetImage(
-                    path = GridItemRepository.getIconPath(item.typeName),
-                    contentDescription = item.typeName,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .size(36.dp),
+                    path = GridItemRepository.getIconPath(item.type),
+                    contentDescription = item.type,
+                    modifier = Modifier.clip(RoundedCornerShape(8.dp)).size(36.dp),
                     filterQuality = FilterQuality.Medium,
                     placeholder = {
                         Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color(0xFFF5EEE8)),
+                            modifier = Modifier.fillMaxSize().background(Color(0xFFEFEFF8)),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = item.typeName.take(1),
+                                text = item.type.take(1),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF795548)
+                                color = Color(0xFF3A47B7)
                             )
                         }
                     }
@@ -446,10 +437,10 @@ fun GridItemCard(
                 Spacer(Modifier.width(8.dp))
 
                 Text(
-                    text = "R${item.gridY + 1}:C${item.gridX + 1}",
+                    text = "R${item.location.y + 1}:C${item.location.x + 1}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color(0xFF5D4037)
+                    color = Color(0xFF3A47B7)
                 )
             }
         }

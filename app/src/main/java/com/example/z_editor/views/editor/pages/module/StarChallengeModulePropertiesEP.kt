@@ -138,11 +138,6 @@ fun StarChallengeModulePropertiesEP(
             innerList.removeAt(index)
             syncMainModule()
 
-            val rtidInfo = RtidParser.parse(challengeRtid)
-            if (rtidInfo?.source == "CurrentLevel") {
-                val alias = rtidInfo.alias
-                val removed = rootLevelFile.objects.removeAll { it.aliases?.contains(alias) == true }
-            }
             refreshTrigger++
         }
     }
@@ -623,6 +618,7 @@ fun PlantSurviveEditDialog(
                 Text("需要指定数量的植物在游戏结束时存活", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
+                    color = Color(0xFFFF9800),
                     value = count,
                     onValueChange = { count = it },
                     label = "存活数量 (Count)",
@@ -789,6 +785,7 @@ fun SunProducedEditDialog(
                 Text("关卡结束前生产一定数量阳光", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
+                    color = Color(0xFFFF9800),
                     value = targetSun,
                     onValueChange = { targetSun = it },
                     label = "目标阳光 (TargetSun)",
@@ -835,6 +832,7 @@ fun SunUsedEditDialog(
                 Text("关卡中阳光的限额使用", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
+                    color = Color(0xFFFF9800),
                     value = maximumSun,
                     onValueChange = { maximumSun = it },
                     label = "阳光限额 (MaximumSun)",
@@ -881,6 +879,7 @@ fun SpendSunHoldoutEditDialog(
                 Text("保持一段时间不使用阳光", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
+                    color = Color(0xFFFF9800),
                     value = holdoutSeconds,
                     onValueChange = { holdoutSeconds = it },
                     label = "保持时间 (HoldoutSeconds)",
@@ -928,6 +927,7 @@ fun KillZombiesEditDialog(
                 Text("在一定时间内消灭指定数量僵尸", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
+                    color = Color(0xFFFF9800),
                     value = zombiesToKill,
                     onValueChange = { zombiesToKill = it },
                     label = "击杀个数 (ZombiesToKill)",
@@ -936,6 +936,7 @@ fun KillZombiesEditDialog(
 
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
+                    color = Color(0xFFFF9800),
                     value = time,
                     onValueChange = { time = it },
                     label = "时间限制 (Time)",
@@ -1138,6 +1139,7 @@ fun SimultaneousPlantsEditDialog(
                 Text("限制所有植物同时在场的数量", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
+                    color = Color(0xFFFF9800),
                     value = maximumPlants,
                     onValueChange = { maximumPlants = it },
                     label = "种植上限 (MaximumPlants)",
@@ -1184,6 +1186,7 @@ fun UnfreezePlantsEditDialog(
                 Text("解冻一定数量的植物", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
+                    color = Color(0xFFFF9800),
                     value = count,
                     onValueChange = { count = it },
                     label = "解冻数量 (Count)",
@@ -1230,6 +1233,7 @@ fun BlowZombieEditDialog(
                 Text("吹飞一定数量的僵尸", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
+                    color = Color(0xFFFF9800),
                     value = count,
                     onValueChange = { count = it },
                     label = "吹飞数量 (Count)",

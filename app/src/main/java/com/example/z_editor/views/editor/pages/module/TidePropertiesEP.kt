@@ -69,6 +69,8 @@ fun TidePropertiesEP(
     var showHelpDialog by remember { mutableStateOf(false) }
     val currentAlias = RtidParser.parse(rtid)?.alias ?: "Tide"
 
+    val themeColor = Color(0xFF00ACC1)
+
     // 数据状态
     val dataState = remember {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
@@ -117,7 +119,7 @@ fun TidePropertiesEP(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF00ACC1),
+                    containerColor = themeColor,
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 )
@@ -128,7 +130,7 @@ fun TidePropertiesEP(
             EditorHelpDialog(
                 title = "潮水模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF00ACC1)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -160,7 +162,7 @@ fun TidePropertiesEP(
                     Text(
                         text = "初始潮水配置",
                         style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFF00ACC1),
+                        color = themeColor,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -173,6 +175,7 @@ fun TidePropertiesEP(
                             dataState.value = dataState.value.copy(startingWaveLocation = it)
                             sync()
                         },
+                        color = themeColor,
                         label = "初始位置 (StartingWaveLocation)",
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -193,7 +196,7 @@ fun TidePropertiesEP(
                         Text(
                             text = "潮水位置预览",
                             style = MaterialTheme.typography.titleMedium,
-                            color = Color(0xFF00ACC1),
+                            color = themeColor,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -285,14 +288,14 @@ fun TidePropertiesEP(
                     Icon(
                         Icons.Outlined.Info,
                         null,
-                        tint = Color(0xFF00ACC1),
+                        tint = themeColor,
                         modifier = Modifier.width(24.dp)
                     )
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
                             text = "场地最右边坐标为0，最左边为9，可以输入负数让潮水初始位置在场外。",
-                            color = Color(0xFF00ACC1),
+                            color = themeColor,
                             fontSize = 12.sp,
                             lineHeight = 16.sp
                         )

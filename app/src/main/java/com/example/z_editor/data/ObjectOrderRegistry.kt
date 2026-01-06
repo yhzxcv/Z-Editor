@@ -1,7 +1,6 @@
 package com.example.z_editor.data
 
 object ObjectOrderRegistry {
-    // 定义排序优先级列表，越靠前越优先写入文件
     private val ORDER_LIST = listOf(
         "LevelDefinition",
 
@@ -16,6 +15,12 @@ object ObjectOrderRegistry {
         "TideProperties",
         "RailcartProperties",
         "PowerTileProperties",
+        "ZombiePotionModuleProperties",
+        "WarMistProperties",
+        "RainDarkProperties",
+        "ZombieMoveFastModuleProperties",
+        "IncreasedCostModuleProperties",
+        "DeathHoleModuleProperties",
 
         "InitialPlantEntryProperties",
         "InitialZombieProperties",
@@ -50,29 +55,29 @@ object ObjectOrderRegistry {
 
         "SpawnZombiesJitteredWaveActionProps",
         "SpawnZombiesFromGroundSpawnerProps",
+        "SpawnZombiesFromGridItemSpawnerProps",
+        "BeachStageEventZombieSpawnerProps",
 
         "StormZombieSpawnerProps",
         "RaidingPartyZombieSpawnerProps",
-        "SpawnModernPortalsWaveActionProps",
 
         "SpiderRainZombieSpawnerProps",
         "ParachuteRainZombieSpawnerProps",
         "BassRainZombieSpawnerProps",
 
+        "SpawnModernPortalsWaveActionProps",
         "FrostWindWaveActionProps",
         "DinoWaveActionProps",
 
         "TidalChangeWaveActionProps",
-        "BeachStageEventZombieSpawnerProps",
-
         "BlackHoleWaveActionProps",
 
+        "ZombiePotionActionProps",
         "SpawnGravestonesWaveActionProps",
 
         "ModifyConveyorWaveActionProps",
     )
 
-    // 为了性能，转为 Map 加速查找
     private val ORDER_MAP: Map<String, Int> = ORDER_LIST.withIndex().associate { it.value to it.index }
 
     /**

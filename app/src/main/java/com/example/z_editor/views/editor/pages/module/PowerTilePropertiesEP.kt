@@ -26,7 +26,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -72,13 +71,12 @@ enum class PowerTileGroup(
     val value: String,
     val label: String,
     val color: Color,
-    val symbol: String,
     val imageName: String
 ) {
-    Alpha("alpha", "Alpha (绿)", Color(0xFF41FF4B), "α", "alpha_tile.webp"),
-    Beta("beta", "Beta (红)", Color(0xFFFF493A), "β", "beta_tile.webp"),
-    Gamma("gamma", "Gamma (蓝)", Color(0xFF3CFFFF), "γ", "gamma_tile.webp"),
-    Delta("delta", "Delta (黄)", Color(0xFFFFE837), "δ", "delta_tile.webp")
+    Alpha("alpha", "Alpha (绿)", Color(0xFF41FF4B), "alpha_tile.webp"),
+    Beta("beta", "Beta (红)", Color(0xFFFF493A), "beta_tile.webp"),
+    Gamma("gamma", "Gamma (蓝)", Color(0xFF3CFFFF), "gamma_tile.webp"),
+    Delta("delta", "Delta (黄)", Color(0xFFFFE837), "delta_tile.webp")
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -283,6 +281,7 @@ fun PowerTilePropertiesEP(
                     Spacer(Modifier.height(16.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         NumberInputDouble(
+                            color = Color(0xFF009688),
                             value = globalDelayInput,
                             onValueChange = { globalDelayInput = it },
                             label = "新放置瓷砖的默认延迟 (Delay)",

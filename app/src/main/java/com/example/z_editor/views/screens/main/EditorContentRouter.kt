@@ -29,20 +29,30 @@ import com.example.z_editor.views.editor.pages.event.SpawnZombiesJitteredWaveAct
 import com.example.z_editor.views.editor.pages.event.SpiderRainEventEP
 import com.example.z_editor.views.editor.pages.event.StormZombieSpawnerPropsEP
 import com.example.z_editor.views.editor.pages.event.TidalChangeEventEP
+import com.example.z_editor.views.editor.pages.event.ZombiePotionActionPropsEP
+import com.example.z_editor.views.editor.pages.module.BowlingMinigamePropertiesEP
 import com.example.z_editor.views.editor.pages.module.ConveyorSeedBankPropertiesEP
+import com.example.z_editor.views.editor.pages.module.DeathHoleModuleEP
+import com.example.z_editor.views.editor.pages.module.IncreasedCostModulePropertiesEP
 import com.example.z_editor.views.editor.pages.module.InitialGridItemEntryEP
 import com.example.z_editor.views.editor.pages.module.InitialPlantEntryEP
 import com.example.z_editor.views.editor.pages.module.InitialZombieEntryEP
 import com.example.z_editor.views.editor.pages.module.LastStandMinigamePropertiesEP
+import com.example.z_editor.views.editor.pages.module.LevelMutatorMaxSunPropsEP
+import com.example.z_editor.views.editor.pages.module.LevelMutatorStartingPlantfoodPropsEP
 import com.example.z_editor.views.editor.pages.module.PiratePlankPropertiesEP
 import com.example.z_editor.views.editor.pages.module.PowerTilePropertiesEP
 import com.example.z_editor.views.editor.pages.module.RailcartPropertiesEP
+import com.example.z_editor.views.editor.pages.module.RainDarkPropertiesEP
 import com.example.z_editor.views.editor.pages.module.SeedBankPropertiesEP
 import com.example.z_editor.views.editor.pages.module.StarChallengeModulePropertiesEP
 import com.example.z_editor.views.editor.pages.module.SunBombChallengePropertiesEP
 import com.example.z_editor.views.editor.pages.module.SunDropperPropertiesEP
 import com.example.z_editor.views.editor.pages.module.TidePropertiesEP
+import com.example.z_editor.views.editor.pages.module.WarMistPropertiesEP
 import com.example.z_editor.views.editor.pages.module.WaveManagerModulePropertiesEP
+import com.example.z_editor.views.editor.pages.module.ZombieMoveFastModulePropertiesEP
+import com.example.z_editor.views.editor.pages.module.ZombiePotionModulePropertiesEP
 import com.example.z_editor.views.editor.pages.others.LevelDefinitionEP
 import com.example.z_editor.views.editor.pages.others.UnknownEP
 import com.example.z_editor.views.editor.pages.others.WaveManagerPropertiesEP
@@ -50,13 +60,13 @@ import com.example.z_editor.views.editor.tabs.IZombieTab
 import com.example.z_editor.views.editor.tabs.LevelSettingsTab
 import com.example.z_editor.views.editor.tabs.VaseBreakerTab
 import com.example.z_editor.views.editor.tabs.WaveTimelineTab
+import com.example.z_editor.views.screens.select.ChallengeSelectionScreen
 import com.example.z_editor.views.screens.select.EventSelectionScreen
 import com.example.z_editor.views.screens.select.GridItemSelectionScreen
 import com.example.z_editor.views.screens.select.ModuleSelectionScreen
 import com.example.z_editor.views.screens.select.PlantSelectionScreen
 import com.example.z_editor.views.screens.select.StageSelectionScreen
 import com.example.z_editor.views.screens.select.ZombieSelectionScreen
-import com.example.z_editor.views.screens.select.ChallengeSelectionScreen
 
 /**
  * 路由分发器：只负责根据 targetState 渲染对应的页面
@@ -199,6 +209,10 @@ fun EditorContentRouter(
                                         waveIdx
                                     )
 
+                                    "ZombiePotionActionProps" -> EditorSubScreen.ZombiePotionActionDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
 
                                     else -> EditorSubScreen.UnknownDetail(rtid)
                                 }
@@ -221,7 +235,6 @@ fun EditorContentRouter(
                 EditorTabType.VaseBreaker -> {
                     VaseBreakerTab(
                         rootLevelFile = rootLevelFile,
-                        objectMap = parsedData.objectMap,
                         onRequestPlantSelection = actions.onLaunchPlantSelector,
                         onRequestZombieSelection = actions.onLaunchZombieSelector,
                         scrollState = getLazyState("VaseBreakerTab"),
@@ -281,15 +294,14 @@ fun EditorContentRouter(
         is EditorSubScreen.SunDropper -> SunDropperPropertiesEP(
             rtid = targetState.rtid,
             rootLevelFile = rootLevelFile,
-            levelDef = parsedData.levelDef!!,
             onBack = actions.navigateBack,
+            onToggleMode = actions.onToggleSunDropperMode,
             scrollState = getScrollState("SunDropper")
         )
 
         is EditorSubScreen.SeedBank -> SeedBankPropertiesEP(
             rtid = targetState.rtid,
             rootLevelFile = rootLevelFile,
-            levelDef = parsedData.levelDef!!,
             onBack = actions.navigateBack,
             onRequestPlantSelection = actions.onLaunchPlantSelector,
             onRequestZombieSelection = actions.onLaunchZombieSelector,
@@ -299,7 +311,6 @@ fun EditorContentRouter(
         is EditorSubScreen.ConveyorBelt -> ConveyorSeedBankPropertiesEP(
             rtid = targetState.rtid,
             rootLevelFile = rootLevelFile,
-            levelDef = parsedData.levelDef!!,
             onBack = actions.navigateBack,
             onRequestPlantSelection = actions.onLaunchPlantSelector,
             scrollState = getScrollState("ConveyorBelt")
@@ -309,24 +320,21 @@ fun EditorContentRouter(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
-            onRequestPlantSelection = actions.onLaunchPlantSelector,
-            scrollState = getScrollState("InitialPlant")
+            onRequestPlantSelection = actions.onLaunchPlantSelector
         )
 
         is EditorSubScreen.InitialZombieEntry -> InitialZombieEntryEP(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
-            onRequestZombieSelection = actions.onLaunchZombieSelector,
-            scrollState = getScrollState("InitialZombie")
+            onRequestZombieSelection = actions.onLaunchZombieSelector
         )
 
         is EditorSubScreen.InitialGridItemEntry -> InitialGridItemEntryEP(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
-            onRequestGridItemSelection = actions.onLaunchGridItemSelector,
-            scrollState = getScrollState("InitialGridItem")
+            onRequestGridItemSelection = actions.onLaunchGridItemSelector
         )
 
         is EditorSubScreen.SunBombChallenge -> SunBombChallengePropertiesEP(
@@ -385,6 +393,70 @@ fun EditorContentRouter(
             onBack = actions.navigateBack,
             onRequestZombieSelection = actions.onLaunchZombieSelector,
             scrollState = getScrollState("WaveManagerModule")
+        )
+
+        is EditorSubScreen.RainDarkProperties -> RainDarkPropertiesEP(
+            currentRtid = targetState.rtid,
+            levelDef = parsedData.levelDef!!,
+            onBack = actions.navigateBack,
+            onUpdate = actions.onWavesChanged
+        )
+
+        is EditorSubScreen.WarMistProperties -> WarMistPropertiesEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getScrollState("WarMistProperties")
+        )
+
+        is EditorSubScreen.ZombiePotionModuleProperties -> ZombiePotionModulePropertiesEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onRequestGridItemSelection = actions.onLaunchGridItemSelector,
+            scrollState = getScrollState("ZombiePotionModuleProperties")
+        )
+
+        is EditorSubScreen.IncreasedCostModule -> IncreasedCostModulePropertiesEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getScrollState("IncreasedCostModule")
+        )
+
+        is EditorSubScreen.DeathHoleModule -> DeathHoleModuleEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getScrollState("DeathHoleModule")
+        )
+
+        is EditorSubScreen.ZombieMoveFastModule -> ZombieMoveFastModulePropertiesEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getScrollState("ZombieMoveFastModule")
+        )
+
+        is EditorSubScreen.MaxSunModule -> LevelMutatorMaxSunPropsEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getScrollState("MaxSunModule")
+        )
+
+        is EditorSubScreen.StartingPlantfoodModule -> LevelMutatorStartingPlantfoodPropsEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getScrollState("StartingPlantfoodModule")
+        )
+
+        is EditorSubScreen.BowlingMinigameModule -> BowlingMinigamePropertiesEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getScrollState("BowlingMinigameModule")
         )
 
         is EditorSubScreen.UnknownDetail -> UnknownEP(
@@ -515,6 +587,13 @@ fun EditorContentRouter(
             onRequestZombieSelection = actions.onLaunchZombieSelector,
             onRequestGridItemSelection = actions.onLaunchGridItemSelector,
             scrollState = getLazyState(targetState.rtid)
+        )
+
+        is EditorSubScreen.ZombiePotionActionDetail -> ZombiePotionActionPropsEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onRequestGridItemSelection = actions.onLaunchGridItemSelector
         )
 
         is EditorSubScreen.InvalidEvent -> InvalidEventEP(

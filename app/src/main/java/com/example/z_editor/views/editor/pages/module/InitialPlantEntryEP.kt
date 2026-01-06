@@ -86,8 +86,7 @@ fun InitialPlantEntryEP(
     rtid: String,
     onBack: () -> Unit,
     rootLevelFile: PvzLevelFile,
-    onRequestPlantSelection: ((String) -> Unit) -> Unit,
-    scrollState: ScrollState
+    onRequestPlantSelection: ((String) -> Unit) -> Unit
 ) {
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current

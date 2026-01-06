@@ -83,7 +83,6 @@ private val gson = Gson()
 fun ConveyorSeedBankPropertiesEP(
     rtid: String,
     rootLevelFile: PvzLevelFile,
-    levelDef: LevelDefinitionData,
     onBack: () -> Unit,
     onRequestPlantSelection: ((String) -> Unit) -> Unit,
     scrollState: ScrollState

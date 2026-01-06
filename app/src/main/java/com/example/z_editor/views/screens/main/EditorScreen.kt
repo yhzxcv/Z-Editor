@@ -513,6 +513,48 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                 refreshTrigger++
             },
 
+            onToggleSunDropperMode = { enableCustom, currentData ->
+                val levelDef = parsedData!!.levelDef!!
+                val objects = rootLevelFile!!.objects
+
+                val moduleIndex = levelDef.modules.indexOfFirst { rtid ->
+                    val alias = RtidParser.parse(rtid)?.alias ?: ""
+                    val objClass = parsedData!!.objectMap[alias]?.objClass
+                        ?: ReferenceRepository.getObjClass(alias)
+                    objClass == "SunDropperProperties"
+                }
+                val alias = "DefaultSunDropper"
+
+                val targetRtid: String
+
+                if (enableCustom) {
+                    targetRtid = RtidParser.build(alias, "CurrentLevel")
+                    if (moduleIndex != -1) levelDef.modules[moduleIndex] = targetRtid
+                    else levelDef.modules.add(targetRtid)
+
+                    val existingObj = objects.find { it.aliases?.contains(alias) == true }
+                    if (existingObj == null) {
+                        val newObj = PvzObject(
+                            aliases = listOf(alias),
+                            objClass = "SunDropperProperties",
+                            objData = gson.toJsonTree(currentData)
+                        )
+                        objects.add(newObj)
+                    }
+
+                } else {
+                    targetRtid = RtidParser.build(alias, "LevelModules")
+                    if (moduleIndex != -1) levelDef.modules[moduleIndex] = targetRtid
+                    objects.removeAll { it.aliases?.contains(alias) == true }
+                }
+
+                val newObjectMap = objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
+                parsedData = parsedData!!.copy(objectMap = newObjectMap)
+
+                refreshTrigger++
+                currentSubScreen = EditorSubScreen.SunDropper(targetRtid)
+            },
+
             // --- 选择器逻辑 ---
             onLaunchPlantSelector = { cb ->
                 previousSubScreen = currentSubScreen; genericSelectionCallback =
@@ -582,7 +624,11 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
         AnimatedContent(
             targetState = currentSubScreen,
             label = "Nav",
+            contentKey = { targetState -> targetState::class },
             transitionSpec = {
+                if (initialState::class == targetState::class) {
+                    androidx.compose.animation.EnterTransition.None togetherWith androidx.compose.animation.ExitTransition.None
+                }
                 if (targetState == EditorSubScreen.PlantSelection || targetState == EditorSubScreen.ZombieSelection
                     || targetState == EditorSubScreen.StageSelection || targetState == EditorSubScreen.GridItemSelection
                     || targetState == EditorSubScreen.ChallengeSelection

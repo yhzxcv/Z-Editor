@@ -49,11 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.LevelDefinitionData
 import com.example.z_editor.data.PvzLevelFile
-import com.example.z_editor.data.PvzObject
-import com.example.z_editor.data.RailcartPropertiesData
-import com.example.z_editor.data.repository.ReferenceRepository
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.SunDropperPropertiesData
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
@@ -67,41 +63,42 @@ private val gson = Gson()
 fun SunDropperPropertiesEP(
     rtid: String,
     rootLevelFile: PvzLevelFile,
-    levelDef: LevelDefinitionData,
+    onToggleMode: (Boolean, SunDropperPropertiesData) -> Unit,
     onBack: () -> Unit,
     scrollState: ScrollState
 ) {
-    val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
 
-    val sunDataState = remember {
-        val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
+    val rtidInfo = remember(rtid) { RtidParser.parse(rtid) }
+    val currentAlias = rtidInfo?.alias ?: "DefaultSunDropper"
+    val isCustomMode = rtidInfo?.source == "CurrentLevel"
+
+    val sunDataState = remember(rtid) {
+        val obj = if (isCustomMode) {
+            rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
+        } else null
+
         val data = try {
-            gson.fromJson(obj?.objData, SunDropperPropertiesData::class.java)
+            if (obj != null) gson.fromJson(obj.objData, SunDropperPropertiesData::class.java)
+            else SunDropperPropertiesData()
         } catch (_: Exception) {
             SunDropperPropertiesData()
         }
         mutableStateOf(data)
     }
 
-    val sunModuleIndex = remember(levelDef.modules) {
-        levelDef.modules.indexOfFirst { rtid ->
-            val alias = RtidParser.parse(rtid)?.alias ?: ""
-            ReferenceRepository.getObjClass(alias) == "SunDropperProperties" ||
-                    rootLevelFile.objects.find { it.aliases?.contains(alias) == true }?.objClass == "SunDropperProperties"
+    fun syncData() {
+        if (isCustomMode) {
+            rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }?.let {
+                it.objData = gson.toJsonTree(sunDataState.value)
+            }
         }
-    }
-    var isCustomMode by remember {
-        val currentRtid = if (sunModuleIndex != -1) levelDef.modules[sunModuleIndex] else ""
-        mutableStateOf(RtidParser.parse(currentRtid)?.source == "CurrentLevel")
     }
 
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures(onTap = {
-                focusManager.clearFocus()
-            })
+            detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
             TopAppBar(
@@ -117,7 +114,7 @@ fun SunDropperPropertiesEP(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1976D2),
+                    containerColor = Color(0xFFFF9800),
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 )
@@ -125,25 +122,11 @@ fun SunDropperPropertiesEP(
         }
     ) { padding ->
         if (showHelpDialog) {
-            EditorHelpDialog(
-                title = "阳光掉落模块说明",
-                onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF1976D2)
-            ) {
-                HelpSection(
-                    title = "简要介绍",
-                    body = "本模块用于控制天降阳光模块，黑夜地图或传送带等不需要掉落阳光的地图可用直接删除本模块。"
-                )
-                HelpSection(
-                    title = "本地参数",
-                    body = "常规关卡中掉落的参数写在LevelModules文件内，这里通过自定义注入的方式将属性参数改为CurrentLevel，即关卡内部。"
-                )
-                HelpSection(
-                    title = "参数调节",
-                    body = "两次阳光的掉落间隔会在当前间隔加上浮动范围内随机选择。常规关卡阳光掉落的间隔会随着游戏的推移越来越慢，是由单次增加间隔决定的。"
-                )
+            EditorHelpDialog(title = "阳光掉落说明", onDismiss = { showHelpDialog = false }) {
+                HelpSection("模式说明", "默认模式引用系统配置；自定义模式会在关卡内生成独立配置对象。")
             }
         }
+
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -152,38 +135,35 @@ fun SunDropperPropertiesEP(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // === 模式切换卡片 ===
             Card(
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Row(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(),
+                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.WbSunny, null, tint = Color(0xFF1976D2))
+                    Icon(Icons.Default.WbSunny, null, tint = Color(0xFFFF9800))
                     Spacer(Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text("自定义本地参数", fontWeight = FontWeight.Bold)
                         Text(
-                            text = if (isCustomMode) "使用 @CurrentLevel (本地编辑)" else "使用 @LevelModules (系统默认)",
-                            fontSize = 12.sp,
-                            color = Color.Gray
+                            text = if (isCustomMode) "当前: 本地编辑 (@CurrentLevel)" else "当前: 系统默认 (@LevelModules)",
+                            fontSize = 12.sp, color = Color.Gray
                         )
                     }
                     Switch(
                         checked = isCustomMode,
                         onCheckedChange = { checked ->
-                            isCustomMode = checked
-                            handleSunModeToggle(
-                                checked, sunModuleIndex, levelDef, rootLevelFile, sunDataState.value
-                            )
+                            // [关键修复] 直接调用回调，不在此处修改数据结构
+                            onToggleMode(checked, sunDataState.value)
                         }
                     )
                 }
             }
 
+            // === 参数编辑区域 ===
             AnimatedVisibility(
                 visible = isCustomMode,
                 enter = expandVertically() + fadeIn(),
@@ -195,107 +175,37 @@ fun SunDropperPropertiesEP(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text("参数调节", color = Color(0xFF1976D2), fontWeight = FontWeight.Bold)
+                    Text("参数调节", color = Color(0xFFFF9800), fontWeight = FontWeight.Bold)
 
-                    SunParamInput(
-                        "首次掉落延迟 (InitialSunDropDelay)",
-                        sunDataState.value.initialSunDropDelay
-                    ) {
+                    SunParamInput("首次掉落延迟", sunDataState.value.initialSunDropDelay) {
                         sunDataState.value = sunDataState.value.copy(initialSunDropDelay = it)
-                        syncDataToRoot(rootLevelFile, currentAlias, sunDataState.value)
+                        syncData()
                     }
-                    SunParamInput(
-                        "初始掉落间隔 (SunCountdownBase)",
-                        sunDataState.value.sunCountdownBase
-                    ) {
+                    SunParamInput("初始掉落间隔", sunDataState.value.sunCountdownBase) {
                         sunDataState.value = sunDataState.value.copy(sunCountdownBase = it)
-                        syncDataToRoot(rootLevelFile, currentAlias, sunDataState.value)
+                        syncData()
                     }
-                    SunParamInput(
-                        "最大掉落间隔 (SunCountdownMax)",
-                        sunDataState.value.sunCountdownMax
-                    ) {
+                    SunParamInput("最大掉落间隔", sunDataState.value.sunCountdownMax) {
                         sunDataState.value = sunDataState.value.copy(sunCountdownMax = it)
-                        syncDataToRoot(rootLevelFile, currentAlias, sunDataState.value)
+                        syncData()
                     }
-                    SunParamInput(
-                        "间隔浮动范围 (SunCountdownRange)",
-                        sunDataState.value.sunCountdownRange
-                    ) {
+                    SunParamInput("间隔浮动范围", sunDataState.value.sunCountdownRange) {
                         sunDataState.value = sunDataState.value.copy(sunCountdownRange = it)
-                        syncDataToRoot(rootLevelFile, currentAlias, sunDataState.value)
+                        syncData()
                     }
-                    SunParamInput(
-                        "单次增加间隔 (sunCountdownIncreasePerSun)",
-                        sunDataState.value.sunCountdownIncreasePerSun
-                    ) {
-                        sunDataState.value =
-                            sunDataState.value.copy(sunCountdownIncreasePerSun = it)
-                        syncDataToRoot(rootLevelFile, currentAlias, sunDataState.value)
+                    SunParamInput("单次增加间隔", sunDataState.value.sunCountdownIncreasePerSun) {
+                        sunDataState.value = sunDataState.value.copy(sunCountdownIncreasePerSun = it)
+                        syncData()
                     }
                 }
             }
-
         }
     }
 }
 
-/**
- * 核心逻辑：处理开关切换
- */
-private fun handleSunModeToggle(
-    enableCustom: Boolean,
-    moduleIndex: Int,
-    levelDef: LevelDefinitionData,
-    rootLevelFile: PvzLevelFile,
-    data: SunDropperPropertiesData
-) {
-    if (enableCustom) {
-        val alias = if (moduleIndex != -1) RtidParser.parse(levelDef.modules[moduleIndex])?.alias
-            ?: "DefaultSunDropper" else "DefaultSunDropper"
-        val newRtid = RtidParser.build(alias, "CurrentLevel")
-
-        if (moduleIndex != -1) levelDef.modules[moduleIndex] = newRtid
-        else levelDef.modules.add(newRtid)
-
-        val existing = rootLevelFile.objects.find { it.aliases?.contains(alias) == true }
-        if (existing == null) {
-            val newObj = PvzObject(
-                aliases = listOf(alias),
-                objClass = "SunDropperProperties",
-                objData = gson.toJsonTree(data)
-            )
-            rootLevelFile.objects.add(newObj)
-        }
-    } else {
-        if (moduleIndex != -1) {
-            val oldAlias = RtidParser.parse(levelDef.modules[moduleIndex])?.alias
-
-            levelDef.modules[moduleIndex] = RtidParser.build("DefaultSunDropper", "LevelModules")
-
-            if (oldAlias != null) {
-                rootLevelFile.objects.removeAll { it.aliases?.contains(oldAlias) == true }
-            }
-        }
-    }
-}
-
-/**
- * 将修改后的业务数据实时写回 PvzObject 的 JsonTree
- */
-private fun syncDataToRoot(root: PvzLevelFile, alias: String, data: SunDropperPropertiesData) {
-    root.objects.find { it.aliases?.contains(alias) == true }?.let {
-        it.objData = gson.toJsonTree(data)
-    }
-}
-
-/**
- * 封装的数字输入组件
- */
 @Composable
 fun SunParamInput(label: String, value: Double, onValueChange: (Double) -> Unit) {
     var textValue by remember(value) { mutableStateOf(value.toString()) }
-
     OutlinedTextField(
         value = textValue,
         onValueChange = {
@@ -307,8 +217,8 @@ fun SunParamInput(label: String, value: Double, onValueChange: (Double) -> Unit)
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color(0xFF388E3C),
-            focusedLabelColor = Color(0xFF388E3C)
+            focusedBorderColor = Color(0xFFFF9800),
+            focusedLabelColor = Color(0xFFFF9800)
         )
     )
 }

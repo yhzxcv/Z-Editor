@@ -194,6 +194,10 @@ fun SpawnGraveStonesEventEP(
                     title = "资源缺失",
                     body = "在部分缺少墓碑出土特效的地图可能会出现阳光贴图的情况，请谨慎使用此事件。"
                 )
+                HelpSection(
+                    title = "自定义相关",
+                    body = "通过此事件生成的障碍物由于包裹了 RTID 语句，可以用于自定义障碍物属性，软件暂时不支持此功能。"
+                )
             }
         }
 

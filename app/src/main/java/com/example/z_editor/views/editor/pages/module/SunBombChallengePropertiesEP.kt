@@ -171,6 +171,7 @@ fun SunBombChallengePropertiesEP(
                                 sync()
                             },
                             label = "植物爆炸半径",
+                            color = Color(0xFFFF9800),
                             modifier = Modifier.weight(1f)
                         )
                         NumberInputInt(
@@ -180,6 +181,7 @@ fun SunBombChallengePropertiesEP(
                                     dataState.value.copy(zombieBombExplosionRadius = it)
                                 sync()
                             },
+                            color = Color(0xFFFF9800),
                             label = "僵尸爆炸半径",
                             modifier = Modifier.weight(1f)
                         )
@@ -203,6 +205,7 @@ fun SunBombChallengePropertiesEP(
                                 dataState.value = dataState.value.copy(plantDamage = it)
                                 sync()
                             },
+                            color = Color(0xFFFF9800),
                             label = "对植物伤害",
                             modifier = Modifier.weight(1f)
                         )
@@ -212,6 +215,7 @@ fun SunBombChallengePropertiesEP(
                                 dataState.value = dataState.value.copy(zombieDamage = it)
                                 sync()
                             },
+                            color = Color(0xFFFF9800),
                             label = "对僵尸伤害",
                             modifier = Modifier.weight(1f)
                         )

@@ -59,7 +59,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.GridSquareBlacklistData
 import com.example.z_editor.data.PvzLevelFile
-import com.example.z_editor.data.PvzObject
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.VaseBreakerPresetData
 import com.example.z_editor.data.VaseDefinition
@@ -75,7 +74,6 @@ private val gson = Gson()
 @Composable
 fun VaseBreakerTab(
     rootLevelFile: PvzLevelFile,
-    objectMap: Map<String, PvzObject>,
     refreshTrigger: Int,
     scrollState: LazyListState,
     onRequestPlantSelection: ((String) -> Unit) -> Unit,
@@ -128,9 +126,9 @@ fun VaseBreakerTab(
     val minCol = data.minColumnIndex
     val maxCol = data.maxColumnIndex
 
-    val blacklistCount = data.gridSquareBlacklist?.count {
+    val blacklistCount = data.gridSquareBlacklist.count {
         it.mx in minCol..maxCol && it.my in 0..4
-    } ?: 0
+    }
 
     val totalSlots = (maxCol - minCol + 1) * 5 - blacklistCount
     val currentAssigned = data.vases.sumOf { it.count }

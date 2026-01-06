@@ -1,6 +1,5 @@
 package com.example.z_editor.views.editor.pages.others
 
-import android.content.pm.PackageManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -88,7 +87,7 @@ fun EventChip(rtid: String, objectMap: Map<String, PvzObject>, onClick: () -> Un
         else -> Color(0xFF9E9E9E)
     }
 
-    val summaryText = if (!isInvalid && obj != null) {
+    val summaryText = if (!isInvalid) {
         meta?.summaryProvider?.invoke(obj)
     } else null
 

@@ -4,18 +4,13 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,10 +21,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -37,11 +32,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.LastStandMinigamePropertiesData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
+import com.example.z_editor.data.ZombieMoveFastModulePropertiesData
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
+import com.example.z_editor.views.editor.pages.others.NumberInputDouble
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
 import com.google.gson.Gson
 
@@ -49,7 +45,7 @@ private val gson = Gson()
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LastStandMinigamePropertiesEP(
+fun ZombieMoveFastModulePropertiesEP(
     rtid: String,
     onBack: () -> Unit,
     rootLevelFile: PvzLevelFile,
@@ -58,15 +54,16 @@ fun LastStandMinigamePropertiesEP(
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
+    val themeColor = Color(0xFF654B80)
 
     val moduleDataState = remember {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
-        val initialData = try {
-            gson.fromJson(obj?.objData, LastStandMinigamePropertiesData::class.java)
+        val data = try {
+            gson.fromJson(obj?.objData, ZombieMoveFastModulePropertiesData::class.java)
         } catch (_: Exception) {
-            LastStandMinigamePropertiesData()
+            ZombieMoveFastModulePropertiesData()
         }
-        mutableStateOf(initialData)
+        mutableStateOf(data)
     }
 
     fun sync() {
@@ -76,24 +73,26 @@ fun LastStandMinigamePropertiesEP(
     }
 
     Scaffold(
-        modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures(onTap = { focusManager.clearFocus() })
-        },
+        modifier = Modifier.pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
         topBar = {
             TopAppBar(
-                title = { Text("坚不可摧配置", fontWeight = FontWeight.Bold) },
+                title = { Text("僵尸加速进场", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            "Back",
+                            tint = Color.White
+                        )
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "Help", tint = Color.White)
-                    }
+                    IconButton(onClick = {
+                        showHelpDialog = true
+                    }) { Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助", tint = Color.White) }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1976D2),
+                    containerColor = themeColor,
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 )
@@ -102,28 +101,22 @@ fun LastStandMinigamePropertiesEP(
     ) { padding ->
         if (showHelpDialog) {
             EditorHelpDialog(
-                title = "坚不可摧模块说明",
+                title = "加速进场模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF1976D2)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
-                    body = "启用此模块后，关卡开始时会进入布阵阶段，不会立即出怪，允许玩家消耗初始阳光摆放植物。点击开始战斗后才会开始刷新波次。"
-                )
-                HelpSection(
-                    title = "注意事项",
-                    body = "在启用坚不可摧后，需要在波次管理器启用手动开始游戏开关，否则僵尸会自动出现，在添加或移除坚不可摧模块时软件会自动管理此开关。"
+                    body = "使僵尸在进入场地时快速移动，直到到达指定列数后恢复正常速度，该模块出现于僵尸清除计划中。"
                 )
             }
         }
-
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
-                .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .verticalScroll(scrollState), verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Card(
                 colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -131,49 +124,36 @@ fun LastStandMinigamePropertiesEP(
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text("初始资源设置", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-
-                    NumberInputInt(
-                        color = Color(0xFF1976D2),
-                        value = moduleDataState.value.startingSun,
-                        onValueChange = {
-                            moduleDataState.value = moduleDataState.value.copy(startingSun = it)
-                            sync()
-                        },
-                        label = "初始阳光 (StartingSun)",
-                        modifier = Modifier.fillMaxWidth()
+                    Text(
+                        "加速设置",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = themeColor
                     )
 
                     NumberInputInt(
-                        color = Color(0xFF1976D2),
-                        value = moduleDataState.value.startingPlantfood,
+                        value = moduleDataState.value.stopColumn,
                         onValueChange = {
-                            moduleDataState.value = moduleDataState.value.copy(startingPlantfood = it)
+                            val col = it.coerceIn(0, 9)
+                            moduleDataState.value = moduleDataState.value.copy(stopColumn = col)
                             sync()
                         },
-                        label = "初始能量豆 (StartingPlantfood)",
+                        label = "停止列 (StopColumn 0-9)",
+                        color = themeColor,
                         modifier = Modifier.fillMaxWidth()
                     )
-                }
-            }
 
-            Card(
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE5EBF5)),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(modifier = Modifier.padding(16.dp)) {
-                    Icon(Icons.Default.Info, null, tint = Color(0xFF1976D2))
-                    Spacer(Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text = "添加坚不可摧模块后会自动在波次管理器模块里启用手动开始游戏开关。",
-                            fontSize = 12.sp,
-                            color = Color(0xFF1976D2),
-                            lineHeight = 16.sp
-                        )
-                    }
+                    NumberInputDouble(
+                        value = moduleDataState.value.speedUp,
+                        onValueChange = {
+                            moduleDataState.value = moduleDataState.value.copy(speedUp = it); sync()
+                        },
+                        label = "加速倍率 (SpeedUp)",
+                        color = themeColor,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
         }

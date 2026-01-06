@@ -57,7 +57,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.LevelDefinitionData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.SeedBankData
@@ -75,7 +74,6 @@ private val gson = Gson()
 fun SeedBankPropertiesEP(
     rtid: String,
     rootLevelFile: PvzLevelFile,
-    levelDef: LevelDefinitionData,
     onBack: () -> Unit,
     onRequestPlantSelection: ((String) -> Unit) -> Unit,
     onRequestZombieSelection: ((String) -> Unit) -> Unit,
@@ -223,6 +221,7 @@ fun SeedBankPropertiesEP(
                         modifier = Modifier.alpha(if (isZombieMode) 0.5f else 1f)
                     ) {
                         NumberInputInt(
+                            color = if (isZombieMode) Color.Gray else Color(0xFF388E3C),
                             value = seedBankDataState.value.globalLevel ?: 0,
                             onValueChange = { input ->
                                 val clamped = input.coerceIn(0, 5)
@@ -236,6 +235,7 @@ fun SeedBankPropertiesEP(
                         )
 
                         NumberInputInt(
+                            color = if (isZombieMode) Color.Gray else Color(0xFF388E3C),
                             value = seedBankDataState.value.overrideSeedSlotsCount ?: 0,
                             onValueChange = { input ->
                                 val clamped = input.coerceIn(0, 9)
@@ -363,10 +363,10 @@ fun SeedBankPropertiesEP(
                         checked = isZombieMode,
                         onCheckedChange = { checked ->
                             var newData = seedBankDataState.value.copy(zombieMode = checked)
-                            if (checked) {
-                                newData = newData.copy(selectionMethod = "preset")
+                            newData = if (checked) {
+                                newData.copy(selectionMethod = "preset")
                             } else {
-                                newData = newData.copy(seedPacketType = null)
+                                newData.copy(seedPacketType = null)
                             }
                             seedBankDataState.value = newData
                             syncData()

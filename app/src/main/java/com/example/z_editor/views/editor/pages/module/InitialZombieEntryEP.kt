@@ -99,8 +99,7 @@ fun InitialZombieEntryEP(
     rtid: String,
     onBack: () -> Unit,
     rootLevelFile: PvzLevelFile,
-    onRequestZombieSelection: ((String) -> Unit) -> Unit,
-    scrollState: ScrollState
+    onRequestZombieSelection: ((String) -> Unit) -> Unit
 ) {
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current
@@ -169,6 +168,8 @@ fun InitialZombieEntryEP(
         moduleDataState.value = moduleDataState.value.copy(placements = newList)
         sync()
     }
+
+    val themeColor = Color(0xFF654B80)
 
     if (editingPlacement != null) {
         var tempCondition by remember { mutableStateOf(editingPlacement!!.condition) }
@@ -306,8 +307,6 @@ fun InitialZombieEntryEP(
         )
     }
 
-    val themeColor = Color(0xFF0288D1)
-
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
@@ -363,16 +362,14 @@ fun InitialZombieEntryEP(
                 .fillMaxSize()
                 .background(Color(0xFFF5F5F5))
         ) {
-            // === 区域 1: 网格选择器 (跨满全宽) ===
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(contentAlignment = Alignment.Center) {
                     Card(
                         colors = CardDefaults.cardColors(containerColor = Color.White),
                         elevation = CardDefaults.cardElevation(2.dp),
-                        modifier = Modifier.widthIn(max = 480.dp) // 限制宽度
+                        modifier = Modifier.widthIn(max = 480.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            // 状态栏
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Column {
                                     Text("选中位置", fontSize = 12.sp, color = Color.Gray)
@@ -401,16 +398,15 @@ fun InitialZombieEntryEP(
 
                             Spacer(Modifier.height(16.dp))
 
-                            // 9x5 网格绘制
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .aspectRatio(1.8f) // 保持 9:5 比例，因为宽度被限制，高度也会被限制
+                                    .aspectRatio(1.8f)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFFE1F5FE))
+                                    .background(Color(0xFFEFEFFF))
                                     .border(
                                         1.dp,
-                                        Color(0xFFB3E5FC),
+                                        Color(0xFFBAC4FA),
                                         RoundedCornerShape(6.dp)
                                     )
                             ) {
@@ -434,7 +430,7 @@ fun InitialZombieEntryEP(
                                                         .fillMaxHeight()
                                                         .border(
                                                             0.5.dp,
-                                                            Color(0xFF81D4FA)
+                                                            Color(0xFF8581FA)
                                                         )
                                                         .background(
                                                             if (isSelected) Color(0xFFEBF13E).copy(
@@ -450,26 +446,6 @@ fun InitialZombieEntryEP(
                                                 ) {
                                                     if (count > 0 && firstZombie != null) {
                                                         ZombieIconSmall(firstZombie.typeName)
-
-                                                        if (firstZombie.condition == "ice_block") {
-                                                            Box(
-                                                                modifier = Modifier
-                                                                    .fillMaxSize(0.9f)
-                                                                    .background(
-                                                                        Color(0x6629B6F6),
-                                                                        RoundedCornerShape(3.dp)
-                                                                    )
-                                                            )
-                                                            Icon(
-                                                                Icons.Default.AcUnit,
-                                                                null,
-                                                                tint = Color.White.copy(
-                                                                    0.8f
-                                                                ),
-                                                                modifier = Modifier.size(12.dp)
-                                                            )
-                                                        }
-
                                                         if (count > 1) {
                                                             Box(
                                                                 modifier = Modifier
@@ -502,7 +478,6 @@ fun InitialZombieEntryEP(
                 }
             }
 
-            // === 区域 2: 标题 (跨满全宽) ===
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
                     "僵尸分布列表 (行优先排序)",
@@ -513,7 +488,6 @@ fun InitialZombieEntryEP(
                 )
             }
 
-            // === 区域 3: 物品列表 ===
             items(sortedPlacements) { item ->
                 InitialZombieCard(
                     item = item,
@@ -528,9 +502,6 @@ fun InitialZombieEntryEP(
         }
     }
 }
-
-
-// === 辅助 UI 组件 ===
 
 @Composable
 fun ZombieIconSmall(typeName: String) {
@@ -603,7 +574,7 @@ fun InitialZombieCard(
                     text = "R${item.gridY + 1}:C${item.gridX + 1}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 12.sp,
-                    color = Color(0xFF0277BD)
+                    color = Color(0xFF654B80)
                 )
                 Text(
                     text = item.condition,
