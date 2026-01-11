@@ -604,13 +604,28 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
             },
 
             // --- 选择器逻辑 ---
+            onLaunchMultiPlantSelector = { cb ->
+                previousSubScreen = currentSubScreen
+                // 这里的 cb 是 (List<String>) -> Unit，符合 (Any) -> Unit 的逆变，或者我们在回调时强转
+                genericSelectionCallback = { result -> cb(result as List<String>) }
+                // 关键点：传入 isMultiSelect = true
+                currentSubScreen = EditorSubScreen.PlantSelection(isMultiSelect = true)
+            },
+
+            onLaunchMultiZombieSelector = { cb ->
+                previousSubScreen = currentSubScreen
+                genericSelectionCallback = { result -> cb(result as List<String>) }
+                currentSubScreen = EditorSubScreen.ZombieSelection(isMultiSelect = true)
+            },
             onLaunchPlantSelector = { cb ->
-                previousSubScreen = currentSubScreen; genericSelectionCallback =
-                { id -> cb(id as String) }; currentSubScreen = EditorSubScreen.PlantSelection
+                previousSubScreen = currentSubScreen
+                genericSelectionCallback = { id -> cb(id as String) }
+                currentSubScreen = EditorSubScreen.PlantSelection()
             },
             onLaunchZombieSelector = { cb ->
-                previousSubScreen = currentSubScreen; genericSelectionCallback =
-                { id -> cb(id as String) }; currentSubScreen = EditorSubScreen.ZombieSelection
+                previousSubScreen = currentSubScreen
+                genericSelectionCallback = { id -> cb(id as String) }
+                currentSubScreen = EditorSubScreen.ZombieSelection()
             },
             onLaunchGridItemSelector = { cb ->
                 previousSubScreen = currentSubScreen; genericSelectionCallback =
@@ -687,13 +702,17 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
                 if (initialState::class == targetState::class) {
                     androidx.compose.animation.EnterTransition.None togetherWith androidx.compose.animation.ExitTransition.None
                 }
-                if (targetState == EditorSubScreen.PlantSelection || targetState == EditorSubScreen.ZombieSelection
+                if (targetState == EditorSubScreen.PlantSelection() || targetState == EditorSubScreen.ZombieSelection()
+                    || targetState == EditorSubScreen.PlantSelection(isMultiSelect = true)
+                    || targetState == EditorSubScreen.ZombieSelection(isMultiSelect = true)
                     || targetState == EditorSubScreen.StageSelection || targetState == EditorSubScreen.GridItemSelection
                     || targetState == EditorSubScreen.ChallengeSelection || targetState == EditorSubScreen.ToolSelection
                 ) {
                     (slideInHorizontally { width -> width } + fadeIn()).togetherWith(
                         slideOutHorizontally { width -> -width / 3 } + fadeOut())
-                } else if (initialState == EditorSubScreen.PlantSelection || initialState == EditorSubScreen.ZombieSelection
+                } else if (initialState == EditorSubScreen.PlantSelection() || initialState == EditorSubScreen.ZombieSelection()
+                    || targetState == EditorSubScreen.PlantSelection(isMultiSelect = true)
+                    || targetState == EditorSubScreen.ZombieSelection(isMultiSelect = true)
                     || initialState == EditorSubScreen.StageSelection || initialState == EditorSubScreen.GridItemSelection
                     || initialState == EditorSubScreen.ChallengeSelection || initialState == EditorSubScreen.ToolSelection
                 ) {

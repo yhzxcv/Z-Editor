@@ -335,6 +335,11 @@ class NewBowlingMinigamePropertiesData
 // === 排山倒海配置 ===
 class PVZ1OverwhelmModulePropertiesData
 
+// === 屋顶花盆模块 ===
+data class RoofPropertiesData(
+    @SerializedName("FlowerPotStartColumn") var flowerPotStartColumn: Int = 0,
+    @SerializedName("FlowerPotEndColumn") var flowerPotEndColumn: Int = 2
+)
 
 // ======================== 2. 物体属性解析 ========================
 

@@ -2,6 +2,7 @@ package com.example.z_editor.views.screens.select
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -19,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,12 +38,16 @@ fun ZombossSelectionScreen(
     val themeColor = Color(0xFF673AB7)
     var searchQuery by remember { mutableStateOf("") }
     var selectedTag by remember { mutableStateOf(ZombossTag.All) }
+    val focusManager = LocalFocusManager.current
 
     val displayList = remember(searchQuery, selectedTag) {
         ZombossRepository.search(searchQuery, selectedTag)
     }
 
     Scaffold(
+        modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = { focusManager.clearFocus() })
+        },
         topBar = {
             Surface(color = themeColor, shadowElevation = 4.dp) {
                 Column(

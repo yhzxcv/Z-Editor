@@ -48,6 +48,8 @@ data class EditorActions(
 
     val onLaunchPlantSelector: ((String) -> Unit) -> Unit,
     val onLaunchZombieSelector: ((String) -> Unit) -> Unit,
+    val onLaunchMultiPlantSelector: ((List<String>) -> Unit) -> Unit,
+    val onLaunchMultiZombieSelector: ((List<String>) -> Unit) -> Unit,
     val onLaunchGridItemSelector: ((String) -> Unit) -> Unit,
     val onLaunchChallengeSelector: ((ChallengeTypeInfo) -> Unit) -> Unit,
     val onLaunchToolSelector: ((String) -> Unit) -> Unit,

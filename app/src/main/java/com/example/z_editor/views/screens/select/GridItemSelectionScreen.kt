@@ -2,6 +2,7 @@ package com.example.z_editor.views.screens.select
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -50,6 +51,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -69,6 +72,7 @@ fun GridItemSelectionScreen(
     BackHandler(onBack = onBack)
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(GridItemCategory.All) }
+    val focusManager = LocalFocusManager.current
 
     val displayList = remember(searchQuery, selectedCategory) {
         GridItemRepository.getByCategory(selectedCategory).filter {
@@ -81,6 +85,9 @@ fun GridItemSelectionScreen(
     val themeColor = Color(0xFF795548)
 
     Scaffold(
+        modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = { focusManager.clearFocus() })
+        },
         topBar = {
             Surface(
                 color = themeColor,

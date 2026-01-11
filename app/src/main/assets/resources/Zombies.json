@@ -1906,7 +1906,7 @@
         "icon": "zombie_modern_miner.jpg"
     },
     {
-        "id": "neuropathy",
+        "id": "Neuropathy",
         "name": "玩偶匣僵尸",
         "tags": [
             "Modern_Pvz1",
@@ -3181,7 +3181,7 @@
         "icon": "zombie_zombie_yearmonster.jpg"
     },
     {
-        "id": "iceyearmonster",
+        "id": "IceYearMonster",
         "name": "寒冰年兽僵尸",
         "tags": [
             "Festival1",
@@ -3966,10 +3966,11 @@
         "icon": "zombie_dark_juggler_elite.jpg"
     },
     {
-        "id": "fairy_tale_imp_elite",
+        "id": "fairy_tale_imp_Elite",
         "name": "圣诞节白皇后小鬼僵尸",
         "tags": [
             "Festival2",
+            "Imp",
             "Elite"
         ],
         "icon": "zombie_fairy_tale_imp_elite.jpg"

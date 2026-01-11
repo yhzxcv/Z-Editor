@@ -45,6 +45,7 @@ import com.example.z_editor.views.editor.pages.module.PiratePlankPropertiesEP
 import com.example.z_editor.views.editor.pages.module.PowerTilePropertiesEP
 import com.example.z_editor.views.editor.pages.module.RailcartPropertiesEP
 import com.example.z_editor.views.editor.pages.module.RainDarkPropertiesEP
+import com.example.z_editor.views.editor.pages.module.RoofPropertiesEP
 import com.example.z_editor.views.editor.pages.module.SeedBankPropertiesEP
 import com.example.z_editor.views.editor.pages.module.StarChallengeModulePropertiesEP
 import com.example.z_editor.views.editor.pages.module.SunBombChallengePropertiesEP
@@ -245,8 +246,8 @@ fun EditorContentRouter(
                 EditorTabType.VaseBreaker -> {
                     VaseBreakerTab(
                         rootLevelFile = rootLevelFile,
-                        onRequestPlantSelection = actions.onLaunchPlantSelector,
-                        onRequestZombieSelection = actions.onLaunchZombieSelector,
+                        onRequestPlantSelection = actions.onLaunchMultiPlantSelector,
+                        onRequestZombieSelection = actions.onLaunchMultiZombieSelector,
                         scrollState = getLazyState("VaseBreakerTab"),
                         refreshTrigger = refreshTrigger
                     )
@@ -316,8 +317,8 @@ fun EditorContentRouter(
             rtid = targetState.rtid,
             rootLevelFile = rootLevelFile,
             onBack = actions.navigateBack,
-            onRequestPlantSelection = actions.onLaunchPlantSelector,
-            onRequestZombieSelection = actions.onLaunchZombieSelector,
+            onRequestPlantSelection = actions.onLaunchMultiPlantSelector,
+            onRequestZombieSelection = actions.onLaunchMultiZombieSelector,
             scrollState = getScrollState("SeedBank")
         )
 
@@ -378,6 +379,14 @@ fun EditorContentRouter(
             rootLevelFile = rootLevelFile,
             levelDef = parsedData.levelDef!!,
             scrollState = getScrollState("PiratePlank")
+        )
+
+        is EditorSubScreen.RoofProperties -> RoofPropertiesEP(
+        rtid = targetState.rtid,
+        onBack = actions.navigateBack,
+        rootLevelFile = rootLevelFile,
+            levelDef = parsedData.levelDef!!,
+        scrollState = getScrollState("RoofProperties")
         )
 
         is EditorSubScreen.Tide -> TidePropertiesEP(
@@ -632,13 +641,17 @@ fun EditorContentRouter(
             onBack = actions.navigateBack
         )
 
-        EditorSubScreen.PlantSelection -> PlantSelectionScreen(
+        is EditorSubScreen.PlantSelection -> PlantSelectionScreen(
+            isMultiSelect = targetState.isMultiSelect,
             onPlantSelected = { id -> actions.onSelectorResult(id) },
+            onMultiPlantSelected = { ids -> actions.onSelectorResult(ids) },
             onBack = actions.onSelectorCancel
         )
 
-        EditorSubScreen.ZombieSelection -> ZombieSelectionScreen(
+        is EditorSubScreen.ZombieSelection -> ZombieSelectionScreen(
+            isMultiSelect = targetState.isMultiSelect,
             onZombieSelected = { id -> actions.onSelectorResult(id) },
+            onMultiZombieSelected = { ids -> actions.onSelectorResult(ids) },
             onBack = actions.onSelectorCancel
         )
 

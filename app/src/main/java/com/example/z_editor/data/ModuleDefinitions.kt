@@ -59,14 +59,14 @@ sealed class EditorSubScreen {
     object None : EditorSubScreen()
     object BasicInfo : EditorSubScreen()
     object WaveManagerSettings : EditorSubScreen()
-    object PlantSelection : EditorSubScreen()
-    object ZombieSelection : EditorSubScreen()
     object ModuleSelection : EditorSubScreen()
     object StageSelection : EditorSubScreen()
     object GridItemSelection : EditorSubScreen()
     object ChallengeSelection : EditorSubScreen()
     object ToolSelection : EditorSubScreen()
     object ZombossSelection : EditorSubScreen()
+    data class PlantSelection(val isMultiSelect: Boolean = false) : EditorSubScreen()
+    data class ZombieSelection(val isMultiSelect: Boolean = false) : EditorSubScreen()
     data class EventSelection(val waveIndex: Int) : EditorSubScreen()
 
     // 具体模块页
@@ -82,6 +82,7 @@ sealed class EditorSubScreen {
     data class Railcart(val rtid: String) : EditorSubScreen()
     data class PowerTile(val rtid: String) : EditorSubScreen()
     data class PiratePlank(val rtid: String) : EditorSubScreen()
+    data class RoofProperties(val rtid: String) : EditorSubScreen()
     data class Tide(val rtid: String) : EditorSubScreen()
     data class RainDarkProperties(val rtid: String) : EditorSubScreen()
     data class WarMistProperties(val rtid: String) : EditorSubScreen()
@@ -857,6 +858,17 @@ object ModuleRegistry {
             defaultSource = "CurrentLevel",
             initialDataFactory = { PiratePlankPropertiesData() },
             navigationFactory = { rtid -> EditorSubScreen.PiratePlank(rtid) }
+        ),
+        "RoofProperties" to ModuleMetadata(
+            title = "屋顶花盆",
+            description = "配置屋顶关卡的预置花盆范围",
+            icon = Icons.Default.LocalFlorist,
+            isCore = true,
+            category = ModuleCategory.Scene,
+            defaultAlias = "RoofProps",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { RoofPropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.RoofProperties(rtid) }
         ),
         "TideProperties" to ModuleMetadata(
             title = "潮水系统",

@@ -75,7 +75,6 @@ fun PiratePlankPropertiesEP(
         ReferenceRepository.init(context)
     }
 
-    // 数据状态
     val dataState = remember {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {

@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
@@ -50,6 +52,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,6 +67,8 @@ import com.example.z_editor.views.components.AssetImage
 
 @Composable
 fun PlantSelectionScreen(
+    isMultiSelect: Boolean = false,
+    onMultiPlantSelected: (List<String>) -> Unit = {},
     onPlantSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
@@ -70,6 +76,9 @@ fun PlantSelectionScreen(
     var searchQuery by remember { mutableStateOf("") }
     var selectedTag by remember { mutableStateOf(PlantTag.All) }
     var selectedCategory by remember { mutableStateOf(PlantCategory.Quality) }
+    val focusManager = LocalFocusManager.current
+
+    var selectedIds by remember { mutableStateOf(setOf<String>()) }
 
     val currentVisibleTags = remember(selectedCategory) {
         listOf(PlantTag.All) + PlantTag.entries.filter {
@@ -90,6 +99,9 @@ fun PlantSelectionScreen(
     val themeColor = Color(0xFF8BC34A)
 
     Scaffold(
+        modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = { focusManager.clearFocus() })
+        },
         topBar = {
             Surface(
                 color = themeColor,
@@ -116,7 +128,7 @@ fun PlantSelectionScreen(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             placeholder = {
-                                Text("搜索植物名称或代码", fontSize = 16.sp, color = Color.Gray)
+                                Text(if (isMultiSelect) "已选择 ${selectedIds.size} 项，点击搜索" else "搜索植物名称或代码", fontSize = 16.sp, color = Color.Gray)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -223,6 +235,17 @@ fun PlantSelectionScreen(
                     }
                 }
             }
+        },
+        floatingActionButton = {
+            if (isMultiSelect) {
+                androidx.compose.material3.FloatingActionButton(
+                    onClick = { onMultiPlantSelected(selectedIds.toList()) },
+                    containerColor = themeColor,
+                    contentColor = Color.White
+                ) {
+                    Icon(Icons.Default.Check, "完成")
+                }
+            }
         }
     ) { padding ->
         Box(
@@ -254,22 +277,44 @@ fun PlantSelectionScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     items(displayList) { plant ->
-                        PlantGridItem(plant = plant) {
-                            onPlantSelected(plant.id)
-                        }
+                        val isSelected = isMultiSelect && selectedIds.contains(plant.id)
+                        PlantGridItem(
+                            plant = plant,
+                            isSelected = isSelected,
+                            onClick = {
+                                if (isMultiSelect) {
+                                    selectedIds = if (isSelected) {
+                                        selectedIds - plant.id
+                                    } else {
+                                        selectedIds + plant.id
+                                    }
+                                } else {
+                                    onPlantSelected(plant.id)
+                                }
+                            }
+                        )
                     }
                 }
             }
         }
     }
 }
-
 @Composable
-fun PlantGridItem(plant: PlantInfo, onClick: () -> Unit) {
+fun PlantGridItem(
+    plant: PlantInfo,
+    isSelected: Boolean = false,
+    onClick: () -> Unit
+) {
+    val borderColor = if (isSelected) Color(0xFF8BC34A) else Color.Transparent
+    val borderWidth = if (isSelected) 2.dp else 0.dp
+    val bgColor = if (isSelected) Color(0xFF8BC34A).copy(alpha = 0.1f) else Color.Transparent
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
+            .background(bgColor)
+            .border(borderWidth, borderColor, RoundedCornerShape(8.dp))
             .clickable(onClick = onClick)
             .padding(vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally

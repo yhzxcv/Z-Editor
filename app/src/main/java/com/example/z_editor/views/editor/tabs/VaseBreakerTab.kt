@@ -76,8 +76,8 @@ fun VaseBreakerTab(
     rootLevelFile: PvzLevelFile,
     refreshTrigger: Int,
     scrollState: LazyListState,
-    onRequestPlantSelection: ((String) -> Unit) -> Unit,
-    onRequestZombieSelection: ((String) -> Unit) -> Unit
+    onRequestPlantSelection: ((List<String>) -> Unit) -> Unit,
+    onRequestZombieSelection: ((List<String>) -> Unit) -> Unit
 ) {
     val presetObj = remember(rootLevelFile, refreshTrigger) {
         rootLevelFile.objects.find { it.objClass == "VaseBreakerPresetProperties" }
@@ -266,7 +266,6 @@ fun VaseBreakerTab(
 
                         Spacer(Modifier.height(12.dp))
 
-                        // 容量信息显示
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -388,9 +387,11 @@ fun VaseBreakerTab(
                         headlineContent = { Text("植物 (Plant)") },
                         modifier = Modifier.clickable {
                             showAddDialog = false
-                            onRequestPlantSelection { plantId ->
+                            onRequestPlantSelection { plantIds ->
                                 val newList = data.vases.toMutableList()
-                                newList.add(VaseDefinition(plantTypeName = plantId, count = 1))
+                                plantIds.forEach { plantId ->
+                                    newList.add(VaseDefinition(plantTypeName = plantId, count = 1))
+                                }
                                 updateState(data.copy(vases = newList))
                             }
                         }
@@ -399,9 +400,11 @@ fun VaseBreakerTab(
                         headlineContent = { Text("僵尸 (Zombie)") },
                         modifier = Modifier.clickable {
                             showAddDialog = false
-                            onRequestZombieSelection { zombieId ->
+                            onRequestZombieSelection { zombieIds ->
                                 val newList = data.vases.toMutableList()
-                                newList.add(VaseDefinition(zombieTypeName = zombieId, count = 1))
+                                zombieIds.forEach { zombieId ->
+                                    newList.add(VaseDefinition(zombieTypeName = zombieId, count = 1))
+                                }
                                 updateState(data.copy(vases = newList))
                             }
                         }

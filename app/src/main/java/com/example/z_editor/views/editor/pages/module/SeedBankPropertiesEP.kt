@@ -75,8 +75,8 @@ fun SeedBankPropertiesEP(
     rtid: String,
     rootLevelFile: PvzLevelFile,
     onBack: () -> Unit,
-    onRequestPlantSelection: ((String) -> Unit) -> Unit,
-    onRequestZombieSelection: ((String) -> Unit) -> Unit,
+    onRequestPlantSelection: ((List<String>) -> Unit) -> Unit,
+    onRequestZombieSelection: ((List<String>) -> Unit) -> Unit,
     scrollState: ScrollState
 ) {
     val focusManager = LocalFocusManager.current
@@ -483,7 +483,7 @@ fun ResourceListEditor(
     accentColor: Color,
     isZombie: Boolean,
     onListChanged: (MutableList<String>) -> Unit,
-    onAddRequest: ((String) -> Unit) -> Unit
+    onAddRequest: ((List<String>) -> Unit) -> Unit
 ) {
 
     Card(
@@ -497,10 +497,14 @@ fun ResourceListEditor(
                     Text(description, fontSize = 11.sp, color = Color.Gray)
                 }
                 IconButton(onClick = {
-                    onAddRequest { selectedId ->
-                        val aliases = ZombieRepository.buildAliases(selectedId)
-                        val newList = items.toMutableList().apply { add(aliases) }
-                        onListChanged(newList)
+                    onAddRequest { selectedIds ->
+                        val currentList = items.toMutableList()
+
+                        selectedIds.forEach { newId ->
+                            val alias = if (isZombie) ZombieRepository.buildAliases(newId) else newId
+                            currentList.add(alias)
+                        }
+                        onListChanged(currentList)
                     }
                 }) {
                     Icon(Icons.Default.Add, "添加", tint = accentColor)
