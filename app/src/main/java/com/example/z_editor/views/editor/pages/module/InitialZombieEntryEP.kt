@@ -343,7 +343,7 @@ fun InitialZombieEntryEP(
             }
         }
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 110.dp),
+            columns = GridCells.Adaptive(minSize = 100.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(16.dp),
@@ -423,9 +423,7 @@ fun InitialZombieEntryEP(
                                                             Color(0xFF8581FA)
                                                         )
                                                         .background(
-                                                            if (isSelected) Color(0xFFEBF13E).copy(
-                                                                alpha = 0.5f
-                                                            )
+                                                            if (isSelected) Color(0xFFFCF2B1)
                                                             else Color.Transparent
                                                         )
                                                         .clickable {
@@ -495,8 +493,8 @@ fun InitialZombieEntryEP(
 
 @Composable
 fun ZombieIconSmall(typeName: String) {
-    val info = remember(typeName) { ZombieRepository.search(typeName, ZombieTag.All).firstOrNull() }
-    val cardShape = RoundedCornerShape(3.dp)
+    val info = remember(typeName) { ZombieRepository.getZombieInfoById(typeName) }
+    val cardShape = RoundedCornerShape(4.dp)
 
     if (info?.icon != null) {
         AssetImage(
@@ -525,15 +523,15 @@ fun InitialZombieCard(
     onClick: () -> Unit
 ) {
     val info = remember(item.typeName) {
-        ZombieRepository.search(item.typeName, ZombieTag.All).firstOrNull()
+        ZombieRepository.getZombieInfoById(item.typeName)
     }
 
     Card(
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFFFFF9C4) else Color.White
+            containerColor = if (isSelected) Color(0xFFD9D7F6) else Color.White
         ),
-        border = if (isSelected) BorderStroke(1.dp, Color(0xFFFBC02D)) else null,
+        border = if (isSelected) BorderStroke(1.dp, Color(0xFF8581FA)) else null,
         elevation = CardDefaults.cardElevation(1.dp)
     ) {
         Row(

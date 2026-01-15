@@ -181,7 +181,7 @@ fun GridItemSelectionScreen(
                 .background(Color(0xFFF5F5F5))
         ) {
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 120.dp), // 自适应宽度，每行通常2个
+                columns = GridCells.Adaptive(minSize = 120.dp),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -230,29 +230,31 @@ fun GridItemSelectionCard(item: GridItemInfo, onClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            AssetImage(
-                path = "images/griditems/${item.icon}",
-                contentDescription = item.name,
-                modifier = Modifier
-                    .size(52.dp)
-                    .clip(RoundedCornerShape(8.dp)),
-                filterQuality = FilterQuality.Medium,
-                placeholder = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color(0xFFF5EEE8)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = item.name.take(1),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF795548)
-                        )
+            if (item.icon != null) {
+                AssetImage(
+                    path = "images/griditems/${item.icon}",
+                    contentDescription = item.name,
+                    modifier = Modifier
+                        .size(52.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    filterQuality = FilterQuality.Medium,
+                    placeholder = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color(0xFFF5EEE8)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = item.name.take(1),
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF795548)
+                            )
+                        }
                     }
-                }
-            )
+                )
+            }
             Text(
                 text = item.name,
                 fontWeight = FontWeight.Bold,

@@ -205,6 +205,10 @@ fun ZombiePotionActionPropsEP(
                     body = "与障碍物生成的预选池不同，这个事件能精准地在固定格点强行生成障碍物并挤走植物。"
                 )
                 HelpSection(
+                    title = "资源缺失",
+                    body = "在部分缺少墓碑出土特效的地图可能会出现阳光贴图的情况，请谨慎使用此事件。"
+                )
+                HelpSection(
                     title = "自定义相关",
                     body = "此事件内使用硬编码的障碍物类型名，只能对少部分预留了接口的障碍物进行自定义。"
                 )
@@ -405,9 +409,10 @@ fun PotionItemCard(
                     text = GridItemRepository.getName(item.type),
                     fontSize = 14.sp,
                     maxLines = 1,
-                    fontWeight = FontWeight.Bold
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
-                Spacer(Modifier.weight(1f))
+                Spacer(Modifier.width(4.dp))
                 IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) {
                     Icon(
                         Icons.Default.Delete,

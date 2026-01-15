@@ -466,18 +466,14 @@ fun WaveTimelineTab(
                     } else if (expectationMap.isEmpty()) {
                         Text("无 (僵尸池为空或数据缺失)", color = Color.Gray, fontSize = 12.sp)
                     } else {
-                        // 过滤并排序显示
                         var hasContent = false
                         expectationMap.entries
-                            .sortedByDescending { it.value } // 按数量从多到少排
+                            .sortedByDescending { it.value }
                             .forEach { (typeName, count) ->
-                                if (count > 0.05) { // 忽略太小的概率
+                                if (count > 0.05) {
                                     hasContent = true
                                     val info = remember(typeName) {
-                                        ZombieRepository.search(
-                                            typeName,
-                                            ZombieTag.All
-                                        ).firstOrNull()
+                                        ZombieRepository.getZombieInfoById(typeName)
                                     }
                                     val displayName = ZombieRepository.getName(typeName)
                                     val placeholderContent = @Composable {
@@ -897,7 +893,9 @@ fun WaveTimelineTab(
         val info = selectedZombieInfo!!
         val realTypeName = ZombiePropertiesRepository.getTypeNameByAlias(info.baseTypeName)
         val displayName = ZombieRepository.getName(realTypeName)
-        val iconInfo = ZombieRepository.search(realTypeName, ZombieTag.All).firstOrNull()
+        val iconInfo = remember(realTypeName) {
+            ZombieRepository.getZombieInfoById(realTypeName)
+        }
 
         val placeholderContent = @Composable {
             Box(

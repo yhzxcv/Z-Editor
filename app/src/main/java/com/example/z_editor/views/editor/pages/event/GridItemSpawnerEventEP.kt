@@ -516,7 +516,9 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                 val isCustom = parsed?.source == "CurrentLevel"
                 val alias = parsed?.alias ?: zombieData.type
                 val displayName = if (isCustom) alias else ZombieRepository.getName(baseTypeName)
-                val info = ZombieRepository.search(baseTypeName, ZombieTag.All).firstOrNull()
+                val info = remember(baseTypeName) {
+                    ZombieRepository.getZombieInfoById(baseTypeName)
+                }
                 val isElite = zombieData.isElite
 
                 Card(

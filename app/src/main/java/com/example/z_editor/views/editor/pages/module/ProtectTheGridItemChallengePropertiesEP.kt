@@ -30,6 +30,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -38,12 +39,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -58,12 +61,11 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.InitialGridItemData
-import com.example.z_editor.data.InitialGridItemEntryData
+import com.example.z_editor.data.ProtectGridItemData
+import com.example.z_editor.data.ProtectTheGridItemChallengePropertiesData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.GridItemRepository
@@ -72,10 +74,9 @@ import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InitialGridItemEntryEP(
+fun ProtectTheGridItemChallengePropertiesEP(
     rtid: String,
     onBack: () -> Unit,
     rootLevelFile: PvzLevelFile,
@@ -85,58 +86,60 @@ fun InitialGridItemEntryEP(
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
 
-    val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
-    val syncManager = rememberJsonSync(obj, InitialGridItemEntryData::class.java)
-    val moduleDataState = syncManager.dataState
+    val obj = remember(rootLevelFile) {
+        rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
+    }
+    val syncManager = rememberJsonSync(obj, ProtectTheGridItemChallengePropertiesData::class.java)
+    var moduleData by syncManager.dataState
 
     fun sync() {
         syncManager.sync()
     }
 
-    var selectedX by remember { mutableIntStateOf(0) }
-    var selectedY by remember { mutableIntStateOf(0) }
-
-
-    val sortedItems = remember(moduleDataState.value.placements) {
-        moduleDataState.value.placements.sortedWith(compareBy({ it.gridY }, { it.gridX }))
-    }
-
-    fun handleSelectItem() {
-        onRequestGridItemSelection { typeName ->
-            val newList = moduleDataState.value.placements.toMutableList()
-            val newItem = InitialGridItemData(
-                gridX = selectedX,
-                gridY = selectedY,
-                typeName = typeName
-            )
-            newList.add(newItem)
-            moduleDataState.value = moduleDataState.value.copy(placements = newList)
+    LaunchedEffect(moduleData.gridItems.size) {
+        if (moduleData.mustProtectCount != moduleData.gridItems.size) {
+            moduleData = moduleData.copy(mustProtectCount = moduleData.gridItems.size)
             sync()
         }
     }
 
-    fun deleteItem(targetItem: InitialGridItemData) {
-        val newList = moduleDataState.value.placements.toMutableList()
+    var selectedX by remember { mutableIntStateOf(0) }
+    var selectedY by remember { mutableIntStateOf(0) }
+
+    val sortedItems = remember(moduleData.gridItems) {
+        moduleData.gridItems.sortedWith(compareBy({ it.gridY }, { it.gridX }))
+    }
+
+    fun handleAddItem() {
+        onRequestGridItemSelection { typeName ->
+            val newList = moduleData.gridItems.toMutableList()
+            newList.removeAll { it.gridX == selectedX && it.gridY == selectedY }
+
+            val newItem = ProtectGridItemData(
+                gridX = selectedX,
+                gridY = selectedY,
+                gridItemType = typeName
+            )
+            newList.add(newItem)
+            moduleData = moduleData.copy(gridItems = newList)
+            sync()
+        }
+    }
+
+    fun deleteItem(targetItem: ProtectGridItemData) {
+        val newList = moduleData.gridItems.toMutableList()
         newList.remove(targetItem)
-        moduleDataState.value = moduleDataState.value.copy(placements = newList)
+        moduleData = moduleData.copy(gridItems = newList)
         sync()
     }
 
-    // 障碍物详情弹窗 (删除确认)
-    var itemToDelete by remember { mutableStateOf<InitialGridItemData?>(null) }
-
+    var itemToDelete by remember { mutableStateOf<ProtectGridItemData?>(null) }
     if (itemToDelete != null) {
         AlertDialog(
             onDismissRequest = { itemToDelete = null },
-            title = { Text("移除物品") },
+            title = { Text("移除保护目标") },
             text = {
-                Text(
-                    "确定要移除 R${itemToDelete!!.gridY + 1}:C${itemToDelete!!.gridX + 1} 处的 ${
-                        GridItemRepository.getName(
-                            itemToDelete!!.typeName
-                        )
-                    } 吗？"
-                )
+                Text("确定要移除 R${itemToDelete!!.gridY + 1}:C${itemToDelete!!.gridX + 1} 处的 ${GridItemRepository.getName(itemToDelete!!.gridItemType)} 吗？")
             },
             confirmButton = {
                 TextButton(
@@ -159,7 +162,7 @@ fun InitialGridItemEntryEP(
         },
         topBar = {
             TopAppBar(
-                title = { Text("场地物品布局", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
+                title = { Text("保护物品挑战", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
@@ -171,7 +174,7 @@ fun InitialGridItemEntryEP(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF795548), // 褐色主题
+                    containerColor = Color(0xFF1976D2),
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 )
@@ -180,21 +183,21 @@ fun InitialGridItemEntryEP(
     ) { padding ->
         if (showHelpDialog) {
             EditorHelpDialog(
-                title = "场地物品模块说明",
+                title = "保护物品挑战说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF795548)
+                themeColor = Color(0xFF1976D2)
             ) {
                 HelpSection(
                     title = "简要介绍",
-                    body = "用于在关卡开始时在场地上预置墓碑等障碍物或其他事件物品。"
+                    body = "定义关卡中必须保护的物品。如果这些物品被破坏会导致关卡失败。"
                 )
                 HelpSection(
-                    title = "格点坐标",
-                    body = "障碍物所在的位置用网格坐标显示，可以在同一个位置堆放多个障碍物。"
+                    title = "自动计数",
+                    body = "软件会自动跟随您添加的物品数量更新需要保护的障碍物数量。"
                 )
                 HelpSection(
-                    title = "莲叶生成",
-                    body = "巨浪沙滩地图的初始莲叶一般是靠初始障碍物设置模块生成的。"
+                    title = "操作指引",
+                    body = "在上方网格中点击选择坐标，然后点击‘添加目标’按钮选择要保护的物品类型。"
                 )
             }
         }
@@ -209,7 +212,40 @@ fun InitialGridItemEntryEP(
                 .fillMaxSize()
                 .background(Color(0xFFF5F5F5))
         ) {
-            // === 区域 1: 网格选择器 (作为列表头，跨满全宽) ===
+            // === 区域 1: 描述输入框 ===
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(1.dp)
+                ) {
+                    Column(Modifier.padding(16.dp)) {
+                        Text(
+                            "挑战描述 (Description)",
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF1976D2)
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = moduleData.description,
+                            onValueChange = {
+                                moduleData = moduleData.copy(description = it)
+                                sync()
+                            },
+                            label = {},
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            "当前保护目标数量: ${moduleData.mustProtectCount}",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                    }
+                }
+            }
+
+            // === 区域 2: 网格选择器 (跨满) ===
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(contentAlignment = Alignment.Center) {
                     Card(
@@ -220,26 +256,22 @@ fun InitialGridItemEntryEP(
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Column {
-                                    Text("选中位置", fontSize = 12.sp, color = Color.Gray)
+                                    Text("目标位置", fontSize = 12.sp, color = Color.Gray)
                                     Text(
                                         "R${selectedY + 1} : C${selectedX + 1}",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 20.sp,
-                                        color = Color(0xFF795548)
+                                        color = Color(0xFF1976D2)
                                     )
                                 }
                                 Spacer(Modifier.weight(1f))
                                 Button(
-                                    onClick = { handleSelectItem() },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(
-                                            0xFF795548
-                                        )
-                                    )
+                                    onClick = { handleAddItem() },
+                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1976D2))
                                 ) {
                                     Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
                                     Spacer(Modifier.width(8.dp))
-                                    Text("添加物品")
+                                    Text("添加目标")
                                 }
                             }
 
@@ -250,25 +282,21 @@ fun InitialGridItemEntryEP(
                                     .fillMaxWidth()
                                     .aspectRatio(1.8f)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFFD7CCC8))
-                                    .border(1.dp, Color(0xFFA1887F), RoundedCornerShape(6.dp))
+                                    .background(Color(0xFFE3F2FD))
+                                    .border(1.dp, Color(0xFF90CAF9), RoundedCornerShape(6.dp))
                             ) {
                                 Column(Modifier.fillMaxSize()) {
                                     for (row in 0..4) {
                                         Row(Modifier.weight(1f)) {
                                             for (col in 0..8) {
-                                                val isSelected =
-                                                    (row == selectedY && col == selectedX)
-                                                val cellItems =
-                                                    moduleDataState.value.placements.filter { it.gridX == col && it.gridY == row }
-                                                val count = cellItems.size
-                                                val firstItem = cellItems.firstOrNull()
+                                                val isSelected = (row == selectedY && col == selectedX)
+                                                val cellItem = moduleData.gridItems.find { it.gridX == col && it.gridY == row }
 
                                                 Box(
                                                     modifier = Modifier
                                                         .weight(1f)
                                                         .fillMaxHeight()
-                                                        .border(0.5.dp, Color(0xFF8D6E63))
+                                                        .border(0.5.dp, Color(0xFFBBDEFB))
                                                         .background(
                                                             if (isSelected) Color(0xFFFCF2B1)
                                                             else Color.Transparent
@@ -279,27 +307,8 @@ fun InitialGridItemEntryEP(
                                                         },
                                                     contentAlignment = Alignment.Center
                                                 ) {
-                                                    if (count > 0 && firstItem != null) {
-                                                        GridItemIconSmall(firstItem.typeName)
-                                                        if (count > 1) {
-                                                            Box(
-                                                                modifier = Modifier
-                                                                    .align(Alignment.TopEnd)
-                                                                    .background(
-                                                                        color = Color.Gray,
-                                                                        shape = RoundedCornerShape(bottomStart = 4.dp)
-                                                                    )
-                                                                    .padding(horizontal = 2.dp)
-                                                            ) {
-                                                                Text(
-                                                                    text = "+$count",
-                                                                    color = Color.White,
-                                                                    fontSize = 8.sp,
-                                                                    fontWeight = FontWeight.Bold,
-                                                                    textAlign = TextAlign.Center
-                                                                )
-                                                            }
-                                                        }
+                                                    if (cellItem != null) {
+                                                        ProtectItemIconSmall(cellItem.gridItemType)
                                                     }
                                                 }
                                             }
@@ -312,10 +321,10 @@ fun InitialGridItemEntryEP(
                 }
             }
 
-            // === 区域 2: 标题 (作为列表头，跨满全宽) ===
+            // === 区域 3: 标题 (跨满) ===
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
-                    "物品分布列表 (行优先排序)",
+                    "保护目标列表 (行优先排序)",
                     modifier = Modifier.padding(vertical = 8.dp),
                     fontWeight = FontWeight.Bold,
                     color = Color.Gray,
@@ -323,9 +332,9 @@ fun InitialGridItemEntryEP(
                 )
             }
 
-            // === 区域 3: 物品列表 (正常的 Grid Items) ===
+            // === 区域 4: 列表展示 ===
             items(sortedItems) { item ->
-                GridItemCard(
+                ProtectItemCard(
                     item = item,
                     isSelected = (item.gridX == selectedX && item.gridY == selectedY),
                     onClick = {
@@ -339,19 +348,17 @@ fun InitialGridItemEntryEP(
     }
 }
 
-@Composable
-fun GridItemIconSmall(typeName: String) {
-    val iconPath = remember(typeName) { GridItemRepository.getIconPath(typeName) }
+// === 辅助组件 ===
 
-    val cardShape = RoundedCornerShape(4.dp)
+@Composable
+fun ProtectItemIconSmall(typeName: String) {
+    val iconPath = remember(typeName) { GridItemRepository.getIconPath(typeName) }
 
     if (iconPath != null) {
         AssetImage(
             path = iconPath,
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize(0.9f)
-                .clip(cardShape),
+            modifier = Modifier.fillMaxSize(0.9f),
             contentScale = ContentScale.Fit,
             filterQuality = FilterQuality.Low
         )
@@ -359,11 +366,11 @@ fun GridItemIconSmall(typeName: String) {
         Box(
             modifier = Modifier
                 .fillMaxSize(0.8f)
-                .background(Color(0xFF795648), cardShape),
+                .background(Color(0xFF1976D2), RoundedCornerShape(4.dp)),
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = typeName.take(1).uppercase(),
+                typeName.take(1).uppercase(),
                 color = Color.White,
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Bold
@@ -373,22 +380,24 @@ fun GridItemIconSmall(typeName: String) {
 }
 
 @Composable
-fun GridItemCard(
-    item: InitialGridItemData,
+fun ProtectItemCard(
+    item: ProtectGridItemData,
     isSelected: Boolean,
     onClick: () -> Unit,
     onDelete: () -> Unit
 ) {
     Card(
         onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = if (isSelected) Color(0xFFF1E1D7) else Color.White),
-        border = if (isSelected) BorderStroke(1.dp, Color(0xFF795548)) else null,
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) Color(0xFFE3F2FD) else Color.White
+        ),
+        border = if (isSelected) BorderStroke(1.dp, Color(0xFF1976D2)) else null,
         elevation = CardDefaults.cardElevation(1.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = GridItemRepository.getName(item.typeName),
+                    text = GridItemRepository.getName(item.gridItemType),
                     fontSize = 14.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -408,8 +417,8 @@ fun GridItemCard(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 AssetImage(
-                    path = GridItemRepository.getIconPath(item.typeName),
-                    contentDescription = item.typeName,
+                    path = GridItemRepository.getIconPath(item.gridItemType),
+                    contentDescription = item.gridItemType,
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
                         .size(36.dp),
@@ -422,10 +431,10 @@ fun GridItemCard(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = item.typeName.take(1),
+                                text = item.gridItemType.take(1),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF795548)
+                                color = Color(0xFF1976D2)
                             )
                         }
                     }
@@ -435,7 +444,7 @@ fun GridItemCard(
                     text = "R${item.gridY + 1}:C${item.gridX + 1}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color(0xFF5D4037)
+                    color = Color(0xFF1976D2)
                 )
             }
         }

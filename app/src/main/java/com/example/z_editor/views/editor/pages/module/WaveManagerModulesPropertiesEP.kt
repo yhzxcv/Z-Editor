@@ -383,7 +383,7 @@ fun ZombiePoolEditor(
             val displayName = ZombieRepository.getName(typeName)
             val level = zombieLevel.getOrNull(index) ?: 1
             val info = remember(typeName) {
-                ZombieRepository.search(typeName, ZombieTag.All).firstOrNull()
+                ZombieRepository.getZombieInfoById(typeName)
             }
 
             val placeholderContent = @Composable {

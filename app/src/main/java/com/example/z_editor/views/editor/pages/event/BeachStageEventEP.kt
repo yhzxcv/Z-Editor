@@ -70,7 +70,7 @@ fun BeachStageEventEP(
     val currentZombieInfo = remember(actionDataState.value.zombieName) {
         val realName = ZombiePropertiesRepository.getTypeNameByAlias(actionDataState.value.zombieName)
         val name = ZombieRepository.getName(realName)
-        ZombieRepository.search(name, ZombieTag.All).firstOrNull() to realName
+        ZombieRepository.getZombieInfoById(name) to realName
     }
 
 

@@ -63,9 +63,7 @@ import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.VaseBreakerPresetData
 import com.example.z_editor.data.VaseDefinition
 import com.example.z_editor.data.repository.PlantRepository
-import com.example.z_editor.data.repository.PlantTag
 import com.example.z_editor.data.repository.ZombieRepository
-import com.example.z_editor.data.repository.ZombieTag
 import com.example.z_editor.views.components.AssetImage
 import com.google.gson.Gson
 
@@ -147,7 +145,12 @@ fun VaseBreakerTab(
         LazyColumn(
             state = scrollState,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 88.dp, top = 16.dp, start = 16.dp, end = 16.dp), // 调整边距
+            contentPadding = PaddingValues(
+                bottom = 88.dp,
+                top = 16.dp,
+                start = 16.dp,
+                end = 16.dp
+            ), // 调整边距
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
@@ -176,7 +179,9 @@ fun VaseBreakerTab(
                                     if (minCol > 0) updateData { it.minColumnIndex = minCol - 1 }
                                 },
                                 onPlus = {
-                                    if (minCol < maxCol) updateData { it.minColumnIndex = minCol + 1 }
+                                    if (minCol < maxCol) updateData {
+                                        it.minColumnIndex = minCol + 1
+                                    }
                                 }
                             )
 
@@ -184,7 +189,9 @@ fun VaseBreakerTab(
                                 label = "结束列 (Max)",
                                 value = maxCol,
                                 onMinus = {
-                                    if (maxCol > minCol) updateData { it.maxColumnIndex = maxCol - 1 }
+                                    if (maxCol > minCol) updateData {
+                                        it.maxColumnIndex = maxCol - 1
+                                    }
                                 },
                                 onPlus = {
                                     if (maxCol < 8) updateData { it.maxColumnIndex = maxCol + 1 }
@@ -214,13 +221,17 @@ fun VaseBreakerTab(
                                     Row(Modifier.weight(1f)) {
                                         for (col in 0..8) {
                                             val isActiveZone = col in minCol..maxCol
-                                            val isBlacklisted = data.gridSquareBlacklist.any { it.x == col && it.y == row } == true
+                                            val isBlacklisted =
+                                                data.gridSquareBlacklist.any { it.x == col && it.y == row } == true
 
                                             Box(
                                                 modifier = Modifier
                                                     .weight(1f)
                                                     .fillMaxHeight()
-                                                    .border(0.5.dp, Color(0xFF8D6E63).copy(alpha = 0.5f))
+                                                    .border(
+                                                        0.5.dp,
+                                                        Color(0xFF8D6E63).copy(alpha = 0.5f)
+                                                    )
                                                     .background(
                                                         when {
                                                             isBlacklisted -> Color.Black.copy(alpha = 0.6f) // 黑名单显示深色
@@ -230,15 +241,23 @@ fun VaseBreakerTab(
                                                     )
                                                     .clickable {
                                                         updateData { mutableData ->
-                                                            val blacklist = mutableData.gridSquareBlacklist
-                                                            val existing = blacklist.find { it.x == col && it.y == row }
+                                                            val blacklist =
+                                                                mutableData.gridSquareBlacklist
+                                                            val existing =
+                                                                blacklist.find { it.x == col && it.y == row }
 
                                                             if (existing != null) {
                                                                 blacklist.remove(existing)
                                                             } else {
-                                                                blacklist.add(LocationData(col, row))
+                                                                blacklist.add(
+                                                                    LocationData(
+                                                                        col,
+                                                                        row
+                                                                    )
+                                                                )
                                                             }
-                                                            mutableData.gridSquareBlacklist = blacklist
+                                                            mutableData.gridSquareBlacklist =
+                                                                blacklist
                                                         }
                                                     },
                                                 contentAlignment = Alignment.Center
@@ -254,7 +273,9 @@ fun VaseBreakerTab(
                                                     Text(
                                                         text = "${col + 1}",
                                                         fontSize = 10.sp,
-                                                        color = if (isActiveZone) Color.White.copy(0.7f) else Color(0xFF5D4037).copy(0.5f)
+                                                        color = if (isActiveZone) Color.White.copy(
+                                                            0.7f
+                                                        ) else Color(0xFF5D4037).copy(0.5f)
                                                     )
                                                 }
                                             }
@@ -312,11 +333,20 @@ fun VaseBreakerTab(
                     elevation = CardDefaults.cardElevation(1.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("特殊罐子设置", fontWeight = FontWeight.Bold, color = Color(0xFF5D4037), fontSize = 18.sp)
+                        Text(
+                            "特殊罐子设置",
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF5D4037),
+                            fontSize = 18.sp
+                        )
                         Spacer(Modifier.height(12.dp))
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("植物罐子 (绿罐)", modifier = Modifier.width(150.dp), fontSize = 16.sp)
+                            Text(
+                                "植物罐子 (绿罐)",
+                                modifier = Modifier.width(150.dp),
+                                fontSize = 16.sp
+                            )
                             Spacer(Modifier.weight(1f))
                             Stepper(
                                 value = data.numColoredPlantVases,
@@ -325,9 +355,16 @@ fun VaseBreakerTab(
                                 }
                             )
                         }
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), color = Color.LightGray.copy(0.3f))
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            color = Color.LightGray.copy(0.3f)
+                        )
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("僵尸罐子 (紫罐)", modifier = Modifier.width(150.dp), fontSize = 16.sp)
+                            Text(
+                                "僵尸罐子 (紫罐)",
+                                modifier = Modifier.width(150.dp),
+                                fontSize = 16.sp
+                            )
                             Spacer(Modifier.weight(1f))
                             Stepper(
                                 value = data.numColoredZombieVases,
@@ -357,7 +394,8 @@ fun VaseBreakerTab(
                         updateData { mutableData ->
                             val index = mutableData.vases.indexOfFirst { v -> v === vase }
                             if (index != -1) {
-                                mutableData.vases[index] = mutableData.vases[index].copy(count = newCount)
+                                mutableData.vases[index] =
+                                    mutableData.vases[index].copy(count = newCount)
                             }
                         }
                     }
@@ -403,7 +441,13 @@ fun VaseBreakerTab(
                             onRequestZombieSelection { zombieIds ->
                                 val newList = data.vases.toMutableList()
                                 zombieIds.forEach { zombieId ->
-                                    newList.add(VaseDefinition(zombieTypeName = zombieId, count = 1))
+                                    newList.add(
+                                        VaseDefinition(
+                                            zombieTypeName = ZombieRepository.buildAliases(
+                                                zombieId
+                                            ), count = 1
+                                        )
+                                    )
                                 }
                                 updateState(data.copy(vases = newList))
                             }
@@ -447,13 +491,26 @@ fun VaseBreakerTab(
                                         path = "images/others/${info.iconName}",
                                         contentDescription = null,
                                         modifier = Modifier.size(44.dp),
-                                        placeholder = { Icon(Icons.Default.Stars, null, tint = Color(0xFFFFC107)) }
+                                        placeholder = {
+                                            Icon(
+                                                Icons.Default.Stars,
+                                                null,
+                                                tint = Color(0xFFFFC107)
+                                            )
+                                        }
                                     )
                                 }
                             },
                             modifier = Modifier
                                 .clickable {
-                                    updateData { it.vases.add(VaseDefinition(collectableTypeName = info.id, count = 1)) }
+                                    updateData {
+                                        it.vases.add(
+                                            VaseDefinition(
+                                                collectableTypeName = info.id,
+                                                count = 1
+                                            )
+                                        )
+                                    }
                                     showCollectableDialog = false
                                 }
                         )
@@ -514,15 +571,15 @@ fun VaseItemRow(
         type = "植物"
         val alias = RtidParser.parse(vase.plantTypeName!!)?.alias ?: vase.plantTypeName!!
         name = PlantRepository.getName(alias)
-        val pInfo = PlantRepository.search(alias, PlantTag.All).firstOrNull()
+        val pInfo = remember(alias) { PlantRepository.getPlantInfoById(alias) }
         iconPath = if (pInfo?.icon != null) "images/plants/${pInfo.icon}" else null
     } else if (vase.zombieTypeName != null) {
         type = "僵尸"
         val alias = RtidParser.parse(vase.zombieTypeName!!)?.alias ?: vase.zombieTypeName!!
         name = ZombieRepository.getName(alias)
-        val zInfo = ZombieRepository.search(alias, ZombieTag.All).firstOrNull()
+        val zInfo = remember(alias) { ZombieRepository.getZombieInfoById(alias) }
         iconPath = if (zInfo?.icon != null) "images/zombies/${zInfo.icon}" else null
-    }  else {
+    } else {
         type = "道具"
         val info = collectableTypes.find { it.id == vase.collectableTypeName }
         name = info?.name ?: vase.collectableTypeName ?: "未知道具"
@@ -570,7 +627,12 @@ fun VaseItemRow(
             Spacer(Modifier.width(8.dp))
 
             IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
-                Icon(Icons.Default.Delete, null, tint = Color.LightGray.copy(alpha = 0.8f), modifier = Modifier.size(20.dp))
+                Icon(
+                    Icons.Default.Delete,
+                    null,
+                    tint = Color.LightGray.copy(alpha = 0.8f),
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }
@@ -634,7 +696,12 @@ fun BoundaryStepper(
                 onClick = onMinus,
                 modifier = Modifier.size(36.dp)
             ) {
-                Icon(Icons.Default.Remove, null, tint = Color(0xFF5D4037), modifier = Modifier.size(16.dp))
+                Icon(
+                    Icons.Default.Remove,
+                    null,
+                    tint = Color(0xFF5D4037),
+                    modifier = Modifier.size(16.dp)
+                )
             }
 
             Box(
@@ -655,7 +722,12 @@ fun BoundaryStepper(
                 onClick = onPlus,
                 modifier = Modifier.size(36.dp)
             ) {
-                Icon(Icons.Default.Add, null, tint = Color(0xFF5D4037), modifier = Modifier.size(16.dp))
+                Icon(
+                    Icons.Default.Add,
+                    null,
+                    tint = Color(0xFF5D4037),
+                    modifier = Modifier.size(16.dp)
+                )
             }
         }
     }

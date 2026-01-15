@@ -17,11 +17,8 @@ object ZombiePropertiesRepository {
     private val statsCache = mutableMapOf<String, ZombieStats>()
     private val aliasToTypeCache = mutableMapOf<String, String>()
 
-    private val originalTypeDataCache = mutableMapOf<String, ZombieTypeData>()
-    private val originalPropsDataCache = mutableMapOf<String, ZombiePropertySheetData>()
-
-    private val originalTypeJsonCache = mutableMapOf<String, JsonElement>()
-    private val originalPropsJsonCache = mutableMapOf<String, JsonElement>()
+    private val originalTypeJsonCache = mutableMapOf<String, Pair<String, JsonElement>>()
+    private val originalPropsJsonCache = mutableMapOf<String, Pair<String, JsonElement>>()
 
     private var isInitialized = false
 
@@ -40,13 +37,13 @@ object ZombiePropertiesRepository {
                     if (typeName.isNotBlank()) {
                         aliasToTypeCache[alias] = typeName
                         aliasToTypeCache[typeName] = typeName
-                        originalTypeJsonCache[typeName] = typeObj.objData
+                        originalTypeJsonCache[typeName] = typeObj.objClass to typeObj.objData
 
                         val propsAlias = RtidParser.parse(typeData.properties)?.alias ?: ""
                         val propsObj = propsFileMap[propsAlias]
                         if (propsObj != null) {
                             val sheet = gson.fromJson(propsObj.objData, ZombiePropertySheetData::class.java)
-                            originalPropsJsonCache[typeName] = propsObj.objData
+                            originalPropsJsonCache[typeName] = propsObj.objClass to propsObj.objData
 
                             val stats = ZombieStats(
                                 id = typeName,
@@ -90,20 +87,12 @@ object ZombiePropertiesRepository {
         return aliasToTypeCache.containsKey(alias)
     }
 
-    fun getTemplateData(typeName: String): Pair<ZombieTypeData, ZombiePropertySheetData>? {
-        val typeData = originalTypeDataCache[typeName]
-        val propsData = originalPropsDataCache[typeName]
+    fun getTemplateJson(typeName: String): Pair<Pair<String, JsonElement>, Pair<String, JsonElement>>? {
+        val typeData = originalTypeJsonCache[typeName]
+        val propsData = originalPropsJsonCache[typeName]
+
         if (typeData != null && propsData != null) {
             return typeData to propsData
-        }
-        return null
-    }
-
-    fun getTemplateJson(typeName: String): Pair<JsonElement, JsonElement>? {
-        val typeJson = originalTypeJsonCache[typeName]
-        val propsJson = originalPropsJsonCache[typeName]
-        if (typeJson != null && propsJson != null) {
-            return typeJson to propsJson
         }
         return null
     }

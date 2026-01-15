@@ -71,6 +71,7 @@ import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.PlantTag
+import com.example.z_editor.data.repository.ZombieRepository
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
@@ -366,9 +367,10 @@ fun ModifyConveyorPlantRow(
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // 剥离 RTID 获取真实 ID 用于查图
         val realId = unwrapRtid(plant.type)
-        val info = remember(realId) { PlantRepository.search(realId, PlantTag.All).firstOrNull() }
+        val info = remember(realId) {
+            PlantRepository.getPlantInfoById(realId)
+        }
         val displayName = PlantRepository.getName(realId)
 
         val placeholderContent = @Composable {
@@ -642,7 +644,9 @@ fun ModifyConveyorRemoveRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         val realId = unwrapRtid(item.type)
-        val info = remember(realId) { PlantRepository.search(realId, PlantTag.All).firstOrNull() }
+        val info = remember(realId) {
+            PlantRepository.getPlantInfoById(realId)
+        }
         val displayName = PlantRepository.getName(realId)
 
         val placeholderContent = @Composable {

@@ -27,7 +27,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
@@ -70,7 +69,6 @@ import com.example.z_editor.data.EventRegistry
 import com.example.z_editor.data.LevelParser
 import com.example.z_editor.data.PvzObject
 import com.example.z_editor.data.RtidParser
-import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.ZombieSpawnData
 import com.example.z_editor.data.repository.ZombieRepository
 import com.example.z_editor.data.repository.ZombieTag
@@ -241,9 +239,11 @@ fun LaneRow(
     onAddClick: () -> Unit,
     onZombieClick: (ZombieSpawnData) -> Unit
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 2.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp)
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -305,11 +305,11 @@ fun CompactZombieCard(
     val displayName = if (isCustom) alias else ZombieRepository.getName(realTypeName)
 
     val info = remember(realTypeName) {
-        ZombieRepository.search(realTypeName, ZombieTag.All).firstOrNull()
+        ZombieRepository.getZombieInfoById(realTypeName)
     }
 
     val isElite = zombie.isElite
-    val level = zombie.level ?: 1
+    val level = zombie.level ?: 0
 
     val placeholderContent = @Composable {
         Box(
@@ -319,7 +319,12 @@ fun CompactZombieCard(
             contentAlignment = Alignment.Center
         ) {
             if (!isValid) {
-                Icon(Icons.Default.ErrorOutline, null, tint = Color.Red, modifier = Modifier.size(24.dp))
+                Icon(
+                    Icons.Default.ErrorOutline,
+                    null,
+                    tint = Color.Red,
+                    modifier = Modifier.size(24.dp)
+                )
             } else {
                 Text(
                     text = displayName.take(1).uppercase(),
@@ -421,7 +426,7 @@ fun ZombieEditSheetContent(
     val displayName = if (isCustom) alias else ZombieRepository.getName(baseTypeName)
     val subtitle = if (isCustom) "基于: $baseTypeName" else baseTypeName
     val info = remember(baseTypeName) {
-        ZombieRepository.search(baseTypeName, ZombieTag.All).firstOrNull()
+        ZombieRepository.getZombieInfoById(baseTypeName)
     }
 
     val isElite = originalZombie.isElite
@@ -670,7 +675,11 @@ fun ZombieEditSheetContent(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.verticalScroll(rememberScrollState())
                 ) {
-                    Text("检测到关卡内已有基于 \"$displayName\" 的自定义僵尸，点击即可替换：", fontSize = 13.sp, color = Color.Gray)
+                    Text(
+                        "检测到关卡内已有基于 \"$displayName\" 的自定义僵尸，点击即可替换：",
+                        fontSize = 13.sp,
+                        color = Color.Gray
+                    )
 
                     compatibleCustomZombies.forEach { (alias, rtid) ->
                         Card(
@@ -767,7 +776,6 @@ fun EditorHelpDialog(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // 这里渲染传入的具体内容
                 content()
             }
         },

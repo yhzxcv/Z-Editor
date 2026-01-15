@@ -66,7 +66,6 @@ import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.SpeedConditionData
 import com.example.z_editor.data.repository.PlantRepository
-import com.example.z_editor.data.repository.PlantTag
 import com.example.z_editor.data.repository.ToolRepository
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
@@ -443,7 +442,7 @@ fun PlantRow(
     val isTool = toolInfo != null
 
     val plantInfo = remember(plant.plantType) {
-        if (!isTool) PlantRepository.search(plant.plantType, PlantTag.All).firstOrNull() else null
+        PlantRepository.getPlantInfoById(plant.plantType)
     }
 
     val displayName = toolInfo?.name ?: PlantRepository.getName(plant.plantType)

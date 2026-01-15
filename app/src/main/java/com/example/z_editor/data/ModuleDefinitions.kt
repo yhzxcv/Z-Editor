@@ -8,6 +8,7 @@ import androidx.compose.material.icons.automirrored.filled.NextPlan
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.AddRoad
+import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.AirplanemodeActive
 import androidx.compose.material.icons.filled.BlurCircular
 import androidx.compose.material.icons.filled.Bolt
@@ -17,6 +18,7 @@ import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Dangerous
 import androidx.compose.material.icons.filled.Eco
+import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material.icons.filled.EmojiPeople
 import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.FastForward
@@ -32,6 +34,8 @@ import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.Redeem
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Scoreboard
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Speaker
 import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.Storm
@@ -81,6 +85,8 @@ sealed class EditorSubScreen {
     data class InitialPlantEntry(val rtid: String) : EditorSubScreen()
     data class InitialZombieEntry(val rtid: String) : EditorSubScreen()
     data class InitialGridItemEntry(val rtid: String) : EditorSubScreen()
+    data class ProtectTheGridItem(val rtid: String) : EditorSubScreen()
+    data class ProtectThePlant(val rtid: String) : EditorSubScreen()
     data class Railcart(val rtid: String) : EditorSubScreen()
     data class PowerTile(val rtid: String) : EditorSubScreen()
     data class PiratePlank(val rtid: String) : EditorSubScreen()
@@ -118,6 +124,8 @@ sealed class EditorSubScreen {
     data class GridItemSpawnerDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class ZombiePotionActionDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class MagicMirrorDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class FairyTaleFogDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class FairyTaleWindDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class InvalidEvent(val rtid: String, val waveIndex: Int) : EditorSubScreen()
 }
 
@@ -369,6 +377,42 @@ object EventRegistry {
                     val gson = Gson()
                     val data = gson.fromJson(obj.objData, SpawnZombiesFromGridItemData::class.java)
                     "${data.zombies.size} 僵尸"
+                } catch (_: Exception) {
+                    "解析错误"
+                }
+            }
+        ),
+        "FairyTaleFogWaveActionProps" to EventMetadata(
+            title = "童话迷雾",
+            description = "生成覆盖场地的迷雾",
+            icon = Icons.Default.Cloud,
+            color = Color(0xFFBE5DBA),
+            defaultAlias = "FairyFogEvent",
+            defaultObjClass = "FairyTaleFogWaveActionProps",
+            initialDataFactory = { FairyTaleFogWaveActionData() },
+            summaryProvider = { obj ->
+                try {
+                    val gson = Gson()
+                    val data = gson.fromJson(obj.objData, FairyTaleFogWaveActionData::class.java)
+                    "mX: ${data.range.mX}"
+                } catch (_: Exception) {
+                    "解析错误"
+                }
+            }
+        ),
+        "FairyTaleWindWaveActionProps" to EventMetadata(
+            title = "童话微风",
+            description = "把场上所有童话迷雾吹走的风",
+            icon = Icons.Default.Air,
+            color = Color(0xFFBE5DBA),
+            defaultAlias = "WindEvent",
+            defaultObjClass = "FairyTaleWindWaveActionProps",
+            initialDataFactory = { FairyTaleWindWaveActionData() },
+            summaryProvider = { obj ->
+                try {
+                    val gson = Gson()
+                    val data = gson.fromJson(obj.objData, FairyTaleWindWaveActionData::class.java)
+                    "${data.duration}秒"
                 } catch (_: Exception) {
                     "解析错误"
                 }
@@ -662,7 +706,7 @@ object ModuleRegistry {
         "LastStandMinigameProperties" to ModuleMetadata(
             title = "坚不可摧",
             description = "设置初始资源，开启布阵阶段",
-            icon = Icons.Default.Build,
+            icon = Icons.Default.Shield,
             isCore = true,
             category = ModuleCategory.Mode,
             defaultAlias = "LastStand",
@@ -772,7 +816,7 @@ object ModuleRegistry {
         "PVZ1OverwhelmModuleProperties" to ModuleMetadata(
             title = "排山倒海",
             description = "排山倒海小游戏，需配合传送带",
-            icon = Icons.Default.Grass,
+            icon = Icons.Default.LocalFlorist,
             isCore = false,
             category = ModuleCategory.Mode,
             defaultAlias = "PVZ1Overwhelm",
@@ -817,7 +861,7 @@ object ModuleRegistry {
         "InitialPlantEntryProperties" to ModuleMetadata(
             title = "预置植物",
             description = "关卡开始时场上已存在的植物",
-            icon = Icons.Default.LocalFlorist,
+            icon = Icons.Default.Widgets,
             isCore = true,
             allowMultiple = true,
             category = ModuleCategory.Scene,
@@ -829,7 +873,7 @@ object ModuleRegistry {
         "InitialZombieProperties" to ModuleMetadata(
             title = "预置僵尸",
             description = "关卡开始时场上已存在的僵尸",
-            icon = Icons.AutoMirrored.Filled.DirectionsWalk,
+            icon = Icons.Default.Widgets,
             isCore = true,
             allowMultiple = true,
             category = ModuleCategory.Scene,
@@ -850,6 +894,30 @@ object ModuleRegistry {
             initialDataFactory = { InitialGridItemEntryData() },
             navigationFactory = { rtid -> EditorSubScreen.InitialGridItemEntry(rtid) }
         ),
+        "ProtectThePlantChallengeProperties" to ModuleMetadata(
+            title = "保护植物挑战",
+            description = "设置关卡中必须保护的植物",
+            icon = Icons.Default.Security,
+            isCore = true,
+            allowMultiple = true,
+            category = ModuleCategory.Scene,
+            defaultAlias = "ProtectThePlant",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { ProtectThePlantChallengePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.ProtectThePlant(rtid) }
+        ),
+        "ProtectTheGridItemChallengeProperties" to ModuleMetadata(
+            title = "保护物品挑战",
+            description = "设置关卡中必须保护且不能被破坏的物品",
+            icon = Icons.Default.Security,
+            isCore = true,
+            allowMultiple = true,
+            category = ModuleCategory.Scene,
+            defaultAlias = "ProtectTheGridItem",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { ProtectTheGridItemChallengePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.ProtectTheGridItem(rtid) }
+        ),
         "ZombiePotionModuleProperties" to ModuleMetadata(
             title = "僵尸药水",
             description = "黑暗时代药水自动生成机制配置",
@@ -865,7 +933,7 @@ object ModuleRegistry {
         "PiratePlankProperties" to ModuleMetadata(
             title = "海盗甲板",
             description = "配置海盗地图的甲板行数",
-            icon = Icons.Default.Widgets,
+            icon = Icons.Default.EditRoad,
             isCore = true,
             category = ModuleCategory.Scene,
             defaultAlias = "PiratePlanks",
@@ -873,32 +941,10 @@ object ModuleRegistry {
             initialDataFactory = { PiratePlankPropertiesData() },
             navigationFactory = { rtid -> EditorSubScreen.PiratePlank(rtid) }
         ),
-        "RoofProperties" to ModuleMetadata(
-            title = "屋顶花盆",
-            description = "配置屋顶关卡的预置花盆范围",
-            icon = Icons.Default.LocalFlorist,
-            isCore = true,
-            category = ModuleCategory.Scene,
-            defaultAlias = "RoofProps",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { RoofPropertiesData() },
-            navigationFactory = { rtid -> EditorSubScreen.RoofProperties(rtid) }
-        ),
-        "TideProperties" to ModuleMetadata(
-            title = "潮水系统",
-            description = "开启关卡中的潮水系统",
-            icon = Icons.Default.WaterDrop,
-            isCore = true,
-            category = ModuleCategory.Scene,
-            defaultAlias = "Tide",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { TidePropertiesData() },
-            navigationFactory = { rtid -> EditorSubScreen.Tide(rtid) }
-        ),
         "RailcartProperties" to ModuleMetadata(
             title = "矿车轨道",
             description = "配置矿车与轨道初始布局",
-            icon = Icons.Default.AddRoad,
+            icon = Icons.Default.EditRoad,
             isCore = true,
             category = ModuleCategory.Scene,
             defaultAlias = "Railcarts",
@@ -927,6 +973,28 @@ object ModuleRegistry {
             defaultSource = "CurrentLevel",
             initialDataFactory = { ManholePipelineModuleData() },
             navigationFactory = { rtid -> EditorSubScreen.ManholePipelineModule(rtid) }
+        ),
+        "RoofProperties" to ModuleMetadata(
+            title = "屋顶花盆",
+            description = "配置屋顶关卡的预置花盆范围",
+            icon = Icons.Default.LocalFlorist,
+            isCore = true,
+            category = ModuleCategory.Scene,
+            defaultAlias = "RoofProps",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { RoofPropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.RoofProperties(rtid) }
+        ),
+        "TideProperties" to ModuleMetadata(
+            title = "潮水系统",
+            description = "开启关卡中的潮水系统",
+            icon = Icons.Default.WaterDrop,
+            isCore = true,
+            category = ModuleCategory.Scene,
+            defaultAlias = "Tide",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { TidePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.Tide(rtid) }
         ),
         "RainDarkProperties" to ModuleMetadata(
             title = "环境天气",

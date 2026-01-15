@@ -28,6 +28,9 @@ object ObjectOrderRegistry {
         "InitialZombieProperties",
         "InitialGridItemProperties",
 
+        "ProtectThePlantChallengeProperties",
+        "ProtectTheGridItemChallengeProperties",
+
         "ZombossBattleIntroProperties",
         "ZombossBattleModuleProperties",
         "VaseBreakerPresetProperties",

@@ -155,6 +155,31 @@ data class InitialGridItemData(
     @SerializedName("TypeName") var typeName: String = ""
 )
 
+// === 保护障碍物模块 ===
+data class ProtectTheGridItemChallengePropertiesData(
+    @SerializedName("Description") var description: String = "",
+    @SerializedName("MustProtectCount") var mustProtectCount: Int = 0,
+    @SerializedName("GridItems") var gridItems: MutableList<ProtectGridItemData> = mutableListOf()
+)
+
+data class ProtectGridItemData(
+    @SerializedName("GridX") var gridX: Int = 0,
+    @SerializedName("GridY") var gridY: Int = 0,
+    @SerializedName("GridItemType") var gridItemType: String = ""
+)
+
+// === 保护植物模块 ===
+data class ProtectThePlantChallengePropertiesData(
+    @SerializedName("MustProtectCount") var mustProtectCount: Int = 0,
+    @SerializedName("Plants") var plants: MutableList<ProtectPlantData> = mutableListOf()
+)
+
+data class ProtectPlantData(
+    @SerializedName("GridX") var gridX: Int = 0,
+    @SerializedName("GridY") var gridY: Int = 0,
+    @SerializedName("PlantType") var plantType: String = ""
+)
+
 // === 太阳炸弹挑战模块 ===
 data class SunBombChallengeData(
     @SerializedName("PlantBombExplosionRadius") var plantBombExplosionRadius: Int = 25,
@@ -391,7 +416,8 @@ data class ZombieStats(
 
 data class ZombieTypeData(
     @SerializedName("TypeName") var typeName: String = "",
-    @SerializedName("Properties") var properties: String = ""
+    @SerializedName("Properties") var properties: String = "",
+    @SerializedName("Resistences") var resistences: MutableList<Double>? = null
 )
 
 data class RectData(
@@ -621,6 +647,25 @@ data class MagicMirrorArrayData(
     @SerializedName("MirrorExistDuration") var mirrorExistDuration: Int = 300
 )
 
+// === 童话迷雾事件 ===
+data class FairyTaleFogWaveActionData(
+    @SerializedName("MovingTime") var movingTime: Double = 3.0,
+    @SerializedName("FogType") var fogType: String = "fairy_tale_fog_lvl1",
+    @SerializedName("Range") var range: FogRangeData = FogRangeData()
+)
+
+data class FogRangeData(
+    @SerializedName("mX") var mX: Int = 4,
+    @SerializedName("mY") var mY: Int = 0,
+    @SerializedName("mWidth") var mWidth: Int = 8,
+    @SerializedName("mHeight") var mHeight: Int = 5
+)
+
+// === 童话微风事件 ===
+data class FairyTaleWindWaveActionData(
+    @SerializedName("Duration") var duration: Double = 5.0,
+    @SerializedName("VelocityScale") var velocityScale: Double = 2.0
+)
 
 // ======================== 4. 特殊模式模块数据定义 ========================
 

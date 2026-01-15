@@ -1,6 +1,5 @@
 package com.example.z_editor.views.editor.pages.module
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,7 +22,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -56,10 +54,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -286,7 +282,9 @@ fun ManholePipelinePropertiesEP(
             // === 区域 3: 当前管道配置 ===
             if (currentPipeline != null) {
                 Card(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
@@ -392,27 +390,42 @@ fun ManholePipelinePropertiesEP(
                                     for (row in 0..4) {
                                         Row(Modifier.weight(1f)) {
                                             for (col in 0..8) {
-                                                val isTargetCell = (!isEditingEnd && currentPipeline.startX == col && currentPipeline.startY == row)
-                                                        || (isEditingEnd && currentPipeline.endX == col && currentPipeline.endY == row)
+                                                val isTargetCell =
+                                                    (!isEditingEnd && currentPipeline.startX == col && currentPipeline.startY == row)
+                                                            || (isEditingEnd && currentPipeline.endX == col && currentPipeline.endY == row)
                                                 Box(
                                                     modifier = Modifier
                                                         .weight(1f)
                                                         .fillMaxHeight()
                                                         .border(
                                                             width = if (isTargetCell) 1.5.dp else 0.5.dp,
-                                                            color = if (isTargetCell) themeColor else Color(0xFFA1887F)
+                                                            color = if (isTargetCell) themeColor else Color(
+                                                                0xFFA1887F
+                                                            )
                                                         )
                                                         .background(
-                                                            if (isTargetCell) Color(0xFFB0B0B0).copy(alpha = 0.6f) else Color.Transparent
+                                                            if (isTargetCell) Color(0xFFB0B0B0).copy(
+                                                                alpha = 0.6f
+                                                            ) else Color.Transparent
                                                         )
                                                         .clickable {
                                                             if (isEditingEnd) {
                                                                 if (currentPipeline.startX != col || currentPipeline.startY != row) {
-                                                                    updateCurrentPipeline(currentPipeline.copy(endX = col, endY = row))
+                                                                    updateCurrentPipeline(
+                                                                        currentPipeline.copy(
+                                                                            endX = col,
+                                                                            endY = row
+                                                                        )
+                                                                    )
                                                                 }
                                                             } else {
                                                                 if (currentPipeline.endX != col || currentPipeline.endY != row) {
-                                                                    updateCurrentPipeline(currentPipeline.copy(startX = col, startY = row))
+                                                                    updateCurrentPipeline(
+                                                                        currentPipeline.copy(
+                                                                            startX = col,
+                                                                            startY = row
+                                                                        )
+                                                                    )
                                                                 }
                                                             }
                                                         }
@@ -427,23 +440,36 @@ fun ManholePipelinePropertiesEP(
                                         Row(Modifier.weight(1f)) {
                                             for (col in 0..8) {
                                                 Box(
-                                                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                                                    modifier = Modifier
+                                                        .weight(1f)
+                                                        .fillMaxHeight(),
                                                     contentAlignment = Alignment.Center
                                                 ) {
-                                                    val pointsAtCell = moduleDataState.value.pipelineList.mapIndexedNotNull { index, pipe ->
-                                                        if (pipe.startX == col && pipe.startY == row) Triple(index, true, pipe)
-                                                        else if (pipe.endX == col && pipe.endY == row) Triple(index, false, pipe)
-                                                        else null
-                                                    }
+                                                    val pointsAtCell =
+                                                        moduleDataState.value.pipelineList.mapIndexedNotNull { index, pipe ->
+                                                            if (pipe.startX == col && pipe.startY == row) Triple(
+                                                                index,
+                                                                true,
+                                                                pipe
+                                                            )
+                                                            else if (pipe.endX == col && pipe.endY == row) Triple(
+                                                                index,
+                                                                false,
+                                                                pipe
+                                                            )
+                                                            else null
+                                                        }
 
-                                                    val pointToShow = pointsAtCell.find { it.first == selectedIndex }
-                                                        ?: pointsAtCell.lastOrNull()
+                                                    val pointToShow =
+                                                        pointsAtCell.find { it.first == selectedIndex }
+                                                            ?: pointsAtCell.lastOrNull()
 
                                                     if (pointToShow != null) {
                                                         val (idx, isStart, _) = pointToShow
                                                         val isSelected = idx == selectedIndex
 
-                                                        val imageName = if (isStart) "steam_down.png" else "steam_up.png"
+                                                        val imageName =
+                                                            if (isStart) "steam_down.png" else "steam_up.png"
 
                                                         AssetImage(
                                                             path = "images/griditems/$imageName",
@@ -460,7 +486,9 @@ fun ManholePipelinePropertiesEP(
                                                                 .padding(2.dp)
                                                                 .size(18.dp)
                                                                 .background(
-                                                                    color = if (isSelected) themeColor else Color.Gray.copy(alpha = 0.8f),
+                                                                    color = if (isSelected) themeColor else Color.Gray.copy(
+                                                                        alpha = 0.8f
+                                                                    ),
                                                                     shape = CircleShape
                                                                 ),
                                                             contentAlignment = Alignment.Center
@@ -483,7 +511,12 @@ fun ManholePipelinePropertiesEP(
                     }
                 }
             } else {
-                Box(modifier = Modifier.height(200.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier
+                        .height(200.dp)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
                     Text("数据异常，请重新添加管道")
                 }
             }

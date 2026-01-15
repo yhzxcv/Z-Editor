@@ -2989,5 +2989,213 @@
             "Physics"
         ],
         "icon": "icon_duckpear.jpg"
+    },
+    {
+        "id": "parallel_sunflower",
+        "name": "42号向日葵",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_sunflower.jpg"
+    },
+    {
+        "id": "parallel_peashooter",
+        "name": "42号豌豆射手",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_peashooter.jpg"
+    },
+    {
+        "id": "parallel_wallnut",
+        "name": "42号坚果",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_wallnut.jpg"
+    },
+    {
+        "id": "parallel_potatomine",
+        "name": "42号土豆地雷",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_potatomine.jpg"
+    },
+    {
+        "id": "parallel_chomper",
+        "name": "42号大嘴花",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_chomper.jpg"
+    },
+    {
+        "id": "parallel_cherry_bomb",
+        "name": "42号樱桃炸弹",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_cherry_bomb.jpg"
+    },
+    {
+        "id": "parallel_iceburg",
+        "name": "42号冰冻生菜",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_iceburg.jpg"
+    },
+    {
+        "id": "parallel_bonkchoy",
+        "name": "42号菜问",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_bonkchoy.jpg"
+    },
+    {
+        "id": "parallel_moonflower",
+        "name": "42号月光花",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_moonflower.jpg"
+    },
+    {
+        "id": "parallel_shadowshroom",
+        "name": "42号毒影菇",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_shadowshroom.jpg"
+    },
+    {
+        "id": "parallel_grimrose",
+        "name": "42号暗樱草",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_grimrose.jpg"
+    },
+    {
+        "id": "parallel_nightshade",
+        "name": "42号夜影龙葵",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_nightshade.jpg"
+    },
+    {
+        "id": "parallel_dusklobber",
+        "name": "42号幽暮投手",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_dusklobber.jpg"
+    },
+    {
+        "id": "parallel_shadowpeashooter",
+        "name": "42号暗影豌豆",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_shadowpeashooter.jpg"
+    },
+    {
+        "id": "parallel_shadowvanilla",
+        "name": "42号暗影荚兰",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_shadowvanilla.jpg"
+    },
+    {
+        "id": "parallel_primalsunflower",
+        "name": "42号原始向日葵",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_primalsunflower.jpg"
+    },
+    {
+        "id": "parallel_primalpeashooter",
+        "name": "42号原始豌豆射手",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_primalpeashooter.jpg"
+    },
+    {
+        "id": "parallel_primalwallnut",
+        "name": "42号原始坚果",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_primalwallnut.jpg"
+    },
+    {
+        "id": "parallel_primalpotatomine",
+        "name": "42号原始土豆地雷",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_primalpotatomine.jpg"
+    },
+    {
+        "id": "parallel_pumpkin",
+        "name": "42号南瓜头",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_pumpkin.jpg"
+    },
+    {
+        "id": "parallel_nekotail",
+        "name": "42号猫尾草",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_nekotail.gif"
+    },
+    {
+        "id": "parallel_kernelpult",
+        "name": "42号玉米投手",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_kernelpult.jpg"
+    },
+    {
+        "id": "parallel_cobcannon",
+        "name": "42号玉米加农炮",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_cobcannon.jpg"
+    },
+    {
+        "id": "parallel_spikeweed",
+        "name": "41号地刺",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_spikeweed.jpg"
+    },
+    {
+        "id": "parallel_splitpea",
+        "name": "41号双向射手",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_splitpea.jpg"
+    },
+    {
+        "id": "parallel_wintermelon",
+        "name": "41号火西瓜",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_wintermelon.gif"
     }
 ]

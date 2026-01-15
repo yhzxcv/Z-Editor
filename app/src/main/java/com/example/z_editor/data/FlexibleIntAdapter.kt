@@ -11,7 +11,6 @@ import java.lang.reflect.Type
 
 class FlexibleIntAdapter : JsonDeserializer<Int>, JsonSerializer<Int> {
 
-    // 读取逻辑：兼容数字 1 和字符串 "1"，统一转为 Int
     override fun deserialize(
         json: JsonElement,
         typeOfT: Type,

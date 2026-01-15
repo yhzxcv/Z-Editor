@@ -181,31 +181,34 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
             Toast.makeText(context, "无法获取 $typeName 的原始数据模板", Toast.LENGTH_SHORT).show()
             return null
         }
-        val (templateTypeJson, templatePropsJson) = template
+
+        val (typeTemplate, propsTemplate) = template
+        val (typeClass, typeJsonSource) = typeTemplate
+        val (propsClass, propsJsonSource) = propsTemplate
+
         val baseName = typeName
         var index = 1
-        while (rootLevelFile!!.objects.any { it.aliases?.contains("${baseName}_$index") == true }) {
-            index++
-        }
+        while (rootLevelFile!!.objects.any { it.aliases?.contains("${baseName}_$index") == true }) { index++ }
         val newTypeAlias = "${baseName}_$index"
 
         var propsIndex = index
-        while (rootLevelFile!!.objects.any { it.aliases?.contains("${baseName}_props_$propsIndex") == true }) {
-            propsIndex++
-        }
+        while (rootLevelFile!!.objects.any { it.aliases?.contains("${baseName}_props_$propsIndex") == true }) { propsIndex++ }
         val newPropsAlias = "${baseName}_props_$propsIndex"
-        val newPropsJson = gson.fromJson(gson.toJson(templatePropsJson), com.google.gson.JsonElement::class.java)
+
+        val newPropsJson = gson.fromJson(gson.toJson(propsJsonSource), com.google.gson.JsonElement::class.java)
 
         val newPropsObj = PvzObject(
             aliases = listOf(newPropsAlias),
-            objClass = "ZombiePropertySheet",
+            objClass = propsClass,
             objData = newPropsJson
         )
-        val newTypeJson = gson.fromJson(gson.toJson(templateTypeJson), com.google.gson.JsonObject::class.java)
+
+        val newTypeJson = gson.fromJson(gson.toJson(typeJsonSource), com.google.gson.JsonObject::class.java)
         newTypeJson.addProperty("Properties", RtidParser.build(newPropsAlias, "CurrentLevel"))
+
         val newTypeObj = PvzObject(
             aliases = listOf(newTypeAlias),
-            objClass = "ZombieType",
+            objClass = typeClass,
             objData = newTypeJson
         )
 

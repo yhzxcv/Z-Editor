@@ -39,7 +39,8 @@ enum class PlantTag(val label: String, val iconName: String?, val category: Plan
     Physics("物理属性", "Plant_Physics.png", PlantCategory.Attribute),
 
     // --- 其他植物 (Other) ---
-    Original("一代植物", null, PlantCategory.Other)
+    Original("一代植物", null, PlantCategory.Other),
+    Parallel("平行世界", null, PlantCategory.Other),
 }
 
 
@@ -65,19 +66,16 @@ object PlantRepository {
      * 初始化：从 assets 读取 JSON
      */
     fun init(context: Context) {
-        if (isLoaded) return // 避免重复加载
+        if (isLoaded) return
 
         try {
-            // 1. 打开文件流
             val inputStream = context.assets.open("resources/Plants.json")
             val reader = InputStreamReader(inputStream)
 
-            // 2. 解析为 RawData 列表
             val gson = Gson()
             val listType = object : TypeToken<List<RawPlantData>>() {}.type
             val rawList: List<RawPlantData> = gson.fromJson(reader, listType)
 
-            // 3. 转换为业务对象 (String -> Enum)
             allPlants = rawList.map { raw ->
                 PlantInfo(
                     id = raw.id,
@@ -101,21 +99,21 @@ object PlantRepository {
      * 混合搜索
      */
     fun search(query: String, tag: PlantTag): List<PlantInfo> {
-
         if (!isLoaded) return emptyList()
-
         val tagFiltered = if (tag == PlantTag.All) {
             allPlants
         } else {
             allPlants.filter { it.tags.contains(tag) }
         }
-
         if (query.isBlank()) return tagFiltered
-
         val lowerQ = query.lowercase()
         return tagFiltered.filter {
             it.id.lowercase().contains(lowerQ) || it.name.contains(lowerQ)
         }
+    }
+
+    fun getPlantInfoById(id: String): PlantInfo? {
+        return allPlants.find { it.id.equals(id, ignoreCase = true) }
     }
 
     fun getName(id: String): String {

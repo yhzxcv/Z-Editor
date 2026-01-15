@@ -111,7 +111,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
                     HorizontalDivider()
                     previewWorldDef!!.representativeZombies.forEach { typeName ->
                         val info = remember(typeName) {
-                            ZombieRepository.search(typeName, ZombieTag.All).firstOrNull()
+                            ZombieRepository.getZombieInfoById(typeName)
                         }
                         val displayName = ZombieRepository.getName(typeName)
 
@@ -257,7 +257,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
                         Spacer(Modifier.height(12.dp))
 
                         LazyVerticalGrid(
-                            columns = GridCells.Adaptive(minSize = 120.dp),
+                            columns = GridCells.Adaptive(minSize = 100.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.height(260.dp)

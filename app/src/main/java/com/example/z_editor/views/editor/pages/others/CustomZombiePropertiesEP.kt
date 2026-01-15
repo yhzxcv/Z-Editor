@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -38,6 +39,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
@@ -48,7 +50,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -59,6 +66,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -69,6 +77,7 @@ import com.example.z_editor.data.RectData
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.ZombiePropertySheetData
 import com.example.z_editor.data.ZombieTypeData
+import com.example.z_editor.views.components.AssetImage
 import rememberJsonSync
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,6 +92,7 @@ fun CustomZombiePropertiesEP(
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     var showHelpDialog by remember { mutableStateOf(false) }
 
+
     val typeObj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
 
     val typeSyncManager = rememberJsonSync(typeObj, ZombieTypeData::class.java)
@@ -94,7 +104,31 @@ fun CustomZombiePropertiesEP(
     val propsSyncManager = rememberJsonSync(propsObj, ZombiePropertySheetData::class.java)
     val propsDataState = propsSyncManager.dataState
 
+    val resistanceState = remember { mutableStateListOf<Double>() }
+    val inputTexts = remember { mutableStateMapOf<Int, String>() }
+
+    LaunchedEffect(Unit) {
+        val currentList = typeDataState.value.resistences
+
+        val initialList = if (currentList.isNullOrEmpty()) {
+            List(7) { 0.0 }
+        } else {
+            currentList + List(maxOf(0, 7 - currentList.size)) { 0.0 }
+        }
+        resistanceState.clear()
+        resistanceState.addAll(initialList)
+
+        initialList.forEachIndexed { index, d ->
+            inputTexts[index] = d.toString()
+        }
+    }
+
     fun sync() {
+        val allZero = resistanceState.all { it == 0.0 }
+        val newResistances = if (allZero) { null } else {
+            ArrayList(resistanceState.map { it.coerceIn(0.0, 1.0) })
+        }
+        typeDataState.value = typeDataState.value.copy(resistences = newResistances)
         propsSyncManager.sync()
         typeSyncManager.sync()
     }
@@ -181,7 +215,13 @@ fun CustomZombiePropertiesEP(
         },
         topBar = {
             TopAppBar(
-                title = { Text("自定义僵尸通用属性", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
+                title = {
+                    Text(
+                        "自定义僵尸通用属性",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
@@ -299,7 +339,7 @@ fun CustomZombiePropertiesEP(
                             modifier = Modifier.weight(1f)
                         )
                         NumberInputDouble(
-                            value = propsDataState.value.speedVariance?: 0.1,
+                            value = propsDataState.value.speedVariance ?: 0.1,
                             onValueChange = {
                                 propsDataState.value = propsDataState.value.copy(speedVariance = it)
                                 sync()
@@ -410,7 +450,7 @@ fun CustomZombiePropertiesEP(
                     var groundExpanded by remember { mutableStateOf(false) }
                     val groundOptions = listOf("ground_swatch", "")
 
-                    val currentGroundLabel = when(propsDataState.value.groundTrackName) {
+                    val currentGroundLabel = when (propsDataState.value.groundTrackName) {
                         "ground_swatch" -> "普通地面 (ground_swatch)"
                         "" -> "无 (Empty)"
                         else -> propsDataState.value.groundTrackName
@@ -430,18 +470,22 @@ fun CustomZombiePropertiesEP(
                                 focusedBorderColor = themeColor,
                                 focusedLabelColor = themeColor
                             ),
-                            modifier = Modifier.fillMaxWidth().menuAnchor()
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor()
                         )
                         ExposedDropdownMenu(
                             expanded = groundExpanded,
                             onDismissRequest = { groundExpanded = false }
                         ) {
                             groundOptions.forEach { option ->
-                                val label = if (option == "ground_swatch") "普通地面 (ground_swatch)" else "无 (null)"
+                                val label =
+                                    if (option == "ground_swatch") "普通地面 (ground_swatch)" else "无 (null)"
                                 DropdownMenuItem(
                                     text = { Text(label) },
                                     onClick = {
-                                        propsDataState.value = propsDataState.value.copy(groundTrackName = option)
+                                        propsDataState.value =
+                                            propsDataState.value.copy(groundTrackName = option)
                                         sync()
                                         groundExpanded = false
                                     }
@@ -460,7 +504,10 @@ fun CustomZombiePropertiesEP(
             )
 
             Card(colors = CardDefaults.cardColors(containerColor = Color.White)) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -469,8 +516,16 @@ fun CustomZombiePropertiesEP(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            Text("体型大小 (SizeType)", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            Text(propsDataState.value.sizeType ?: "null", fontSize = 14.sp, color = Color.Gray)
+                            Text(
+                                "体型大小 (SizeType)",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp
+                            )
+                            Text(
+                                propsDataState.value.sizeType ?: "null",
+                                fontSize = 14.sp,
+                                color = Color.Gray
+                            )
                         }
                         Icon(Icons.Default.Edit, null, tint = Color.Gray)
                     }
@@ -481,7 +536,8 @@ fun CustomZombiePropertiesEP(
                         checked = propsDataState.value.enableShowHealthBarByDamage == true,
                         onCheckedChange = { checked ->
                             val newVal = if (checked) true else null
-                            val newTime = if (checked) (propsDataState.value.drawHealthBarTime ?: 4.0) else null
+                            val newTime = if (checked) (propsDataState.value.drawHealthBarTime
+                                ?: 4.0) else null
                             propsDataState.value = propsDataState.value.copy(
                                 enableShowHealthBarByDamage = newVal,
                                 drawHealthBarTime = newTime
@@ -498,11 +554,14 @@ fun CustomZombiePropertiesEP(
                         NumberInputDouble(
                             value = propsDataState.value.drawHealthBarTime ?: 4.0,
                             onValueChange = {
-                                propsDataState.value = propsDataState.value.copy(drawHealthBarTime = it)
+                                propsDataState.value =
+                                    propsDataState.value.copy(drawHealthBarTime = it)
                                 sync()
                             },
                             label = "血条显示时间 (DrawHealthBarTime)",
-                            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp)
                         )
                     }
 
@@ -511,7 +570,8 @@ fun CustomZombiePropertiesEP(
                         checked = propsDataState.value.enableEliteScale == true,
                         onCheckedChange = { checked ->
                             val newVal = if (checked) true else null
-                            val newScale = if (checked) (propsDataState.value.eliteScale ?: 1.2) else null
+                            val newScale =
+                                if (checked) (propsDataState.value.eliteScale ?: 1.2) else null
                             propsDataState.value = propsDataState.value.copy(
                                 enableEliteScale = newVal,
                                 eliteScale = newScale
@@ -532,7 +592,9 @@ fun CustomZombiePropertiesEP(
                                 sync()
                             },
                             label = "缩放比例 (EliteScale)",
-                            modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp)
                         )
                     }
 
@@ -541,7 +603,8 @@ fun CustomZombiePropertiesEP(
                         checked = propsDataState.value.enableEliteImmunities == true,
                         onCheckedChange = { checked ->
                             val newVal = if (checked) true else null
-                            propsDataState.value = propsDataState.value.copy(enableEliteImmunities = newVal)
+                            propsDataState.value =
+                                propsDataState.value.copy(enableEliteImmunities = newVal)
                             sync()
                         }
                     )
@@ -570,9 +633,112 @@ fun CustomZombiePropertiesEP(
                         checked = propsDataState.value.canTriggerZombieWin != false,
                         onCheckedChange = { checked ->
                             val newVal = if (checked) null else false
-                            propsDataState.value = propsDataState.value.copy(canTriggerZombieWin = newVal)
+                            propsDataState.value =
+                                propsDataState.value.copy(canTriggerZombieWin = newVal)
                             sync()
                         }
+                    )
+                }
+            }
+
+            Text(
+                "僵尸抗性设置 (Resistences)",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = themeColor
+            )
+
+            Card(
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(2.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    @Composable
+                    fun ResistanceInput(
+                        index: Int,
+                        label: String,
+                        iconPath: String?,
+                        modifier: Modifier = Modifier
+                    ) {
+                        val textValue = inputTexts.getOrElse(index) {
+                            resistanceState.getOrElse(index) { 0.0 }.toString()
+                        }
+                        OutlinedTextField(
+                            value = textValue,
+                            onValueChange = { str ->
+                                inputTexts[index] = str
+                                val num = str.toDoubleOrNull()
+                                if (num != null) {
+                                    val clamped = num.coerceIn(0.0, 1.0)
+                                    resistanceState[index] = clamped
+                                    sync()
+                                }
+                            },
+
+                            label = { Text(label, fontSize = 11.sp) },
+                            leadingIcon = if (iconPath != null) {
+                                {
+                                    AssetImage(
+                                        path = iconPath,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            } else null,
+                            modifier = modifier,
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            textStyle = LocalTextStyle.current.copy(fontSize = 13.sp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = themeColor,
+                                focusedLabelColor = themeColor
+                            )
+                        )
+                    }
+                    ResistanceInput(
+                        index = 0,
+                        label = "即死抗性 (受到秒杀攻击的免疫概率)",
+                        iconPath = null,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    val labels = listOf(
+                        "物理抗性 (Physics)", "毒液抗性 (Poison)",
+                        "电能抗性 (Electric)", "魔法抗性 (Magic)",
+                        "寒冰抗性 (Ice)", "火焰抗性 (Fire)"
+                    )
+                    val icons = listOf(
+                        "images/tags/Plant_Physics.png", "images/tags/Plant_Poison.png",
+                        "images/tags/Plant_Electric.png", "images/tags/Plant_Magic.png",
+                        "images/tags/Plant_Ice.png", "images/tags/Plant_Fire.png"
+                    )
+
+                    for (i in 0 until 3) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            val idx1 = 1 + i * 2
+                            val idx2 = 1 + i * 2 + 1
+
+                            ResistanceInput(
+                                index = idx1,
+                                label = labels.getOrElse(i * 2) { "Res $idx1" },
+                                iconPath = icons.getOrElse(i * 2) { null },
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            ResistanceInput(
+                                index = idx2,
+                                label = labels.getOrElse(i * 2 + 1) { "Res $idx2" },
+                                iconPath = icons.getOrElse(i * 2 + 1) { null },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+
+                    Text(
+                        "数值范围 0.0 - 1.0，0.0 表示无影响，1.0 表示完全免疫",
+                        fontSize = 11.sp, color = Color.Gray
                     )
                 }
             }
@@ -592,7 +758,6 @@ fun CustomZombiePropertiesEP(
 }
 
 // === 辅助组件 ===
-
 @Composable
 fun EditButtonRow(title: String, subtitle: String, icon: ImageVector, onClick: () -> Unit) {
     Row(
@@ -632,10 +797,10 @@ fun RectEditDialog(
     onDismiss: () -> Unit,
     onConfirm: (RectData) -> Unit
 ) {
-    var mX by remember { mutableStateOf(initialData.mX) }
-    var mY by remember { mutableStateOf(initialData.mY) }
-    var mWidth by remember { mutableStateOf(initialData.mWidth) }
-    var mHeight by remember { mutableStateOf(initialData.mHeight) }
+    var mX by remember { mutableIntStateOf(initialData.mX) }
+    var mY by remember { mutableIntStateOf(initialData.mY) }
+    var mWidth by remember { mutableIntStateOf(initialData.mWidth) }
+    var mHeight by remember { mutableIntStateOf(initialData.mHeight) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -648,7 +813,12 @@ fun RectEditDialog(
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     NumberInputInt(mWidth, { mWidth = it }, "Width", modifier = Modifier.weight(1f))
-                    NumberInputInt(mHeight, { mHeight = it }, "Height", modifier = Modifier.weight(1f))
+                    NumberInputInt(
+                        mHeight,
+                        { mHeight = it },
+                        "Height",
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
         },
@@ -666,8 +836,8 @@ fun Point2DEditDialog(
     onDismiss: () -> Unit,
     onConfirm: (Point2D) -> Unit
 ) {
-    var x by remember { mutableStateOf(initialData.x) }
-    var y by remember { mutableStateOf(initialData.y) }
+    var x by remember { mutableIntStateOf(initialData.x) }
+    var y by remember { mutableIntStateOf(initialData.y) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -692,9 +862,9 @@ fun Point3DEditDialog(
     onDismiss: () -> Unit,
     onConfirm: (Point3DDouble) -> Unit
 ) {
-    var x by remember { mutableStateOf(initialData.x) }
-    var y by remember { mutableStateOf(initialData.y) }
-    var z by remember { mutableStateOf(initialData.z) }
+    var x by remember { mutableDoubleStateOf(initialData.x) }
+    var y by remember { mutableDoubleStateOf(initialData.y) }
+    var z by remember { mutableDoubleStateOf(initialData.z) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -752,6 +922,9 @@ fun SizeTypeDialog(
     )
 }
 
-fun formatRect(rect: RectData?) = if (rect == null) "默认" else "X:${rect.mX}, Y:${rect.mY}, W:${rect.mWidth}, H:${rect.mHeight}"
+fun formatRect(rect: RectData?) =
+    if (rect == null) "默认" else "X:${rect.mX}, Y:${rect.mY}, W:${rect.mWidth}, H:${rect.mHeight}"
+
 fun formatPoint(pt: Point2D?) = if (pt == null) "默认" else "X:${pt.x}, Y:${pt.y}"
-fun formatPoint3D(pt: Point3DDouble?) = if (pt == null) "默认" else "X:${pt.x}, Y:${pt.y}, Z:${pt.z}"
+fun formatPoint3D(pt: Point3DDouble?) =
+    if (pt == null) "默认" else "X:${pt.x}, Y:${pt.y}, Z:${pt.z}"

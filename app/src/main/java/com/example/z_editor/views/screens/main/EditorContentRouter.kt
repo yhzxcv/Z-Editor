@@ -17,6 +17,8 @@ import com.example.z_editor.views.editor.pages.event.BassRainEventEP
 import com.example.z_editor.views.editor.pages.event.BeachStageEventEP
 import com.example.z_editor.views.editor.pages.event.BlackHoleEventEP
 import com.example.z_editor.views.editor.pages.event.DinoEventEP
+import com.example.z_editor.views.editor.pages.event.FairyTaleFogWaveActionPropsEP
+import com.example.z_editor.views.editor.pages.event.FairyTaleWindWaveActionPropsEP
 import com.example.z_editor.views.editor.pages.event.FrostWindEventEP
 import com.example.z_editor.views.editor.pages.event.InvalidEventEP
 import com.example.z_editor.views.editor.pages.event.MagicMirrorEventEP
@@ -45,6 +47,8 @@ import com.example.z_editor.views.editor.pages.module.LevelMutatorStartingPlantf
 import com.example.z_editor.views.editor.pages.module.ManholePipelinePropertiesEP
 import com.example.z_editor.views.editor.pages.module.PiratePlankPropertiesEP
 import com.example.z_editor.views.editor.pages.module.PowerTilePropertiesEP
+import com.example.z_editor.views.editor.pages.module.ProtectTheGridItemChallengePropertiesEP
+import com.example.z_editor.views.editor.pages.module.ProtectThePlantChallengePropertiesEP
 import com.example.z_editor.views.editor.pages.module.RailcartPropertiesEP
 import com.example.z_editor.views.editor.pages.module.RainDarkPropertiesEP
 import com.example.z_editor.views.editor.pages.module.RoofPropertiesEP
@@ -226,6 +230,16 @@ fun EditorContentRouter(
                                         waveIdx
                                     )
 
+                                    "FairyTaleFogWaveActionProps" -> EditorSubScreen.FairyTaleFogDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
+
+                                    "FairyTaleWindWaveActionProps" -> EditorSubScreen.FairyTaleWindDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
+
                                     else -> EditorSubScreen.UnknownDetail(rtid)
                                 }
                                 actions.navigateTo(nextScreen)
@@ -354,6 +368,20 @@ fun EditorContentRouter(
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
             onRequestGridItemSelection = actions.onLaunchGridItemSelector
+        )
+
+        is EditorSubScreen.ProtectTheGridItem -> ProtectTheGridItemChallengePropertiesEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onRequestGridItemSelection = actions.onLaunchGridItemSelector
+        )
+
+        is EditorSubScreen.ProtectThePlant -> ProtectThePlantChallengePropertiesEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onRequestPlantSelection = actions.onLaunchPlantSelector
         )
 
         is EditorSubScreen.SunBombChallenge -> SunBombChallengePropertiesEP(
@@ -642,6 +670,20 @@ fun EditorContentRouter(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile
+        )
+
+        is EditorSubScreen.FairyTaleFogDetail -> FairyTaleFogWaveActionPropsEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getScrollState("FairyTaleFogDetail")
+        )
+
+        is EditorSubScreen.FairyTaleWindDetail -> FairyTaleWindWaveActionPropsEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getScrollState("FairyTaleWindDetail")
         )
 
         is EditorSubScreen.InvalidEvent -> InvalidEventEP(

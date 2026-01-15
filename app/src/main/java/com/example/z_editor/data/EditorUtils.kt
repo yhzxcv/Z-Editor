@@ -23,7 +23,7 @@ class JsonSyncManager<T : Any>(
     private val baseJson: JsonObject = if (obj?.objData != null) {
         try {
             JsonParser.parseString(obj.objData.toString()).asJsonObject
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             JsonObject()
         }
     } else {
@@ -34,7 +34,7 @@ class JsonSyncManager<T : Any>(
         if (obj != null) {
             try {
                 gson.fromJson(obj.objData, dataClass)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 createDefaultInstance(dataClass)
             }
         } else {
@@ -67,7 +67,7 @@ class JsonSyncManager<T : Any>(
     private fun createDefaultInstance(clazz: Class<T>): T {
         return try {
             clazz.getDeclaredConstructor().newInstance()
-        } catch (e: Exception) {
+        } catch (_s: Exception) {
             throw RuntimeException("Data class ${clazz.simpleName} must have a no-arg constructor")
         }
     }

@@ -330,9 +330,8 @@ fun InitialPlantEntryEP(
                                                         .fillMaxHeight()
                                                         .border(0.5.dp, Color(0xFFA5D6A7))
                                                         .background(
-                                                            if (isSelected) Color(0xFFEBF13E).copy(
-                                                                alpha = 0.5f
-                                                            ) else Color.Transparent
+                                                            if (isSelected) Color(0xFFFCF2B1)
+                                                            else Color.Transparent
                                                         )
                                                         .clickable {
                                                             selectedX = col
@@ -412,9 +411,10 @@ fun InitialPlantEntryEP(
 
 @Composable
 fun PlantIconSmall(plantType: String) {
-    val info = remember(plantType) { PlantRepository.search(plantType, PlantTag.All).firstOrNull() }
-
-    val cardShape = RoundedCornerShape(3.dp)
+    val info = remember(plantType) {
+        PlantRepository.getPlantInfoById(plantType)
+    }
+    val cardShape = RoundedCornerShape(4.dp)
 
     if (info?.icon != null) {
         AssetImage(
@@ -443,14 +443,14 @@ fun InitialPlantCard(
     onClick: () -> Unit
 ) {
     val plantType = plant.plantTypes.firstOrNull() ?: "Unknown"
-    val info = remember(plantType) { PlantRepository.search(plantType, PlantTag.All).firstOrNull() }
+    val info = remember(plantType) { PlantRepository.getPlantInfoById(plantType) }
 
     Card(
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFFFFF9C4) else Color.White
+            containerColor = if (isSelected) Color(0xFFD5F3D6) else Color.White
         ),
-        border = if (isSelected) BorderStroke(1.dp, Color(0xFFFBC02D)) else null,
+        border = if (isSelected) BorderStroke(1.dp, Color(0xFF4CAF50)) else null,
         elevation = CardDefaults.cardElevation(1.dp)
     ) {
         Row(

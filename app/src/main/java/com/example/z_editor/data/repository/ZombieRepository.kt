@@ -96,17 +96,13 @@ object ZombieRepository {
     }
 
     fun search(query: String, tag: ZombieTag): List<ZombieInfo> {
-
         if (!isLoaded) return emptyList()
-
         val tagFiltered = if (tag == ZombieTag.All) {
             allZombies
         } else {
             allZombies.filter { it.tags.contains(tag) }
         }
-
         if (query.isBlank()) return tagFiltered
-
         val lowerQ = query.lowercase()
         return tagFiltered.filter {
             it.id.lowercase().contains(lowerQ) || it.name.contains(lowerQ)
@@ -117,6 +113,10 @@ object ZombieRepository {
         val uiName = allZombies.find { it.id == id }?.name
         if (uiName != null) return uiName
         return id
+    }
+
+    fun getZombieInfoById(id: String): ZombieInfo? {
+        return allZombies.find { it.id.equals(id, ignoreCase = true) }
     }
 
     fun isElite(id: String): Boolean {

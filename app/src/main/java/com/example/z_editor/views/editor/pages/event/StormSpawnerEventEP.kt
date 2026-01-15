@@ -520,7 +520,9 @@ fun StormZombieSpawnerPropsEP(
                 val isCustom = parsed?.source == "CurrentLevel"
                 val alias = parsed?.alias ?: zombie.type
                 val displayName = if (isCustom) alias else ZombieRepository.getName(baseTypeName)
-                val info = ZombieRepository.search(baseTypeName, ZombieTag.All).firstOrNull()
+                val info = remember(baseTypeName) {
+                    ZombieRepository.getZombieInfoById(baseTypeName)
+                }
 
                 Card(
                     colors = CardDefaults.cardColors(containerColor = if (!isValid) Color(0xFFF8F1F1) else Color.White),
