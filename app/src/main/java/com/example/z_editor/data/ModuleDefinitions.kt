@@ -2,19 +2,16 @@ package com.example.z_editor.data
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CompareArrows
-import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.automirrored.filled.FactCheck
 import androidx.compose.material.icons.automirrored.filled.NextPlan
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AcUnit
-import androidx.compose.material.icons.filled.AddRoad
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.AirplanemodeActive
 import androidx.compose.material.icons.filled.BlurCircular
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.BrightnessHigh
 import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Dangerous
 import androidx.compose.material.icons.filled.Eco
@@ -22,7 +19,6 @@ import androidx.compose.material.icons.filled.EditRoad
 import androidx.compose.material.icons.filled.EmojiPeople
 import androidx.compose.material.icons.filled.Extension
 import androidx.compose.material.icons.filled.FastForward
-import androidx.compose.material.icons.filled.Grass
 import androidx.compose.material.icons.filled.Grid4x4
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
@@ -1018,7 +1014,7 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.WarMistProperties(rtid) }
         ),
 
-    )
+        )
 
 
     fun getMetadata(objClass: String): ModuleMetadata {

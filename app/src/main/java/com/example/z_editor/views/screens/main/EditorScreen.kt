@@ -673,9 +673,7 @@ fun EditorScreen(fileName: String, onBack: () -> Unit) {
             // --- 选择器逻辑 ---
             onLaunchMultiPlantSelector = { cb ->
                 previousSubScreen = currentSubScreen
-                // 这里的 cb 是 (List<String>) -> Unit，符合 (Any) -> Unit 的逆变，或者我们在回调时强转
                 genericSelectionCallback = { result -> cb(result as List<String>) }
-                // 关键点：传入 isMultiSelect = true
                 currentSubScreen = EditorSubScreen.PlantSelection(isMultiSelect = true)
             },
 

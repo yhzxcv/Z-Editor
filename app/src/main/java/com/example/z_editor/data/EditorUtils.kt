@@ -67,7 +67,7 @@ class JsonSyncManager<T : Any>(
     private fun createDefaultInstance(clazz: Class<T>): T {
         return try {
             clazz.getDeclaredConstructor().newInstance()
-        } catch (_s: Exception) {
+        } catch (_: Exception) {
             throw RuntimeException("Data class ${clazz.simpleName} must have a no-arg constructor")
         }
     }

@@ -71,7 +71,6 @@ import com.example.z_editor.data.PvzObject
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.ZombieSpawnData
 import com.example.z_editor.data.repository.ZombieRepository
-import com.example.z_editor.data.repository.ZombieTag
 import com.example.z_editor.views.components.AssetImage
 
 @Composable

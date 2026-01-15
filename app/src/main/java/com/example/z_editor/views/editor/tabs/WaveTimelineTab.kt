@@ -39,7 +39,6 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Error
@@ -99,7 +98,6 @@ import com.example.z_editor.data.WaveManagerModuleData
 import com.example.z_editor.data.WavePointAnalysis
 import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.repository.ZombieRepository
-import com.example.z_editor.data.repository.ZombieTag
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EventChip
 import com.example.z_editor.views.editor.pages.others.SettingEntryCard
@@ -345,43 +343,9 @@ fun WaveTimelineTab(
         onWavesChanged()
     }
 
-    // 校验失效引用
     val deadLinks = remember(waveManager.waves, objectMap, refreshTrigger) {
         waveManager.waves.flatten().distinct().filter { rtid ->
             !objectMap.containsKey(LevelParser.extractAlias(rtid))
-        }
-    }
-
-    // 清除僵尸引用
-    fun cleanUnusedZombies() {
-        if (rootLevelFile == null) return
-        var deletedCount = 0
-        unusedZombies.forEach { zombieRtid ->
-            val alias = RtidParser.parse(zombieRtid)?.alias ?: return@forEach
-
-            val typeObj = rootLevelFile.objects.find { it.aliases?.contains(alias) == true }
-            if (typeObj != null) {
-                try {
-                    val typeJson = typeObj.objData.asJsonObject
-                    if (typeJson.has("Properties")) {
-                        val propsRtid = typeJson.get("Properties").asString
-                        val propsAlias = RtidParser.parse(propsRtid)?.alias
-                        if (propsAlias != null && RtidParser.parse(propsRtid)?.source == "CurrentLevel") {
-                            rootLevelFile.objects.removeAll { it.aliases?.contains(propsAlias) == true }
-                        }
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-
-                rootLevelFile.objects.remove(typeObj)
-                deletedCount++
-            }
-        }
-        if (deletedCount > 0) {
-            Toast.makeText(context, "清理了 $deletedCount 个闲置僵尸数据", Toast.LENGTH_SHORT)
-                .show()
-            onWavesChanged()
         }
     }
 

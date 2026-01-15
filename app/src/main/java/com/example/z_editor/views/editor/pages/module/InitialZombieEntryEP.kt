@@ -77,7 +77,6 @@ import com.example.z_editor.data.InitialZombieEntryData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.ZombieRepository
-import com.example.z_editor.data.repository.ZombieTag
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection

@@ -66,12 +66,9 @@ import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.ModifyConveyorPlantData
 import com.example.z_editor.data.ModifyConveyorRemoveData
 import com.example.z_editor.data.ModifyConveyorWaveActionData
-import com.example.z_editor.data.ParachuteRainEventData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.PlantRepository
-import com.example.z_editor.data.repository.PlantTag
-import com.example.z_editor.data.repository.ZombieRepository
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection

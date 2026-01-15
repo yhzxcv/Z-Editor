@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -32,8 +31,6 @@ import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocalFlorist
-import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -71,7 +68,6 @@ import com.example.z_editor.data.ProtectThePlantChallengePropertiesData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.PlantRepository
-import com.example.z_editor.data.repository.PlantTag
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
@@ -220,7 +216,7 @@ fun ProtectThePlantChallengePropertiesEP(
                 .fillMaxSize()
                 .background(Color(0xFFF5F5F5))
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }){
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Card(
                     colors = CardDefaults.cardColors(containerColor = Color(0xFFE9EEF5)),
                     modifier = Modifier.fillMaxWidth()
@@ -282,8 +278,10 @@ fun ProtectThePlantChallengePropertiesEP(
                                     for (row in 0..4) {
                                         Row(Modifier.weight(1f)) {
                                             for (col in 0..8) {
-                                                val isSelected = (row == selectedY && col == selectedX)
-                                                val cellPlant = moduleData.plants.find { it.gridX == col && it.gridY == row }
+                                                val isSelected =
+                                                    (row == selectedY && col == selectedX)
+                                                val cellPlant =
+                                                    moduleData.plants.find { it.gridX == col && it.gridY == row }
 
                                                 Box(
                                                     modifier = Modifier
@@ -291,7 +289,9 @@ fun ProtectThePlantChallengePropertiesEP(
                                                         .fillMaxHeight()
                                                         .border(0.5.dp, borderThemeColor)
                                                         .background(
-                                                            if (isSelected) Color(0xFFEBF13E).copy(alpha = 0.5f)
+                                                            if (isSelected) Color(0xFFEBF13E).copy(
+                                                                alpha = 0.5f
+                                                            )
                                                             else Color.Transparent
                                                         )
                                                         .clickable {
@@ -411,7 +411,7 @@ fun ProtectPlantCard(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 AssetImage(
-                    path = if(info?.icon != null) "images/plants/${info.icon}" else null,
+                    path = if (info?.icon != null) "images/plants/${info.icon}" else null,
                     contentDescription = null,
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))

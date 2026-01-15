@@ -517,7 +517,7 @@ fun EditorContentRouter(
         is EditorSubScreen.ManholePipelineModule -> ManholePipelinePropertiesEP(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
-            rootLevelFile = rootLevelFile!!,
+            rootLevelFile = rootLevelFile,
             scrollState = getScrollState("ManholePipelineModule")
         )
 
@@ -698,7 +698,7 @@ fun EditorContentRouter(
         is EditorSubScreen.CustomZombieProperties -> {
             CustomZombiePropertiesEP(
                 rtid = targetState.rtid,
-                rootLevelFile = rootLevelFile!!,
+                rootLevelFile = rootLevelFile,
                 onBack = { actions.navigateBack() },
                 scrollState = getScrollState("CustomZombie_${targetState.rtid}")
             )

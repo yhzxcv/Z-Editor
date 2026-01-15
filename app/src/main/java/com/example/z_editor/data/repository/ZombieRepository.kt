@@ -140,7 +140,7 @@ object ZombieRepository {
         if (parsed.source == "ZombieTypes") {
             val typeName = ZombiePropertiesRepository.getTypeNameByAlias(alias)
             val isValid = uiConfiguredAliases.contains(typeName) || ZombiePropertiesRepository.isValidAlias(alias)
-            return Pair(typeName, isValid) as Pair<String, Boolean>
+            return Pair(typeName, isValid)
         }
 
         if (parsed.source == "CurrentLevel" && objectMap != null) {

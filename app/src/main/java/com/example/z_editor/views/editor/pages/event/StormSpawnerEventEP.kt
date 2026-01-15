@@ -70,7 +70,6 @@ import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.StormZombieData
 import com.example.z_editor.data.StormZombieSpawnerPropsData
 import com.example.z_editor.data.repository.ZombieRepository
-import com.example.z_editor.data.repository.ZombieTag
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection

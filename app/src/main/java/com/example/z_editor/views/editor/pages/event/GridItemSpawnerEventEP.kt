@@ -69,7 +69,6 @@ import com.example.z_editor.data.SpawnZombiesFromGridItemData
 import com.example.z_editor.data.ZombieSpawnData
 import com.example.z_editor.data.repository.GridItemRepository
 import com.example.z_editor.data.repository.ZombieRepository
-import com.example.z_editor.data.repository.ZombieTag
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
@@ -183,7 +182,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                             val rtid = RtidParser.build(alias, "CurrentLevel")
                             if (rtid != zombieData.type) alias to rtid else null
                         } else null
-                    } catch (e: Exception) { null }
+                    } catch (_: Exception) { null }
                 }
         }
 
