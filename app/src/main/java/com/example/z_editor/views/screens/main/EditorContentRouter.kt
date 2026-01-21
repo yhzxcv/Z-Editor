@@ -455,7 +455,7 @@ fun EditorContentRouter(
             currentRtid = targetState.rtid,
             levelDef = parsedData.levelDef!!,
             onBack = actions.navigateBack,
-            onUpdate = actions.onWavesChanged
+            onUpdate = actions.onLevelDefChanged
         )
 
         is EditorSubScreen.WarMistProperties -> WarMistPropertiesEP(
@@ -708,6 +708,7 @@ fun EditorContentRouter(
         // ======================== 选择器与导航 ========================
 
         is EditorSubScreen.JsonView -> JsonCodeViewerScreen(
+            fileName = targetState.fileName,
             levelFile = rootLevelFile,
             onBack = actions.navigateBack
         )

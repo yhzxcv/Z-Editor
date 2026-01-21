@@ -38,7 +38,7 @@ data class LevelDefinitionData(
 // === 波次管理器 ===
 data class WaveManagerModuleData(
     @SerializedName("DynamicZombies") var dynamicZombies: MutableList<DynamicZombieGroup> = mutableListOf(),
-    @SerializedName("WaveManagerProps") var waveManagerProps: String = "",
+    @SerializedName("WaveManagerProps") var waveManagerProps: String? = null,
     @SerializedName("ManualStartup") var manualStartup: Boolean? = null
 )
 
@@ -253,6 +253,9 @@ data class StarChallengeBlowZombieData(
 )
 
 data class StarChallengeTargetScoreData(
+    @SerializedName("Description") var description: String = "[STARCHALLENGE_TARGET_SCORE]",
+    @SerializedName("DescriptionFailure") var descriptionFailure: String = "[STARCHALLENGE_TARGET_SCORE_FAILURE]",
+    @SerializedName("DescriptiveName") var descriptiveName: String = "[STARCHALLENGE_TARGET_SCORE_NAME]",
     @SerializedName("TargetScore") var targetScore: Int = 20000
 )
 

@@ -6,8 +6,6 @@ import androidx.compose.material.icons.filled.EmojiPeople
 import androidx.compose.material.icons.filled.Grid4x4
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ShieldMoon
-import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.z_editor.data.EditorSubScreen
 import com.example.z_editor.data.EventMetadata
@@ -38,6 +36,7 @@ data class EditorActions(
     val onAddModule: (ModuleMetadata) -> Unit,
     val onAddEvent: (EventMetadata, Int) -> Unit,
     val onWavesChanged: () -> Unit,
+    val onLevelDefChanged: () -> Unit,
     val onDeleteEventReference: (String) -> Unit,
     val onSaveWaveManager: () -> Unit,
     val onCreateWaveContainer: () -> Unit,

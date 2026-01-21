@@ -1,5 +1,7 @@
 package com.example.z_editor.views.editor.pages.others
 
+import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -17,15 +19,19 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DataObject
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.FormatSize
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,9 +44,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +56,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -64,6 +75,7 @@ private enum class JsonViewMode {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JsonCodeViewerScreen(
+    fileName: String,
     levelFile: PvzLevelFile?,
     onBack: () -> Unit
 ) {
@@ -74,17 +86,57 @@ fun JsonCodeViewerScreen(
         return
     }
 
-    var viewMode by remember { mutableStateOf(JsonViewMode.Structured) }
+    val context = LocalContext.current
+    val gson = remember { GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create() }
+
+    // === 状态定义 ===
+    var viewMode by remember { mutableStateOf(JsonViewMode.RawText) }
     var fontSize by remember { mutableFloatStateOf(12f) }
 
-    val gson = remember { GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create() }
-    val expandedStates = remember { mutableStateMapOf<Int, Boolean>() }
+    var isEditing by remember { mutableStateOf(false) }
+    var editingText by remember { mutableStateOf("") }
 
-    val fullJsonContent by remember(viewMode) {
+    val expandedStates = remember { mutableStateMapOf<Int, Boolean>() }
+    var refreshTrigger by remember { mutableIntStateOf(0) }
+
+    val fullJsonContent by remember(viewMode, refreshTrigger) {
         derivedStateOf {
-            if (viewMode == JsonViewMode.RawText) {
+            if (viewMode == JsonViewMode.RawText || isEditing) {
                 gson.toJson(levelFile)
             } else ""
+        }
+    }
+
+    LaunchedEffect(isEditing) {
+        if (isEditing) {
+            editingText = gson.toJson(levelFile)
+        }
+    }
+
+    BackHandler {
+        if (isEditing) {
+            isEditing = false
+        } else {
+            onBack()
+        }
+    }
+
+    fun handleSave() {
+        try {
+            val newLevelData = gson.fromJson(editingText, PvzLevelFile::class.java)
+
+            levelFile.objects.clear()
+            levelFile.objects.addAll(newLevelData.objects)
+
+            context.openFileOutput(fileName, android.content.Context.MODE_PRIVATE).use {
+                it.write(editingText.toByteArray())
+            }
+            Toast.makeText(context, "保存成功", Toast.LENGTH_SHORT).show()
+            refreshTrigger++
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(context, "保存失败: JSON 格式错误\n${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -93,30 +145,51 @@ fun JsonCodeViewerScreen(
             TopAppBar(
                 title = {
                     Column {
-                        val modeTitle = if (viewMode == JsonViewMode.Structured) "代码预览 (结构化视图)" else "代码预览 (纯文本视图)"
+                        val modeTitle = when {
+                            isEditing -> "编辑模式"
+                            viewMode == JsonViewMode.Structured -> "结构化视图"
+                            else -> "纯文本视图"
+                        }
                         Text(modeTitle, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
+                    if (isEditing) {
+                        IconButton(onClick = { isEditing = false }) {
+                            Icon(Icons.Default.Close, "取消", tint = Color.White)
+                        }
+                    } else {
+                        IconButton(onClick = onBack) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
+                        }
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        viewMode = if (viewMode == JsonViewMode.Structured)
-                            JsonViewMode.RawText else JsonViewMode.Structured
-                    }) {
-                        Icon(
-                            imageVector = if (viewMode == JsonViewMode.Structured)
-                                Icons.Default.DataObject else Icons.AutoMirrored.Filled.List,
-                            contentDescription = "切换视图",
-                            tint = Color.White
-                        )
+                    if (isEditing) {
+                        IconButton(onClick = { handleSave() }) {
+                            Icon(Icons.Default.Save, "保存", tint = Color.White)
+                        }
+                    } else {
+                        IconButton(onClick = {
+                            viewMode = if (viewMode == JsonViewMode.Structured)
+                                JsonViewMode.RawText else JsonViewMode.Structured
+                        }) {
+                            Icon(
+                                imageVector = if (viewMode == JsonViewMode.Structured)
+                                    Icons.Default.DataObject else Icons.AutoMirrored.Filled.List,
+                                contentDescription = "切换视图",
+                                tint = Color.White
+                            )
+                        }
+                        IconButton(onClick = {
+                            isEditing = true
+                        }) {
+                            Icon(Icons.Default.Edit, "编辑", tint = Color.White)
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF455A64),
+                    containerColor = if (isEditing) Color(0xFF1472E8) else Color(0xFF455A64),
                     titleContentColor = Color.White,
                     actionIconContentColor = Color.White
                 )
@@ -153,45 +226,68 @@ fun JsonCodeViewerScreen(
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
-                when (viewMode) {
-                    JsonViewMode.Structured -> {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 8.dp)
-                        ) {
-                            itemsIndexed(levelFile.objects) { index, obj ->
-                                val isExpanded = expandedStates[index] ?: true
-                                ObjectCodeCard(
-                                    index = index,
-                                    obj = obj,
-                                    fontSize = fontSize,
-                                    expanded = isExpanded,
-                                    onToggle = {
-                                        expandedStates[index] = !isExpanded
-                                    },
-                                    jsonFormatter = { element -> gson.toJson(element) }
-                                )
+                if (isEditing) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White)
+                            .verticalScroll(rememberScrollState())
+                            .horizontalScroll(rememberScrollState())
+                    ) {
+                        BasicTextField(
+                            value = editingText,
+                            onValueChange = { editingText = it },
+                            textStyle = TextStyle(
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = fontSize.sp,
+                                lineHeight = (fontSize * 1.3).sp,
+                                color = Color(0xFF263238)
+                            ),
+                            cursorBrush = SolidColor(Color(0xFF1472E8)),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                        )
+                    }
+                } else {
+                    when (viewMode) {
+                        JsonViewMode.Structured -> {
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 8.dp)
+                            ) {
+                                itemsIndexed(levelFile.objects) { index, obj ->
+                                    val isExpanded = expandedStates[index] ?: true
+                                    ObjectCodeCard(
+                                        index = index,
+                                        obj = obj,
+                                        fontSize = fontSize,
+                                        expanded = isExpanded,
+                                        onToggle = { expandedStates[index] = !isExpanded },
+                                        jsonFormatter = { element -> gson.toJson(element) }
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    JsonViewMode.RawText -> {
-                        SelectionContainer(modifier = Modifier.fillMaxSize()) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.White)
-                                    .verticalScroll(rememberScrollState())
-                                    .horizontalScroll(rememberScrollState())
-                            ) {
-                                Text(
-                                    text = fullJsonContent,
-                                    fontFamily = FontFamily.Monospace,
-                                    fontSize = fontSize.sp,
-                                    lineHeight = (fontSize * 1.3).sp,
-                                    color = Color(0xFF263238),
-                                    modifier = Modifier.padding(16.dp)
-                                )
+                        JsonViewMode.RawText -> {
+                            SelectionContainer(modifier = Modifier.fillMaxSize()) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(Color.White)
+                                        .verticalScroll(rememberScrollState())
+                                        .horizontalScroll(rememberScrollState())
+                                ) {
+                                    Text(
+                                        text = fullJsonContent,
+                                        fontFamily = FontFamily.Monospace,
+                                        fontSize = fontSize.sp,
+                                        lineHeight = (fontSize * 1.3).sp,
+                                        color = Color(0xFF263238),
+                                        modifier = Modifier.padding(16.dp)
+                                    )
+                                }
                             }
                         }
                     }
@@ -259,6 +355,7 @@ fun ObjectCodeCard(
                         color = Color(0xFF546E7A)
                     )
                 }
+
                 Text(
                     text = "ObjClass: $objClass",
                     fontSize = 13.sp,

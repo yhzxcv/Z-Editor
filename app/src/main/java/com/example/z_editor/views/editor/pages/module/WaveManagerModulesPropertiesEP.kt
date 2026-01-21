@@ -69,9 +69,7 @@ import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
-import com.google.gson.Gson
-
-private val gson = Gson()
+import rememberJsonSync
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,24 +85,36 @@ fun WaveManagerModulePropertiesEP(
     var showHelpDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    val moduleDataState = remember {
-        val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
-        val initialData = try {
-            gson.fromJson(obj?.objData, WaveManagerModuleData::class.java)
-        } catch (_: Exception) {
-            WaveManagerModuleData()
+    val obj = remember(rootLevelFile) {
+        rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
+    }
+    val syncManager = rememberJsonSync(obj, WaveManagerModuleData::class.java)
+    val moduleData = syncManager.dataState.value
+
+    fun sync() {
+        syncManager.sync()
+    }
+
+    LaunchedEffect(Unit) {
+        var needsUpdate = false
+        val currentData = syncManager.dataState.value
+
+        if (currentData.dynamicZombies.isEmpty()) {
+            currentData.dynamicZombies.add(DynamicZombieGroup())
+            needsUpdate = true
+        } else {
+            // 检查并修复每个组的 level 列表长度，确保与 zombiePool 长度一致
+            currentData.dynamicZombies.forEach { group ->
+                while (group.zombieLevel.size < group.zombiePool.size) {
+                    group.zombieLevel.add(1)
+                    needsUpdate = true
+                }
+            }
         }
 
-        if (initialData.dynamicZombies.isEmpty()) {
-            initialData.dynamicZombies.add(DynamicZombieGroup())
+        if (needsUpdate) {
+            sync()
         }
-
-        val firstGroup = initialData.dynamicZombies[0]
-        while (firstGroup.zombieLevel.size < firstGroup.zombiePool.size) {
-            firstGroup.zombieLevel.add(1)
-        }
-
-        mutableStateOf(initialData)
     }
 
     var refreshTrigger by remember { mutableIntStateOf(0) }
@@ -112,22 +122,20 @@ fun WaveManagerModulePropertiesEP(
     val actualWaveMgrAlias = remember(rootLevelFile.objects) {
         rootLevelFile.objects.find { it.objClass == "WaveManagerProperties" }?.aliases?.firstOrNull()
     }
-    val currentPropsAlias = RtidParser.parse(moduleDataState.value.waveManagerProps)?.alias
+
+    // 使用 moduleData 获取当前值。注意处理 waveManagerProps 可能为 null 的情况
+    val currentPropsAlias = RtidParser.parse(moduleData.waveManagerProps ?: "")?.alias
     val isPropsValid = actualWaveMgrAlias != null && currentPropsAlias == actualWaveMgrAlias
 
-    fun sync() {
-        rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }?.let {
-            it.objData = gson.toJsonTree(moduleDataState.value)
-        }
-    }
-
+    // 检查 LastStand 逻辑
     val hasLastStandModule = remember(rootLevelFile.objects) {
         rootLevelFile.objects.any { it.objClass == "LastStandMinigameProperties" }
     }
 
     LaunchedEffect(hasLastStandModule) {
-        if (hasLastStandModule && moduleDataState.value.manualStartup != true) {
-            moduleDataState.value = moduleDataState.value.copy(manualStartup = true)
+        if (hasLastStandModule && moduleData.manualStartup != true) {
+            // 更新 State 并同步
+            syncManager.dataState.value = moduleData.copy(manualStartup = true)
             sync()
         }
     }
@@ -199,7 +207,6 @@ fun WaveManagerModulePropertiesEP(
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // --- 区域 A: 引用校验与修复提示 ---
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = if (isPropsValid) Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
@@ -222,7 +229,7 @@ fun WaveManagerModulePropertiesEP(
                     }
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "当前值: ${moduleDataState.value.waveManagerProps}",
+                        "当前值: ${moduleData.waveManagerProps ?: "null"}",
                         fontSize = 11.sp,
                         color = Color.Gray
                     )
@@ -245,12 +252,8 @@ fun WaveManagerModulePropertiesEP(
                         )
                         Button(
                             onClick = {
-                                moduleDataState.value = moduleDataState.value.copy(
-                                    waveManagerProps = RtidParser.build(
-                                        actualWaveMgrAlias,
-                                        "CurrentLevel"
-                                    )
-                                )
+                                val newProps = RtidParser.build(actualWaveMgrAlias, "CurrentLevel")
+                                syncManager.dataState.value = moduleData.copy(waveManagerProps = newProps)
                                 sync()
                             },
                             modifier = Modifier.padding(top = 8.dp),
@@ -262,8 +265,8 @@ fun WaveManagerModulePropertiesEP(
                 }
             }
 
-            // --- 区域 B: 基础点数设置 ---
-            val firstGroup = moduleDataState.value.dynamicZombies[0]
+            val firstGroup = moduleData.dynamicZombies[0]
+
             Text(
                 "点数分配设置",
                 fontWeight = FontWeight.Bold,
@@ -280,23 +283,34 @@ fun WaveManagerModulePropertiesEP(
                 ) {
                     NumberInputInt(
                         firstGroup.startingWave,
-                        { firstGroup.startingWave = it; sync() },
-                        "起始波次 (StartingWave)"
+                        {
+                            firstGroup.startingWave = it
+                            sync()
+                        },
+                        "起始波次 (StartingWave)",
+                        color = Color(0xFF673AB7)
                     )
                     NumberInputInt(
                         firstGroup.startingPoints,
-                        { firstGroup.startingPoints = it; sync() },
-                        "起始点数 (StartingPoints)"
+                        {
+                            firstGroup.startingPoints = it
+                            sync()
+                        },
+                        "起始点数 (StartingPoints)",
+                        color = Color(0xFF673AB7)
                     )
                     NumberInputInt(
                         firstGroup.pointIncrement,
-                        { firstGroup.pointIncrement = it; sync() },
-                        "每波点数增量 (PointIncrement)"
+                        {
+                            firstGroup.pointIncrement = it
+                            sync()
+                        },
+                        "每波点数增量 (PointIncrement)",
+                        color = Color(0xFF673AB7)
                     )
                 }
             }
 
-            // --- 区域 C: 僵尸池管理 ---
             Text(
                 "僵尸池 (ZombiePool)",
                 fontWeight = FontWeight.Bold,
@@ -343,7 +357,6 @@ fun WaveManagerModulePropertiesEP(
                 )
             }
 
-            // --- 区域 D: 等级说明卡片 ---
             Card(
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFF3E5F5)),
                 modifier = Modifier.fillMaxWidth()

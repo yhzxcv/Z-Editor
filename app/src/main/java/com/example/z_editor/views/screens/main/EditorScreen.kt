@@ -519,6 +519,15 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                 refreshTrigger++
             },
 
+            onLevelDefChanged = {
+                val currentLevelDef = parsedData!!.levelDef!!
+                rootLevelFile!!.objects.find { it.objClass == "LevelDefinition" }?.let {
+                    it.objData = gson.toJsonTree(currentLevelDef)
+                }
+                parsedData = parsedData!!.copy(levelDef = currentLevelDef)
+                refreshTrigger++
+            },
+
             onDeleteEventReference = { rtid ->
                 parsedData?.waveManager?.waves?.forEach { wave -> wave.removeAll { it == rtid } }
                 rootLevelFile?.objects?.find { it.objClass == "WaveManagerProperties" }

@@ -7,9 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -89,25 +87,32 @@ fun RainDarkPropertiesEP(
 
     val targetAliases = remember { options.map { it.alias }.toSet() }
 
-    val activeAlias = remember(localRefreshTrigger) {
+    val activeAlias = remember(levelDef.modules, localRefreshTrigger) {
         val foundRtid = levelDef.modules.find { rtid ->
             targetAliases.contains(RtidParser.parse(rtid)?.alias)
         }
-        RtidParser.parse(foundRtid ?: currentRtid)?.alias ?: "DefaultSnow"
+
+        if (foundRtid != null) {
+            RtidParser.parse(foundRtid)?.alias ?: "DefaultSnow"
+        } else {
+            RtidParser.parse(currentRtid)?.alias ?: "DefaultSnow"
+        }
     }
 
     fun selectOption(newAlias: String) {
         if (newAlias == activeAlias) return
 
-        val index = levelDef.modules.indexOfFirst { rtid ->
+        var index = levelDef.modules.indexOfFirst { rtid ->
             targetAliases.contains(RtidParser.parse(rtid)?.alias)
         }
-
+        if (index == -1) {
+            index = levelDef.modules.indexOf(currentRtid)
+        }
         if (index != -1) {
             val newRtid = RtidParser.build(newAlias, "LevelModules")
             levelDef.modules[index] = newRtid
-            onUpdate()
             localRefreshTrigger++
+            onUpdate()
         }
     }
 
@@ -183,9 +188,16 @@ fun RainDarkPropertiesEP(
                         Spacer(Modifier.width(16.dp))
                         Column {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(option.icon, null, tint = if (isSelected) themeColor else Color.Gray)
+                                Icon(
+                                    option.icon,
+                                    null,
+                                    tint = if (isSelected) themeColor else Color.Gray
+                                )
                                 Spacer(Modifier.width(8.dp))
-                                Text(option.label, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+                                Text(
+                                    option.label,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                )
                             }
                             Text(option.description, fontSize = 12.sp, color = Color.Gray)
                         }
