@@ -27,8 +27,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
@@ -39,14 +37,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -71,7 +67,12 @@ import com.example.z_editor.data.InitialPlantEntryData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.PlantRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzGridHighLight
+import com.example.z_editor.ui.theme.PvzLightGreenDark
+import com.example.z_editor.ui.theme.PvzLightGreenLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
@@ -146,6 +147,9 @@ fun InitialPlantEntryEP(
         sync()
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightGreenDark else PvzLightGreenLight
+
     if (editingPlant != null) {
         var tempLevelFloat by remember { mutableFloatStateOf(editingPlant!!.level.toFloat()) }
         var tempAvatar by remember { mutableStateOf(editingPlant!!.avatar) }
@@ -202,7 +206,7 @@ fun InitialPlantEntryEP(
                             deletePlant(editingPlant!!)
                             editingPlant = null
                         },
-                        colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onError)
                     ) { Text("删除") }
 
                     Spacer(Modifier.width(8.dp))
@@ -213,7 +217,6 @@ fun InitialPlantEntryEP(
         )
     }
 
-
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = {
@@ -221,23 +224,11 @@ fun InitialPlantEntryEP(
             })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("预置植物布局", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF4CAF50),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "初始植物布局",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -245,7 +236,7 @@ fun InitialPlantEntryEP(
             EditorHelpDialog(
                 title = "预置植物模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF4CAF50)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -265,13 +256,13 @@ fun InitialPlantEntryEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // === 区域 1: 网格选择器 (跨满全宽) ===
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(contentAlignment = Alignment.Center) {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(2.dp),
                         modifier = Modifier.widthIn(max = 480.dp) // 限制最大宽度
                     ) {
@@ -279,12 +270,16 @@ fun InitialPlantEntryEP(
                             // 状态栏
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Column {
-                                    Text("选中位置", fontSize = 12.sp, color = Color.Gray)
+                                    Text(
+                                        "选中位置",
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                     Text(
                                         "R${selectedY + 1} : C${selectedX + 1}",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 20.sp,
-                                        color = Color(0xFF4CAF50)
+                                        color = themeColor
                                     )
                                 }
                                 Spacer(Modifier.weight(1f))
@@ -292,7 +287,7 @@ fun InitialPlantEntryEP(
                                 Button(
                                     onClick = { handleSelectPlant() },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(0xFF4CAF50)
+                                        containerColor = themeColor
                                     )
                                 ) {
                                     Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
@@ -309,7 +304,7 @@ fun InitialPlantEntryEP(
                                     .fillMaxWidth()
                                     .aspectRatio(1.8f) // 限制宽度后，这个高度也会被限制
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFFE8F5E9))
+                                    .background(if (isDark) Color(0xFF3C483D) else Color(0xFFE8F5E9))
                                     .border(1.dp, Color(0xFFC8E6C9), RoundedCornerShape(6.dp))
                             ) {
                                 Column(Modifier.fillMaxSize()) {
@@ -327,9 +322,14 @@ fun InitialPlantEntryEP(
                                                     modifier = Modifier
                                                         .weight(1f)
                                                         .fillMaxHeight()
-                                                        .border(0.5.dp, Color(0xFFA5D6A7))
+                                                        .border(
+                                                            if (isSelected) 1.5.dp else 0.5.dp,
+                                                            if (isSelected) themeColor else Color(
+                                                                0xFFA5D6A7
+                                                            )
+                                                        )
                                                         .background(
-                                                            if (isSelected) Color(0xFFFCF2B1)
+                                                            if (isSelected) PvzGridHighLight
                                                             else Color.Transparent
                                                         )
                                                         .clickable {
@@ -350,7 +350,7 @@ fun InitialPlantEntryEP(
                                                                 modifier = Modifier
                                                                     .align(Alignment.TopEnd)
                                                                     .background(
-                                                                        color = Color.Gray,
+                                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                                         shape = RoundedCornerShape(
                                                                             bottomStart = 4.dp
                                                                         )
@@ -384,7 +384,7 @@ fun InitialPlantEntryEP(
                     "植物分布列表 (行优先排序)",
                     modifier = Modifier.padding(vertical = 8.dp),
                     fontWeight = FontWeight.Bold,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp
                 )
             }
@@ -422,7 +422,7 @@ fun PlantIconSmall(plantType: String) {
             modifier = Modifier
                 .fillMaxSize(0.9f)
                 .clip(cardShape)
-                .border(0.5.dp, Color.Gray, cardShape),
+                .border(0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant, cardShape),
             contentScale = ContentScale.Crop,
             filterQuality = FilterQuality.Low
         )
@@ -444,13 +444,15 @@ fun InitialPlantCard(
     val plantType = plant.plantTypes.firstOrNull() ?: "Unknown"
     val info = remember(plantType) { PlantRepository.getPlantInfoById(plantType) }
 
+    val isDark = LocalDarkTheme.current
     Card(
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFFD5F3D6) else Color.White
+            containerColor = if (isSelected) if (isDark) Color(0xFF3C483D) else Color(0xFFD5F3D6)
+            else MaterialTheme.colorScheme.surface
         ),
         border = if (isSelected) BorderStroke(1.dp, Color(0xFF4CAF50)) else null,
-        elevation = CardDefaults.cardElevation(1.dp)
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
             modifier = Modifier.padding(8.dp),
@@ -463,13 +465,12 @@ fun InitialPlantCard(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFFF1F8E9))
-                        .border(0.5.dp, Color.LightGray, RoundedCornerShape(8.dp)),
+                        .background(Color(0xFFF1F8E9)),
                     placeholder = {
                         Box(
                             Modifier
                                 .fillMaxSize()
-                                .background(Color.Gray)
+                                .background(MaterialTheme.colorScheme.onSurfaceVariant)
                         )
                     }
                 )
@@ -499,7 +500,7 @@ fun InitialPlantCard(
                 Text(
                     text = "等级: ${plant.level}",
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1
                 )
             }

@@ -27,6 +27,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.repository.ChallengeRepository
 import com.example.z_editor.data.repository.ChallengeTypeInfo
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzOrangeDark
+import com.example.z_editor.ui.theme.PvzOrangeLight
+import com.example.z_editor.views.components.rememberDebouncedClick
 
 @Composable
 fun ChallengeSelectionScreen(
@@ -35,13 +39,15 @@ fun ChallengeSelectionScreen(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
-    BackHandler(onBack = onBack)
+    val handleBack = rememberDebouncedClick { onBack() }
+    BackHandler(onBack = handleBack)
 
     val displayList = remember(searchQuery) {
         ChallengeRepository.search(searchQuery)
     }
 
-    val themeColor = Color(0xFFE8A000)
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzOrangeDark else PvzOrangeLight
 
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
@@ -64,30 +70,30 @@ fun ChallengeSelectionScreen(
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = onBack, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                        IconButton(onClick = handleBack, modifier = Modifier.size(24.dp)) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = MaterialTheme.colorScheme.onPrimary)
                         }
                         Spacer(Modifier.width(16.dp))
 
                         TextField(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
-                            placeholder = { Text("搜索挑战名称或代码", fontSize = 16.sp, color = Color.Gray) },
+                            placeholder = { Text("搜索挑战名称或代码", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(54.dp),
                             singleLine = true,
                             shape = RoundedCornerShape(24.dp),
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White,
+                                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
                                 cursorColor = themeColor
                             ),
-                            leadingIcon = { Icon(Icons.Default.Search, null, tint = Color.Gray) },
+                            leadingIcon = { Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                             trailingIcon = if (searchQuery.isNotEmpty()) {
-                                { IconButton(onClick = { searchQuery = "" }) { Icon(Icons.Default.Clear, null, tint = Color.Gray) } }
+                                { IconButton(onClick = { searchQuery = "" }) { Icon(Icons.Default.Clear, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) } }
                             } else null,
                             textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
                         )
@@ -100,16 +106,16 @@ fun ChallengeSelectionScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFFAFAFA))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             if (displayList.isEmpty()) {
                 Column(
                     modifier = Modifier.align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(Icons.Default.Search, null, tint = Color.LightGray, modifier = Modifier.size(64.dp))
+                    Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(64.dp))
                     Spacer(Modifier.height(16.dp))
-                    Text("未找到相关挑战", color = Color.Gray)
+                    Text("未找到相关挑战", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
                 LazyVerticalGrid(
@@ -137,7 +143,7 @@ fun ChallengeSelectionCard(
 ) {
     Card(
         onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -149,14 +155,14 @@ fun ChallengeSelectionCard(
                 modifier = Modifier
                     .size(56.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFFFECB3))
-                    .border(1.dp, Color(0xFFE8A000), RoundedCornerShape(12.dp)),
+                    .background(MaterialTheme.colorScheme.tertiary)
+                    .border(1.dp, MaterialTheme.colorScheme.onTertiary, RoundedCornerShape(12.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = challenge.icon,
                     contentDescription = null,
-                    tint = Color(0xFFFF8F00),
+                    tint = MaterialTheme.colorScheme.onTertiary,
                     modifier = Modifier.size(32.dp)
                 )
             }
@@ -168,7 +174,7 @@ fun ChallengeSelectionCard(
                     text = challenge.title,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(Modifier.height(4.dp))
@@ -176,7 +182,7 @@ fun ChallengeSelectionCard(
                 Text(
                     text = challenge.description,
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     lineHeight = 16.sp
@@ -187,7 +193,7 @@ fun ChallengeSelectionCard(
                 Text(
                     text = challenge.objClass,
                     fontSize = 12.sp,
-                    color = Color.LightGray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

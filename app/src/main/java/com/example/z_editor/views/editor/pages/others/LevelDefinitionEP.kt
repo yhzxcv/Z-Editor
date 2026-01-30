@@ -121,18 +121,18 @@ fun LevelDefinitionEP(
                 title = { Text("关卡基本信息", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = MaterialTheme.colorScheme.surface)
                     }
                 },
                 actions = {
                     IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
+                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = MaterialTheme.colorScheme.surface)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF388E3C),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.surface,
+                    actionIconContentColor = MaterialTheme.colorScheme.surface
                 )
             )
         }
@@ -141,7 +141,7 @@ fun LevelDefinitionEP(
             EditorHelpDialog(
                 title = "关卡定义基础说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF388E3C)
+                themeColor = MaterialTheme.colorScheme.primary
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -173,7 +173,7 @@ fun LevelDefinitionEP(
                 "基础信息",
                 fontWeight = FontWeight.Bold, fontSize = 16.sp,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color(0xFF388E3C)
+                color = MaterialTheme.colorScheme.primary
             )
 
             OutlinedTextField(
@@ -183,8 +183,9 @@ fun LevelDefinitionEP(
                     sync()
                 },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF388E3C),
-                    focusedLabelColor = Color(0xFF388E3C)
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary
                 ),
                 label = { Text("关卡名称 (Name)") },
                 modifier = Modifier.fillMaxWidth(),
@@ -201,8 +202,9 @@ fun LevelDefinitionEP(
                         sync()
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF388E3C),
-                        focusedLabelColor = Color(0xFF388E3C)
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
                     ),
                     label = { Text("关卡序号") },
                     modifier = Modifier.weight(1f),
@@ -218,8 +220,9 @@ fun LevelDefinitionEP(
                         sync()
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF388E3C),
-                        focusedLabelColor = Color(0xFF388E3C)
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
                     ),
                     label = { Text("初始阳光") },
                     modifier = Modifier.weight(1f),
@@ -234,26 +237,27 @@ fun LevelDefinitionEP(
                     sync()
                 },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF388E3C),
-                    focusedLabelColor = Color(0xFF388E3C)
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary
                 ),
                 label = { Text("关卡描述 (Description)") },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 2
             )
 
-            HorizontalDivider()
+            HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             Text(
                 "场景设置",
                 fontWeight = FontWeight.Bold, fontSize = 16.sp,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color(0xFF388E3C)
+                color = MaterialTheme.colorScheme.primary
             )
 
             Card(
                 onClick = onNavigateToStageSelection,
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -261,16 +265,16 @@ fun LevelDefinitionEP(
                     modifier = Modifier.padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Map, null, tint = Color(0xFF388E3C))
+                    Icon(Icons.Default.Map, null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(16.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("关卡地图 (StageModule)", fontSize = 12.sp, color = Color.Gray)
+                        Text("关卡地图 (StageModule)", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(
                             text = currentStageInfo?.alias ?: "未选择 / Unknown",
                             fontSize = 16.sp
                         )
                     }
-                    Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = Color.Gray)
+                    Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
 
@@ -286,8 +290,9 @@ fun LevelDefinitionEP(
                     label = { Text("音乐类型 (MusicType)") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = musicTypeExpanded) },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF388E3C),
-                        focusedLabelColor = Color(0xFF388E3C)
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier.fillMaxWidth().menuAnchor()
                 )
@@ -320,8 +325,9 @@ fun LevelDefinitionEP(
                     label = { Text("关卡默认掉落 (Loot)") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = lootExpanded) },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF388E3C),
-                        focusedLabelColor = Color(0xFF388E3C)
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier.fillMaxWidth().menuAnchor()
                 )
@@ -354,8 +360,9 @@ fun LevelDefinitionEP(
                     label = { Text("胜利结算方式 (VictoryModule)") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = victoryExpanded) },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF388E3C),
-                        focusedLabelColor = Color(0xFF388E3C)
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier.fillMaxWidth().menuAnchor()
                 )
@@ -379,16 +386,16 @@ fun LevelDefinitionEP(
             Text(
                 "使用默认结算方式以外的结算方式可能会因为模块冲突导致关卡闪退，请谨慎使用",
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            HorizontalDivider()
+            HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             Text(
                 "限制选项",
                 fontWeight = FontWeight.Bold, fontSize = 16.sp,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color(0xFF388E3C)
+                color = MaterialTheme.colorScheme.primary
             )
 
             SwitchOptionItem(
@@ -433,12 +440,20 @@ fun SwitchOptionItem(
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(title, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-            Text(subtitle, fontSize = 12.sp, color = Color.Gray, lineHeight = 14.sp)
+            Text(subtitle, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, lineHeight = 14.sp)
         }
         Switch(
             checked = checked,
             onCheckedChange = onCheckedChange,
-            colors = SwitchDefaults.colors(checkedTrackColor = Color(0xFF388E3C))
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                checkedTrackColor = MaterialTheme.colorScheme.primary,
+                checkedBorderColor = Color.Transparent,
+
+                uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+            )
         )
     }
 }

@@ -21,6 +21,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.EventMetadata
 import com.example.z_editor.data.EventRegistry
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.views.components.rememberDebouncedClick
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,18 +46,18 @@ fun EventSelectionScreen(
     onEventSelected: (EventMetadata) -> Unit,
     onBack: () -> Unit
 ) {
-    BackHandler(onBack = onBack)
+    val handleBack = rememberDebouncedClick { onBack() }
+    BackHandler(onBack = handleBack)
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("为第 $waveIndex 波添加事件", color = Color.White) },
+                title = { Text("为第 $waveIndex 波添加事件", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.surface) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = Color.White)
+                    IconButton(onClick = handleBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = MaterialTheme.colorScheme.surface)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF388E3C)
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
             )
         }
     ) { padding ->
@@ -68,9 +71,11 @@ fun EventSelectionScreen(
             items(EventRegistry.getAll()) { meta ->
                 Card(
                     onClick = { onEventSelected(meta) },
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
+                    val isDark = LocalDarkTheme.current
+                    val bgColor = if (isDark) meta.darkColor else meta.color
                     Row(
                         modifier = Modifier
                             .padding(16.dp)
@@ -78,14 +83,14 @@ fun EventSelectionScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Surface(
-                            color = meta.color.copy(alpha = 0.1f),
+                            color = bgColor.copy(alpha = 0.1f),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.size(48.dp)
                         ) {
                             Icon(
                                 meta.icon,
                                 null,
-                                tint = meta.color,
+                                tint = bgColor,
                                 modifier = Modifier.padding(12.dp)
                             )
                         }
@@ -94,7 +99,7 @@ fun EventSelectionScreen(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(meta.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                            Text(meta.description, fontSize = 12.sp, color = Color.Gray)
+                            Text(meta.description, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }

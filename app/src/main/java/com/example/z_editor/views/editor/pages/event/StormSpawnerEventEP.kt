@@ -23,9 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Check
@@ -40,13 +38,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -61,7 +58,6 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.LevelParser
@@ -70,7 +66,11 @@ import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.StormZombieData
 import com.example.z_editor.data.StormZombieSpawnerPropsData
 import com.example.z_editor.data.repository.ZombieRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzLightOrangeDark
+import com.example.z_editor.ui.theme.PvzLightOrangeLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -114,6 +114,9 @@ fun StormZombieSpawnerPropsEP(
     }
 
     var zombieToCustomizeIndex by remember { mutableStateOf<Int?>(null) }
+
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightOrangeDark else PvzLightOrangeLight
 
     if (zombieToCustomizeIndex != null) {
         val index = zombieToCustomizeIndex!!
@@ -163,8 +166,8 @@ fun StormZombieSpawnerPropsEP(
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFFF9800),
-                                contentColor = Color.White
+                                containerColor = themeColor,
+                                contentColor = MaterialTheme.colorScheme.surface
                             )
                         ) {
                             Icon(Icons.Default.Edit, null, modifier = Modifier.size(16.dp))
@@ -176,14 +179,22 @@ fun StormZombieSpawnerPropsEP(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(vertical = 4.dp)
                         ) {
-                            HorizontalDivider(modifier = Modifier.weight(1f))
+                            HorizontalDivider(
+                                modifier = Modifier.weight(1f),
+                                thickness = 1.dp,
+                                color = MaterialTheme.colorScheme.surfaceVariant
+                            )
                             Text(
                                 " 或 ",
                                 fontSize = 12.sp,
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(horizontal = 8.dp)
                             )
-                            HorizontalDivider(modifier = Modifier.weight(1f))
+                            HorizontalDivider(
+                                modifier = Modifier.weight(1f),
+                                thickness = 1.dp,
+                                color = MaterialTheme.colorScheme.surfaceVariant
+                            )
                         }
                     }
 
@@ -202,7 +213,7 @@ fun StormZombieSpawnerPropsEP(
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800))
+                        colors = ButtonDefaults.buttonColors(containerColor = themeColor)
                     ) {
                         Icon(Icons.Default.Add, null, modifier = Modifier.size(16.dp))
                         Spacer(Modifier.width(8.dp))
@@ -211,7 +222,11 @@ fun StormZombieSpawnerPropsEP(
 
                     if (compatibleCustomZombies.isNotEmpty()) {
                         Spacer(Modifier.height(8.dp))
-                        Text("切换至已有的同类定义：", fontSize = 12.sp, color = Color.Gray)
+                        Text(
+                            "切换至已有的同类定义：",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                         compatibleCustomZombies.forEach { (alias, rtid) ->
                             Card(
                                 onClick = {
@@ -222,7 +237,7 @@ fun StormZombieSpawnerPropsEP(
                                     sync()
                                     zombieToCustomizeIndex = null
                                 },
-                                colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 Row(
@@ -235,14 +250,14 @@ fun StormZombieSpawnerPropsEP(
                                         Icon(
                                             Icons.Default.Check,
                                             null,
-                                            tint = Color(0xFF4CAF50),
+                                            tint = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.size(16.dp)
                                         )
                                     } else {
                                         Icon(
                                             Icons.AutoMirrored.Filled.ArrowForward,
                                             null,
-                                            tint = Color.Gray,
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.size(16.dp)
                                         )
                                     }
@@ -268,34 +283,12 @@ fun StormZombieSpawnerPropsEP(
             })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            "编辑 $currentAlias",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text("事件类型：风暴突袭", fontSize = 15.sp, fontWeight = FontWeight.Normal)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFFF9800),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "编辑 $currentAlias",
+                subtitle = "事件类型：风暴突袭",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -303,7 +296,7 @@ fun StormZombieSpawnerPropsEP(
             EditorHelpDialog(
                 title = "风暴事件说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFFFF9800)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -324,14 +317,14 @@ fun StormZombieSpawnerPropsEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5)),
+                .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // === 区域 1: 风暴类型与范围 ===
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(
@@ -342,7 +335,7 @@ fun StormZombieSpawnerPropsEP(
                             "生成参数",
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
-                            color = Color(0xFFFF9800)
+                            color = themeColor
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Row(
@@ -354,6 +347,7 @@ fun StormZombieSpawnerPropsEP(
                                 }
                             ) {
                                 RadioButton(
+                                    colors = RadioButtonDefaults.colors(selectedColor = themeColor),
                                     selected = stormDataState.value.type == "sandstorm",
                                     onClick = {
                                         stormDataState.value =
@@ -373,6 +367,7 @@ fun StormZombieSpawnerPropsEP(
                                 }
                             ) {
                                 RadioButton(
+                                    colors = RadioButtonDefaults.colors(selectedColor = themeColor),
                                     selected = stormDataState.value.type == "snowstorm",
                                     onClick = {
                                         stormDataState.value =
@@ -392,6 +387,7 @@ fun StormZombieSpawnerPropsEP(
                                 }
                             ) {
                                 RadioButton(
+                                    colors = RadioButtonDefaults.colors(selectedColor = themeColor),
                                     selected = stormDataState.value.type == "excoldstorm",
                                     onClick = {
                                         stormDataState.value =
@@ -413,7 +409,7 @@ fun StormZombieSpawnerPropsEP(
                                 },
                                 label = "起始列 (ColumnStart)",
                                 modifier = Modifier.weight(1f),
-                                color = Color(0xFFFF9800)
+                                color = themeColor
                             )
                             NumberInputInt(
                                 value = stormDataState.value.columnEnd,
@@ -423,13 +419,13 @@ fun StormZombieSpawnerPropsEP(
                                 },
                                 label = "结束列 (ColumnEnd)",
                                 modifier = Modifier.weight(1f),
-                                color = Color(0xFFFF9800)
+                                color = themeColor
                             )
                         }
                         Text(
                             "场地左边界为0列，右边界为9列，起始列要小于结束列",
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -438,7 +434,7 @@ fun StormZombieSpawnerPropsEP(
             // === 区域 2: 生成逻辑 ===
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(
@@ -449,7 +445,7 @@ fun StormZombieSpawnerPropsEP(
                             "生成逻辑",
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
-                            color = Color(0xFFFF9800)
+                            color = themeColor
                         )
 
                         NumberInputInt(
@@ -457,7 +453,7 @@ fun StormZombieSpawnerPropsEP(
                             onValueChange = { stormDataState.value.groupSize = it; sync() },
                             label = "每组数量 (GroupSize)",
                             modifier = Modifier.fillMaxWidth(),
-                            color = Color(0xFFFF9800)
+                            color = themeColor
                         )
 
                         NumberInputInt(
@@ -465,7 +461,7 @@ fun StormZombieSpawnerPropsEP(
                             onValueChange = { stormDataState.value.timeBetweenGroups = it; sync() },
                             label = "组间间隔 (TimeBetweenGroups)",
                             modifier = Modifier.fillMaxWidth(),
-                            color = Color(0xFFFF9800)
+                            color = themeColor
                         )
                     }
                 }
@@ -482,12 +478,12 @@ fun StormZombieSpawnerPropsEP(
                         "携带僵尸 (Zombies)",
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
-                        color = Color(0xFFFF9800)
+                        color = themeColor,
                     )
                     Button(
                         onClick = {
                             onRequestZombieSelection { selectedId ->
-                                val aliases = ZombieRepository.buildAliases(selectedId)
+                                val aliases = ZombieRepository.buildZombieAliases(selectedId)
                                 val fullRtid = RtidParser.build(aliases, "ZombieTypes")
                                 val newList = stormDataState.value.zombies.toMutableList()
                                 newList.add(StormZombieData(type = fullRtid))
@@ -496,7 +492,7 @@ fun StormZombieSpawnerPropsEP(
                                 localRefreshTrigger++
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800)),
+                        colors = ButtonDefaults.buttonColors(containerColor = themeColor),
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                         modifier = Modifier.height(36.dp)
                     ) {
@@ -524,12 +520,8 @@ fun StormZombieSpawnerPropsEP(
                 }
 
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = if (!isValid) Color(0xFFF8F1F1) else Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp),
-                    border = if (!isValid) androidx.compose.foundation.BorderStroke(
-                        1.dp,
-                        Color.Red
-                    ) else null,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(12.dp)) {
@@ -543,7 +535,7 @@ fun StormZombieSpawnerPropsEP(
                                     .background(if (isValid) Color(0xFFEEEEEE) else Color(0xFFFFEBEE))
                                     .border(
                                         0.5.dp,
-                                        if (isValid) Color.Transparent else Color.Red,
+                                        if (isValid) Color.Transparent else MaterialTheme.colorScheme.onError,
                                         RoundedCornerShape(8.dp)
                                     ),
                                 filterQuality = FilterQuality.Medium,
@@ -564,14 +556,14 @@ fun StormZombieSpawnerPropsEP(
                                         text = displayName,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 16.sp,
-                                        color = if (isValid) Color.Black else Color.Red
+                                        color = if (isValid) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onError
                                     )
                                     if (isCustom) {
                                         Spacer(Modifier.width(6.dp))
                                         Box(
                                             modifier = Modifier
                                                 .background(
-                                                    Color(0xFFFF9800),
+                                                    MaterialTheme.colorScheme.onTertiary,
                                                     RoundedCornerShape(4.dp)
                                                 )
                                                 .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -583,13 +575,12 @@ fun StormZombieSpawnerPropsEP(
                                                 fontWeight = FontWeight.Bold
                                             )
                                         }
-                                    }
-                                    else if (isElite) {
+                                    } else if (isElite) {
                                         Spacer(Modifier.width(6.dp))
                                         Box(
                                             modifier = Modifier
                                                 .background(
-                                                    Color(0xFF673AB7),
+                                                    MaterialTheme.colorScheme.surfaceTint,
                                                     RoundedCornerShape(4.dp)
                                                 )
                                                 .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -608,20 +599,23 @@ fun StormZombieSpawnerPropsEP(
                                     Text(
                                         "引用对象不存在，请检查或删除",
                                         fontSize = 12.sp,
-                                        color = Color.Red
+                                        color = MaterialTheme.colorScheme.onError
                                     )
                                 } else {
                                     Text(
                                         if (isCustom) "原型: $baseTypeName" else alias,
                                         fontSize = 12.sp,
-                                        color = Color.Gray
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
                         }
 
                         Spacer(Modifier.height(12.dp))
-                        HorizontalDivider(color = Color(0xFFEEEEEE))
+                        HorizontalDivider(
+                            thickness = 1.dp,
+                            color = MaterialTheme.colorScheme.surfaceVariant
+                        )
                         Spacer(Modifier.height(8.dp))
 
                         Row(
@@ -639,8 +633,8 @@ fun StormZombieSpawnerPropsEP(
                                 },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFE3F2FD),
-                                    contentColor = Color(0xFF1565C0)
+                                    containerColor = MaterialTheme.colorScheme.outline,
+                                    contentColor = MaterialTheme.colorScheme.secondary
                                 ),
                                 contentPadding = PaddingValues(0.dp),
                                 shape = RoundedCornerShape(8.dp)
@@ -655,9 +649,9 @@ fun StormZombieSpawnerPropsEP(
                             }
 
                             val customBtnColor =
-                                if (isCustom) Color(0xFFFFF3E0) else Color(0xFFE8F5E9)
+                                if (isCustom) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.outlineVariant
                             val customContentColor =
-                                if (isCustom) Color(0xFFE65100) else Color(0xFF2E7D32)
+                                if (isCustom) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.primary
                             val customText = if (isCustom) "编辑属性" else "自定义"
                             val customIcon = Icons.Default.Build
 
@@ -689,8 +683,8 @@ fun StormZombieSpawnerPropsEP(
                                 },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFFFEBEE),
-                                    contentColor = Color(0xFFC62828)
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = MaterialTheme.colorScheme.onError
                                 ),
                                 contentPadding = PaddingValues(0.dp),
                                 shape = RoundedCornerShape(8.dp)
@@ -712,7 +706,11 @@ fun StormZombieSpawnerPropsEP(
                             .padding(24.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("列表中没有僵尸", fontSize = 14.sp, color = Color.Gray)
+                        Text(
+                            "列表中没有僵尸",
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }

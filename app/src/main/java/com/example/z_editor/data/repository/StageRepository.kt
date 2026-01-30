@@ -28,6 +28,7 @@ object StageRepository {
         StageItem("BeachStage", "巨浪沙滩", "Stage_Beach.png", StageType.Main),
         StageItem("IceageStage", "冰河世纪", "Stage_Iceage.png", StageType.Main),
         StageItem("LostCityStage", "失落之城", "Stage_LostCity.png", StageType.Main),
+        StageItem("SkycityStage", "天空之城", "Stage_Skycity.png", StageType.Main),
         StageItem("EightiesStage", "摇滚年代", "Stage_Eighties.png", StageType.Main),
         StageItem("DinoStage", "恐龙危机", "Stage_Dino.png", StageType.Main),
         StageItem("ModernStage", "现代世界", "Stage_Modern.png", StageType.Main),

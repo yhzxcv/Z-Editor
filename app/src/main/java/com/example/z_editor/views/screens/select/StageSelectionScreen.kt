@@ -1,8 +1,8 @@
 package com.example.z_editor.views.screens.select
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +33,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
@@ -54,6 +55,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -65,14 +67,17 @@ import com.example.z_editor.data.repository.StageItem
 import com.example.z_editor.data.repository.StageRepository
 import com.example.z_editor.data.repository.StageType
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.components.rememberDebouncedClick
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StageSelectionScreen(
     onStageSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
-    BackHandler(onBack = onBack)
+    val handleBack = rememberDebouncedClick { onBack() }
+    BackHandler(onBack = handleBack)
     var searchQuery by remember { mutableStateOf("") }
     var selectedTab by remember { mutableIntStateOf(0) }
     val focusManager = LocalFocusManager.current
@@ -94,7 +99,7 @@ fun StageSelectionScreen(
         }
     }
 
-    val themeColor = Color(0xFF388E3C)
+    val themeColor = MaterialTheme.colorScheme.primary
 
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
@@ -117,8 +122,12 @@ fun StageSelectionScreen(
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = onBack, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                        IconButton(onClick = handleBack, modifier = Modifier.size(24.dp)) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                "Back",
+                                tint = MaterialTheme.colorScheme.surface
+                            )
                         }
                         Spacer(Modifier.width(16.dp))
 
@@ -126,7 +135,11 @@ fun StageSelectionScreen(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             placeholder = {
-                                Text("搜索地图名称或代号", fontSize = 16.sp, color = Color.Gray)
+                                Text(
+                                    "搜索地图名称或代号",
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -134,18 +147,30 @@ fun StageSelectionScreen(
                             singleLine = true,
                             shape = RoundedCornerShape(25.dp),
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White,
+                                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
                                 cursorColor = themeColor
                             ),
-                            leadingIcon = { Icon(Icons.Default.Search, null, tint = Color.Gray) },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Search,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
                             trailingIcon = if (searchQuery.isNotEmpty()) {
                                 {
                                     IconButton(onClick = {
                                         searchQuery = ""
-                                    }) { Icon(Icons.Default.Clear, null, tint = Color.Gray) }
+                                    }) {
+                                        Icon(
+                                            Icons.Default.Clear,
+                                            null,
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
                                 }
                             } else null,
                             textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
@@ -155,31 +180,38 @@ fun StageSelectionScreen(
                     ScrollableTabRow(
                         selectedTabIndex = selectedTab,
                         containerColor = Color.Transparent,
-                        contentColor = Color.White,
+                        contentColor = MaterialTheme.colorScheme.surface,
                         edgePadding = 16.dp,
+                        divider = {},
                         indicator = { tabPositions ->
                             if (selectedTab < tabPositions.size) {
                                 SecondaryIndicator(
                                     Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.surface,
                                     height = 3.dp
                                 )
                             }
                         }
                     ) {
                         tabs.forEachIndexed { index, (_, title) ->
+                            val configuration = LocalConfiguration.current
+                            val screenWidth = configuration.screenWidthDp.dp
                             val isSelected = selectedTab == index
                             Tab(
+                                modifier = Modifier.width(screenWidth / 4),
                                 selected = isSelected,
                                 onClick = { selectedTab = index },
                                 text = {
                                     Text(
                                         text = title,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                        fontSize = 13.sp
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.surface
                                     )
                                 },
-                                unselectedContentColor = Color.White.copy(alpha = 0.7f)
+                                unselectedContentColor = MaterialTheme.colorScheme.surface.copy(
+                                    alpha = 0.6f
+                                )
                             )
                         }
                     }
@@ -191,7 +223,7 @@ fun StageSelectionScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             LazyVerticalGrid(
                 columns = Adaptive(minSize = 120.dp),
@@ -223,7 +255,7 @@ fun StageSelectionScreen(
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(Modifier.height(8.dp))
-                    Text("未找到相关地图", color = Color.Gray)
+                    Text("未找到相关地图", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
@@ -237,7 +269,7 @@ fun StageGridItem(
 ) {
     Card(
         onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -253,30 +285,14 @@ fun StageGridItem(
                     modifier = Modifier
                         .size(80.dp)
                         .clip(CircleShape)
-                        .background(Color.White)
-                        .border(1.dp, Color(0xFFE0E0E0), CircleShape),
+                        .background(MaterialTheme.colorScheme.surface),
                     contentAlignment = Alignment.Center
                 ) {
                     AssetImage(
                         path = "images/stages/${stage.iconName}",
                         contentDescription = stage.name,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize(),
-                        placeholder = {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color(0xFFEEEEEE)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = stage.alias.take(1),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 24.sp,
-                                    color = Color.Gray
-                                )
-                            }
-                        }
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
                 Spacer(Modifier.height(10.dp))
@@ -286,7 +302,7 @@ fun StageGridItem(
                 text = stage.name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -295,7 +311,7 @@ fun StageGridItem(
             Text(
                 text = stage.alias,
                 fontSize = 11.sp,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

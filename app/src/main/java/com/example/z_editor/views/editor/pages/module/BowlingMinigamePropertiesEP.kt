@@ -7,18 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +27,10 @@ import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.BowlingMinigamePropertiesData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzBlueDark
+import com.example.z_editor.ui.theme.PvzBlueLight
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.StepperControl
@@ -50,7 +47,6 @@ fun BowlingMinigamePropertiesEP(
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
-    val themeColor = Color(0xFF1976D2)
 
     val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
     val syncManager = rememberJsonSync(obj, BowlingMinigamePropertiesData::class.java)
@@ -60,30 +56,17 @@ fun BowlingMinigamePropertiesEP(
         syncManager.sync()
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzBlueDark else PvzBlueLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
         topBar = {
-            TopAppBar(
-                title = { Text("旧版保龄球设置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            "Back",
-                            tint = Color.White
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {
-                        showHelpDialog = true
-                    }) { Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助", tint = Color.White) }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "旧版保龄球设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->

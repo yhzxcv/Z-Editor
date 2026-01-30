@@ -1,5 +1,6 @@
 package com.example.z_editor.views.editor.pages.module
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,8 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
@@ -34,12 +33,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -52,6 +51,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -60,8 +60,11 @@ import com.example.z_editor.data.PennyClassroomModuleData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.PlantRepository
-import com.example.z_editor.data.repository.PlantTag
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzCyanDark
+import com.example.z_editor.ui.theme.PvzCyanLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
@@ -90,8 +93,10 @@ fun PennyClassroomModulePropertiesEP(
 
     var batchLevelFloat by remember { mutableFloatStateOf(1f) }
     var showBatchConfirmDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
-    val themeColor = Color(0xFF009688)
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzCyanDark else PvzCyanLight
 
     fun executeBatchUpdate() {
         val targetLevel = batchLevelFloat.roundToInt()
@@ -101,6 +106,11 @@ fun PennyClassroomModulePropertiesEP(
         }
         dataState.value = dataState.value.copy(plantMap = newMap)
         sync()
+        Toast.makeText(
+            context,
+            "已将所有植物设为 $targetLevel 阶",
+            Toast.LENGTH_SHORT
+        ).show()
         showBatchConfirmDialog = false
     }
 
@@ -122,7 +132,12 @@ fun PennyClassroomModulePropertiesEP(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showBatchConfirmDialog = false }) { Text("取消") }
+                TextButton(onClick = { showBatchConfirmDialog = false }) {
+                    Text(
+                        "取消",
+                        color = themeColor
+                    )
+                }
             }
         )
     }
@@ -132,23 +147,11 @@ fun PennyClassroomModulePropertiesEP(
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("阶级定义设置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "阶级定义设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -177,12 +180,12 @@ fun PennyClassroomModulePropertiesEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // === 顶部：批量控制与添加按钮 ===
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(1.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(2.dp),
                 shape = RoundedCornerShape(0.dp, 0.dp, 12.dp, 12.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -219,7 +222,11 @@ fun PennyClassroomModulePropertiesEP(
                         onValueChange = { batchLevelFloat = it },
                         valueRange = 1f..5f,
                         steps = 3,
-                        modifier = Modifier.padding(horizontal = 8.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        colors = SliderDefaults.colors(
+                            thumbColor = themeColor,
+                            activeTrackColor = themeColor,
+                        ),
                     )
 
                     Spacer(Modifier.height(8.dp))
@@ -243,7 +250,7 @@ fun PennyClassroomModulePropertiesEP(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFE5F5F4),
+                            containerColor = MaterialTheme.colorScheme.surface,
                             contentColor = themeColor
                         ),
                         border = androidx.compose.foundation.BorderStroke(
@@ -267,11 +274,14 @@ fun PennyClassroomModulePropertiesEP(
                         Icon(
                             Icons.Default.Layers,
                             null,
-                            tint = Color.LightGray,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(64.dp)
                         )
                         Spacer(Modifier.height(16.dp))
-                        Text("暂无配置，请添加植物", color = Color.Gray)
+                        Text(
+                            "暂无配置，请添加植物",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             } else {
@@ -320,8 +330,8 @@ fun PlantLevelRow(
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(1.dp)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
@@ -331,8 +341,7 @@ fun PlantLevelRow(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFF5F5F5))
-                    .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp)),
+                    .background(MaterialTheme.colorScheme.surface),
                 contentAlignment = Alignment.Center
             ) {
                 if (iconPath != null) {
@@ -346,7 +355,7 @@ fun PlantLevelRow(
                                 plantName.take(1),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     )
@@ -364,7 +373,7 @@ fun PlantLevelRow(
                 Text(
                     text = plantId,
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1
                 )
             }
@@ -394,7 +403,7 @@ fun Stepper(value: Int, onChange: (Int) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .background(Color(0xFFF5F5F5), RoundedCornerShape(6.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(6.dp))
             .border(1.dp, Color.LightGray.copy(0.5f), RoundedCornerShape(6.dp))
     ) {
         Box(
@@ -404,13 +413,18 @@ fun Stepper(value: Int, onChange: (Int) -> Unit) {
                 .clickable { onChange(value - 1) },
             contentAlignment = Alignment.Center
         ) {
-            Text("-", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Gray)
+            Text(
+                "-",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
         Text(
             "$value 阶",
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF5D4037),
+            color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.padding(horizontal = 4.dp)
         )
         Box(
@@ -420,7 +434,12 @@ fun Stepper(value: Int, onChange: (Int) -> Unit) {
                 .clickable { onChange(value + 1) },
             contentAlignment = Alignment.Center
         ) {
-            Text("+", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Gray)
+            Text(
+                "+",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

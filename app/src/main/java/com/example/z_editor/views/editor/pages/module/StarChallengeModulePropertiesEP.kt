@@ -20,10 +20,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Delete
@@ -38,12 +37,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -65,8 +64,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.PvzObject
-import com.example.z_editor.data.repository.ChallengeRepository
-import com.example.z_editor.data.repository.ReferenceRepository
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.StarChallengeBeatTheLevelData
 import com.example.z_editor.data.StarChallengeBlowZombieData
@@ -83,6 +80,12 @@ import com.example.z_editor.data.StarChallengeTargetScoreData
 import com.example.z_editor.data.StarChallengeUnfreezePlantsData
 import com.example.z_editor.data.StarChallengeZombieDistanceData
 import com.example.z_editor.data.StarChallengeZombieSpeedData
+import com.example.z_editor.data.repository.ChallengeRepository
+import com.example.z_editor.data.repository.ReferenceRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzOrangeDark
+import com.example.z_editor.ui.theme.PvzOrangeLight
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputDouble
@@ -170,28 +173,19 @@ fun StarChallengeModulePropertiesEP(
         )
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzOrangeDark else PvzOrangeLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("挑战模块配置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFE8A000),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "挑战模块设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -199,7 +193,7 @@ fun StarChallengeModulePropertiesEP(
             EditorHelpDialog(
                 title = "挑战模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFFE8A000)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -216,7 +210,7 @@ fun StarChallengeModulePropertiesEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -225,7 +219,8 @@ fun StarChallengeModulePropertiesEP(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 key(refreshTrigger) {
-                    val activeList = challengeDataState.value.challenges.firstOrNull() ?: emptyList()
+                    val activeList =
+                        challengeDataState.value.challenges.firstOrNull() ?: emptyList()
                     if (activeList.isEmpty()) {
                         Box(
                             modifier = Modifier
@@ -233,7 +228,12 @@ fun StarChallengeModulePropertiesEP(
                                 .padding(24.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("列表中暂无挑战", color = Color.Gray, fontSize = 14.sp, modifier = Modifier.padding(start = 4.dp))
+                            Text(
+                                "列表中暂无挑战",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
                         }
                     } else {
                         activeList.forEachIndexed { index, challengeRtid ->
@@ -250,17 +250,18 @@ fun StarChallengeModulePropertiesEP(
                 AddChallengeButton(onClick = onNavigateToAddChallenge)
 
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F0E5)),
-                    modifier = Modifier.fillMaxWidth()
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Row(modifier = Modifier.padding(16.dp)) {
-                        Icon(Icons.Default.Info, null, tint = Color(0xFFE8A000))
+                        Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.onTertiary)
                         Spacer(Modifier.width(12.dp))
                         Column {
                             Text(
                                 text = "同类型的挑战可设置多个，注意模块过多时挑战的统计数据框可能会被遮挡。",
                                 fontSize = 12.sp,
-                                color = Color(0xFFE8A000),
+                                color = MaterialTheme.colorScheme.onTertiary,
                                 lineHeight = 16.sp
                             )
                         }
@@ -296,17 +297,23 @@ fun ChallengeItemCard(
     val displayName = getChallengeDisplayName(objClass)
     val isEditable = source == "CurrentLevel" && !isMissing
 
-    val themeColor = if (isMissing) Color.Red else Color(0xFFE8A000)
-    val containerColor = if (isMissing) Color(0xFFFFEBEE) else Color.White
+    val themeColor =
+        if (isMissing) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onTertiary
+    val containerColor =
+        if (isMissing) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surface
 
     val challengeInfo = ChallengeRepository.getInfo(objClass)
-    val icon = if (isMissing) Icons.Default.BrokenImage else (challengeInfo?.icon ?: Icons.Default.Extension)
+    val icon = if (isMissing) Icons.Default.BrokenImage else (challengeInfo?.icon
+        ?: Icons.Default.Extension)
 
     Card(
         onClick = onClick,
         colors = CardDefaults.cardColors(containerColor = containerColor),
         elevation = CardDefaults.cardElevation(2.dp),
-        border = if (isMissing) androidx.compose.foundation.BorderStroke(1.dp, Color.Red) else null,
+        border = if (isMissing) androidx.compose.foundation.BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.onTertiary
+        ) else null,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -329,15 +336,19 @@ fun ChallengeItemCard(
                     text = if (isMissing) "引用失效: $alias" else displayName,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = if (isMissing) Color.Red.copy(0.7f) else Color.Black
+                    color = if (isMissing) MaterialTheme.colorScheme.onTertiary.copy(0.7f) else MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = if (isMissing) "找不到本地对象 (Object Missing)" else alias,
                     fontSize = 12.sp,
-                    color = if (isMissing) Color.Red.copy(0.7f) else Color.Gray
+                    color = if (isMissing) MaterialTheme.colorScheme.onTertiary.copy(0.7f) else MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 if (!isEditable && !isMissing) {
-                    Text(text = "引用对象 (只读)", fontSize = 10.sp, color = Color.Red.copy(0.7f))
+                    Text(
+                        text = "引用对象 (只读)",
+                        fontSize = 10.sp,
+                        color = MaterialTheme.colorScheme.onTertiary.copy(0.7f)
+                    )
                 }
             }
 
@@ -345,7 +356,13 @@ fun ChallengeItemCard(
             Spacer(Modifier.width(12.dp))
 
             IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) {
-                Icon(Icons.Default.Delete, "移除", tint = if (isMissing) Color.Red else Color.Red.copy(alpha = 0.6f))
+                Icon(
+                    Icons.Default.Delete,
+                    "移除",
+                    tint = if (isMissing) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onTertiary.copy(
+                        alpha = 0.6f
+                    )
+                )
             }
         }
     }
@@ -357,15 +374,19 @@ fun AddChallengeButton(onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .border(1.dp, Color(0xFFE8A000), RoundedCornerShape(8.dp))
+            .border(1.dp, MaterialTheme.colorScheme.onTertiary, RoundedCornerShape(8.dp))
             .clickable { onClick() }
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.AddCircleOutline, null, tint = Color(0xFFE8A000))
+            Icon(Icons.Default.AddCircleOutline, null, tint = MaterialTheme.colorScheme.onTertiary)
             Spacer(Modifier.width(8.dp))
-            Text("添加新挑战", color = Color(0xFFE8A000), fontWeight = FontWeight.Bold)
+            Text(
+                "添加新挑战",
+                color = MaterialTheme.colorScheme.onTertiary,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
@@ -385,8 +406,21 @@ fun ChallengeEditDialog(
     if (obj == null) {
         AlertDialog(
             onDismissRequest = onDismiss,
-            title = { Text("错误", fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.fillMaxWidth()) },
-            text = { Text("找不到本地对象: $alias \n\n该挑战引用的实体数据在关卡文件中不存在，这可能是因为手动修改了JSON，请直接点击列表右侧的删除按钮移除它", fontSize = 14.sp, modifier = Modifier.fillMaxWidth()) },
+            title = {
+                Text(
+                    "错误",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
+            text = {
+                Text(
+                    "找不到本地对象: $alias \n\n该挑战引用的实体数据在关卡文件中不存在，这可能是因为手动修改了JSON，请直接点击列表右侧的删除按钮移除它",
+                    fontSize = 14.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            },
             confirmButton = { TextButton(onClick = onDismiss) { Text("关闭") } }
         )
         return
@@ -593,7 +627,7 @@ fun InfoOnlyDialog(title: String, message: String, onDismiss: () -> Unit) {
         confirmButton = {
             Button(
                 onClick = onDismiss,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("确定")
             }
@@ -624,7 +658,7 @@ fun PlantSurviveEditDialog(
                 Text("需要指定数量的植物在游戏结束时存活", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
-                    color = Color(0xFFFF9800),
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = count,
                     onValueChange = { count = it },
                     label = "存活数量 (Count)",
@@ -637,13 +671,15 @@ fun PlantSurviveEditDialog(
                 onClick = {
                     onConfirm(initialData.copy(count = count))
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }
@@ -692,13 +728,15 @@ fun ZombieDistanceEditDialog(
         confirmButton = {
             Button(
                 onClick = { onConfirm(initialData.copy(targetDistance = distance)) },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }
@@ -740,6 +778,16 @@ fun BeatTheLevelEditDialog(
                     singleLine = false,
                     maxLines = 10,
                     minLines = 1,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = MaterialTheme.colorScheme.onTertiary,
+                        selectionColors = TextSelectionColors(
+                            handleColor = MaterialTheme.colorScheme.onTertiary,
+                            backgroundColor = MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.4f)
+                        ),
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.onTertiary,
+                        focusedLabelColor = MaterialTheme.colorScheme.onTertiary
+                    ),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Default
@@ -757,13 +805,15 @@ fun BeatTheLevelEditDialog(
         confirmButton = {
             Button(
                 onClick = { onConfirm(initialData.copy(description = description)) },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }
@@ -791,7 +841,7 @@ fun SunProducedEditDialog(
                 Text("关卡结束前生产一定数量阳光", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
-                    color = Color(0xFFFF9800),
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = targetSun,
                     onValueChange = { targetSun = it },
                     label = "目标阳光 (TargetSun)",
@@ -804,13 +854,15 @@ fun SunProducedEditDialog(
                 onClick = {
                     onConfirm(initialData.copy(targetSun = targetSun))
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }
@@ -838,7 +890,7 @@ fun SunUsedEditDialog(
                 Text("关卡中阳光的限额使用", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
-                    color = Color(0xFFFF9800),
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = maximumSun,
                     onValueChange = { maximumSun = it },
                     label = "阳光限额 (MaximumSun)",
@@ -851,13 +903,15 @@ fun SunUsedEditDialog(
                 onClick = {
                     onConfirm(initialData.copy(maximumSun = maximumSun))
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }
@@ -885,7 +939,7 @@ fun SpendSunHoldoutEditDialog(
                 Text("保持一段时间不使用阳光", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
-                    color = Color(0xFFFF9800),
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = holdoutSeconds,
                     onValueChange = { holdoutSeconds = it },
                     label = "保持时间 (HoldoutSeconds)",
@@ -898,13 +952,15 @@ fun SpendSunHoldoutEditDialog(
                 onClick = {
                     onConfirm(initialData.copy(holdoutSeconds = holdoutSeconds))
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }
@@ -933,7 +989,7 @@ fun KillZombiesEditDialog(
                 Text("在一定时间内消灭指定数量僵尸", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
-                    color = Color(0xFFFF9800),
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = zombiesToKill,
                     onValueChange = { zombiesToKill = it },
                     label = "击杀个数 (ZombiesToKill)",
@@ -942,7 +998,7 @@ fun KillZombiesEditDialog(
 
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
-                    color = Color(0xFFFF9800),
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = time,
                     onValueChange = { time = it },
                     label = "时间限制 (Time)",
@@ -955,13 +1011,15 @@ fun KillZombiesEditDialog(
                 onClick = {
                     onConfirm(initialData.copy(zombiesToKill = zombiesToKill, time = time))
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }
@@ -1010,13 +1068,15 @@ fun ZombieSpeedEditDialog(
         confirmButton = {
             Button(
                 onClick = { onConfirm(initialData.copy(speedModifier = speedModifier)) },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }
@@ -1065,13 +1125,15 @@ fun SunReducedEditDialog(
         confirmButton = {
             Button(
                 onClick = { onConfirm(initialData.copy(sunModifier = sunModifier)) },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }
@@ -1111,13 +1173,15 @@ fun PlantsLostEditDialog(
                 onClick = {
                     onConfirm(initialData.copy(maximumPlantsLost = maximumPlantsLost))
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }
@@ -1145,7 +1209,7 @@ fun SimultaneousPlantsEditDialog(
                 Text("限制所有植物同时在场的数量", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
-                    color = Color(0xFFFF9800),
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = maximumPlants,
                     onValueChange = { maximumPlants = it },
                     label = "种植上限 (MaximumPlants)",
@@ -1158,13 +1222,15 @@ fun SimultaneousPlantsEditDialog(
                 onClick = {
                     onConfirm(initialData.copy(maximumPlants = maximumPlants))
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }
@@ -1192,7 +1258,7 @@ fun UnfreezePlantsEditDialog(
                 Text("解冻一定数量的植物", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
-                    color = Color(0xFFFF9800),
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = count,
                     onValueChange = { count = it },
                     label = "解冻数量 (Count)",
@@ -1205,13 +1271,15 @@ fun UnfreezePlantsEditDialog(
                 onClick = {
                     onConfirm(initialData.copy(count = count))
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }
@@ -1239,7 +1307,7 @@ fun BlowZombieEditDialog(
                 Text("吹飞一定数量的僵尸", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
-                    color = Color(0xFFFF9800),
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = count,
                     onValueChange = { count = it },
                     label = "吹飞数量 (Count)",
@@ -1252,13 +1320,15 @@ fun BlowZombieEditDialog(
                 onClick = {
                     onConfirm(initialData.copy(count = count))
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }
@@ -1287,7 +1357,7 @@ fun TargetScoreEditDialog(
                 Text("达到目标积分，需开启关卡积分模块", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
-                    color = Color(0xFFFF9800),
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = targetScore,
                     onValueChange = { targetScore = it },
                     label = "目标积分 (targetScore)",
@@ -1300,13 +1370,15 @@ fun TargetScoreEditDialog(
                 onClick = {
                     onConfirm(initialData.copy(targetScore = targetScore))
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8A000))
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
             ) {
                 Text("保存")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("取消") }
+            TextButton(
+                onClick = onDismiss
+            ) { Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
     )
 }

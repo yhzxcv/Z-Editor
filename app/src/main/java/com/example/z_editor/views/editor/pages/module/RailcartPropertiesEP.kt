@@ -21,8 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.AddRoad
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Inbox
@@ -34,14 +32,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -62,7 +58,12 @@ import com.example.z_editor.data.RailData
 import com.example.z_editor.data.RailcartData
 import com.example.z_editor.data.RailcartPropertiesData
 import com.example.z_editor.data.RtidParser
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzBrownDark
+import com.example.z_editor.ui.theme.PvzBrownLight
+import com.example.z_editor.ui.theme.PvzGridBorder
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.google.gson.Gson
@@ -176,6 +177,8 @@ fun RailcartPropertiesEP(
     val cartTypeOptions = listOf(
         "railcart_cowboy" to "西部矿车 (railcart_cowboy)",
         "railcart_future" to "未来矿车 (railcart_future)",
+        "railcart_egypt" to "埃及矿车 (railcart_egypt)",
+        "railcart_pirate" to "海盗矿车 (railcart_pirate)",
         "railcart_worldcup" to "世界杯矿车 (railcart_worldcup)",
     )
 
@@ -183,32 +186,19 @@ fun RailcartPropertiesEP(
         cartTypeOptions.find { it.first == moduleDataState.value.railcartType }?.second
             ?: moduleDataState.value.railcartType
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzBrownDark else PvzBrownLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text("矿车轨道配置", fontWeight = FontWeight.Bold, fontSize = 22.sp)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "Help", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF795548),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "矿车轨道设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -216,7 +206,7 @@ fun RailcartPropertiesEP(
             EditorHelpDialog(
                 title = "矿车轨道模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF795548)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -238,11 +228,12 @@ fun RailcartPropertiesEP(
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -262,8 +253,9 @@ fun RailcartPropertiesEP(
                             label = { Text("矿车类型 (RailcartType)") },
                             readOnly = true,
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFF795548),
-                                focusedLabelColor = Color(0xFF795548)
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                focusedBorderColor = themeColor,
+                                focusedLabelColor = themeColor
                             ),
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = typeExpanded) },
                             modifier = Modifier
@@ -296,7 +288,7 @@ fun RailcartPropertiesEP(
                             .fillMaxWidth()
                             .height(48.dp)
                             .clip(RoundedCornerShape(24.dp))
-                            .background(Color(0xFFEEEEEE))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                             .padding(4.dp)
                     ) {
                         Box(
@@ -304,7 +296,7 @@ fun RailcartPropertiesEP(
                                 .weight(1f)
                                 .fillMaxHeight()
                                 .clip(RoundedCornerShape(20.dp))
-                                .background(if (editMode == RailEditMode.Rails) Color(0xFF855C4F) else Color.Transparent)
+                                .background(if (editMode == RailEditMode.Rails) themeColor else Color.Transparent)
                                 .clickable { editMode = RailEditMode.Rails },
                             contentAlignment = Alignment.Center
                         ) {
@@ -312,13 +304,13 @@ fun RailcartPropertiesEP(
                                 Icon(
                                     Icons.Default.AddRoad,
                                     null,
-                                    tint = if (editMode == RailEditMode.Rails) Color.White else Color.Gray,
+                                    tint = if (editMode == RailEditMode.Rails) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text(
                                     "铺设轨道",
-                                    color = if (editMode == RailEditMode.Rails) Color.White else Color.Gray,
+                                    color = if (editMode == RailEditMode.Rails) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -329,7 +321,7 @@ fun RailcartPropertiesEP(
                                 .weight(1f)
                                 .fillMaxHeight()
                                 .clip(RoundedCornerShape(20.dp))
-                                .background(if (editMode == RailEditMode.Carts) Color(0xFF855C4F) else Color.Transparent)
+                                .background(if (editMode == RailEditMode.Carts) themeColor else Color.Transparent)
                                 .clickable { editMode = RailEditMode.Carts },
                             contentAlignment = Alignment.Center
                         ) {
@@ -337,13 +329,13 @@ fun RailcartPropertiesEP(
                                 Icon(
                                     Icons.Default.Inbox,
                                     null,
-                                    tint = if (editMode == RailEditMode.Carts) Color.White else Color.Gray,
+                                    tint = if (editMode == RailEditMode.Carts) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text(
                                     "放置矿车",
-                                    color = if (editMode == RailEditMode.Carts) Color.White else Color.Gray,
+                                    color = if (editMode == RailEditMode.Carts) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
@@ -357,8 +349,8 @@ fun RailcartPropertiesEP(
                     .fillMaxWidth()
                     .aspectRatio(1.8f)
                     .clip(RoundedCornerShape(6.dp))
-                    .border(1.dp, Color(0xFF8D6E63), RoundedCornerShape(6.dp))
-                    .background(Color(0xFFD7CCC8))
+                    .border(1.dp, PvzGridBorder, RoundedCornerShape(6.dp))
+                    .background(if (isDark) Color(0xFF503C34) else Color(0xFFD7CCC8))
             ) {
 
                 Box(
@@ -366,8 +358,8 @@ fun RailcartPropertiesEP(
                         .fillMaxWidth()
                         .aspectRatio(1.8f)
                         .clip(RoundedCornerShape(6.dp))
-                        .border(1.dp, Color(0xFF8D6E63), RoundedCornerShape(6.dp))
-                        .background(Color(0xFFD7CCC8))
+                        .border(1.dp, PvzGridBorder, RoundedCornerShape(6.dp))
+                        .background(if (isDark) Color(0xFF503C34) else Color(0xFFD7CCC8))
                 ) {
                     Column(Modifier.fillMaxSize()) {
                         for (r in 0..4) {
@@ -382,7 +374,7 @@ fun RailcartPropertiesEP(
                                             .fillMaxHeight()
                                             .border(
                                                 0.5.dp,
-                                                Color(0xFFA1887F).copy(alpha = 0.5f)
+                                                PvzGridBorder
                                             )
                                             .clickable { handleGridClick(c, r) },
                                         contentAlignment = Alignment.Center
@@ -392,7 +384,7 @@ fun RailcartPropertiesEP(
                                                 modifier = Modifier
                                                     .fillMaxWidth(0.8f)
                                                     .fillMaxHeight()
-                                                    .background(Color(0xFF5D4037).copy(alpha = 0.3f))
+                                                    .background(PvzBrownLight.copy(alpha = 0.3f))
                                             ) {
                                                 AssetImage(
                                                     path = "images/others/rails.png",
@@ -428,8 +420,8 @@ fun RailcartPropertiesEP(
             }
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(1.dp)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -442,12 +434,12 @@ fun RailcartPropertiesEP(
                         Text(
                             "轨道段数: ${moduleDataState.value.rails.size}",
                             fontSize = 14.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             "矿车数量: ${moduleDataState.value.railcarts.size}",
                             fontSize = 14.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
@@ -460,8 +452,8 @@ fun RailcartPropertiesEP(
                             sync()
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFFEBEE),
-                            contentColor = Color.Red
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError
                         ),
                     ) {
                         Icon(Icons.Default.Delete, null, modifier = Modifier.size(16.dp))

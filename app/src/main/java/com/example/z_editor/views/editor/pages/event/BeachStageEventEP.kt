@@ -4,18 +4,39 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Water
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,7 +45,6 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.BeachStageEventData
@@ -32,7 +52,11 @@ import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.repository.ZombieRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzLightBlueDark
+import com.example.z_editor.ui.theme.PvzLightBlueLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputDouble
@@ -64,40 +88,24 @@ fun BeachStageEventEP(
 
     val currentZombieInfo = remember(actionDataState.value.zombieName) {
         val realName = ZombiePropertiesRepository.getTypeNameByAlias(actionDataState.value.zombieName)
-        val name = ZombieRepository.getName(realName)
-        ZombieRepository.getZombieInfoById(name) to realName
+        ZombieRepository.getZombieInfoById(realName) to realName
     }
 
-
-    val themeColor = Color(0xFF00ACC1)
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightBlueDark else PvzLightBlueLight
 
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text("编辑 $currentAlias", fontWeight = FontWeight.Bold, fontSize = 18.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text("事件类型：退潮突袭", fontSize = 14.sp, fontWeight = FontWeight.Normal)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "编辑 $currentAlias",
+                subtitle = "事件类型：退潮突袭",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -127,21 +135,26 @@ fun BeachStageEventEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5)),
+                .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // === 区域 1: 僵尸类型选择 ===
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Water, null, tint = themeColor)
                             Spacer(Modifier.width(12.dp))
-                            Text("突袭单位配置", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                            Text(
+                                "突袭单位配置",
+                                color = themeColor,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 15.sp
+                            )
                         }
 
                         Spacer(Modifier.height(16.dp))
@@ -149,12 +162,16 @@ fun BeachStageEventEP(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(Color(0xFFE0F7FA), RoundedCornerShape(8.dp))
-                                .border(1.dp, themeColor.copy(alpha = 0.3f), RoundedCornerShape(8.dp))
+                                .background(if(isDark) Color(0xFF303C3D) else Color(0xFFE0F7FA), RoundedCornerShape(8.dp))
+                                .border(
+                                    1.dp,
+                                    themeColor.copy(alpha = 0.3f),
+                                    RoundedCornerShape(8.dp)
+                                )
                                 .clip(RoundedCornerShape(8.dp))
                                 .clickable {
                                     onRequestZombieSelection { selectedId ->
-                                        val aliases = ZombieRepository.buildAliases(selectedId)
+                                        val aliases = ZombieRepository.buildZombieAliases(selectedId)
                                         sync(actionDataState.value.copy(zombieName = aliases))
                                     }
                                 }
@@ -174,10 +191,16 @@ fun BeachStageEventEP(
                                 AssetImage(
                                     path = if (info?.icon != null) "images/zombies/${info.icon}" else null,
                                     contentDescription = displayName,
-                                    modifier = Modifier.fillMaxSize().clip(CircleShape),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(CircleShape),
                                     filterQuality = FilterQuality.Medium,
                                     placeholder = {
-                                        Text(displayName.take(1), fontWeight = FontWeight.Bold, color = themeColor)
+                                        Text(
+                                            displayName.take(1),
+                                            fontWeight = FontWeight.Bold,
+                                            color = themeColor
+                                        )
                                     }
                                 )
                             }
@@ -185,8 +208,17 @@ fun BeachStageEventEP(
                             Spacer(Modifier.width(12.dp))
 
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(displayName, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Black)
-                                Text(realTypeName, fontSize = 12.sp, color = Color.Gray)
+                                Text(
+                                    displayName,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    realTypeName,
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             }
 
                             Icon(Icons.Default.Edit, "更改", tint = themeColor)
@@ -198,11 +230,16 @@ fun BeachStageEventEP(
             // === 区域 2: 数量与批次 ===
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("生成数量控制", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text(
+                            "生成数量控制",
+                            color = themeColor,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp
+                        )
                         Spacer(Modifier.height(12.dp))
 
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -228,11 +265,16 @@ fun BeachStageEventEP(
             // === 区域 3: 范围与时间 ===
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("位置与时间参数", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text(
+                            "位置与时间参数",
+                            color = themeColor,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp
+                        )
                         Spacer(Modifier.height(12.dp))
 
                         // 列范围
@@ -285,11 +327,16 @@ fun BeachStageEventEP(
             // === 区域 4: 提示信息 ===
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("红色字幕警告信息", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text(
+                            "红色字幕警告信息",
+                            color = themeColor,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp
+                        )
                         Spacer(Modifier.height(8.dp))
 
                         OutlinedTextField(
@@ -297,6 +344,7 @@ fun BeachStageEventEP(
                             onValueChange = { sync(actionDataState.value.copy(waveStartMessage = it)) },
                             label = { Text("WaveStartMessage") },
                             colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 focusedBorderColor = themeColor,
                                 focusedLabelColor = themeColor
                             ),
@@ -306,7 +354,7 @@ fun BeachStageEventEP(
                         Text(
                             "事件开始时在屏幕中央显示的红字警告，不支持输入中文",
                             fontSize = 11.sp,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     }

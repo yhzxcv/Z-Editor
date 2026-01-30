@@ -22,8 +22,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
@@ -36,10 +34,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,7 +59,13 @@ import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.SpawnGraveStonesData
 import com.example.z_editor.data.repository.GridItemRepository
+import com.example.z_editor.data.repository.GridItemRepository.buildGridAliases
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzGrayDark
+import com.example.z_editor.ui.theme.PvzGrayLight
+import com.example.z_editor.ui.theme.PvzGridBorder
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -80,8 +83,6 @@ fun SpawnGraveStonesEventEP(
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
-
-    val themeColor = Color(0xFF607D8B)
 
     val internalObjectAliases = remember(rootLevelFile.objects.size, rootLevelFile.hashCode()) {
         rootLevelFile.objects.flatMap { it.aliases ?: emptyList() }.toSet()
@@ -111,7 +112,7 @@ fun SpawnGraveStonesEventEP(
 
     fun handleAddItem() {
         onRequestGridItemSelection { typeName ->
-            val fullRtid = RtidParser.build(typeName, "GridItemTypes")
+            val fullRtid = RtidParser.build(buildGridAliases(typeName), "GridItemTypes")
             val newList = actionDataState.value.gravestonePool.toMutableList()
             val existingIndex = newList.indexOfFirst { it.type == fullRtid }
             if (existingIndex != -1) {
@@ -125,39 +126,20 @@ fun SpawnGraveStonesEventEP(
         }
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzGrayDark else PvzGrayLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            "编辑 $currentAlias",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text("事件类型：墓碑生成", fontSize = 14.sp, fontWeight = FontWeight.Normal)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "编辑 $currentAlias",
+                subtitle = "事件类型：墓碑生成",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -191,14 +173,14 @@ fun SpawnGraveStonesEventEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5)),
+                .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // === 区域 1: 候选位置池 ===
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -212,7 +194,7 @@ fun SpawnGraveStonesEventEP(
                         Text(
                             "点击格子以选中/取消选中，选中的格子即为可能的生成点",
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(Modifier.height(16.dp))
 
@@ -222,8 +204,8 @@ fun SpawnGraveStonesEventEP(
                                 .fillMaxWidth()
                                 .aspectRatio(1.8f)
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(Color(0xFFD7CCC8))
-                                .border(1.dp, Color(0xFFA1887F), RoundedCornerShape(6.dp))
+                                .background(if (isDark) Color(0xFF3B332F) else Color(0xFFD7CCC8))
+                                .border(1.dp, PvzGridBorder, RoundedCornerShape(6.dp))
                         ) {
                             Column(Modifier.fillMaxSize()) {
                                 for (row in 0..4) {
@@ -236,7 +218,7 @@ fun SpawnGraveStonesEventEP(
                                                 modifier = Modifier
                                                     .weight(1f)
                                                     .fillMaxHeight()
-                                                    .border(0.5.dp, Color(0xFF8D6E63))
+                                                    .border(0.5.dp, PvzGridBorder)
                                                     .background(
                                                         if (isSelected) Color(0xFF8BC34A).copy(alpha = 0.8f)
                                                         else Color.Transparent
@@ -292,7 +274,7 @@ fun SpawnGraveStonesEventEP(
                 Spacer(Modifier.height(16.dp))
 
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE9EEF5)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(modifier = Modifier.padding(16.dp)) {
@@ -350,8 +332,8 @@ fun SpawnGraveStonesEventEP(
                 }
 
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = if (!isValid) Color(0xFFF8F1F1) else Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp),
+                    colors = CardDefaults.cardColors(containerColor = if (!isValid) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp),
                     border = if (!isValid) androidx.compose.foundation.BorderStroke(
                         1.dp,
                         Color.Red
@@ -367,11 +349,15 @@ fun SpawnGraveStonesEventEP(
                             modifier = Modifier
                                 .size(48.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFFEEEEEE)),
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
                             filterQuality = FilterQuality.Medium,
                             placeholder = {
                                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Icon(Icons.Default.Widgets, null, tint = Color.Gray)
+                                    Icon(
+                                        Icons.Default.Widgets,
+                                        null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             }
                         )
@@ -387,7 +373,7 @@ fun SpawnGraveStonesEventEP(
                             Text(
                                 text = alias,
                                 fontSize = 10.sp,
-                                color = if (!isValid) Color.Red else Color.Gray,
+                                color = if (!isValid) Color.Red else MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )

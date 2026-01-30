@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -94,17 +95,17 @@ fun IZombieTab(
         Spacer(Modifier.height(8.dp))
 
         Card(
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFEEF5E5)),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.outline),
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(modifier = Modifier.padding(16.dp)) {
-                Icon(Icons.Default.Info, null, tint = Color(0xFF388E3C))
+                Icon(Icons.Default.Info, null, tint = MaterialTheme.colorScheme.secondary)
                 Spacer(Modifier.width(12.dp))
                 Column {
                     Text(
                         text = "我是僵尸模式下的预置植物和僵尸选择分别要在关卡模块里的预置植物和种子库里配置。",
                         fontSize = 12.sp,
-                        color = Color(0xFF388E3C),
+                        color = MaterialTheme.colorScheme.secondary,
                         lineHeight = 16.sp
                     )
                 }

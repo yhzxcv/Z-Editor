@@ -26,8 +26,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
@@ -38,11 +36,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -68,7 +65,12 @@ import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.ZombiePotionActionPropsData
 import com.example.z_editor.data.ZombiePotionData
 import com.example.z_editor.data.repository.GridItemRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzGrayDark
+import com.example.z_editor.ui.theme.PvzGrayLight
+import com.example.z_editor.ui.theme.PvzGridHighLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
@@ -84,8 +86,6 @@ fun ZombiePotionActionPropsEP(
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
-
-    val themeColor = Color(0xFF607D8B)
 
     var selectedX by remember { mutableIntStateOf(0) }
     var selectedY by remember { mutableIntStateOf(0) }
@@ -124,6 +124,9 @@ fun ZombiePotionActionPropsEP(
 
     var itemToDelete by remember { mutableStateOf<ZombiePotionData?>(null) }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzGrayDark else PvzGrayLight
+
     if (itemToDelete != null) {
         AlertDialog(
             onDismissRequest = { itemToDelete = null },
@@ -141,7 +144,7 @@ fun ZombiePotionActionPropsEP(
                         deleteItem(itemToDelete!!)
                         itemToDelete = null
                     },
-                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onError)
                 ) { Text("移除") }
             },
             dismissButton = {
@@ -155,38 +158,12 @@ fun ZombiePotionActionPropsEP(
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            "编辑 $currentAlias",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            "事件类型：药水投放",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "编辑 $currentAlias",
+                subtitle = "事件类型：药水投放",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -223,19 +200,19 @@ fun ZombiePotionActionPropsEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(contentAlignment = Alignment.Center) {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(2.dp),
                         modifier = Modifier.widthIn(max = 480.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Column {
-                                    Text("选中位置", fontSize = 12.sp, color = Color.Gray)
+                                    Text("选中位置", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     Text(
                                         "R${selectedY + 1} : C${selectedX + 1}",
                                         fontWeight = FontWeight.Bold,
@@ -261,7 +238,7 @@ fun ZombiePotionActionPropsEP(
                                     .fillMaxWidth()
                                     .aspectRatio(1.8f)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFFE8E7F6))
+                                    .background(if (isDark) Color(0xFF31343B) else Color(0xFFD7E0F1))
                                     .border(1.dp, Color(0xFF9DA0DB), RoundedCornerShape(6.dp))
                             ) {
                                 Column(Modifier.fillMaxSize()) {
@@ -281,11 +258,14 @@ fun ZombiePotionActionPropsEP(
                                                     modifier = Modifier
                                                         .weight(1f)
                                                         .fillMaxHeight()
-                                                        .border(0.5.dp, Color(0xFF9DA0DB))
-                                                        .background(
-                                                            if (isSelected) Color(0xFFEBF13E).copy(
-                                                                alpha = 0.5f
+                                                        .border(
+                                                            if (isSelected) 1.5.dp else 0.5.dp,
+                                                            if (isSelected) themeColor else Color(
+                                                                0xFF9DA0DB
                                                             )
+                                                        )
+                                                        .background(
+                                                            if (isSelected) PvzGridHighLight
                                                             else Color.Transparent
                                                         )
                                                         .clickable {
@@ -301,7 +281,7 @@ fun ZombiePotionActionPropsEP(
                                                                 modifier = Modifier
                                                                     .align(Alignment.TopEnd)
                                                                     .background(
-                                                                        color = Color.Gray,
+                                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                                         shape = RoundedCornerShape(
                                                                             bottomStart = 4.dp
                                                                         )
@@ -335,7 +315,7 @@ fun ZombiePotionActionPropsEP(
                     "物品分布列表 (行优先排序)",
                     modifier = Modifier.padding(vertical = 8.dp),
                     fontWeight = FontWeight.Bold,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp
                 )
             }
@@ -375,7 +355,7 @@ fun PotionIconSmall(typeName: String) {
         Box(
             modifier = Modifier
                 .fillMaxSize(0.8f)
-                .background(Color(0xFF3A47B7), cardShape),
+                .background(Color(0xFF9DA0DB), cardShape),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -395,13 +375,15 @@ fun PotionItemCard(
     onClick: () -> Unit,
     onDelete: () -> Unit
 ) {
+    val isDark = LocalDarkTheme.current
     Card(
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFFE3E4F3) else Color.White
+            containerColor = if (isSelected) if (isDark) Color(0xFF31343B) else Color(0xFFD7E0F1)
+            else MaterialTheme.colorScheme.surface
         ),
-        border = if (isSelected) BorderStroke(1.dp, Color(0xFF3A48B9)) else null,
-        elevation = CardDefaults.cardElevation(1.dp)
+        border = if (isSelected) BorderStroke(1.dp, Color(0xFF9DA0DB)) else null,
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -443,7 +425,7 @@ fun PotionItemCard(
                                 text = item.type.take(1),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF3A47B7)
+                                color = Color(0xFF9DA0DB)
                             )
                         }
                     }
@@ -455,7 +437,7 @@ fun PotionItemCard(
                     text = "R${item.location.y + 1}:C${item.location.x + 1}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color(0xFF3A47B7)
+                    color = Color(0xFF9DA0DB)
                 )
             }
         }

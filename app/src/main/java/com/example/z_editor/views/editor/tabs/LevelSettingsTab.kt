@@ -133,20 +133,20 @@ fun LevelSettingsTab(
                 imageVector = Icons.Default.Settings,
                 contentDescription = null,
                 modifier = Modifier.size(64.dp),
-                tint = Color.Gray
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(Modifier.height(16.dp))
             Text(
                 text = "未找到关卡定义",
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 text = "当前关卡内未找到关卡定义模块 (LevelDefinition)，这是关卡文件的基础节点，缺失会导致关卡无法正常读取及运行。",
                 fontSize = 14.sp,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
         }
@@ -214,7 +214,7 @@ fun LevelSettingsTab(
                 TextButton(onClick = {
                     onRemoveModule(pendingDeleteRtid!!)
                     pendingDeleteRtid = null
-                }) { Text("确认移除", color = Color.Red) }
+                }) { Text("确认移除", color = MaterialTheme.colorScheme.onError) }
             },
             dismissButton = {
                 TextButton(onClick = { pendingDeleteRtid = null }) { Text("取消") }
@@ -246,7 +246,7 @@ fun LevelSettingsTab(
                 "可用编辑模块",
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp,
-                color = Color(0xFF4CAF50)
+                color = MaterialTheme.colorScheme.primary,
             )
         }
         items(coreModules) { item ->
@@ -279,41 +279,41 @@ fun LevelSettingsTab(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
-                    .border(1.dp, Color(0xFF4CAF50), RoundedCornerShape(8.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
                     .clickable { onNavigateToAddModule() }
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.AddCircleOutline, null, tint = Color(0xFF4CAF50))
+                    Icon(Icons.Default.AddCircleOutline, null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(8.dp))
-                    Text("添加新模块", color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold)
+                    Text("添加新模块", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
             }
         }
 
         items(activeConflicts) { (rule, description) ->
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)), // 浅红色背景
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error), // 浅红色背景
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, Color(0xFFEF5350), RoundedCornerShape(12.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.onError, RoundedCornerShape(12.dp))
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Error, null, tint = Color(0xFFD32F2F))
+                        Icon(Icons.Default.Error, null, tint = MaterialTheme.colorScheme.onError)
                         Spacer(Modifier.width(8.dp))
                         Text(
                             text = rule.title,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFFD32F2F)
+                            color = MaterialTheme.colorScheme.onError
                         )
                     }
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = description,
                         fontSize = 12.sp,
-                        color = Color(0xFFB71C1C),
+                        color = MaterialTheme.colorScheme.onError,
                         lineHeight = 18.sp
                     )
                 }
@@ -324,33 +324,33 @@ fun LevelSettingsTab(
         if (missingEssentials.isNotEmpty()) {
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF9C4)), // 浅黄色
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiary), // 浅黄色
                     modifier = Modifier
                         .fillMaxWidth()
-                        .border(1.dp, Color(0xFFF57F17), RoundedCornerShape(12.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.onTertiary, RoundedCornerShape(12.dp))
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Warning, null, tint = Color(0xFFFBC02D))
+                            Icon(Icons.Default.Warning, null, tint = MaterialTheme.colorScheme.onTertiary)
                             Spacer(Modifier.width(8.dp))
                             Text(
                                 "缺少必要模块",
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFF57F17)
+                                color = MaterialTheme.colorScheme.onTertiary
                             )
                         }
                         Spacer(Modifier.height(8.dp))
                         Text(
                             text = "关卡可能无法正常运行。建议添加以下模块：",
                             fontSize = 12.sp,
-                            color = Color(0xFFF57F17)
+                            color = MaterialTheme.colorScheme.onTertiary
                         )
                         missingEssentials.forEach { meta ->
                             Text(
                                 text = "• ${meta.title}",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFF57F17),
+                                color = MaterialTheme.colorScheme.onTertiary,
                                 modifier = Modifier.padding(start = 8.dp, top = 2.dp)
                             )
                         }
@@ -368,25 +368,25 @@ fun LevelSettingsTab(
 fun ModuleCard(info: ModuleUIInfo, onClick: () -> Unit, onDelete: () -> Unit) {
     Card(
         onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(1.dp)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(info.icon, null, tint = Color(0xFF4CAF50), modifier = Modifier.size(28.dp))
+            Icon(info.icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(info.friendlyName, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(info.description, fontSize = 12.sp, color = Color.Gray, maxLines = 1)
-                Text(info.alias, fontSize = 12.sp, color = Color.Gray)
+                Text(info.friendlyName, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+                Text(info.description, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+                Text(info.alias, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             IconButton(onClick = onDelete) {
                 Icon(
                     Icons.Default.Close,
                     "删除",
-                    tint = Color.LightGray,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -402,21 +402,21 @@ fun MiscModuleRow(info: ModuleUIInfo, onDelete: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, shape = MaterialTheme.shapes.small)
+            .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.small)
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(info.icon, null, tint = Color.Gray, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(info.friendlyName, fontSize = 14.sp, fontWeight = FontWeight.Medium)
-            Text(info.alias, fontSize = 10.sp, color = Color.LightGray)
+            Text(info.friendlyName, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
+            Text(info.alias, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
             Icon(
                 Icons.Default.RemoveCircleOutline,
                 null,
-                tint = Color(0xFFFFCDD2),
+                tint = MaterialTheme.colorScheme.onError.copy(0.5f),
                 modifier = Modifier.size(18.dp)
             )
         }

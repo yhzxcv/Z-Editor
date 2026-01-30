@@ -20,20 +20,15 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,12 +41,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.TidalChangeWaveActionData
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzGridBgDark
+import com.example.z_editor.ui.theme.PvzGridBorder
+import com.example.z_editor.ui.theme.PvzLightBlueDark
+import com.example.z_editor.ui.theme.PvzLightBlueLight
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -90,43 +90,20 @@ fun TidalChangeEventEP(
         rootLevelFile.objects.any { it.objClass == "TideProperties" }
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightBlueDark else PvzLightBlueLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            "编辑 $currentAlias",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            "事件类型：潮水变更",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF00ACC1),  // 蓝色，与潮水模块一致
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "编辑 $currentAlias",
+                subtitle = "事件类型：潮水变更",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -134,7 +111,7 @@ fun TidalChangeEventEP(
             EditorHelpDialog(
                 title = "潮水变更事件说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF00ACC1)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -152,13 +129,17 @@ fun TidalChangeEventEP(
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             if (!hasTideModule) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
-                    border = androidx.compose.foundation.BorderStroke(1.dp, Color.Red),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error),
+                    border = androidx.compose.foundation.BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.onError
+                    ),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
@@ -168,21 +149,21 @@ fun TidalChangeEventEP(
                         Icon(
                             imageVector = Icons.Default.Warning,
                             contentDescription = null,
-                            tint = Color.Red
+                            tint = MaterialTheme.colorScheme.onError
                         )
                         Spacer(Modifier.width(12.dp))
                         Column {
                             Text(
                                 text = "模块缺失警告",
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Red,
+                                color = MaterialTheme.colorScheme.onError,
                                 fontSize = 15.sp
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(
                                 text = "关卡未检测到潮水模块，此事件在游戏中可能无法生效，甚至导致闪退",
                                 fontSize = 14.sp,
-                                color = Color(0xFFC62828),
+                                color = MaterialTheme.colorScheme.onError,
                                 lineHeight = 18.sp
                             )
                         }
@@ -190,7 +171,7 @@ fun TidalChangeEventEP(
                 }
             }
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -198,7 +179,7 @@ fun TidalChangeEventEP(
                     Text(
                         text = "潮水变更配置",
                         style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFF00ACC1),
+                        color = themeColor,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -217,7 +198,7 @@ fun TidalChangeEventEP(
                         },
                         label = "变更位置 (ChangeAmount)",
                         modifier = Modifier.fillMaxWidth(),
-                        color = Color(0xFF00ACC1)
+                        color = themeColor
                     )
                 }
             }
@@ -228,7 +209,7 @@ fun TidalChangeEventEP(
                 contentAlignment = Alignment.Center
             ) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp),
                     modifier = Modifier.widthIn(max = 480.dp)
                 ) {
@@ -236,7 +217,7 @@ fun TidalChangeEventEP(
                         Text(
                             text = "潮水位置预览",
                             style = MaterialTheme.typography.titleMedium,
-                            color = Color(0xFF00ACC1),
+                            color = themeColor,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -248,8 +229,8 @@ fun TidalChangeEventEP(
                                 .fillMaxWidth()
                                 .aspectRatio(1.8f)
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(Color(0xFFF5F5F5))
-                                .border(1.dp, Color(0xFFBDBDBD), RoundedCornerShape(6.dp))
+                                .background(if (isDark) PvzGridBgDark else Color.White)
+                                .border(1.dp, PvzGridBorder, RoundedCornerShape(6.dp))
                         ) {
                             Column(Modifier.fillMaxSize()) {
                                 for (row in 0..4) {
@@ -261,10 +242,10 @@ fun TidalChangeEventEP(
                                                 modifier = Modifier
                                                     .weight(1f)
                                                     .fillMaxHeight()
-                                                    .border(0.5.dp, Color(0xFF9E9E9E))
+                                                    .border(0.5.dp, PvzGridBorder)
                                                     .background(
-                                                        if (inWater) Color(0xFF81D4FA).copy(alpha = 0.6f) // 淡蓝色表示有水
-                                                        else Color.White
+                                                        if (inWater) themeColor.copy(alpha = 0.6f)
+                                                        else if (isDark) PvzGridBgDark else Color.White
                                                     )
                                             )
                                         }
@@ -285,28 +266,28 @@ fun TidalChangeEventEP(
                                 modifier = Modifier
                                     .width(20.dp)
                                     .height(20.dp)
-                                    .background(Color(0xFF81D4FA).copy(alpha = 0.6f))
-                                    .border(0.5.dp, Color(0xFF9E9E9E))
+                                    .background(themeColor.copy(alpha = 0.6f))
+                                    .border(0.5.dp, PvzGridBorder)
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
                                 "有潮水",
                                 fontSize = 12.sp,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(Modifier.width(24.dp))
                             Box(
                                 modifier = Modifier
                                     .width(20.dp)
                                     .height(20.dp)
-                                    .background(Color.White)
-                                    .border(0.5.dp, Color(0xFF9E9E9E))
+                                    .background(if (isDark) PvzGridBgDark else Color.White)
+                                    .border(0.5.dp, PvzGridBorder)
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
                                 "无潮水",
                                 fontSize = 12.sp,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -314,7 +295,7 @@ fun TidalChangeEventEP(
             }
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -325,14 +306,14 @@ fun TidalChangeEventEP(
                     Icon(
                         Icons.Outlined.Info,
                         null,
-                        tint = Color(0xFF00ACC1),
+                        tint = themeColor,
                         modifier = Modifier.width(24.dp)
                     )
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
                             text = "场地最右边坐标为0，最左边为9，潮水的更改范围不能超出场地。",
-                            color = Color(0xFF00ACC1),
+                            color = themeColor,
                             fontSize = 12.sp,
                             lineHeight = 16.sp
                         )

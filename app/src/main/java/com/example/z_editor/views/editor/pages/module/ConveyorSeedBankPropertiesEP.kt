@@ -21,8 +21,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.LinearScale
@@ -36,11 +34,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -67,7 +64,11 @@ import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.SpeedConditionData
 import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.ToolRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzLightGreenDark
+import com.example.z_editor.ui.theme.PvzLightGreenLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputDouble
@@ -111,6 +112,9 @@ fun ConveyorSeedBankPropertiesEP(
         }
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightGreenDark else PvzLightGreenLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = {
@@ -118,23 +122,11 @@ fun ConveyorSeedBankPropertiesEP(
             })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("传送带配置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1976D2),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "传送带设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -142,7 +134,7 @@ fun ConveyorSeedBankPropertiesEP(
             EditorHelpDialog(
                 title = "传送带模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF1976D2)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -171,6 +163,7 @@ fun ConveyorSeedBankPropertiesEP(
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
@@ -221,7 +214,7 @@ fun ConveyorSeedBankPropertiesEP(
                             },
                             label = "阈值",
                             modifier = Modifier.weight(1f),
-                            color = Color(0xFF1976D2)
+                            color = themeColor
                         )
                         NumberInputInt(
                             value = item.delay,
@@ -231,7 +224,7 @@ fun ConveyorSeedBankPropertiesEP(
                             },
                             label = "延迟",
                             modifier = Modifier.weight(1f),
-                            color = Color(0xFF1976D2)
+                            color = themeColor
                         )
                     }
                 }
@@ -273,7 +266,7 @@ fun ConveyorSeedBankPropertiesEP(
                             },
                             label = "阈值",
                             modifier = Modifier.weight(1f),
-                            color = Color(0xFF1976D2)
+                            color = themeColor
                         )
                         NumberInputInt(
                             value = item.speed,
@@ -283,7 +276,7 @@ fun ConveyorSeedBankPropertiesEP(
                             },
                             label = "速度",
                             modifier = Modifier.weight(1f),
-                            color = Color(0xFF1976D2)
+                            color = themeColor
                         )
                     }
                 }
@@ -340,20 +333,22 @@ fun ConveyorPlantListEditor(
             }
         )
     }
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightGreenDark else PvzLightGreenLight
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.LinearScale, null, tint = Color(0xFF1976D2))
+                Icon(Icons.Default.LinearScale, null, tint = themeColor)
                 Spacer(Modifier.width(12.dp))
                 Text(
                     "传送带卡片池",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = Color(0xFF1976D2)
+                    color = themeColor
                 )
             }
 
@@ -371,8 +366,8 @@ fun ConveyorPlantListEditor(
                     },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFE3F2FD),
-                        contentColor = Color(0xFF1976D2)
+                        containerColor = MaterialTheme.colorScheme.outlineVariant,
+                        contentColor = themeColor
                     ),
                     contentPadding = PaddingValues(vertical = 0.dp, horizontal = 8.dp)
                 ) {
@@ -392,8 +387,8 @@ fun ConveyorPlantListEditor(
                     },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFE3F2FD),
-                        contentColor = Color(0xFF1976D2)
+                        containerColor = MaterialTheme.colorScheme.outlineVariant,
+                        contentColor = themeColor
                     ),
                     contentPadding = PaddingValues(vertical = 0.dp, horizontal = 8.dp)
                 ) {
@@ -408,7 +403,7 @@ fun ConveyorPlantListEditor(
             if (items.isEmpty()) {
                 Text(
                     "暂无卡片，请添加",
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(8.dp)
                 )
@@ -453,13 +448,13 @@ fun PlantRow(
         if (plantInfo?.icon != null) "images/plants/${plantInfo.icon}" else null
     }
 
-    val themeColor = Color.Gray
+    val themeColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
             .clickable { onEdit() }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -485,7 +480,7 @@ fun PlantRow(
             path = iconPath,
             contentDescription = displayName,
             modifier = Modifier
-                .size(height = if(isTool) 36.dp else 44.dp, width = 44.dp)
+                .size(height = if (isTool) 36.dp else 44.dp, width = 44.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(Color.LightGray)
                 .border(1.dp, themeColor.copy(alpha = 0.5f), RoundedCornerShape(8.dp)),
@@ -500,16 +495,29 @@ fun PlantRow(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 val levelText = if (plant.iLevel == null) "随账号" else "${plant.iLevel}"
-                Text("权重: ${plant.weight}", fontSize = 12.sp, color = Color.Gray)
+                Text(
+                    "权重: ${plant.weight}",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 if (!isTool) {
                     Spacer(Modifier.width(8.dp))
-                    Text("等级: $levelText", fontSize = 12.sp, color = Color.Gray)
+                    Text(
+                        "等级: $levelText",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
 
         IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) {
-            Icon(Icons.Default.Delete, null, tint = Color.Gray, modifier = Modifier.size(18.dp))
+            Icon(
+                Icons.Default.Delete,
+                null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp)
+            )
         }
     }
 }
@@ -537,6 +545,8 @@ fun PlantDetailDialog(
     var tempMinCount by remember { mutableIntStateOf(data.minCount) }
     var tempMinWeightFactor by remember { mutableDoubleStateOf(data.minWeightFactor) }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightGreenDark else PvzLightGreenLight
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -558,7 +568,7 @@ fun PlantDetailDialog(
                         onValueChange = { tempWeight = it },
                         label = "初始权重",
                         modifier = Modifier.weight(1f),
-                        color = Color(0xFF1976D2)
+                        color = themeColor
                     )
 
                     NumberInputInt(
@@ -568,13 +578,13 @@ fun PlantDetailDialog(
                         },
                         label = "植物等级",
                         modifier = Modifier.weight(1f),
-                        color = Color(0xFF1976D2)
+                        color = themeColor
                     )
                 }
                 Text(
                     text = if (isTool) "工具卡默认固定等级无需修改" else "等级输入 0 表示等级跟随玩家账号",
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 4.dp)
                 )
 
@@ -585,7 +595,7 @@ fun PlantDetailDialog(
                         "上限控制 (Max Limits)",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -594,14 +604,14 @@ fun PlantDetailDialog(
                             onValueChange = { tempMaxCount = it },
                             label = "最大数量阈值",
                             modifier = Modifier.weight(1f),
-                            color = Color(0xFF1976D2)
+                            color = themeColor
                         )
                         NumberInputDouble(
                             value = tempMaxWeightFactor,
                             onValueChange = { tempMaxWeightFactor = it },
                             label = "达标后权重倍率",
                             modifier = Modifier.weight(1f),
-                            color = Color(0xFF1976D2)
+                            color = themeColor
                         )
                     }
                     Text(
@@ -609,7 +619,7 @@ fun PlantDetailDialog(
                         else if (tempMaxCount > 0) "达到 $tempMaxCount 株后权重变为 ${(tempWeight * tempMaxWeightFactor).toInt()}"
                         else "",
                         fontSize = 12.sp,
-                        color = Color(0xFF1976D2),
+                        color = themeColor,
                         modifier = Modifier.padding(top = 2.dp)
                     )
                 }
@@ -619,7 +629,7 @@ fun PlantDetailDialog(
                         "下限控制 (Min Limits)",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -628,21 +638,21 @@ fun PlantDetailDialog(
                             onValueChange = { tempMinCount = it },
                             label = "最小数量阈值",
                             modifier = Modifier.weight(1f),
-                            color = Color(0xFF1976D2)
+                            color = themeColor
                         )
                         NumberInputDouble(
                             value = tempMinWeightFactor,
                             onValueChange = { tempMinWeightFactor = it },
                             label = "未达标权重倍率",
                             modifier = Modifier.weight(1f),
-                            color = Color(0xFF1976D2)
+                            color = themeColor
                         )
                     }
                     Text(
                         text = if (tempMinCount > 0) "不满 $tempMinCount 株前权重变为 ${(tempWeight * tempMinWeightFactor).toInt()}"
                         else "",
                         fontSize = 12.sp,
-                        color = Color(0xFF1976D2),
+                        color = themeColor,
                         modifier = Modifier.padding(top = 2.dp)
                     )
                 }
@@ -682,22 +692,28 @@ fun <T> ConveyorConditionEditor(
     contentRow: @Composable (T, () -> Unit) -> Unit // 增加第二个参数：onChangeTrigger
 ) {
     val refreshKey = remember { mutableIntStateOf(0) }
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightGreenDark else PvzLightGreenLight
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(title, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                    Text(subtitle, fontSize = 11.sp, color = Color.Gray)
+                    Text(
+                        subtitle,
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
                 IconButton(onClick = {
                     onAdd()
                     refreshKey.intValue++
                 }) {
-                    Icon(Icons.Default.Add, "添加", tint = Color(0xFF1976D2))
+                    Icon(Icons.Default.Add, "添加", tint = themeColor)
                 }
             }
 
@@ -708,14 +724,14 @@ fun <T> ConveyorConditionEditor(
                 Text(
                     headers.first,
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
                     headers.second,
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(Modifier.width(32.dp))
@@ -732,7 +748,6 @@ fun <T> ConveyorConditionEditor(
                         modifier = Modifier.padding(vertical = 4.dp)
                     ) {
                         Box(modifier = Modifier.weight(1f)) {
-                            // [关键修改] 将 onValueChange 传递给 contentRow
                             contentRow(item, onValueChange)
                         }
 

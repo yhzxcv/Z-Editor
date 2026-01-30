@@ -1,5 +1,7 @@
 package com.example.z_editor.views.screens.select
 
+import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -21,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -28,14 +31,21 @@ import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.repository.ZombossInfo
 import com.example.z_editor.data.repository.ZombossRepository
 import com.example.z_editor.data.repository.ZombossTag
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzPurpleDark
+import com.example.z_editor.ui.theme.PvzPurpleLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.components.rememberDebouncedClick
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun ZombossSelectionScreen(
     onSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
-    val themeColor = Color(0xFF673AB7)
+    val handleBack = rememberDebouncedClick { onBack() }
+    BackHandler(onBack = handleBack)
+
     var searchQuery by remember { mutableStateOf("") }
     var selectedTag by remember { mutableStateOf(ZombossTag.All) }
     val focusManager = LocalFocusManager.current
@@ -43,6 +53,9 @@ fun ZombossSelectionScreen(
     val displayList = remember(searchQuery, selectedTag) {
         ZombossRepository.search(searchQuery, selectedTag)
     }
+
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzPurpleDark else PvzPurpleLight
 
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
@@ -62,8 +75,8 @@ fun ZombossSelectionScreen(
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = onBack, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                        IconButton(onClick = handleBack, modifier = Modifier.size(24.dp)) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = MaterialTheme.colorScheme.surface)
                         }
                         Spacer(Modifier.width(16.dp))
 
@@ -71,7 +84,7 @@ fun ZombossSelectionScreen(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             placeholder = {
-                                Text("搜索僵王名称或代号", fontSize = 16.sp, color = Color.Gray)
+                                Text("搜索僵王名称或代号", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -79,18 +92,18 @@ fun ZombossSelectionScreen(
                             singleLine = true,
                             shape = RoundedCornerShape(25.dp),
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White,
+                                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
                                 cursorColor = themeColor
                             ),
-                            leadingIcon = { Icon(Icons.Default.Search, null, tint = Color.Gray) },
+                            leadingIcon = { Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                             trailingIcon = if (searchQuery.isNotEmpty()) {
                                 {
                                     IconButton(onClick = {
                                         searchQuery = ""
-                                    }) { Icon(Icons.Default.Clear, null, tint = Color.Gray) }
+                                    }) { Icon(Icons.Default.Clear, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
                                 }
                             } else null,
                             textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
@@ -100,29 +113,32 @@ fun ZombossSelectionScreen(
                     ScrollableTabRow(
                         selectedTabIndex = ZombossTag.entries.indexOf(selectedTag),
                         containerColor = Color.Transparent,
-                        contentColor = Color.White,
+                        contentColor = MaterialTheme.colorScheme.surface,
                         edgePadding = 16.dp,
                         indicator = { tabPositions ->
                             TabRowDefaults.SecondaryIndicator(
                                 Modifier.tabIndicatorOffset(tabPositions[ZombossTag.entries.indexOf(selectedTag)]),
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.surface,
                                 height = 3.dp
                             )
                         },
                         divider = {}
                     ) {
                         ZombossTag.entries.forEach { tag ->
+                            val configuration = LocalConfiguration.current
+                            val screenWidth = configuration.screenWidthDp.dp
                             Tab(
+                                modifier = Modifier.width(screenWidth / 4),
                                 selected = selectedTag == tag,
                                 onClick = { selectedTag = tag },
                                 text = {
                                     Text(
                                         text = tag.label,
                                         fontWeight = if (selectedTag == tag) FontWeight.Bold else FontWeight.Normal,
-                                        fontSize = 13.sp
+                                        fontSize = 14.sp
                                     )
                                 },
-                                unselectedContentColor = Color.White.copy(alpha = 0.7f)
+                                unselectedContentColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
                             )
                         }
                     }
@@ -134,7 +150,7 @@ fun ZombossSelectionScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
         ) {
             if (displayList.isEmpty()) {
                 Column(
@@ -148,7 +164,7 @@ fun ZombossSelectionScreen(
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(Modifier.height(16.dp))
-                    Text("未找到匹配的僵王", color = Color.Gray)
+                    Text("未找到匹配的僵王", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
                 LazyVerticalGrid(
@@ -171,7 +187,7 @@ fun ZombossSelectionScreen(
 fun ZombossItemCard(boss: ZombossInfo, onClick: () -> Unit) {
     Card(
         onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -186,18 +202,18 @@ fun ZombossItemCard(boss: ZombossInfo, onClick: () -> Unit) {
                     .size(48.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color.LightGray)
-                    .border(1.dp, Color.Gray, RoundedCornerShape(12.dp)),
+                    .border(1.dp, MaterialTheme.colorScheme.onSurfaceVariant, RoundedCornerShape(12.dp)),
                 filterQuality = FilterQuality.Medium,
                 placeholder = {
                     Box(Modifier.fillMaxSize().background(Color.LightGray)) {
-                        Text(boss.name.take(1), Modifier.align(Alignment.Center), color = Color.White)
+                        Text(boss.name.take(1), Modifier.align(Alignment.Center), color = MaterialTheme.colorScheme.surface)
                     }
                 }
             )
             Spacer(Modifier.width(16.dp))
             Column {
                 Text(boss.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(boss.id, fontSize = 12.sp, color = Color.Gray)
+                Text(boss.id, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }

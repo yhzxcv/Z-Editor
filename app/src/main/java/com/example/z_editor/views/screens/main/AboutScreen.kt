@@ -1,5 +1,6 @@
 package com.example.z_editor.views.screens.main
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -31,14 +31,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.views.components.rememberDebouncedClick
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(
     onBack: () -> Unit
 ) {
-    val themeColor = Color(0xFF4CAF50)
-    BackHandler(onBack = onBack)
+    val themeColor = MaterialTheme.colorScheme.primary
+    val handleBack = rememberDebouncedClick { onBack() }
+    BackHandler(onBack = handleBack)
 
     Scaffold(
         topBar = {
@@ -51,18 +53,17 @@ fun AboutScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = handleBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "返回",
-                            tint = Color.White
+                            contentDescription = "返回"
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
                 )
             )
         }
@@ -71,7 +72,7 @@ fun AboutScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
@@ -92,7 +93,7 @@ fun AboutScreen(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(Modifier.height(18.dp))
@@ -101,7 +102,7 @@ fun AboutScreen(
                 Text(
                     "\tZ-Editor 是一款专为《植物大战僵尸2》设计的可视化关卡编辑工具。它旨在解决直接修改 JSON 文件繁琐、易错的问题，提供直观的图形界面来管理关卡配置。",
                     lineHeight = 24.sp,
-                    color = Color(0xFF424242)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -121,38 +122,38 @@ fun AboutScreen(
                             "4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n" +
                             "如果有使用上的疑问或反馈建议，欢迎加入交流 QQ 群 562251204 进行交流。",
                     lineHeight = 24.sp,
-                    color = Color(0xFF424242)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
             InfoSectionCard(title = "致谢名单") {
                 BulletPoint("软件作者：")
-                Text("降维打击",
+                Text(
+                    "降维打击",
                     lineHeight = 24.sp,
-                    color = Color(0xFF424242)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 BulletPoint("特别鸣谢：")
                 Text(
                     "星寻、metal海枣、超越自我3333、桃酱、凉沈、小小师、顾小言、PhiLia093、咖啡、不留名",
                     lineHeight = 24.sp,
-                    color = Color(0xFF424242)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
-
             Spacer(Modifier.height(20.dp))
 
             Text(
                 text = "穿越时空 创造无穷可能",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 18.sp
             )
 
             Spacer(Modifier.height(20.dp))
 
             Text(
-                text = "Version 1.1.2",
+                text = "Version 1.1.4",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 color = Color.LightGray,
@@ -169,7 +170,7 @@ fun InfoSectionCard(title: String, content: @Composable () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -177,7 +178,7 @@ fun InfoSectionCard(title: String, content: @Composable () -> Unit) {
                 text = title,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF388E3C)
+                color = MaterialTheme.colorScheme.primary
             )
             HorizontalDivider(
                 modifier = Modifier.padding(vertical = 8.dp),
@@ -192,7 +193,7 @@ fun InfoSectionCard(title: String, content: @Composable () -> Unit) {
 @Composable
 fun BulletPoint(text: String) {
     Row(modifier = Modifier.padding(vertical = 2.dp)) {
-        Text("• ", fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50))
-        Text(text, lineHeight = 24.sp, color = Color(0xFF424242))
+        Text("• ", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        Text(text, lineHeight = 24.sp, color = MaterialTheme.colorScheme.onSurface)
     }
 }

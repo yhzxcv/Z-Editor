@@ -21,19 +21,14 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +48,12 @@ import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RoofPropertiesData
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.ReferenceRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzBrownDark
+import com.example.z_editor.ui.theme.PvzBrownLight
+import com.example.z_editor.ui.theme.PvzGridBgDark
+import com.example.z_editor.ui.theme.PvzGridBorder
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.StepperControl
@@ -83,7 +84,8 @@ fun RoofPropertiesEP(
 
     val isRoofStage = stageObjClass == "RoofStageProperties"
 
-    val themeColor = Color(0xFF8D6E63)
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzBrownDark else PvzBrownLight
 
     val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
     val syncManager = rememberJsonSync(obj, RoofPropertiesData::class.java)
@@ -113,23 +115,11 @@ fun RoofPropertiesEP(
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("屋顶花盆配置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "屋顶花盆设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -155,15 +145,16 @@ fun RoofPropertiesEP(
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             if (!isRoofStage) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .border(1.dp, Color.Red, RoundedCornerShape(8.dp)),
+                        .border(1.dp, MaterialTheme.colorScheme.onError, RoundedCornerShape(8.dp)),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Row(
@@ -173,7 +164,7 @@ fun RoofPropertiesEP(
                         Icon(
                             Icons.Default.Warning,
                             null,
-                            tint = Color.Red,
+                            tint = MaterialTheme.colorScheme.onError,
                             modifier = Modifier.width(24.dp)
                         )
                         Spacer(Modifier.width(12.dp))
@@ -181,13 +172,13 @@ fun RoofPropertiesEP(
                             Text(
                                 text = "地图类型不匹配",
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Red,
+                                color = MaterialTheme.colorScheme.onError,
                                 fontSize = 15.sp
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(
                                 text = "当前地图类型并非屋顶地图，此模块在游戏中可能无法生效，甚至导致闪退",
-                                color = Color(0xFFC62828),
+                                color = MaterialTheme.colorScheme.onError,
                                 fontSize = 14.sp,
                                 lineHeight = 18.sp
                             )
@@ -196,7 +187,7 @@ fun RoofPropertiesEP(
                 }
             }
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -261,7 +252,7 @@ fun RoofPropertiesEP(
                 contentAlignment = Alignment.Center
             ) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp),
                     modifier = Modifier.widthIn(max = 480.dp)
                 ) {
@@ -281,8 +272,8 @@ fun RoofPropertiesEP(
                                 .fillMaxWidth()
                                 .aspectRatio(1.8f)
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(Color(0xFFEFEBE9))
-                                .border(1.dp, Color(0xFFD7CCC8), RoundedCornerShape(6.dp))
+                                .background(if (isDark) PvzGridBgDark else Color.White)
+                                .border(1.dp, PvzGridBorder, RoundedCornerShape(6.dp))
                         ) {
                             Column(Modifier.fillMaxSize()) {
                                 for (row in 0..4) {
@@ -293,9 +284,11 @@ fun RoofPropertiesEP(
                                                 modifier = Modifier
                                                     .weight(1f)
                                                     .fillMaxHeight()
-                                                    .border(0.5.dp, Color(0xFFA1887F))
+                                                    .border(0.5.dp, PvzGridBorder)
                                                     .background(
-                                                        if (hasPot) Color(0xFFC99380)
+                                                        if (hasPot) if (isDark) Color(0xFF6B4233) else Color(
+                                                            0xFFC99380
+                                                        )
                                                         else Color.Transparent
                                                     ),
                                                 contentAlignment = Alignment.Center
@@ -317,22 +310,30 @@ fun RoofPropertiesEP(
                             Box(
                                 modifier = Modifier
                                     .size(16.dp)
-                                    .background(Color(0xFFC99380))
-                                    .border(0.5.dp, Color(0xFFA1887F))
+                                    .background(if (isDark) Color(0xFF6B4233) else Color(0xFFC99380))
+                                    .border(0.5.dp, PvzGridBorder)
                             )
                             Spacer(Modifier.width(8.dp))
-                            Text("有花盆", fontSize = 12.sp, color = Color.Gray)
+                            Text(
+                                "有花盆",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
 
                             Spacer(Modifier.width(24.dp))
 
                             Box(
                                 modifier = Modifier
                                     .size(16.dp)
-                                    .background(Color.Transparent)
-                                    .border(0.5.dp, Color(0xFFA1887F))
+                                    .background(if (isDark) PvzGridBgDark else Color.White)
+                                    .border(0.5.dp, PvzGridBorder)
                             )
                             Spacer(Modifier.width(8.dp))
-                            Text("无花盆", fontSize = 12.sp, color = Color.Gray)
+                            Text(
+                                "无花盆",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                 }

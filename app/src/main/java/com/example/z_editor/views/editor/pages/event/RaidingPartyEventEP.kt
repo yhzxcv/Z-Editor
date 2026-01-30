@@ -1,6 +1,7 @@
 package com.example.z_editor.views.editor.pages.event
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,18 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,12 +25,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.LevelParser
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RaidingPartyEventData
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzLightOrangeDark
+import com.example.z_editor.ui.theme.PvzLightOrangeLight
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -61,6 +59,9 @@ fun RaidingPartyEventEP(
         syncManager.sync()
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightOrangeDark else PvzLightOrangeLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = {
@@ -68,34 +69,12 @@ fun RaidingPartyEventEP(
             })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            "编辑 $currentAlias",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text("事件类型：海盗登船", fontSize = 15.sp, fontWeight = FontWeight.Normal)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFFF9800),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "编辑 $currentAlias",
+                subtitle = "事件类型：海盗登船",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -103,7 +82,7 @@ fun RaidingPartyEventEP(
             EditorHelpDialog(
                 title = "海盗登船事件说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFFFF9800)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -120,11 +99,12 @@ fun RaidingPartyEventEP(
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(
@@ -133,7 +113,7 @@ fun RaidingPartyEventEP(
                 ) {
                     Text(
                         "生成参数配置",
-                        color = Color(0xFFFF9800),
+                        color = themeColor,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
@@ -146,12 +126,12 @@ fun RaidingPartyEventEP(
                         },
                         label = "每组的僵尸数 (GroupSize)",
                         modifier = Modifier.fillMaxWidth(),
-                        color = Color(0xFFFF9800)
+                        color = themeColor
                     )
                     Text(
                         "每一组所包含的僵尸数量",
                         fontSize = 12.sp,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(start = 4.dp)
                     )
 
@@ -163,12 +143,12 @@ fun RaidingPartyEventEP(
                         },
                         label = "总僵尸数 (SwashbucklerCount)",
                         modifier = Modifier.fillMaxWidth(),
-                        color = Color(0xFFFF9800)
+                        color = themeColor
                     )
                     Text(
                         "该事件总共生成的僵尸数量",
                         fontSize = 12.sp,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(start = 4.dp)
                     )
 
@@ -180,12 +160,12 @@ fun RaidingPartyEventEP(
                         },
                         label = "组间间隔 (TimeBetweenGroups)",
                         modifier = Modifier.fillMaxWidth(),
-                        color = Color(0xFFFF9800)
+                        color = themeColor
                     )
                     Text(
                         "两批突袭之间的时间间隔",
                         fontSize = 12.sp,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(start = 4.dp)
                     )
                 }

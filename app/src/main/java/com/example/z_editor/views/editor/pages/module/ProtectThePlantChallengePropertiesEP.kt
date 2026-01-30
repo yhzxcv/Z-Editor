@@ -26,8 +26,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Info
@@ -39,11 +37,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -68,7 +65,12 @@ import com.example.z_editor.data.ProtectThePlantChallengePropertiesData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.PlantRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzGridHighLight
+import com.example.z_editor.ui.theme.PvzLightGreenDark
+import com.example.z_editor.ui.theme.PvzLightGreenLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
@@ -84,10 +86,6 @@ fun ProtectThePlantChallengePropertiesEP(
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
-
-    val themeColor = Color(0xFF4CAF50)
-    val lightThemeColor = Color(0xFFE8F5E9)
-    val borderThemeColor = Color(0xFFA5D6A7)
 
     val obj = remember(rootLevelFile) {
         rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
@@ -106,8 +104,8 @@ fun ProtectThePlantChallengePropertiesEP(
         }
     }
 
-    var selectedX by remember { mutableIntStateOf(2) }
-    var selectedY by remember { mutableIntStateOf(2) }
+    var selectedX by remember { mutableIntStateOf(0) }
+    var selectedY by remember { mutableIntStateOf(0) }
 
     val sortedPlants = remember(moduleData.plants) {
         moduleData.plants.sortedWith(compareBy({ it.gridY }, { it.gridX }))
@@ -151,7 +149,7 @@ fun ProtectThePlantChallengePropertiesEP(
                         deletePlant(itemToDelete!!)
                         itemToDelete = null
                     },
-                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onError)
                 ) { Text("移除") }
             },
             dismissButton = {
@@ -160,28 +158,21 @@ fun ProtectThePlantChallengePropertiesEP(
         )
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightGreenDark else PvzLightGreenLight
+    val lightThemeColor = if (isDark) Color(0xFF49564C) else Color(0xFFE8F5E9)
+    val borderThemeColor = Color(0xFFA5D6A7)
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("保护植物挑战", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "保护植物挑战",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -214,13 +205,15 @@ fun ProtectThePlantChallengePropertiesEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE9EEF5)),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(2.dp),
+
+                    ) {
                     Row(modifier = Modifier.padding(16.dp)) {
                         Icon(Icons.Default.Info, null, tint = themeColor)
                         Spacer(Modifier.width(12.dp))
@@ -238,14 +231,18 @@ fun ProtectThePlantChallengePropertiesEP(
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(contentAlignment = Alignment.Center) {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(2.dp),
                         modifier = Modifier.widthIn(max = 480.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Column {
-                                    Text("目标位置", fontSize = 12.sp, color = Color.Gray)
+                                    Text(
+                                        "目标位置",
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                     Text(
                                         "R${selectedY + 1} : C${selectedX + 1}",
                                         fontWeight = FontWeight.Bold,
@@ -287,11 +284,12 @@ fun ProtectThePlantChallengePropertiesEP(
                                                     modifier = Modifier
                                                         .weight(1f)
                                                         .fillMaxHeight()
-                                                        .border(0.5.dp, borderThemeColor)
+                                                        .border(
+                                                            if (isSelected) 1.5.dp else 0.5.dp,
+                                                            if (isSelected) themeColor else borderThemeColor
+                                                        )
                                                         .background(
-                                                            if (isSelected) Color(0xFFEBF13E).copy(
-                                                                alpha = 0.5f
-                                                            )
+                                                            if (isSelected) PvzGridHighLight
                                                             else Color.Transparent
                                                         )
                                                         .clickable {
@@ -319,7 +317,7 @@ fun ProtectThePlantChallengePropertiesEP(
                     "保护植物列表",
                     modifier = Modifier.padding(vertical = 8.dp),
                     fontWeight = FontWeight.Bold,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp
                 )
             }
@@ -379,14 +377,17 @@ fun ProtectPlantCard(
 ) {
     val info = remember(plant.plantType) { PlantRepository.getPlantInfoById(plant.plantType) }
     val displayName = info?.name ?: plant.plantType
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightGreenDark else PvzLightGreenLight
+    val lightThemeColor = if (isDark) Color(0xFF49564C) else Color(0xFFE8F5E9)
 
     Card(
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFFE8F5E9) else Color.White
+            containerColor = if (isSelected) lightThemeColor else MaterialTheme.colorScheme.surface
         ),
-        border = if (isSelected) BorderStroke(1.dp, Color(0xFF4CAF50)) else null,
-        elevation = CardDefaults.cardElevation(1.dp)
+        border = if (isSelected) BorderStroke(1.dp, themeColor) else null,
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -424,7 +425,7 @@ fun ProtectPlantCard(
                     text = "R${plant.gridY + 1}:C${plant.gridX + 1}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color(0xFF33691E)
+                    color = themeColor
                 )
             }
         }

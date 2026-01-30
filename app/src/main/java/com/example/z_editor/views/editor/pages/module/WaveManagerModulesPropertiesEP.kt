@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,12 +20,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
@@ -34,12 +33,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -65,7 +61,11 @@ import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.WaveManagerModuleData
 import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.repository.ZombieRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzPurpleDark
+import com.example.z_editor.ui.theme.PvzPurpleLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -140,6 +140,9 @@ fun WaveManagerModulePropertiesEP(
         }
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzPurpleDark else PvzPurpleLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = {
@@ -147,27 +150,11 @@ fun WaveManagerModulePropertiesEP(
             })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("波次管理器配置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            null,
-                            tint = Color.White
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF673AB7),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "波次管理器设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -175,7 +162,7 @@ fun WaveManagerModulePropertiesEP(
             EditorHelpDialog(
                 title = "波次管理器模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF673AB7)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -203,15 +190,16 @@ fun WaveManagerModulePropertiesEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isPropsValid) Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
+                    containerColor = if (isPropsValid) MaterialTheme.colorScheme.outlineVariant else MaterialTheme.colorScheme.error
                 ),
-                elevation = CardDefaults.cardElevation(1.dp)
+                elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(
                     modifier = Modifier
@@ -222,7 +210,7 @@ fun WaveManagerModulePropertiesEP(
                         Icon(
                             if (isPropsValid) Icons.Default.CheckCircle else Icons.Default.Warning,
                             null,
-                            tint = if (isPropsValid) Color(0xFF388E3C) else Color(0xFFD32F2F)
+                            tint = if (isPropsValid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onError
                         )
                         Spacer(Modifier.width(8.dp))
                         Text("关联波次参数 (WaveManagerProps)", fontWeight = FontWeight.Bold)
@@ -237,7 +225,7 @@ fun WaveManagerModulePropertiesEP(
                     if (actualWaveMgrAlias == null) {
                         Text(
                             "错误：当前关卡不存在波次容器，该模块无法正常工作",
-                            color = Color(0xFFD32F2F),
+                            color = MaterialTheme.colorScheme.onError,
                             fontSize = 12.sp,
                             modifier = Modifier.padding(top = 4.dp)
                         )
@@ -246,18 +234,19 @@ fun WaveManagerModulePropertiesEP(
                     if (!isPropsValid && actualWaveMgrAlias != null) {
                         Text(
                             "错误：当前指向无效。这会导致波次无法正确加载。",
-                            color = Color(0xFFD32F2F),
+                            color = MaterialTheme.colorScheme.onError,
                             fontSize = 12.sp,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                         Button(
                             onClick = {
                                 val newProps = RtidParser.build(actualWaveMgrAlias, "CurrentLevel")
-                                syncManager.dataState.value = moduleData.copy(waveManagerProps = newProps)
+                                syncManager.dataState.value =
+                                    moduleData.copy(waveManagerProps = newProps)
                                 sync()
                             },
                             modifier = Modifier.padding(top = 8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError)
                         ) {
                             Text("自动修正至: $actualWaveMgrAlias", fontSize = 12.sp)
                         }
@@ -270,11 +259,11 @@ fun WaveManagerModulePropertiesEP(
             Text(
                 "点数分配设置",
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF673AB7),
-                fontSize = 14.sp
+                color = themeColor,
+                fontSize = 16.sp
             )
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(
@@ -288,7 +277,7 @@ fun WaveManagerModulePropertiesEP(
                             sync()
                         },
                         "起始波次 (StartingWave)",
-                        color = Color(0xFF673AB7)
+                        color = themeColor
                     )
                     NumberInputInt(
                         firstGroup.startingPoints,
@@ -297,7 +286,7 @@ fun WaveManagerModulePropertiesEP(
                             sync()
                         },
                         "起始点数 (StartingPoints)",
-                        color = Color(0xFF673AB7)
+                        color = themeColor
                     )
                     NumberInputInt(
                         firstGroup.pointIncrement,
@@ -306,7 +295,7 @@ fun WaveManagerModulePropertiesEP(
                             sync()
                         },
                         "每波点数增量 (PointIncrement)",
-                        color = Color(0xFF673AB7)
+                        color = themeColor
                     )
                 }
             }
@@ -314,8 +303,8 @@ fun WaveManagerModulePropertiesEP(
             Text(
                 "僵尸池 (ZombiePool)",
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF673AB7),
-                fontSize = 14.sp
+                color = themeColor,
+                fontSize = 16.sp
             )
 
             key(refreshTrigger) {
@@ -325,13 +314,14 @@ fun WaveManagerModulePropertiesEP(
                     onAdd = {
                         onRequestZombieSelection { selectedId ->
                             val isElite = ZombieRepository.isElite(selectedId)
-                            val aliases = ZombieRepository.buildAliases(selectedId)
+                            val aliases = ZombieRepository.buildZombieAliases(selectedId)
                             if (!isElite) {
                                 firstGroup.zombiePool.add(RtidParser.build(aliases, "ZombieTypes"))
                                 firstGroup.zombieLevel.add(1)
                                 sync()
                                 refreshTrigger++
-                            } else Toast.makeText(context, "不能添加精英僵尸", Toast.LENGTH_SHORT).show()
+                            } else Toast.makeText(context, "不能添加精英僵尸", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     },
                     onRemove = { index ->
@@ -356,25 +346,6 @@ fun WaveManagerModulePropertiesEP(
                     }
                 )
             }
-
-            Card(
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFF3E5F5)),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(modifier = Modifier.padding(16.dp)) {
-                    Icon(Icons.Default.Info, null, tint = Color(0xFF7B1FA2))
-                    Spacer(Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text = "非庭院模式下关卡僵尸阶级只定义到5阶，点数为负数时会从自然出怪事件中扣除僵尸。",
-                            fontSize = 12.sp,
-                            color = Color(0xFF7B1FA2),
-                            lineHeight = 16.sp
-                        )
-                    }
-                }
-            }
-
             Spacer(Modifier.height(32.dp))
         }
     }
@@ -388,6 +359,8 @@ fun ZombiePoolEditor(
     onRemove: (Int) -> Unit,
     onLevelChange: (Int, Int) -> Unit
 ) {
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzPurpleDark else PvzPurpleLight
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         zombiePool.forEachIndexed { index, rtid ->
             val alias = RtidParser.parse(rtid)?.alias ?: rtid
@@ -397,12 +370,11 @@ fun ZombiePoolEditor(
             val info = remember(typeName) {
                 ZombieRepository.getZombieInfoById(typeName)
             }
-
             val placeholderContent = @Composable {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color(0xFFEEEEEE), RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                         .border(1.dp, Color.LightGray, RoundedCornerShape(16.dp)),
                     contentAlignment = Alignment.Center
                 ) {
@@ -415,65 +387,96 @@ fun ZombiePoolEditor(
                 }
             }
 
-            Row(
+            Card(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color.White, RoundedCornerShape(16.dp))
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+                    .fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(2.dp)
             ) {
-                AssetImage(
-                    path = if (info?.icon != null) "images/zombies/${info.icon}" else null,
-                    contentDescription = displayName,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color.White)
-                        .border(1.dp, Color.LightGray, RoundedCornerShape(16.dp)),
-                    filterQuality = FilterQuality.Medium,
-                    placeholder = placeholderContent
-                )
-                Spacer(Modifier.width(8.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(displayName, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                    Text(typeName, fontSize = 12.sp, color = Color.Gray)
-                    Text(
-                        "等级: $level",
-                        fontSize = 12.sp,
-                        color = if (level >= 6) Color(0xFFD32F2F) else Color(0xFF388E3C)
-                    )
-                }
-
-                IconButton(onClick = { if (level > 1) onLevelChange(index, level - 1) }) {
-                    Icon(Icons.Default.Remove, null, modifier = Modifier.size(16.dp))
-                }
-
-                IconButton(
-                    onClick = { if (level < 10) onLevelChange(index, level + 1) },
-                    enabled = level < 10
+                Row(
+                    modifier = Modifier.padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        Icons.Default.Add, null,
-                        modifier = Modifier.size(16.dp),
-                        tint = if (level < 10) LocalContentColor.current else Color.LightGray
+                    AssetImage(
+                        path = if (info?.icon != null) "images/zombies/${info.icon}" else null,
+                        contentDescription = displayName,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(MaterialTheme.colorScheme.surface)
+                            .border(
+                                1.dp,
+                                MaterialTheme.colorScheme.surfaceVariant,
+                                RoundedCornerShape(16.dp)
+                            ),
+                        filterQuality = FilterQuality.Medium,
+                        placeholder = placeholderContent
                     )
-                }
+                    Spacer(Modifier.width(8.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(displayName, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text(
+                            typeName,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            "等级: $level",
+                            fontSize = 12.sp,
+                            color = if (level >= 6) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.primary
+                        )
+                    }
 
-                IconButton(onClick = { onRemove(index) }) {
-                    Icon(Icons.Default.Delete, null, tint = Color.LightGray)
+                    IconButton(onClick = { if (level > 1) onLevelChange(index, level - 1) }) {
+                        Icon(
+                            Icons.Default.Remove,
+                            null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { if (level < 10) onLevelChange(index, level + 1) },
+                        enabled = level < 10
+                    ) {
+                        Icon(
+                            Icons.Default.Add, null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    IconButton(onClick = { onRemove(index) }) {
+                        Icon(
+                            Icons.Default.Delete,
+                            null,
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }
-
-        OutlinedButton(
-            onClick = onAdd,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF673AB7))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .border(1.dp, themeColor, RoundedCornerShape(8.dp))
+                .clickable { onAdd() }
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Icon(Icons.Default.Add, null)
-            Spacer(Modifier.width(8.dp))
-            Text("添加新僵尸到池中")
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.AddCircleOutline, null, tint = themeColor)
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    "添加新僵尸",
+                    color = themeColor,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }

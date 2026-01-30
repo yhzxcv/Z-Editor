@@ -20,19 +20,14 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +45,12 @@ import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.TidePropertiesData
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzGridBgDark
+import com.example.z_editor.ui.theme.PvzGridBorder
+import com.example.z_editor.ui.theme.PvzLightBlueDark
+import com.example.z_editor.ui.theme.PvzLightBlueLight
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -67,7 +68,8 @@ fun TidePropertiesEP(
     var showHelpDialog by remember { mutableStateOf(false) }
     val currentAlias = RtidParser.parse(rtid)?.alias ?: "Tide"
 
-    val themeColor = Color(0xFF00ACC1)
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightBlueDark else PvzLightBlueLight
 
     val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
     val syncManager = rememberJsonSync(obj, TidePropertiesData::class.java)
@@ -89,23 +91,11 @@ fun TidePropertiesEP(
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("潮水配置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "初始潮水设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -131,13 +121,14 @@ fun TidePropertiesEP(
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -172,7 +163,7 @@ fun TidePropertiesEP(
                 contentAlignment = Alignment.Center
             ) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp),
                     modifier = Modifier.widthIn(max = 480.dp)
                 ) {
@@ -192,8 +183,8 @@ fun TidePropertiesEP(
                                 .fillMaxWidth()
                                 .aspectRatio(1.8f)
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(Color(0xFFF5F5F5))
-                                .border(1.dp, Color(0xFFBDBDBD), RoundedCornerShape(6.dp))
+                                .background(if (isDark) PvzGridBgDark else Color.White)
+                                .border(1.dp, PvzGridBorder, RoundedCornerShape(6.dp))
                         ) {
                             Column(Modifier.fillMaxSize()) {
                                 for (row in 0..4) {
@@ -205,10 +196,10 @@ fun TidePropertiesEP(
                                                 modifier = Modifier
                                                     .weight(1f)
                                                     .fillMaxHeight()
-                                                    .border(0.5.dp, Color(0xFF9E9E9E))
+                                                    .border(0.5.dp, PvzGridBorder)
                                                     .background(
-                                                        if (inWater) Color(0xFF81D4FA).copy(alpha = 0.6f) // 淡蓝色表示有水
-                                                        else Color.White
+                                                        if (inWater) themeColor.copy(alpha = 0.6f)
+                                                        else if (isDark) PvzGridBgDark else Color.White
                                                     ),
                                                 contentAlignment = Alignment.Center
                                             ) {
@@ -231,28 +222,28 @@ fun TidePropertiesEP(
                                 modifier = Modifier
                                     .width(20.dp)
                                     .height(20.dp)
-                                    .background(Color(0xFF81D4FA).copy(alpha = 0.6f))
-                                    .border(0.5.dp, Color(0xFF9E9E9E))
+                                    .background(themeColor.copy(alpha = 0.6f))
+                                    .border(0.5.dp, PvzGridBorder)
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
                                 "有潮水",
                                 fontSize = 12.sp,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(Modifier.width(24.dp))
                             Box(
                                 modifier = Modifier
                                     .width(20.dp)
                                     .height(20.dp)
-                                    .background(Color.White)
-                                    .border(0.5.dp, Color(0xFF9E9E9E))
+                                    .background(if (isDark) PvzGridBgDark else Color.White)
+                                    .border(0.5.dp, PvzGridBorder)
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
                                 "无潮水",
                                 fontSize = 12.sp,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -260,7 +251,7 @@ fun TidePropertiesEP(
             }
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {

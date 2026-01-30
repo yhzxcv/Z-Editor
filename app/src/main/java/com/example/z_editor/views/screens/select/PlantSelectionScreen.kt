@@ -5,7 +5,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +39,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -69,7 +67,11 @@ import com.example.z_editor.data.repository.PlantCategory
 import com.example.z_editor.data.repository.PlantInfo
 import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.PlantTag
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzLightGreenDark
+import com.example.z_editor.ui.theme.PvzLightGreenLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.components.rememberDebouncedClick
 
 @Composable
 fun PlantSelectionScreen(
@@ -78,9 +80,9 @@ fun PlantSelectionScreen(
     onPlantSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
-    BackHandler(onBack = onBack)
+    val handleBack = rememberDebouncedClick { onBack() }
+    BackHandler(onBack = handleBack)
     var searchQuery by remember { mutableStateOf("") }
-    // 默认进入“按品质”
     var selectedCategory by remember { mutableStateOf(PlantCategory.Quality) }
     var selectedTag by remember { mutableStateOf(PlantTag.All) }
 
@@ -113,7 +115,8 @@ fun PlantSelectionScreen(
         }
     }
 
-    val themeColor = Color(0xFF8BC34A)
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightGreenDark else PvzLightGreenLight
 
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
@@ -136,8 +139,8 @@ fun PlantSelectionScreen(
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = onBack, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                        IconButton(onClick = handleBack, modifier = Modifier.size(24.dp)) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = MaterialTheme.colorScheme.surface)
                         }
                         Spacer(Modifier.width(16.dp))
 
@@ -148,7 +151,7 @@ fun PlantSelectionScreen(
                                 Text(
                                     if (isMultiSelect) "已选择 ${selectedIds.size} 项，点击搜索" else "搜索植物名称或代码",
                                     fontSize = 16.sp,
-                                    color = Color.Gray
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             },
                             modifier = Modifier
@@ -157,18 +160,18 @@ fun PlantSelectionScreen(
                             singleLine = true,
                             shape = RoundedCornerShape(24.dp),
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White,
+                                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
                                 cursorColor = themeColor
                             ),
-                            leadingIcon = { Icon(Icons.Default.Search, null, tint = Color.Gray) },
+                            leadingIcon = { Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                             trailingIcon = if (searchQuery.isNotEmpty()) {
                                 {
                                     IconButton(onClick = {
                                         searchQuery = ""
-                                    }) { Icon(Icons.Default.Clear, null, tint = Color.Gray) }
+                                    }) { Icon(Icons.Default.Clear, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
                                 }
                             } else null,
                             textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
@@ -177,14 +180,14 @@ fun PlantSelectionScreen(
                     ScrollableTabRow(
                         selectedTabIndex = PlantCategory.entries.indexOf(selectedCategory),
                         containerColor = Color.Transparent,
-                        contentColor = Color.White,
+                        contentColor = MaterialTheme.colorScheme.surface,
                         edgePadding = 16.dp,
                         indicator = { tabPositions ->
                             val index = PlantCategory.entries.indexOf(selectedCategory)
                             if (index < tabPositions.size) {
                                 SecondaryIndicator(
                                     Modifier.tabIndicatorOffset(tabPositions[index]),
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.surface,
                                     height = 3.dp
                                 )
                             }
@@ -203,7 +206,9 @@ fun PlantSelectionScreen(
                                                 Icons.Default.Star,
                                                 null,
                                                 modifier = Modifier.size(16.dp),
-                                                tint = if(isSelected) Color.White else Color.White.copy(0.6f)
+                                                tint = if (isSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(
+                                                    0.6f
+                                                )
                                             )
                                             Spacer(Modifier.width(4.dp))
                                         }
@@ -214,16 +219,17 @@ fun PlantSelectionScreen(
                                         )
                                     }
                                 },
-                                unselectedContentColor = Color.White.copy(alpha = 0.6f)
+                                unselectedContentColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
                             )
                         }
                     }
                     if (selectedCategory != PlantCategory.Collection) {
                         Spacer(Modifier.height(4.dp))
                         ScrollableTabRow(
-                            selectedTabIndex = currentVisibleTags.indexOf(selectedTag).coerceAtLeast(0),
+                            selectedTabIndex = currentVisibleTags.indexOf(selectedTag)
+                                .coerceAtLeast(0),
                             containerColor = Color.Transparent,
-                            contentColor = Color.White,
+                            contentColor = MaterialTheme.colorScheme.surface,
                             edgePadding = 16.dp,
                             indicator = { tabPositions ->
                                 val index = currentVisibleTags.indexOf(selectedTag)
@@ -233,7 +239,10 @@ fun PlantSelectionScreen(
                                             .tabIndicatorOffset(tabPositions[index])
                                             .height(2.5.dp)
                                             .padding(horizontal = 4.dp)
-                                            .background(Color.White.copy(alpha = 0.8f), RoundedCornerShape(1.dp))
+                                            .background(
+                                                MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                                                RoundedCornerShape(1.dp)
+                                            )
                                     )
                                 }
                             },
@@ -253,7 +262,7 @@ fun PlantSelectionScreen(
                                                     path = "images/tags/${tag.iconName}",
                                                     contentDescription = null,
                                                     modifier = Modifier.size(20.dp),
-                                                    placeholder = {}
+                                                    filterQuality = FilterQuality.Low,
                                                 )
                                                 Spacer(Modifier.width(6.dp))
                                             }
@@ -261,7 +270,9 @@ fun PlantSelectionScreen(
                                                 text = tag.label,
                                                 fontWeight = if (isTagSelected) FontWeight.Bold else FontWeight.Normal,
                                                 fontSize = 13.sp,
-                                                color = if (isTagSelected) Color.White else Color.White.copy(0.6f)
+                                                color = if (isTagSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(
+                                                    0.6f
+                                                )
                                             )
                                         }
                                     }
@@ -277,7 +288,7 @@ fun PlantSelectionScreen(
                 androidx.compose.material3.FloatingActionButton(
                     onClick = { onMultiPlantSelected(selectedIds.toList()) },
                     containerColor = themeColor,
-                    contentColor = Color.White
+                    contentColor = MaterialTheme.colorScheme.surface
                 ) {
                     Icon(Icons.Default.Check, "完成")
                 }
@@ -288,7 +299,7 @@ fun PlantSelectionScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFFAFAFA))
+                .background(MaterialTheme.colorScheme.surface)
         ) {
             if (displayList.isEmpty()) {
                 Column(
@@ -298,13 +309,13 @@ fun PlantSelectionScreen(
                     Icon(
                         Icons.Default.Search,
                         null,
-                        tint = Color.LightGray,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(Modifier.height(16.dp))
                     Text(
                         if (selectedCategory == PlantCategory.Collection) "暂无收藏植物，长按植物即可收藏" else "未找到相关植物",
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             } else {
@@ -336,7 +347,8 @@ fun PlantSelectionScreen(
                             },
                             onLongClick = {
                                 PlantRepository.toggleFavorite(context, plant.id)
-                                val msg = if (PlantRepository.isFavorite(plant.id)) "已加入收藏" else "已取消收藏"
+                                val msg =
+                                    if (PlantRepository.isFavorite(plant.id)) "已加入收藏" else "已取消收藏"
                                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             }
                         )
@@ -356,9 +368,11 @@ fun PlantGridItem(
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
-    val borderColor = if (isSelected) Color(0xFF8BC34A) else Color.Transparent
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightGreenDark else PvzLightGreenLight
+    val borderColor = if (isSelected) themeColor else Color.Transparent
     val borderWidth = if (isSelected) 2.dp else 0.dp
-    val bgColor = if (isSelected) Color(0xFF8BC34A).copy(alpha = 0.1f) else Color.Transparent
+    val bgColor = if (isSelected) themeColor.copy(alpha = 0.1f) else Color.Transparent
 
     Column(
         modifier = Modifier
@@ -381,23 +395,7 @@ fun PlantGridItem(
                 modifier = Modifier
                     .size(52.dp)
                     .clip(CircleShape)
-                    .background(Color.White)
-                    .border(0.5.dp, Color.LightGray.copy(alpha = 0.5f), CircleShape),
-                placeholder = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color(0xFFE8F5E9)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = plant.name.take(1),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2E7D32)
-                        )
-                    }
-                }
+                    .background(MaterialTheme.colorScheme.surface)
             )
 
             if (isFavorite) {
@@ -422,7 +420,7 @@ fun PlantGridItem(
             fontWeight = FontWeight.Medium,
             fontSize = 11.sp,
             maxLines = 1,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(horizontal = 2.dp)
@@ -430,7 +428,7 @@ fun PlantGridItem(
         Text(
             text = plant.id,
             fontSize = 8.sp,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,

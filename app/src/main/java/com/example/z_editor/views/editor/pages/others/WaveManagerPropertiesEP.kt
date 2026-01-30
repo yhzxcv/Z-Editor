@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -24,9 +25,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -45,6 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.WaveManagerData
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzBlueDark
+import com.example.z_editor.ui.theme.PvzBlueLight
 import rememberJsonSync
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -122,6 +128,9 @@ fun WaveManagerPropertiesEP(
         sync()
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzBlueDark else PvzBlueLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
@@ -140,19 +149,23 @@ fun WaveManagerPropertiesEP(
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             "返回",
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
+                        Icon(
+                            Icons.AutoMirrored.Filled.HelpOutline,
+                            "帮助说明",
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1976D2),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                    containerColor = themeColor,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
                 )
             )
         }
@@ -161,7 +174,7 @@ fun WaveManagerPropertiesEP(
             EditorHelpDialog(
                 title = "波次事件容器说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF1976D2)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -197,7 +210,7 @@ fun WaveManagerPropertiesEP(
                 "基础参数",
                 fontWeight = FontWeight.Bold, fontSize = 16.sp,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color(0xFF1976D2)
+                color = themeColor
             )
 
             OutlinedTextField(
@@ -210,6 +223,16 @@ fun WaveManagerPropertiesEP(
                         sync()
                     }
                 },
+                colors = OutlinedTextFieldDefaults.colors(
+                    cursorColor = themeColor,
+                    selectionColors = TextSelectionColors(
+                        handleColor = themeColor,
+                        backgroundColor = themeColor.copy(alpha = 0.4f)
+                    ),
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedBorderColor = themeColor,
+                    focusedLabelColor = themeColor
+                ),
                 label = { Text("旗帜间隔 (FlagWaveInterval)") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -225,6 +248,7 @@ fun WaveManagerPropertiesEP(
                             sync()
                         }
                     },
+                    color = themeColor,
                     label = "最大刷新血线",
                     modifier = Modifier.weight(1f)
                 )
@@ -238,6 +262,7 @@ fun WaveManagerPropertiesEP(
                             sync()
                         }
                     },
+                    color = themeColor,
                     label = "最小刷新血线",
                     modifier = Modifier.weight(1f)
                 )
@@ -246,15 +271,15 @@ fun WaveManagerPropertiesEP(
             Text(
                 "刷新血线的值需要为0到1之间的数",
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            HorizontalDivider()
+            HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
                 "时间控制",
                 fontWeight = FontWeight.Bold, fontSize = 16.sp,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color(0xFF1976D2)
+                color = themeColor
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -267,6 +292,16 @@ fun WaveManagerPropertiesEP(
                     label = {
                         Text(if (hasConveyor) "首波延迟 (传送带)" else "首波延迟 (普通)")
                     },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = themeColor,
+                        selectionColors = TextSelectionColors(
+                            handleColor = themeColor,
+                            backgroundColor = themeColor.copy(alpha = 0.4f)
+                        ),
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = themeColor,
+                        focusedLabelColor = themeColor
+                    ),
                     modifier = Modifier.weight(1f),
                     singleLine = true
                 )
@@ -277,6 +312,16 @@ fun WaveManagerPropertiesEP(
                         hugeWaveInput = it
                         saveTimeSettings(firstWaveInput, it)
                     },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = themeColor,
+                        selectionColors = TextSelectionColors(
+                            handleColor = themeColor,
+                            backgroundColor = themeColor.copy(alpha = 0.4f)
+                        ),
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = themeColor,
+                        focusedLabelColor = themeColor
+                    ),
                     label = { Text("旗帜波延迟") },
                     modifier = Modifier.weight(1f),
                     singleLine = true
@@ -284,19 +329,19 @@ fun WaveManagerPropertiesEP(
             }
             Text(
                 text = if (hasConveyor) "检测到传送带模块，已自动应用 Conveyor 延迟设置" else "未检测到传送带模块，应用普通模式延迟设置",
-                fontSize = 12.sp, color = Color.Gray
+                fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            HorizontalDivider()
+            HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
                 "特殊设置",
                 fontWeight = FontWeight.Bold, fontSize = 16.sp,
                 style = MaterialTheme.typography.titleMedium,
-                color = Color(0xFF1976D2)
+                color = themeColor
             )
 
             Surface(
-                color = Color(0xFFE0EBF8),
+                color = MaterialTheme.colorScheme.surface,
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -308,7 +353,11 @@ fun WaveManagerPropertiesEP(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text("屏蔽旗帜僵尸", fontWeight = FontWeight.Bold)
-                        Text("SuppressFlagZombie", fontSize = 12.sp, color = Color.Gray)
+                        Text(
+                            "SuppressFlagZombie",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                     Switch(
                         checked = waveManager.suppressFlagZombie == true,
@@ -316,14 +365,23 @@ fun WaveManagerPropertiesEP(
                             waveManager =
                                 waveManager.copy(suppressFlagZombie = if (isChecked) true else null)
                             sync()
-                        }
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                            checkedTrackColor = themeColor,
+                            checkedBorderColor = Color.Transparent,
+
+                            uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
                     )
                 }
             }
             Text(
                 "开启后，大波次来袭时不会生成带旗帜的领头僵尸",
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(Modifier.height(8.dp))
@@ -340,7 +398,11 @@ fun WaveManagerPropertiesEP(
                     label = { Text("背景音乐类型 (LevelJam)") },
                     leadingIcon = { Icon(Icons.Default.MusicNote, null) },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = jamExpanded) },
-                    colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = themeColor,
+                        focusedLabelColor = themeColor
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .menuAnchor()
@@ -365,7 +427,7 @@ fun WaveManagerPropertiesEP(
             Text(
                 "该设置仅在摩登世界有效，用于为关卡加入不可更改的全局音乐",
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(Modifier.height(48.dp))

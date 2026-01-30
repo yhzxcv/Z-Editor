@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Science
@@ -27,11 +25,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
@@ -51,7 +47,11 @@ import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.ZombiePotionModulePropertiesData
 import com.example.z_editor.data.repository.GridItemRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzPurpleDark
+import com.example.z_editor.ui.theme.PvzPurpleLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -70,8 +70,6 @@ fun ZombiePotionModulePropertiesEP(
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
 
-    val themeColor = Color(0xFF673AB7)
-
     val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
     val syncManager = rememberJsonSync(obj, ZombiePotionModulePropertiesData::class.java)
     val moduleDataState = syncManager.dataState
@@ -80,28 +78,19 @@ fun ZombiePotionModulePropertiesEP(
         syncManager.sync()
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzPurpleDark else PvzPurpleLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("僵尸药水配置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "药水生成设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -131,12 +120,13 @@ fun ZombiePotionModulePropertiesEP(
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // === 卡片 1: 数量控制 ===
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -176,7 +166,7 @@ fun ZombiePotionModulePropertiesEP(
 
             // === 卡片 2: 生成计时器 ===
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -218,7 +208,7 @@ fun ZombiePotionModulePropertiesEP(
 
             // === 卡片 3: 药水类型列表 ===
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -241,39 +231,53 @@ fun ZombiePotionModulePropertiesEP(
                                 }
                             }
                         }) {
-                            Icon(Icons.Default.Add, null)
-                            Text("添加")
+                            Icon(
+                                Icons.Default.Add,
+                                null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text("添加", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
 
                     if (moduleDataState.value.potionTypes.isEmpty()) {
-                        Text("暂无配置，请添加药水类型", color = Color.Gray, fontSize = 12.sp)
+                        Text(
+                            "暂无配置，请添加药水类型",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 12.sp
+                        )
                     } else {
                         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             moduleDataState.value.potionTypes.forEachIndexed { index, typeName ->
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
+                                        .background(
+                                            MaterialTheme.colorScheme.surfaceVariant,
+                                            RoundedCornerShape(8.dp)
+                                        )
                                         .padding(8.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    // 图标
                                     AssetImage(
                                         path = GridItemRepository.getIconPath(typeName),
                                         contentDescription = typeName,
                                         modifier = Modifier
-                                            .size(32.dp)
+                                            .size(40.dp)
                                             .clip(RoundedCornerShape(4.dp)),
                                         filterQuality = FilterQuality.Low,
                                         placeholder = {
                                             Box(
                                                 modifier = Modifier
                                                     .fillMaxSize()
-                                                    .background(Color(0xFFE0E0E0)),
+                                                    .background(MaterialTheme.colorScheme.surface),
                                                 contentAlignment = Alignment.Center
                                             ) {
-                                                Icon(Icons.Default.Science, null, tint = Color.Gray)
+                                                Icon(
+                                                    Icons.Default.Science,
+                                                    null,
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
                                             }
                                         }
                                     )
@@ -286,7 +290,11 @@ fun ZombiePotionModulePropertiesEP(
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 14.sp
                                         )
-                                        Text(typeName, fontSize = 10.sp, color = Color.Gray)
+                                        Text(
+                                            typeName,
+                                            fontSize = 10.sp,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
                                     }
 
                                     IconButton(onClick = {
@@ -300,7 +308,7 @@ fun ZombiePotionModulePropertiesEP(
                                         Icon(
                                             Icons.Default.Delete,
                                             null,
-                                            tint = Color.LightGray,
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.size(20.dp)
                                         )
                                     }

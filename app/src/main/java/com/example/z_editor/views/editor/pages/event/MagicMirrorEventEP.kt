@@ -26,8 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
@@ -41,15 +39,13 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -71,7 +67,11 @@ import com.example.z_editor.data.LevelParser
 import com.example.z_editor.data.MagicMirrorArrayData
 import com.example.z_editor.data.MagicMirrorWaveActionData
 import com.example.z_editor.data.PvzLevelFile
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzPurpleDark
+import com.example.z_editor.ui.theme.PvzPurpleLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -94,8 +94,6 @@ fun MagicMirrorEventEP(
 
     var typeExpanded by remember { mutableStateOf(false) }
     val typeOptions = listOf(1, 2, 3)
-
-    val themeColor = Color(0xFF7C30D9)
 
     val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
     val syncManager = rememberJsonSync(obj, MagicMirrorWaveActionData::class.java)
@@ -124,28 +122,20 @@ fun MagicMirrorEventEP(
         }
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzPurpleDark else PvzPurpleLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("魔镜传送事件", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "编辑 $currentAlias",
+                subtitle = "事件类型：召唤魔镜",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -175,14 +165,14 @@ fun MagicMirrorEventEP(
                 .padding(padding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .background(Color(0xFFF5F5F5)),
+                .background(MaterialTheme.colorScheme.background),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // === 区域 1: 数组列表管理 ===
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(vertical = 4.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -235,7 +225,11 @@ fun MagicMirrorEventEP(
                             sync()
                         }
                     ) {
-                        Icon(Icons.Default.Add, "添加组", tint = Color.Gray)
+                        Icon(
+                            Icons.Default.Add,
+                            "添加组",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }
@@ -247,7 +241,7 @@ fun MagicMirrorEventEP(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -270,6 +264,7 @@ fun MagicMirrorEventEP(
                                 label = { Text("镜子外观 (TypeIndex)") },
                                 readOnly = true,
                                 colors = OutlinedTextFieldDefaults.colors(
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                     focusedBorderColor = themeColor,
                                     focusedLabelColor = themeColor
                                 ),
@@ -307,16 +302,13 @@ fun MagicMirrorEventEP(
                             color = themeColor
                         )
 
-                        Spacer(Modifier.height(16.dp))
-                        HorizontalDivider()
-                        Spacer(Modifier.height(16.dp))
-
+                        Spacer(Modifier.height(24.dp))
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(48.dp)
                                 .clip(RoundedCornerShape(24.dp))
-                                .background(Color(0xFFEEEEEE))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                                 .padding(4.dp)
                         ) {
                             Box(
@@ -332,13 +324,13 @@ fun MagicMirrorEventEP(
                                     Icon(
                                         Icons.AutoMirrored.Filled.Login,
                                         null,
-                                        tint = if (!isEditingMirror2) Color.White else Color.Gray,
+                                        tint = if (!isEditingMirror2) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(18.dp)
                                     )
                                     Spacer(Modifier.width(8.dp))
                                     Text(
                                         "放置镜子 1",
-                                        color = if (!isEditingMirror2) Color.White else Color.Gray,
+                                        color = if (!isEditingMirror2) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 13.sp
                                     )
@@ -358,13 +350,13 @@ fun MagicMirrorEventEP(
                                     Icon(
                                         Icons.AutoMirrored.Filled.Logout,
                                         null,
-                                        tint = if (isEditingMirror2) Color.White else Color.Gray,
+                                        tint = if (isEditingMirror2) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(18.dp)
                                     )
                                     Spacer(Modifier.width(8.dp))
                                     Text(
                                         "放置镜子 2",
-                                        color = if (isEditingMirror2) Color.White else Color.Gray,
+                                        color = if (isEditingMirror2) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 13.sp
                                     )
@@ -381,7 +373,7 @@ fun MagicMirrorEventEP(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(2.dp),
                         modifier = Modifier.widthIn(max = 480.dp)
                     ) {
@@ -396,7 +388,7 @@ fun MagicMirrorEventEP(
                                 Spacer(Modifier.width(12.dp))
                                 Text(
                                     "M1: R${currentArray.mirror1GridY + 1}:C${currentArray.mirror1GridX + 1}  |  M2: R${currentArray.mirror2GridY + 1}:C${currentArray.mirror2GridX + 1}",
-                                    color = Color.Gray,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontSize = 12.sp
                                 )
                             }
@@ -407,23 +399,34 @@ fun MagicMirrorEventEP(
                                     .fillMaxWidth()
                                     .aspectRatio(1.8f)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFFEDE7F6))
+                                    .background(if (isDark) Color(0xFF413B49) else Color(0xFFEDE7F6))
                                     .border(1.dp, Color(0xFFD1C4E9), RoundedCornerShape(6.dp))
                             ) {
                                 Column(Modifier.fillMaxSize()) {
                                     for (row in 0..4) {
                                         Row(Modifier.weight(1f)) {
                                             for (col in 0..8) {
-                                                val mirrorsInCell = eventDataState.value.arrays.mapIndexedNotNull { idx, data ->
-                                                    if (data.mirror1GridX == col && data.mirror1GridY == row) Triple(idx, 1, data.typeIndex)
-                                                    else if (data.mirror2GridX == col && data.mirror2GridY == row) Triple(idx, 2, data.typeIndex)
-                                                    else null
-                                                }
-                                                val isTargetCell = (!isEditingMirror2 && currentArray.mirror1GridX == col && currentArray.mirror1GridY == row)
-                                                        || (isEditingMirror2 && currentArray.mirror2GridX == col && currentArray.mirror2GridY == row)
+                                                val mirrorsInCell =
+                                                    eventDataState.value.arrays.mapIndexedNotNull { idx, data ->
+                                                        if (data.mirror1GridX == col && data.mirror1GridY == row) Triple(
+                                                            idx,
+                                                            1,
+                                                            data.typeIndex
+                                                        )
+                                                        else if (data.mirror2GridX == col && data.mirror2GridY == row) Triple(
+                                                            idx,
+                                                            2,
+                                                            data.typeIndex
+                                                        )
+                                                        else null
+                                                    }
+                                                val isTargetCell =
+                                                    (!isEditingMirror2 && currentArray.mirror1GridX == col && currentArray.mirror1GridY == row)
+                                                            || (isEditingMirror2 && currentArray.mirror2GridX == col && currentArray.mirror2GridY == row)
 
-                                                val mirrorToShow = mirrorsInCell.find { it.first == selectedIndex }
-                                                    ?: mirrorsInCell.lastOrNull()
+                                                val mirrorToShow =
+                                                    mirrorsInCell.find { it.first == selectedIndex }
+                                                        ?: mirrorsInCell.lastOrNull()
 
                                                 Box(
                                                     modifier = Modifier
@@ -431,16 +434,30 @@ fun MagicMirrorEventEP(
                                                         .fillMaxHeight()
                                                         .border(
                                                             width = if (isTargetCell) 1.5.dp else 0.5.dp,
-                                                            color = if (isTargetCell) themeColor else Color(0xFFD1C4E9)
+                                                            color = if (isTargetCell) themeColor else Color(
+                                                                0xFFD1C4E9
+                                                            )
                                                         )
                                                         .background(
-                                                            if (isTargetCell) Color(0xFFB0B0B0).copy(alpha = 0.6f) else Color.Transparent
+                                                            if (isTargetCell) Color(0xFFB0B0B0).copy(
+                                                                alpha = 0.6f
+                                                            ) else Color.Transparent
                                                         )
                                                         .clickable {
                                                             if (isEditingMirror2) {
-                                                                updateCurrentArray(currentArray.copy(mirror2GridX = col, mirror2GridY = row))
+                                                                updateCurrentArray(
+                                                                    currentArray.copy(
+                                                                        mirror2GridX = col,
+                                                                        mirror2GridY = row
+                                                                    )
+                                                                )
                                                             } else {
-                                                                updateCurrentArray(currentArray.copy(mirror1GridX = col, mirror1GridY = row))
+                                                                updateCurrentArray(
+                                                                    currentArray.copy(
+                                                                        mirror1GridX = col,
+                                                                        mirror1GridY = row
+                                                                    )
+                                                                )
                                                             }
                                                         },
                                                     contentAlignment = Alignment.Center
@@ -466,7 +483,9 @@ fun MagicMirrorEventEP(
                                                                 .padding(2.dp)
                                                                 .size(18.dp)
                                                                 .background(
-                                                                    color = if (isSelected) themeColor else Color.Gray.copy(alpha = 0.8f),
+                                                                    color = if (isSelected) themeColor else MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                                                        alpha = 0.8f
+                                                                    ),
                                                                     shape = CircleShape
                                                                 ),
                                                             contentAlignment = Alignment.Center
@@ -495,7 +514,10 @@ fun MagicMirrorEventEP(
                         .height(200.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("请点击上方 + 号添加一组魔镜", color = Color.Gray)
+                    Text(
+                        "请点击上方 + 号添加一组魔镜",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }

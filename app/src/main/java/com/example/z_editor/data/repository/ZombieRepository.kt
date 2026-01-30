@@ -134,12 +134,7 @@ object ZombieRepository {
             if (tag != null && tag != ZombieTag.All) {
                 allZombies.filter { it.tags.contains(tag) }
             } else {
-                allZombies.filter { zombie ->
-                    zombie.tags.any { it.category == category } || tag == ZombieTag.All
-                }
-                allZombies.filter { zombie ->
-                    zombie.tags.any { it.category == category }
-                }
+                allZombies
             }
         }
         if (query.isBlank()) return baseList
@@ -169,8 +164,9 @@ object ZombieRepository {
         return ZombiePropertiesRepository.isValidAlias(id)
     }
 
-    fun buildAliases(id: String): String {
-        return if (id.contains("iceage_fat_weasel")) "iceage_fat_weasel_elite"
+    // 用于将 TypeName 转化为 RTID 包裹的代号
+    fun buildZombieAliases(id: String): String {
+        return if (id == "iceage_fat_weasel") "iceage_fat_weasel_elite"
         else id
     }
 

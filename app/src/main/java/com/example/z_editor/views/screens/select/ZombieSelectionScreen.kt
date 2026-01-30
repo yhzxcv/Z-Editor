@@ -39,7 +39,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
@@ -68,7 +67,11 @@ import com.example.z_editor.data.repository.ZombieCategory
 import com.example.z_editor.data.repository.ZombieInfo
 import com.example.z_editor.data.repository.ZombieRepository
 import com.example.z_editor.data.repository.ZombieTag
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzPurpleDark
+import com.example.z_editor.ui.theme.PvzPurpleLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.components.rememberDebouncedClick
 
 @Composable
 fun ZombieSelectionScreen(
@@ -77,7 +80,8 @@ fun ZombieSelectionScreen(
     onMultiZombieSelected: (List<String>) -> Unit = {},
     onBack: () -> Unit
 ) {
-    BackHandler(onBack = onBack)
+    val handleBack = rememberDebouncedClick { onBack() }
+    BackHandler(onBack = handleBack)
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(ZombieCategory.Main) }
     var selectedTag by remember { mutableStateOf(ZombieTag.All) }
@@ -111,7 +115,8 @@ fun ZombieSelectionScreen(
         }
     }
 
-    val themeColor = Color(0xFF673AB7)
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzPurpleDark else PvzPurpleLight
 
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
@@ -134,15 +139,15 @@ fun ZombieSelectionScreen(
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = onBack, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                        IconButton(onClick = handleBack, modifier = Modifier.size(24.dp)) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = MaterialTheme.colorScheme.surface)
                         }
                         Spacer(Modifier.width(16.dp))
                         TextField(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             placeholder = {
-                                Text(if (isMultiSelect) "已选择 ${selectedIds.size} 项，点击搜索" else "搜索僵尸名称或代号", fontSize = 16.sp, color = Color.Gray)
+                                Text(if (isMultiSelect) "已选择 ${selectedIds.size} 项，点击搜索" else "搜索僵尸名称或代号", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -150,18 +155,18 @@ fun ZombieSelectionScreen(
                             singleLine = true,
                             shape = RoundedCornerShape(24.dp),
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White,
+                                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
                                 cursorColor = themeColor
                             ),
-                            leadingIcon = { Icon(Icons.Default.Search, null, tint = Color.Gray) },
+                            leadingIcon = { Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                             trailingIcon = if (searchQuery.isNotEmpty()) {
                                 {
                                     IconButton(onClick = {
                                         searchQuery = ""
-                                    }) { Icon(Icons.Default.Clear, null, tint = Color.Gray) }
+                                    }) { Icon(Icons.Default.Clear, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
                                 }
                             } else null,
                             textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
@@ -171,14 +176,14 @@ fun ZombieSelectionScreen(
                     ScrollableTabRow(
                         selectedTabIndex = ZombieCategory.entries.indexOf(selectedCategory),
                         containerColor = Color.Transparent,
-                        contentColor = Color.White,
+                        contentColor = MaterialTheme.colorScheme.surface,
                         edgePadding = 16.dp,
                         indicator = { tabPositions ->
                             val index = ZombieCategory.entries.indexOf(selectedCategory)
                             if (index < tabPositions.size) {
                                 SecondaryIndicator(
                                     Modifier.tabIndicatorOffset(tabPositions[index]),
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.surface,
                                     height = 3.dp
                                 )
                             }
@@ -197,7 +202,7 @@ fun ZombieSelectionScreen(
                                                 Icons.Default.Star,
                                                 null,
                                                 modifier = Modifier.size(16.dp),
-                                                tint = if(isSelected) Color.White else Color.White.copy(0.7f)
+                                                tint = if(isSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(0.7f)
                                             )
                                             Spacer(Modifier.width(4.dp))
                                         }
@@ -208,7 +213,7 @@ fun ZombieSelectionScreen(
                                         )
                                     }
                                 },
-                                unselectedContentColor = Color.White.copy(alpha = 0.7f)
+                                unselectedContentColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
                             )
                         }
                     }
@@ -217,7 +222,7 @@ fun ZombieSelectionScreen(
                         ScrollableTabRow(
                             selectedTabIndex = currentVisibleTags.indexOf(selectedTag).coerceAtLeast(0),
                             containerColor = Color.Transparent,
-                            contentColor = Color.White,
+                            contentColor = MaterialTheme.colorScheme.surface,
                             edgePadding = 16.dp,
                             indicator = { tabPositions ->
                                 val index = currentVisibleTags.indexOf(selectedTag)
@@ -227,7 +232,7 @@ fun ZombieSelectionScreen(
                                             .tabIndicatorOffset(tabPositions[index])
                                             .height(2.5.dp)
                                             .padding(horizontal = 4.dp)
-                                            .background(Color.White.copy(alpha = 0.8f), RoundedCornerShape(1.dp))
+                                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f), RoundedCornerShape(1.dp))
                                     )
                                 }
                             },
@@ -247,7 +252,7 @@ fun ZombieSelectionScreen(
                                                     path = "images/tags/${tag.iconName}",
                                                     contentDescription = null,
                                                     modifier = Modifier.size(20.dp),
-                                                    placeholder = {}
+                                                    filterQuality = FilterQuality.Low,
                                                 )
                                                 Spacer(Modifier.width(6.dp))
                                             }
@@ -255,7 +260,7 @@ fun ZombieSelectionScreen(
                                                 text = tag.label,
                                                 fontWeight = if (isTagSelected) FontWeight.Bold else FontWeight.Normal,
                                                 fontSize = 13.sp,
-                                                color = if(isTagSelected) Color.White else Color.White.copy(0.6f)
+                                                color = if(isTagSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(0.6f)
                                             )
                                         }
                                     }
@@ -271,7 +276,7 @@ fun ZombieSelectionScreen(
                 androidx.compose.material3.FloatingActionButton(
                     onClick = { onMultiZombieSelected(selectedIds.toList()) },
                     containerColor = themeColor,
-                    contentColor = Color.White
+                    contentColor = MaterialTheme.colorScheme.surface
                 ) {
                     Icon(Icons.Default.Check, "完成")
                 }
@@ -282,7 +287,7 @@ fun ZombieSelectionScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFFAFAFA))
+                .background(MaterialTheme.colorScheme.surface)
         ) {
             if (displayList.isEmpty()) {
                 Column(
@@ -298,7 +303,7 @@ fun ZombieSelectionScreen(
                     Spacer(Modifier.height(16.dp))
                     Text(
                         if (selectedCategory == ZombieCategory.Collection) "暂无收藏僵尸，长按僵尸即可收藏" else "未找到相关僵尸",
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             } else {
@@ -350,10 +355,11 @@ fun ZombieGridItem(
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
-    // 使用紫色主题色
-    val borderColor = if (isSelected) Color(0xFF673AB7) else Color.Transparent
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzPurpleDark else PvzPurpleLight
+    val borderColor = if (isSelected) themeColor else Color.Transparent
     val borderWidth = if (isSelected) 2.dp else 0.dp
-    val bgColor = if (isSelected) Color(0xFF673AB7).copy(alpha = 0.1f) else Color.Transparent
+    val bgColor = if (isSelected) themeColor.copy(alpha = 0.1f) else Color.Transparent
 
     Column(
         modifier = Modifier
@@ -376,23 +382,7 @@ fun ZombieGridItem(
                 modifier = Modifier
                     .size(52.dp)
                     .clip(CircleShape)
-                    .background(Color.White)
-                    .border(0.5.dp, Color.LightGray.copy(alpha = 0.5f), CircleShape),
-                placeholder = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color(0xFFEDE7F6)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = zombie.name.take(1),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF512DA8)
-                        )
-                    }
-                }
+                    .background(MaterialTheme.colorScheme.surface)
             )
 
             // 收藏星星
@@ -418,7 +408,7 @@ fun ZombieGridItem(
             fontWeight = FontWeight.Medium,
             fontSize = 9.sp,
             maxLines = 1,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.padding(horizontal = 2.dp)
@@ -427,7 +417,7 @@ fun ZombieGridItem(
         Text(
             text = zombie.id,
             fontSize = 8.sp,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Ellipsis,

@@ -23,8 +23,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -33,12 +31,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
@@ -59,7 +55,11 @@ import com.example.z_editor.data.PowerTilePropertiesData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.TileLocationData
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzCyanDark
+import com.example.z_editor.ui.theme.PvzCyanLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputDouble
@@ -157,7 +157,11 @@ fun PowerTilePropertiesEP(
             },
             text = {
                 Column {
-                    Text("当前组: ${tileToEdit!!.group}", fontSize = 14.sp, color = Color.Gray)
+                    Text(
+                        "当前组: ${tileToEdit!!.group}",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     Spacer(Modifier.height(16.dp))
                     NumberInputDouble(
                         value = tileEditDelay,
@@ -175,32 +179,19 @@ fun PowerTilePropertiesEP(
         )
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzCyanDark else PvzCyanLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text("能量瓷砖配置", fontWeight = FontWeight.Bold, fontSize = 22.sp)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "Help", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF009688),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "能量瓷砖设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -208,7 +199,7 @@ fun PowerTilePropertiesEP(
             EditorHelpDialog(
                 title = "能量瓷砖模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF009688)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -226,11 +217,12 @@ fun PowerTilePropertiesEP(
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -254,7 +246,7 @@ fun PowerTilePropertiesEP(
                                     )
                                     .border(
                                         width = if (isSelected) 1.dp else 0.dp,
-                                        color = if (isSelected) Color.Gray else Color.Transparent,
+                                        color = if (isSelected) MaterialTheme.colorScheme.onSurfaceVariant else Color.Transparent,
                                         shape = RoundedCornerShape(8.dp)
                                     )
                                     .clickable { selectedGroup = group },
@@ -273,7 +265,7 @@ fun PowerTilePropertiesEP(
                     Spacer(Modifier.height(16.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         NumberInputDouble(
-                            color = Color(0xFF009688),
+                            color = themeColor,
                             value = globalDelayInput,
                             onValueChange = { globalDelayInput = it },
                             label = "新放置瓷砖的默认延迟 (Delay)",
@@ -289,7 +281,7 @@ fun PowerTilePropertiesEP(
                     .aspectRatio(1.8f) // 9:5
                     .clip(RoundedCornerShape(6.dp))
                     .border(1.dp, Color(0xFF00796B), RoundedCornerShape(6.dp))
-                    .background(Color(0xFFE0F2F1))
+                    .background(if (isDark) Color(0xFF3D4947) else Color(0xFFE0F2F1))
             ) {
                 Column(Modifier.fillMaxSize()) {
                     for (row in 0..4) {
@@ -353,8 +345,8 @@ fun PowerTilePropertiesEP(
             }
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(1.dp)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -389,8 +381,8 @@ fun PowerTilePropertiesEP(
                             sync()
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFFFEBEE),
-                            contentColor = Color.Red
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError
                         ),
                     ) {
                         Icon(Icons.Default.Delete, null, modifier = Modifier.size(16.dp))

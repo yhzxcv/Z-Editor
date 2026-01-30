@@ -26,8 +26,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
@@ -38,11 +36,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -67,7 +64,12 @@ import com.example.z_editor.data.InitialGridItemEntryData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.GridItemRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzBlueDark
+import com.example.z_editor.ui.theme.PvzBlueLight
+import com.example.z_editor.ui.theme.PvzGridHighLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
@@ -125,6 +127,9 @@ fun InitialGridItemEntryEP(
     // 障碍物详情弹窗 (删除确认)
     var itemToDelete by remember { mutableStateOf<InitialGridItemData?>(null) }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzBlueDark else PvzBlueLight
+
     if (itemToDelete != null) {
         AlertDialog(
             onDismissRequest = { itemToDelete = null },
@@ -144,7 +149,7 @@ fun InitialGridItemEntryEP(
                         deleteItem(itemToDelete!!)
                         itemToDelete = null
                     },
-                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onError)
                 ) { Text("移除") }
             },
             dismissButton = {
@@ -158,23 +163,11 @@ fun InitialGridItemEntryEP(
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("场地物品布局", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF795548), // 褐色主题
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "场地物品布局",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -182,7 +175,7 @@ fun InitialGridItemEntryEP(
             EditorHelpDialog(
                 title = "场地物品模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF795548)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -207,34 +200,36 @@ fun InitialGridItemEntryEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // === 区域 1: 网格选择器 (作为列表头，跨满全宽) ===
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(contentAlignment = Alignment.Center) {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(2.dp),
                         modifier = Modifier.widthIn(max = 480.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Column {
-                                    Text("选中位置", fontSize = 12.sp, color = Color.Gray)
+                                    Text(
+                                        "选中位置",
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                     Text(
                                         "R${selectedY + 1} : C${selectedX + 1}",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 20.sp,
-                                        color = Color(0xFF795548)
+                                        color = themeColor
                                     )
                                 }
                                 Spacer(Modifier.weight(1f))
                                 Button(
                                     onClick = { handleSelectItem() },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(
-                                            0xFF795548
-                                        )
+                                        containerColor = themeColor
                                     )
                                 ) {
                                     Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
@@ -250,8 +245,8 @@ fun InitialGridItemEntryEP(
                                     .fillMaxWidth()
                                     .aspectRatio(1.8f)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFFD7CCC8))
-                                    .border(1.dp, Color(0xFFA1887F), RoundedCornerShape(6.dp))
+                                    .background(if (isDark) Color(0xFF31383B) else Color(0xFFD7ECF1))
+                                    .border(1.dp, Color(0xFF6B899A), RoundedCornerShape(6.dp))
                             ) {
                                 Column(Modifier.fillMaxSize()) {
                                     for (row in 0..4) {
@@ -268,9 +263,14 @@ fun InitialGridItemEntryEP(
                                                     modifier = Modifier
                                                         .weight(1f)
                                                         .fillMaxHeight()
-                                                        .border(0.5.dp, Color(0xFF8D6E63))
+                                                        .border(
+                                                            if (isSelected) 1.5.dp else 0.5.dp,
+                                                            if (isSelected) themeColor else Color(
+                                                                0xFF6B899A
+                                                            )
+                                                        )
                                                         .background(
-                                                            if (isSelected) Color(0xFFFCF2B1)
+                                                            if (isSelected) PvzGridHighLight
                                                             else Color.Transparent
                                                         )
                                                         .clickable {
@@ -286,8 +286,10 @@ fun InitialGridItemEntryEP(
                                                                 modifier = Modifier
                                                                     .align(Alignment.TopEnd)
                                                                     .background(
-                                                                        color = Color.Gray,
-                                                                        shape = RoundedCornerShape(bottomStart = 4.dp)
+                                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                                        shape = RoundedCornerShape(
+                                                                            bottomStart = 4.dp
+                                                                        )
                                                                     )
                                                                     .padding(horizontal = 2.dp)
                                                             ) {
@@ -318,7 +320,7 @@ fun InitialGridItemEntryEP(
                     "物品分布列表 (行优先排序)",
                     modifier = Modifier.padding(vertical = 8.dp),
                     fontWeight = FontWeight.Bold,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp
                 )
             }
@@ -359,7 +361,7 @@ fun GridItemIconSmall(typeName: String) {
         Box(
             modifier = Modifier
                 .fillMaxSize(0.8f)
-                .background(Color(0xFF795648), cardShape),
+                .background(Color(0xFF407A9A), cardShape),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -379,11 +381,15 @@ fun GridItemCard(
     onClick: () -> Unit,
     onDelete: () -> Unit
 ) {
+    val isDark = LocalDarkTheme.current
     Card(
         onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = if (isSelected) Color(0xFFF1E1D7) else Color.White),
-        border = if (isSelected) BorderStroke(1.dp, Color(0xFF795548)) else null,
-        elevation = CardDefaults.cardElevation(1.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) if (isDark) Color(0xFF31383B) else Color(0xFFD7ECF1)
+            else MaterialTheme.colorScheme.surface
+        ),
+        border = if (isSelected) BorderStroke(1.dp, Color(0xFF6CA4B4)) else null,
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -425,7 +431,7 @@ fun GridItemCard(
                                 text = item.typeName.take(1),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF795548)
+                                color = Color(0xFF407A9A)
                             )
                         }
                     }
@@ -435,7 +441,7 @@ fun GridItemCard(
                     text = "R${item.gridY + 1}:C${item.gridX + 1}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color(0xFF5D4037)
+                    color = Color(0xFF407A9A)
                 )
             }
         }

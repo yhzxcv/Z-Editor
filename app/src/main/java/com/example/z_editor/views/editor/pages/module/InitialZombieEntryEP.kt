@@ -30,8 +30,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
@@ -43,7 +41,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
@@ -52,8 +49,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -77,7 +72,12 @@ import com.example.z_editor.data.InitialZombieEntryData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.ZombieRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzGridHighLight
+import com.example.z_editor.ui.theme.PvzPurpleDark
+import com.example.z_editor.ui.theme.PvzPurpleLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
@@ -125,7 +125,7 @@ fun InitialZombieEntryEP(
     fun handleAddZombie() {
         onRequestZombieSelection { selectedId ->
             val isElite = ZombieRepository.isElite(selectedId)
-            val aliases = ZombieRepository.buildAliases(selectedId)
+            val aliases = ZombieRepository.buildZombieAliases(selectedId)
             if (!isElite) {
                 val newList = moduleDataState.value.placements.toMutableList()
                 val newPlacement = InitialZombieData(
@@ -158,7 +158,8 @@ fun InitialZombieEntryEP(
         sync()
     }
 
-    val themeColor = Color(0xFF654B80)
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzPurpleDark else PvzPurpleLight
 
     if (editingPlacement != null) {
         var tempCondition by remember { mutableStateOf(editingPlacement!!.condition) }
@@ -202,7 +203,11 @@ fun InitialZombieEntryEP(
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true
                         )
-                        Text("使用自定义输入需确保输入值准确", color = Color.Gray, fontSize = 12.sp)
+                        Text(
+                            "使用自定义输入需确保输入值准确",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 12.sp
+                        )
                     } else {
                         // === 模式 B: 下拉菜单选择 ===
                         Box(modifier = Modifier.fillMaxWidth()) {
@@ -267,7 +272,7 @@ fun InitialZombieEntryEP(
                         }
                         Text(
                             "点击输入框从预设的状态列表中选择",
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 12.sp
                         )
                     }
@@ -287,7 +292,7 @@ fun InitialZombieEntryEP(
                             deletePlacement(editingPlacement!!)
                             editingPlacement = null
                         },
-                        colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onError)
                     ) { Text("删除") }
                     Spacer(Modifier.width(8.dp))
                     TextButton(onClick = { editingPlacement = null }) { Text("取消") }
@@ -301,23 +306,11 @@ fun InitialZombieEntryEP(
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("预置僵尸布局", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "初始僵尸布局",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -349,19 +342,23 @@ fun InitialZombieEntryEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(contentAlignment = Alignment.Center) {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(2.dp),
                         modifier = Modifier.widthIn(max = 480.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Column {
-                                    Text("选中位置", fontSize = 12.sp, color = Color.Gray)
+                                    Text(
+                                        "选中位置",
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                     Text(
                                         "R${selectedY + 1} : C${selectedX + 1}",
                                         fontWeight = FontWeight.Bold,
@@ -392,7 +389,7 @@ fun InitialZombieEntryEP(
                                     .fillMaxWidth()
                                     .aspectRatio(1.8f)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFFEFEFFF))
+                                    .background(if (isDark) Color(0xFF40404B) else Color(0xFFEFEFFF))
                                     .border(
                                         1.dp,
                                         Color(0xFFBAC4FA),
@@ -418,11 +415,13 @@ fun InitialZombieEntryEP(
                                                         .weight(1f)
                                                         .fillMaxHeight()
                                                         .border(
-                                                            0.5.dp,
-                                                            Color(0xFF8581FA)
+                                                            if (isSelected) 1.5.dp else 0.5.dp,
+                                                            if (isSelected) themeColor else Color(
+                                                                0xFF8581FA
+                                                            )
                                                         )
                                                         .background(
-                                                            if (isSelected) Color(0xFFFCF2B1)
+                                                            if (isSelected) PvzGridHighLight
                                                             else Color.Transparent
                                                         )
                                                         .clickable {
@@ -438,7 +437,7 @@ fun InitialZombieEntryEP(
                                                                 modifier = Modifier
                                                                     .align(Alignment.TopEnd)
                                                                     .background(
-                                                                        Color.Gray,
+                                                                        MaterialTheme.colorScheme.onSurfaceVariant,
                                                                         RoundedCornerShape(
                                                                             bottomStart = 4.dp
                                                                         )
@@ -470,7 +469,7 @@ fun InitialZombieEntryEP(
                     "僵尸分布列表 (行优先排序)",
                     modifier = Modifier.padding(vertical = 8.dp),
                     fontWeight = FontWeight.Bold,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp
                 )
             }
@@ -502,7 +501,7 @@ fun ZombieIconSmall(typeName: String) {
             modifier = Modifier
                 .fillMaxSize(0.9f)
                 .clip(cardShape)
-                .border(0.5.dp, Color.Gray, cardShape),
+                .border(0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant, cardShape),
             contentScale = ContentScale.Crop,
             filterQuality = FilterQuality.Low
         )
@@ -524,14 +523,16 @@ fun InitialZombieCard(
     val info = remember(item.typeName) {
         ZombieRepository.getZombieInfoById(item.typeName)
     }
+    val isDark = LocalDarkTheme.current
 
     Card(
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFFD9D7F6) else Color.White
+            containerColor = if (isSelected) if (isDark) Color(0xFF40404B) else Color(0xFFD9D7F6)
+            else MaterialTheme.colorScheme.surface
         ),
         border = if (isSelected) BorderStroke(1.dp, Color(0xFF8581FA)) else null,
-        elevation = CardDefaults.cardElevation(1.dp)
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
             modifier = Modifier.padding(8.dp),
@@ -544,13 +545,12 @@ fun InitialZombieCard(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(Color(0xFFEFEBE9))
-                        .border(0.5.dp, Color.LightGray, RoundedCornerShape(8.dp)),
+                        .background(Color(0xFFEFEBE9)),
                     placeholder = {
                         Box(
                             Modifier
                                 .fillMaxSize()
-                                .background(Color.Gray)
+                                .background(MaterialTheme.colorScheme.onSurfaceVariant)
                         )
                     }
                 )
@@ -568,7 +568,7 @@ fun InitialZombieCard(
                 Text(
                     text = item.condition,
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1
                 )
             }

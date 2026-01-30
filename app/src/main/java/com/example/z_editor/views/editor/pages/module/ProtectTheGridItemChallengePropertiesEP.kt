@@ -25,9 +25,8 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
@@ -38,12 +37,12 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -68,7 +67,12 @@ import com.example.z_editor.data.ProtectTheGridItemChallengePropertiesData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.GridItemRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzBlueDark
+import com.example.z_editor.ui.theme.PvzBlueLight
+import com.example.z_editor.ui.theme.PvzGridHighLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
@@ -138,7 +142,13 @@ fun ProtectTheGridItemChallengePropertiesEP(
             onDismissRequest = { itemToDelete = null },
             title = { Text("移除保护目标") },
             text = {
-                Text("确定要移除 R${itemToDelete!!.gridY + 1}:C${itemToDelete!!.gridX + 1} 处的 ${GridItemRepository.getName(itemToDelete!!.gridItemType)} 吗？")
+                Text(
+                    "确定要移除 R${itemToDelete!!.gridY + 1}:C${itemToDelete!!.gridX + 1} 处的 ${
+                        GridItemRepository.getName(
+                            itemToDelete!!.gridItemType
+                        )
+                    } 吗？"
+                )
             },
             confirmButton = {
                 TextButton(
@@ -146,7 +156,7 @@ fun ProtectTheGridItemChallengePropertiesEP(
                         deleteItem(itemToDelete!!)
                         itemToDelete = null
                     },
-                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onError)
                 ) { Text("移除") }
             },
             dismissButton = {
@@ -155,28 +165,20 @@ fun ProtectTheGridItemChallengePropertiesEP(
         )
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzBlueDark else PvzBlueLight
+    val borderThemeColor = Color(0xFFA5BDD6)
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("保护物品挑战", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1976D2),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "保护物品挑战",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -184,7 +186,7 @@ fun ProtectTheGridItemChallengePropertiesEP(
             EditorHelpDialog(
                 title = "保护物品挑战说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF1976D2)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -209,22 +211,32 @@ fun ProtectTheGridItemChallengePropertiesEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // === 区域 1: 描述输入框 ===
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(Modifier.padding(16.dp)) {
                         Text(
                             "挑战描述 (Description)",
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1976D2)
+                            color = themeColor
                         )
                         Spacer(Modifier.height(8.dp))
                         OutlinedTextField(
+                            colors = OutlinedTextFieldDefaults.colors(
+                                cursorColor = themeColor,
+                                selectionColors = TextSelectionColors(
+                                    handleColor = themeColor,
+                                    backgroundColor = themeColor.copy(alpha = 0.4f)
+                                ),
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                focusedBorderColor = themeColor,
+                                focusedLabelColor = themeColor
+                            ),
                             value = moduleData.description,
                             onValueChange = {
                                 moduleData = moduleData.copy(description = it)
@@ -238,7 +250,7 @@ fun ProtectTheGridItemChallengePropertiesEP(
                         Text(
                             "当前保护目标数量: ${moduleData.mustProtectCount}",
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -248,25 +260,29 @@ fun ProtectTheGridItemChallengePropertiesEP(
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(contentAlignment = Alignment.Center) {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(2.dp),
                         modifier = Modifier.widthIn(max = 480.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Column {
-                                    Text("目标位置", fontSize = 12.sp, color = Color.Gray)
+                                    Text(
+                                        "目标位置",
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                     Text(
                                         "R${selectedY + 1} : C${selectedX + 1}",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 20.sp,
-                                        color = Color(0xFF1976D2)
+                                        color = themeColor
                                     )
                                 }
                                 Spacer(Modifier.weight(1f))
                                 Button(
                                     onClick = { handleAddItem() },
-                                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1976D2))
+                                    colors = ButtonDefaults.buttonColors(containerColor = themeColor)
                                 ) {
                                     Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
                                     Spacer(Modifier.width(8.dp))
@@ -281,23 +297,28 @@ fun ProtectTheGridItemChallengePropertiesEP(
                                     .fillMaxWidth()
                                     .aspectRatio(1.8f)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFFE3F2FD))
-                                    .border(1.dp, Color(0xFF90CAF9), RoundedCornerShape(6.dp))
+                                    .background(MaterialTheme.colorScheme.outline)
+                                    .border(1.dp, themeColor, RoundedCornerShape(6.dp))
                             ) {
                                 Column(Modifier.fillMaxSize()) {
                                     for (row in 0..4) {
                                         Row(Modifier.weight(1f)) {
                                             for (col in 0..8) {
-                                                val isSelected = (row == selectedY && col == selectedX)
-                                                val cellItem = moduleData.gridItems.find { it.gridX == col && it.gridY == row }
+                                                val isSelected =
+                                                    (row == selectedY && col == selectedX)
+                                                val cellItem =
+                                                    moduleData.gridItems.find { it.gridX == col && it.gridY == row }
 
                                                 Box(
                                                     modifier = Modifier
                                                         .weight(1f)
                                                         .fillMaxHeight()
-                                                        .border(0.5.dp, Color(0xFFBBDEFB))
+                                                        .border(
+                                                            if (isSelected) 1.5.dp else 0.5.dp,
+                                                            if (isSelected) themeColor else borderThemeColor
+                                                        )
                                                         .background(
-                                                            if (isSelected) Color(0xFFFCF2B1)
+                                                            if (isSelected) PvzGridHighLight
                                                             else Color.Transparent
                                                         )
                                                         .clickable {
@@ -326,7 +347,7 @@ fun ProtectTheGridItemChallengePropertiesEP(
                     "保护目标列表 (行优先排序)",
                     modifier = Modifier.padding(vertical = 8.dp),
                     fontWeight = FontWeight.Bold,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp
                 )
             }
@@ -365,7 +386,7 @@ fun ProtectItemIconSmall(typeName: String) {
         Box(
             modifier = Modifier
                 .fillMaxSize(0.8f)
-                .background(Color(0xFF1976D2), RoundedCornerShape(4.dp)),
+                .background(MaterialTheme.colorScheme.secondary, RoundedCornerShape(4.dp)),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -388,10 +409,10 @@ fun ProtectItemCard(
     Card(
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFFE3F2FD) else Color.White
+            containerColor = if (isSelected) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.surface
         ),
-        border = if (isSelected) BorderStroke(1.dp, Color(0xFF1976D2)) else null,
-        elevation = CardDefaults.cardElevation(1.dp)
+        border = if (isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.secondary) else null,
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -426,14 +447,14 @@ fun ProtectItemCard(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(Color(0xFFF5EEE8)),
+                                .background(MaterialTheme.colorScheme.outline),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = item.gridItemType.take(1),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1976D2)
+                                color = MaterialTheme.colorScheme.secondary
                             )
                         }
                     }
@@ -443,7 +464,7 @@ fun ProtectItemCard(
                     text = "R${item.gridY + 1}:C${item.gridX + 1}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color(0xFF1976D2)
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
         }

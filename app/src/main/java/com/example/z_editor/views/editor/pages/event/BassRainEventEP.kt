@@ -2,35 +2,56 @@ package com.example.z_editor.views.editor.pages.event
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Speaker
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.ParachuteRainEventData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzLightPurpleDark
+import com.example.z_editor.ui.theme.PvzLightPurpleLight
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputDouble
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
-import com.google.gson.Gson
 import rememberJsonSync
-
-private val gson = Gson()
 
 private val PRESET_BASS_ZOMBIES = listOf(
     "eighties_bass" to "贝斯僵尸 (eighties_bass)",
@@ -51,8 +72,6 @@ fun BassRainEventEP(
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
 
-    val themeColor = Color(0xFF9C27B0)
-
     val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
     val syncManager = rememberJsonSync(obj, ParachuteRainEventData::class.java)
     val actionDataState = syncManager.dataState
@@ -62,33 +81,20 @@ fun BassRainEventEP(
         syncManager.sync()
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightPurpleDark else PvzLightPurpleLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text("编辑 $currentAlias", fontWeight = FontWeight.Bold, fontSize = 18.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                        Text("事件类型：贝斯/喷射空降", fontSize = 14.sp, fontWeight = FontWeight.Normal)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "编辑 $currentAlias",
+                subtitle = "事件类型：贝斯/喷射空降",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -119,21 +125,26 @@ fun BassRainEventEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5)),
+                .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // === 区域 1: 僵尸类型配置 ===
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(Icons.Default.Speaker, null, tint = themeColor)
                             Spacer(Modifier.width(12.dp))
-                            Text("空降单位配置", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                            Text(
+                                "空降单位配置",
+                                color = themeColor,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 15.sp
+                            )
                         }
 
                         Spacer(Modifier.height(16.dp))
@@ -192,11 +203,16 @@ fun BassRainEventEP(
             // === 区域 2: 数量与批次 ===
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("生成数量控制", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text(
+                            "生成数量控制",
+                            color = themeColor,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp
+                        )
                         Spacer(Modifier.height(12.dp))
 
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -222,11 +238,16 @@ fun BassRainEventEP(
             // === 区域 3: 范围与时间 ===
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("位置与时间参数", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text(
+                            "位置与时间参数",
+                            color = themeColor,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp
+                        )
                         Spacer(Modifier.height(12.dp))
 
                         // 列范围
@@ -283,11 +304,16 @@ fun BassRainEventEP(
             // === 区域 4: 提示信息 ===
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("红色字幕警告信息", color = themeColor, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text(
+                            "红色字幕警告信息",
+                            color = themeColor,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp
+                        )
                         Spacer(Modifier.height(8.dp))
 
                         OutlinedTextField(
@@ -295,6 +321,7 @@ fun BassRainEventEP(
                             onValueChange = { sync(actionDataState.value.copy(waveStartMessage = it)) },
                             label = { Text("WaveStartMessage") },
                             colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 focusedBorderColor = themeColor,
                                 focusedLabelColor = themeColor
                             ),
@@ -304,7 +331,7 @@ fun BassRainEventEP(
                         Text(
                             "空降开始时在屏幕中央显示的红字警告，不支持输入中文",
                             fontSize = 11.sp,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     }

@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.Stars
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -64,6 +63,9 @@ import com.example.z_editor.data.VaseBreakerPresetData
 import com.example.z_editor.data.VaseDefinition
 import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.ZombieRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzGridBgDark
+import com.example.z_editor.ui.theme.PvzGridBorder
 import com.example.z_editor.views.components.AssetImage
 import com.google.gson.Gson
 
@@ -137,10 +139,11 @@ fun VaseBreakerTab(
 
     var vaseToDelete by remember { mutableStateOf<VaseDefinition?>(null) }
 
+    val isDark = LocalDarkTheme.current
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(MaterialTheme.colorScheme.background)
     ) {
         LazyColumn(
             state = scrollState,
@@ -150,12 +153,12 @@ fun VaseBreakerTab(
                 top = 16.dp,
                 start = 16.dp,
                 end = 16.dp
-            ), // 调整边距
+            ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -164,7 +167,7 @@ fun VaseBreakerTab(
                             "罐子生成范围与禁用格点",
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
-                            color = Color(0xFF5D4037)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(Modifier.height(12.dp))
 
@@ -204,7 +207,7 @@ fun VaseBreakerTab(
                         Text(
                             "点击格点可切换禁用状态（禁用点将不生成罐子）",
                             fontSize = 12.sp,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
 
@@ -213,8 +216,8 @@ fun VaseBreakerTab(
                                 .fillMaxWidth()
                                 .aspectRatio(1.8f)
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(Color(0xFFD7CCC8))
-                                .border(1.dp, Color(0xFFA1887F), RoundedCornerShape(6.dp))
+                                .background(if (isDark) PvzGridBgDark else Color(0xFFD7CCC8))
+                                .border(1.dp, PvzGridBorder, RoundedCornerShape(6.dp))
                         ) {
                             Column(Modifier.fillMaxSize()) {
                                 for (row in 0..4) {
@@ -230,12 +233,15 @@ fun VaseBreakerTab(
                                                     .fillMaxHeight()
                                                     .border(
                                                         0.5.dp,
-                                                        Color(0xFF8D6E63).copy(alpha = 0.5f)
+                                                        PvzGridBorder.copy(alpha = 0.5f)
                                                     )
                                                     .background(
                                                         when {
-                                                            isBlacklisted -> Color.Black.copy(alpha = 0.6f) // 黑名单显示深色
-                                                            isActiveZone -> Color(0xFF9D7165)
+                                                            isBlacklisted -> Color.Black.copy(alpha = 0.6f)
+                                                            isActiveZone -> if (isDark) Color(
+                                                                0xFFA67B6E
+                                                            ) else Color(0xFF9D7165)
+
                                                             else -> Color.Transparent
                                                         }
                                                     )
@@ -291,12 +297,12 @@ fun VaseBreakerTab(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .background(
-                                    if (isCapacityError) Color(0xFFFFEBEE) else Color(0xFFE8F5E9),
+                                    if (isCapacityError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outlineVariant,
                                     RoundedCornerShape(8.dp)
                                 )
                                 .border(
                                     1.dp,
-                                    if (isCapacityError) Color.Red else Color(0xFF4CAF50),
+                                    if (isCapacityError) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.primary,
                                     RoundedCornerShape(8.dp)
                                 )
                                 .padding(12.dp),
@@ -305,7 +311,7 @@ fun VaseBreakerTab(
                             Icon(
                                 if (isCapacityError) Icons.Default.Warning else Icons.Default.CheckCircle,
                                 null,
-                                tint = if (isCapacityError) Color.Red else Color(0xFF4CAF50)
+                                tint = if (isCapacityError) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.primary
                             )
                             Spacer(Modifier.width(8.dp))
                             Column {
@@ -313,12 +319,12 @@ fun VaseBreakerTab(
                                     text = if (isCapacityError) "配置数量与有效容量不符" else "配置数量已匹配容量",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.sp,
-                                    color = if (isCapacityError) Color.Red else Color(0xFF2E7D32)
+                                    color = if (isCapacityError) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.primary
                                 )
                                 Text(
                                     text = "有效容量: $totalSlots  |  已配置: $currentAssigned",
                                     fontSize = 12.sp,
-                                    color = Color.Black
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -328,15 +334,15 @@ fun VaseBreakerTab(
 
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
                             "特殊罐子设置",
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF5D4037),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 18.sp
                         )
                         Spacer(Modifier.height(12.dp))
@@ -381,7 +387,7 @@ fun VaseBreakerTab(
                 Text(
                     "罐子内容列表",
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 16.sp
                 )
             }
@@ -446,7 +452,7 @@ fun VaseBreakerTab(
                                 zombieIds.forEach { zombieId ->
                                     newList.add(
                                         VaseDefinition(
-                                            zombieTypeName = ZombieRepository.buildAliases(
+                                            zombieTypeName = ZombieRepository.buildZombieAliases(
                                                 zombieId
                                             ), count = 1
                                         )
@@ -488,20 +494,17 @@ fun VaseBreakerTab(
                                         .size(44.dp)
                                         .clip(RoundedCornerShape(8.dp))
                                         .background(Color.LightGray)
-                                        .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)),
+                                        .border(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.onSurfaceVariant,
+                                            RoundedCornerShape(8.dp)
+                                        ),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     AssetImage(
                                         path = "images/others/${info.iconName}",
                                         contentDescription = null,
-                                        modifier = Modifier.size(44.dp),
-                                        placeholder = {
-                                            Icon(
-                                                Icons.Default.Stars,
-                                                null,
-                                                tint = Color(0xFFFFC107)
-                                            )
-                                        }
+                                        modifier = Modifier.size(44.dp)
                                     )
                                 }
                             },
@@ -538,7 +541,7 @@ fun VaseBreakerTab(
                         updateState(data.copy(vases = newList))
                         vaseToDelete = null
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError)
                 ) { Text("移除") }
             },
             dismissButton = {
@@ -593,8 +596,8 @@ fun VaseItemRow(
     Card(
         modifier = Modifier
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(1.dp)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
@@ -605,7 +608,11 @@ fun VaseItemRow(
                     .size(44.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color.LightGray)
-                    .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)),
+                    .border(
+                        1.dp,
+                        MaterialTheme.colorScheme.onSurfaceVariant,
+                        RoundedCornerShape(8.dp)
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 if (iconPath != null) {
@@ -623,7 +630,7 @@ fun VaseItemRow(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(name, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                Text(type, fontSize = 12.sp, color = Color.Gray)
+                Text(type, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
 
             Stepper(value = vase.count, onChange = onCountChange)
@@ -648,7 +655,7 @@ fun Stepper(value: Int, onChange: (Int) -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .background(Color(0xFFF5F5F5), RoundedCornerShape(6.dp))
+            .background(MaterialTheme.colorScheme.background, RoundedCornerShape(6.dp))
             .border(1.dp, Color.LightGray.copy(0.5f), RoundedCornerShape(6.dp))
     ) {
         Box(
@@ -658,7 +665,12 @@ fun Stepper(value: Int, onChange: (Int) -> Unit) {
                 .clickable { if (value >= 1) onChange(value - 1) },
             contentAlignment = Alignment.Center
         ) {
-            Text("-", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Gray)
+            Text(
+                "-",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
 
         Text(
@@ -675,7 +687,12 @@ fun Stepper(value: Int, onChange: (Int) -> Unit) {
                 .clickable { onChange(value + 1) },
             contentAlignment = Alignment.Center
         ) {
-            Text("+", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Gray)
+            Text(
+                "+",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
@@ -688,13 +705,18 @@ fun BoundaryStepper(
     onPlus: () -> Unit
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label, fontSize = 12.sp, color = Color.Gray, fontWeight = FontWeight.Bold)
+        Text(
+            label,
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Bold
+        )
         Spacer(Modifier.height(4.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .background(Color(0xFFEFEBE9), RoundedCornerShape(8.dp))
-                .border(1.dp, Color(0xFF8D6E63), RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.background, RoundedCornerShape(8.dp))
+                .border(1.dp, MaterialTheme.colorScheme.onSurfaceVariant, RoundedCornerShape(8.dp))
         ) {
             IconButton(
                 onClick = onMinus,
@@ -703,7 +725,7 @@ fun BoundaryStepper(
                 Icon(
                     Icons.Default.Remove,
                     null,
-                    tint = Color(0xFF5D4037),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(16.dp)
                 )
             }
@@ -718,7 +740,7 @@ fun BoundaryStepper(
                     text = "${value + 1}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = Color(0xFF3E2723)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -729,7 +751,7 @@ fun BoundaryStepper(
                 Icon(
                     Icons.Default.Add,
                     null,
-                    tint = Color(0xFF5D4037),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(16.dp)
                 )
             }

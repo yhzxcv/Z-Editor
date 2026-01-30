@@ -26,8 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
@@ -40,10 +38,9 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -65,7 +62,13 @@ import com.example.z_editor.data.LevelParser
 import com.example.z_editor.data.ManholePipelineModuleData
 import com.example.z_editor.data.PipelineData
 import com.example.z_editor.data.PvzLevelFile
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzGrayDark
+import com.example.z_editor.ui.theme.PvzGrayLight
+import com.example.z_editor.ui.theme.PvzGridBgDark
+import com.example.z_editor.ui.theme.PvzGridBorder
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -86,8 +89,6 @@ fun ManholePipelinePropertiesEP(
     var selectedIndex by remember { mutableIntStateOf(0) }
     var isEditingEnd by remember { mutableStateOf(false) }
 
-    val themeColor = Color(0xFF607D8B)
-
     val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
     val syncManager = rememberJsonSync(obj, ManholePipelineModuleData::class.java)
     val moduleDataState = syncManager.dataState
@@ -95,6 +96,9 @@ fun ManholePipelinePropertiesEP(
     fun sync() {
         syncManager.sync()
     }
+
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzGrayDark else PvzGrayLight
 
     LaunchedEffect(Unit) {
         if (moduleDataState.value.pipelineList.isEmpty()) {
@@ -120,23 +124,11 @@ fun ManholePipelinePropertiesEP(
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("地下管道设置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "地下管道设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -166,14 +158,14 @@ fun ManholePipelinePropertiesEP(
                 .padding(padding)
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .background(Color(0xFFF5F5F5)),
+                .background(MaterialTheme.colorScheme.background),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // === 区域 1: 管道组列表管理 ===
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(vertical = 4.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -227,7 +219,11 @@ fun ManholePipelinePropertiesEP(
                             sync()
                         }
                     ) {
-                        Icon(Icons.Default.Add, "添加组", tint = Color.Gray)
+                        Icon(
+                            Icons.Default.Add,
+                            "添加组",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }
@@ -239,7 +235,7 @@ fun ManholePipelinePropertiesEP(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -285,7 +281,7 @@ fun ManholePipelinePropertiesEP(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -299,7 +295,7 @@ fun ManholePipelinePropertiesEP(
                             Spacer(Modifier.weight(1f))
                             Text(
                                 "起点: (${currentPipeline.startY + 1}, ${currentPipeline.startX + 1}) → 终点: (${currentPipeline.endY + 1}, ${currentPipeline.endX + 1})",
-                                fontSize = 11.sp, color = Color.Gray
+                                fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
 
@@ -310,7 +306,7 @@ fun ManholePipelinePropertiesEP(
                                 .fillMaxWidth()
                                 .height(48.dp)
                                 .clip(RoundedCornerShape(24.dp))
-                                .background(Color(0xFFEEEEEE))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                                 .padding(4.dp)
                         ) {
                             Box(
@@ -325,13 +321,13 @@ fun ManholePipelinePropertiesEP(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         Icons.AutoMirrored.Filled.Logout, null,
-                                        tint = if (isEditingEnd) Color.White else Color.Gray,
+                                        tint = if (isEditingEnd) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(18.dp)
                                     )
                                     Spacer(Modifier.width(8.dp))
                                     Text(
                                         "放置终点 (出口)",
-                                        color = if (isEditingEnd) Color.White else Color.Gray,
+                                        color = if (isEditingEnd) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 13.sp
                                     )
@@ -350,13 +346,13 @@ fun ManholePipelinePropertiesEP(
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         Icons.AutoMirrored.Filled.Login, null,
-                                        tint = if (!isEditingEnd) Color.White else Color.Gray,
+                                        tint = if (!isEditingEnd) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(18.dp)
                                     )
                                     Spacer(Modifier.width(8.dp))
                                     Text(
                                         "放置起点 (入口)",
-                                        color = if (!isEditingEnd) Color.White else Color.Gray,
+                                        color = if (!isEditingEnd) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 13.sp
                                     )
@@ -373,7 +369,7 @@ fun ManholePipelinePropertiesEP(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(2.dp),
                         modifier = Modifier.widthIn(max = 480.dp)
                     ) {
@@ -383,8 +379,8 @@ fun ManholePipelinePropertiesEP(
                                     .fillMaxWidth()
                                     .aspectRatio(1.8f)
                                     .clip(RoundedCornerShape(6.dp))
-                                    .background(Color(0xFFD7CCC8))
-                                    .border(1.dp, Color(0xFFA1887F), RoundedCornerShape(6.dp))
+                                    .background(if (isDark) PvzGridBgDark else Color(0xFFD7CCC8))
+                                    .border(1.dp, PvzGridBorder, RoundedCornerShape(6.dp))
                             ) {
                                 Column(Modifier.fillMaxSize()) {
                                     for (row in 0..4) {
@@ -399,12 +395,10 @@ fun ManholePipelinePropertiesEP(
                                                         .fillMaxHeight()
                                                         .border(
                                                             width = if (isTargetCell) 1.5.dp else 0.5.dp,
-                                                            color = if (isTargetCell) themeColor else Color(
-                                                                0xFFA1887F
-                                                            )
+                                                            color = if (isTargetCell) themeColor else PvzGridBorder
                                                         )
                                                         .background(
-                                                            if (isTargetCell) Color(0xFFB0B0B0).copy(
+                                                            if (isTargetCell) themeColor.copy(
                                                                 alpha = 0.6f
                                                             ) else Color.Transparent
                                                         )
@@ -486,7 +480,7 @@ fun ManholePipelinePropertiesEP(
                                                                 .padding(2.dp)
                                                                 .size(18.dp)
                                                                 .background(
-                                                                    color = if (isSelected) themeColor else Color.Gray.copy(
+                                                                    color = if (isSelected) themeColor else MaterialTheme.colorScheme.onSurfaceVariant.copy(
                                                                         alpha = 0.8f
                                                                     ),
                                                                     shape = CircleShape

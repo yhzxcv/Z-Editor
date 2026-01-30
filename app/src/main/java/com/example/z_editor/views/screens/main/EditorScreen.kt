@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,7 +44,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -65,6 +66,7 @@ import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.ReferenceRepository
 import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.repository.ZombieRepository
+import com.example.z_editor.views.components.rememberDebouncedClick
 import com.google.gson.Gson
 
 private val gson = Gson()
@@ -72,7 +74,13 @@ private val gson = Gson()
 @SuppressLint("ConfigurationScreenWidthHeight")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
+fun EditorScreen(
+    fileName: String,
+    fileUri: Uri?,
+    onBack: () -> Unit,
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit
+) {
     val context = LocalContext.current
 
     // ======================== 状态管理 ========================
@@ -849,8 +857,8 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                                 IconButton(onClick = { handleExit() }) {
                                     Icon(
                                         Icons.AutoMirrored.Filled.ArrowBack,
-                                        "Back",
-                                        tint = Color.White
+                                        "返回",
+                                        tint = MaterialTheme.colorScheme.background
                                     )
                                 }
                             },
@@ -859,18 +867,31 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                                     performSave(isExit = false)
                                     currentSubScreen = EditorSubScreen.JsonView(currentFileName)
                                 }) {
-                                    Icon(Icons.Default.Code, "查看代码", tint = Color.White)
+                                    Icon(
+                                        Icons.Default.Code,
+                                        "查看代码",
+                                        tint = MaterialTheme.colorScheme.background
+                                    )
+                                }
+                                IconButton(onClick = onToggleTheme) {
+                                    Icon(
+                                        imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                                        contentDescription = "切换主题",
+                                        tint = MaterialTheme.colorScheme.onPrimary
+                                    )
                                 }
                                 IconButton(onClick = { performSave(isExit = false) }) {
                                     Icon(
                                         Icons.Default.Save,
                                         "保存",
-                                        tint = Color.White
+                                        tint = MaterialTheme.colorScheme.background
                                     )
                                 }
                             },
                             colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = Color(0xFF4CAF50), titleContentColor = Color.White
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                                navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
                             )
                         )
                     }
@@ -883,19 +904,20 @@ fun EditorScreen(fileName: String, fileUri: Uri?, onBack: () -> Unit) {
                         if (availableTabs.size > 1) {
                             ScrollableTabRow(
                                 selectedTabIndex = selectedTabIndex,
-                                containerColor = Color.Transparent,
-                                contentColor = Color(0xFF1976D2),
+                                containerColor = MaterialTheme.colorScheme.scrim,
+                                contentColor = MaterialTheme.colorScheme.secondary,
                                 edgePadding = 0.dp,
                                 indicator = { tabPositions ->
                                     val index = selectedTabIndex
                                     if (index < tabPositions.size) {
                                         SecondaryIndicator(
                                             Modifier.tabIndicatorOffset(tabPositions[index]),
-                                            color = Color(0xFF1976D2),
+                                            color = MaterialTheme.colorScheme.secondary,
                                             height = 3.dp
                                         )
                                     }
                                 },
+                                divider = {},
                             ) {
                                 availableTabs.forEachIndexed { index, tabType ->
                                     Tab(

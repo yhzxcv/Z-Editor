@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.EmojiPeople
@@ -40,9 +38,8 @@ import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,6 +59,12 @@ import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.SeedBankData
 import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.ZombieRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzLightGreenDark
+import com.example.z_editor.ui.theme.PvzLightGreenLight
+import com.example.z_editor.ui.theme.PvzPurpleDark
+import com.example.z_editor.ui.theme.PvzPurpleLight
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -92,6 +95,10 @@ fun SeedBankPropertiesEP(
     val isZombieMode = seedBankDataState.value.zombieMode == true
     val isReversedZombie = seedBankDataState.value.seedPacketType == "UIIZombieSeedPacket"
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isZombieMode) if (isDark) PvzPurpleDark else PvzPurpleLight
+    else if (isDark) PvzLightGreenDark else PvzLightGreenLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = {
@@ -99,29 +106,11 @@ fun SeedBankPropertiesEP(
             })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        if (isZombieMode) "种子库 (我是僵尸)" else "种子库配置",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = if (isZombieMode) Color(0xFF654B80) else Color(0xFF388E3C), // 僵尸模式变色
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = if (isZombieMode) "种子库 (我是僵尸)" else "种子库设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -129,7 +118,7 @@ fun SeedBankPropertiesEP(
             EditorHelpDialog(
                 title = "种子库模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = if (isZombieMode) Color(0xFF654B80) else Color(0xFF388E3C)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -158,12 +147,13 @@ fun SeedBankPropertiesEP(
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // === 第一部分：基础设置 ===
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(
@@ -174,7 +164,7 @@ fun SeedBankPropertiesEP(
                         Icon(
                             Icons.Default.Yard,
                             null,
-                            tint = if (isZombieMode) Color.Gray else Color(0xFF388E3C)
+                            tint = if (isZombieMode) MaterialTheme.colorScheme.onSurfaceVariant else themeColor
                         )
                         Spacer(Modifier.width(12.dp))
                         Text("基础规则", fontWeight = FontWeight.Bold, fontSize = 16.sp)
@@ -182,7 +172,10 @@ fun SeedBankPropertiesEP(
 
                     Spacer(Modifier.height(8.dp))
 
-                    HorizontalDivider(thickness = 0.5.dp)
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
 
                     Spacer(Modifier.height(8.dp))
 
@@ -213,7 +206,7 @@ fun SeedBankPropertiesEP(
                     Text(
                         "选择模式为预选时，无论预选卡片数量多少都会立即进入游戏",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
                     Spacer(Modifier.height(12.dp))
@@ -223,7 +216,7 @@ fun SeedBankPropertiesEP(
                         modifier = Modifier.alpha(if (isZombieMode) 0.5f else 1f)
                     ) {
                         NumberInputInt(
-                            color = if (isZombieMode) Color.Gray else Color(0xFF388E3C),
+                            color = if (isZombieMode) MaterialTheme.colorScheme.onSurfaceVariant else themeColor,
                             value = seedBankDataState.value.globalLevel ?: 0,
                             onValueChange = { input ->
                                 val clamped = input.coerceIn(0, 5)
@@ -237,7 +230,7 @@ fun SeedBankPropertiesEP(
                         )
 
                         NumberInputInt(
-                            color = if (isZombieMode) Color.Gray else Color(0xFF388E3C),
+                            color = if (isZombieMode) MaterialTheme.colorScheme.onSurfaceVariant else themeColor,
                             value = seedBankDataState.value.overrideSeedSlotsCount ?: 0,
                             onValueChange = { input ->
                                 val clamped = input.coerceIn(0, 9)
@@ -252,7 +245,7 @@ fun SeedBankPropertiesEP(
                     Text(
                         "庭院模式下，对卡槽数量的更改无效，自选模式会锁定8槽",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -264,7 +257,7 @@ fun SeedBankPropertiesEP(
                     title = "可用僵尸列表",
                     description = "我是僵尸模式下供玩家使用的僵尸",
                     items = seedBankDataState.value.presetPlantList,
-                    accentColor = Color(0xFF654B80),
+                    accentColor = themeColor,
                     isZombie = true,
                     onListChanged = { newList ->
                         seedBankDataState.value =
@@ -279,7 +272,7 @@ fun SeedBankPropertiesEP(
                     title = "预选植物 (PresetPlantList)",
                     description = "开局自带的植物",
                     items = seedBankDataState.value.presetPlantList,
-                    accentColor = Color(0xFF1976D2),
+                    accentColor = MaterialTheme.colorScheme.secondary,
                     isZombie = false,
                     onListChanged = { newList ->
                         seedBankDataState.value =
@@ -294,7 +287,7 @@ fun SeedBankPropertiesEP(
                     title = "白名单 (WhiteList)",
                     description = "仅允许选择这些植物 (空则不限制)",
                     items = seedBankDataState.value.plantWhiteList,
-                    accentColor = Color(0xFF388E3C),
+                    accentColor = MaterialTheme.colorScheme.primary,
                     isZombie = false,
                     onListChanged = { newList ->
                         seedBankDataState.value =
@@ -309,7 +302,7 @@ fun SeedBankPropertiesEP(
                     title = "黑名单 (BlackList)",
                     description = "禁止选择这些植物",
                     items = seedBankDataState.value.plantBlackList,
-                    accentColor = Color(0xFFD32F2F),
+                    accentColor = MaterialTheme.colorScheme.onError,
                     isZombie = false,
                     onListChanged = { newList ->
                         seedBankDataState.value =
@@ -322,17 +315,18 @@ fun SeedBankPropertiesEP(
 
             if (isZombieMode) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF3E5F5)),
-                    modifier = Modifier.fillMaxWidth()
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Row(modifier = Modifier.padding(16.dp)) {
-                        Icon(Icons.Default.Info, null, tint = Color(0xFF654B80))
+                        Icon(Icons.Default.Info, null, tint = themeColor)
                         Spacer(Modifier.width(12.dp))
                         Column {
                             Text(
                                 text = "只有一部分僵尸为iz适配了卡槽和阳光，在僵尸选择页面里的其它分类里可以找到。",
                                 fontSize = 12.sp,
-                                color = Color(0xFF654B80),
+                                color = themeColor,
                                 lineHeight = 16.sp
                             )
                         }
@@ -342,7 +336,7 @@ fun SeedBankPropertiesEP(
 
             // === 第三部分：底部开关 ===
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Row(
@@ -353,7 +347,11 @@ fun SeedBankPropertiesEP(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.EmojiPeople, null, tint = Color(0xFF654B80))
+                            Icon(
+                                Icons.Default.EmojiPeople,
+                                null,
+                                tint = if (isDark) PvzPurpleDark else PvzPurpleLight
+                            )
                             Spacer(Modifier.width(8.dp))
                             Text(
                                 "我是僵尸模式",
@@ -365,7 +363,7 @@ fun SeedBankPropertiesEP(
                         Text(
                             "启用后将转变为放置僵尸的玩法，选卡方式将被锁定",
                             fontSize = 10.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     Switch(
@@ -379,13 +377,22 @@ fun SeedBankPropertiesEP(
                             }
                             seedBankDataState.value = newData
                             sync()
-                        }
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                            checkedTrackColor = themeColor,
+                            checkedBorderColor = Color.Transparent,
+
+                            uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
                     )
                 }
             }
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 if (isZombieMode) {
@@ -400,7 +407,7 @@ fun SeedBankPropertiesEP(
                                 Icon(
                                     Icons.Default.FlipCameraAndroid,
                                     null,
-                                    tint = Color(0xFF654B80)
+                                    tint = themeColor
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text(
@@ -413,7 +420,7 @@ fun SeedBankPropertiesEP(
                             Text(
                                 "启用后放置的僵尸将变为植物阵营，可用于ZVZ",
                                 fontSize = 10.sp,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Switch(
@@ -424,7 +431,16 @@ fun SeedBankPropertiesEP(
                                 )
                                 seedBankDataState.value = newData
                                 sync()
-                            }
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                                checkedTrackColor = themeColor,
+                                checkedBorderColor = Color.Transparent,
+
+                                uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
                         )
                     }
                 }
@@ -456,10 +472,12 @@ fun SelectionMethodChip(
             { Icon(Icons.Default.Add, null, modifier = Modifier.size(16.dp)) }
         } else null,
         colors = FilterChipDefaults.filterChipColors(
-            selectedContainerColor = if (enabled) Color(0xFFE8F5E9) else Color.LightGray.copy(alpha = 0.3f),
-            selectedLabelColor = if (enabled) Color(0xFF2E7D32) else Color.Gray,
+            selectedContainerColor = if (enabled) MaterialTheme.colorScheme.outlineVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                alpha = 0.2f
+            ),
+            selectedLabelColor = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             disabledContainerColor = Color.Transparent,
-            disabledLabelColor = Color.Gray
+            disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
     )
 }
@@ -481,14 +499,18 @@ fun ResourceListEditor(
 ) {
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(title, fontWeight = FontWeight.Bold, color = accentColor)
-                    Text(description, fontSize = 11.sp, color = Color.Gray)
+                    Text(
+                        description,
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
                 IconButton(onClick = {
                     onAddRequest { selectedIds ->
@@ -496,7 +518,7 @@ fun ResourceListEditor(
 
                         selectedIds.forEach { newId ->
                             val alias =
-                                if (isZombie) ZombieRepository.buildAliases(newId) else newId
+                                if (isZombie) ZombieRepository.buildZombieAliases(newId) else newId
                             currentList.add(alias)
                         }
                         onListChanged(currentList)
@@ -511,11 +533,18 @@ fun ResourceListEditor(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFFF5F5F5), MaterialTheme.shapes.small)
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            MaterialTheme.shapes.small
+                        )
                         .padding(12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("列表为空", color = Color.LightGray, fontSize = 12.sp)
+                    Text(
+                        "列表为空",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 12.sp
+                    )
                 }
             } else {
                 FlowRow(
@@ -548,7 +577,7 @@ fun ResourceListEditor(
                             },
                             colors = InputChipDefaults.inputChipColors(
                                 selectedContainerColor = accentColor.copy(alpha = 0.1f),
-                                selectedLabelColor = Color.Black,
+                                selectedLabelColor = MaterialTheme.colorScheme.onSurface,
                                 selectedTrailingIconColor = accentColor
                             ),
                             border = InputChipDefaults.inputChipBorder(

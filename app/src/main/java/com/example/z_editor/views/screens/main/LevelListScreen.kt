@@ -3,10 +3,11 @@ package com.example.z_editor.views.screens.main
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.DocumentsContract
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,10 +31,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.DriveFileMove
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AspectRatio
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.CreateNewFolder
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.DriveFileMove
@@ -41,6 +44,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
@@ -59,8 +63,11 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -69,6 +76,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -86,8 +94,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
-import android.provider.DocumentsContract
-import androidx.activity.result.contract.ActivityResultContract
 import com.example.z_editor.data.repository.FileItem
 import com.example.z_editor.data.repository.LevelRepository
 import kotlinx.coroutines.Dispatchers
@@ -107,7 +113,8 @@ class OpenDocumentTreeFixed : ActivityResultContract<Uri?, Uri?>() {
         if (input != null) {
             intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, input)
         } else {
-            val primaryRootUri = Uri.parse("content://com.android.externalstorage.documents/tree/primary%3A")
+            val primaryRootUri =
+                Uri.parse("content://com.android.externalstorage.documents/tree/primary%3A")
             intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, primaryRootUri)
         }
         return intent
@@ -121,6 +128,10 @@ class OpenDocumentTreeFixed : ActivityResultContract<Uri?, Uri?>() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LevelListScreen(
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit,
+    uiScale: Float,
+    onUiScaleChange: (Float) -> Unit,
     onLevelClick: (String, Uri) -> Unit,
     onAboutClick: () -> Unit
 ) {
@@ -170,6 +181,8 @@ fun LevelListScreen(
 
     var templates by remember { mutableStateOf<List<String>>(emptyList()) }
     var selectedTemplate by remember { mutableStateOf("") }
+
+    var showUiScaleDialog by remember { mutableStateOf(false) }
 
     // ======================== 2. 核心逻辑 ========================
 
@@ -359,23 +372,36 @@ fun LevelListScreen(
                     IconButton(onClick = { loadCurrentDirectory() }) {
                         Icon(
                             Icons.Default.Refresh,
-                            "刷新"
+                            "刷新",
+                            tint = MaterialTheme.colorScheme.background
                         )
                     }
-                    IconButton(onClick = { folderPickerLauncher.launch(null) }) {
+                    IconButton(onClick = onToggleTheme) {
                         Icon(
-                            Icons.Default.FolderOpen,
-                            "切换根目录"
+                            imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            contentDescription = "切换主题",
+                            tint = MaterialTheme.colorScheme.background
                         )
                     }
                     Box {
                         IconButton(onClick = { showMenu = true }) {
-                            Icon(Icons.Default.MoreVert, "更多选项", tint = Color.White)
+                            Icon(
+                                Icons.Default.MoreVert, "更多选项",
+                                tint = MaterialTheme.colorScheme.background
+                            )
                         }
                         DropdownMenu(
                             expanded = showMenu,
                             onDismissRequest = { showMenu = false }
                         ) {
+                            DropdownMenuItem(
+                                text = { Text("切换目录") },
+                                onClick = { folderPickerLauncher.launch(null) },
+                                leadingIcon = {
+                                    Icon(Icons.Default.FolderOpen, null, tint = Color.Gray)
+                                }
+                            )
+                            HorizontalDivider()
                             DropdownMenuItem(
                                 text = { Text("释放缓存") },
                                 onClick = {
@@ -393,6 +419,17 @@ fun LevelListScreen(
                             )
                             HorizontalDivider()
                             DropdownMenuItem(
+                                text = { Text("界面大小") },
+                                onClick = {
+                                    showMenu = false
+                                    showUiScaleDialog = true
+                                },
+                                leadingIcon = {
+                                    Icon(Icons.Default.AspectRatio, null, tint = Color.Gray)
+                                }
+                            )
+                            HorizontalDivider()
+                            DropdownMenuItem(
                                 text = { Text("关于软件") },
                                 onClick = {
                                     showMenu = false
@@ -406,9 +443,9 @@ fun LevelListScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF4CAF50),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },
@@ -423,15 +460,15 @@ fun LevelListScreen(
                             itemToMove = null
                             moveSourceUri = null
                         },
-                        containerColor = Color(0xFFFFEBEE),
-                        contentColor = Color(0xFFD32F2F),
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError,
                         icon = { Icon(Icons.Default.Close, null) },
                         text = { Text("取消") }
                     )
                     ExtendedFloatingActionButton(
                         onClick = { handleMoveConfirm() },
-                        containerColor = Color(0xFF1976D2),
-                        contentColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                         icon = { Icon(Icons.Default.ContentPaste, null) },
                         text = { Text("粘贴") }
                     )
@@ -443,8 +480,8 @@ fun LevelListScreen(
                 ) {
                     FloatingActionButton(
                         onClick = { showNewFolderDialog = true },
-                        containerColor = Color(0xFFE8F5E9),
-                        contentColor = Color(0xFF2E7D32),
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         elevation = FloatingActionButtonDefaults.elevation(4.dp)
                     ) {
                         Icon(Icons.Default.CreateNewFolder, "新建文件夹")
@@ -452,8 +489,8 @@ fun LevelListScreen(
 
                     FloatingActionButton(
                         onClick = { openTemplateSelector() },
-                        containerColor = Color(0xFF4CAF50),
-                        contentColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                         elevation = FloatingActionButtonDefaults.elevation(4.dp)
                     ) {
                         Icon(Icons.Default.Add, "新建关卡")
@@ -466,7 +503,7 @@ fun LevelListScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // --- 面包屑导航栏 ---
             BreadcrumbBar(
@@ -478,7 +515,7 @@ fun LevelListScreen(
             )
             if (isMovingMode) {
                 Surface(
-                    color = Color(0xFFE3F2FD),
+                    color = MaterialTheme.colorScheme.secondaryContainer,
                     modifier = Modifier.fillMaxWidth(),
                     shadowElevation = 2.dp
                 ) {
@@ -486,19 +523,23 @@ fun LevelListScreen(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.DriveFileMove, null, tint = Color(0xFF1976D2))
+                        Icon(
+                            Icons.Default.DriveFileMove,
+                            null,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
                         Spacer(Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 "正在移动: ${itemToMove?.name}",
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF0D47A1),
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 fontSize = 14.sp
                             )
                             Text(
                                 "请导航至目标文件夹，然后点击右下角粘贴",
                                 fontSize = 12.sp,
-                                color = Color(0xFF1976D2)
+                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
                             )
                         }
                     }
@@ -506,7 +547,7 @@ fun LevelListScreen(
             }
             if (isLoading) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = Color(0xFF4CAF50))
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else {
                 LazyColumn(
@@ -517,7 +558,7 @@ fun LevelListScreen(
                     if (pathStack.size > 1) {
                         item {
                             Card(
-                                colors = CardDefaults.cardColors(containerColor = Color(0xFFE0E0E0)),
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
@@ -558,7 +599,7 @@ fun LevelListScreen(
                                     Icon(
                                         Icons.Default.FolderOpen,
                                         null,
-                                        tint = Color.LightGray,
+                                        tint = MaterialTheme.colorScheme.surfaceVariant,
                                         modifier = Modifier.size(64.dp)
                                     )
                                     Spacer(Modifier.height(16.dp))
@@ -674,7 +715,7 @@ fun LevelListScreen(
                         confirmCheckbox = false
                     },
                     enabled = confirmCheckbox,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError)
                 ) { Text("确认删除") }
             },
             dismissButton = {
@@ -692,6 +733,12 @@ fun LevelListScreen(
             title = { Text("重命名") },
             text = {
                 OutlinedTextField(
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
+                    ),
                     value = renameInput,
                     onValueChange = { renameInput = it },
                     label = { Text("新名称") },
@@ -709,6 +756,12 @@ fun LevelListScreen(
             title = { Text("复制关卡") },
             text = {
                 OutlinedTextField(
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
+                    ),
                     value = copyInput,
                     onValueChange = { copyInput = it },
                     label = { Text("新文件名") })
@@ -724,6 +777,12 @@ fun LevelListScreen(
             title = { Text("新建文件夹") },
             text = {
                 OutlinedTextField(
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
+                    ),
                     value = newFolderNameInput,
                     onValueChange = { newFolderNameInput = it },
                     label = { Text("文件夹名称") })
@@ -754,7 +813,7 @@ fun LevelListScreen(
                                 showTemplateDialog = false
                                 showCreateNameDialog = true
                             },
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Row(
@@ -764,10 +823,11 @@ fun LevelListScreen(
                                 Icon(
                                     Icons.Default.Description,
                                     null,
-                                    tint = Color(0xFF4CAF50)
+                                    tint = MaterialTheme.colorScheme.primary
                                 )
                                 Spacer(Modifier.width(16.dp))
                                 Text(
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     text = template.substringBeforeLast("."),
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Medium
@@ -789,6 +849,12 @@ fun LevelListScreen(
             title = { Text("命名关卡") },
             text = {
                 OutlinedTextField(
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
+                    ),
                     value = newLevelNameInput,
                     onValueChange = { newLevelNameInput = it })
             },
@@ -797,6 +863,54 @@ fun LevelListScreen(
                 TextButton(onClick = {
                     showCreateNameDialog = false
                 }) { Text("取消") }
+            }
+        )
+    }
+    if (showUiScaleDialog) {
+        var tempScale by remember { mutableFloatStateOf(uiScale) }
+
+        AlertDialog(
+            onDismissRequest = { showUiScaleDialog = false },
+            title = { Text("调整界面大小") },
+            text = {
+                Column {
+                    Text(
+                        text = "当前缩放: ${(tempScale * 100).toInt()}%",
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(Modifier.height(16.dp))
+                    Slider(
+                        value = tempScale,
+                        onValueChange = { tempScale = it },
+                        valueRange = 0.75f..1.25f
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("小", style = MaterialTheme.typography.bodySmall)
+                        Text("标准", style = MaterialTheme.typography.bodySmall)
+                        Text("大", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showUiScaleDialog = false
+                    onUiScaleChange(tempScale)
+                }) {
+                    Text("完成")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    tempScale = 1.0f
+                }) {
+                    Text("重置")
+                }
             }
         )
     }
@@ -812,7 +926,7 @@ fun BreadcrumbBar(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(vertical = 6.dp, horizontal = 18.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -822,7 +936,7 @@ fun BreadcrumbBar(
             val isLast = index == pathStack.size - 1
 
             Surface(
-                color = if (isLast) Color(0xFFE8F5E9) else Color.Transparent,
+                color = if (isLast) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
@@ -836,7 +950,7 @@ fun BreadcrumbBar(
                         Icon(
                             Icons.Default.FolderOpen,
                             null,
-                            tint = if (isLast) Color(0xFF2E7D32) else Color.Gray,
+                            tint = if (isLast) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(Modifier.width(4.dp))
@@ -844,7 +958,7 @@ fun BreadcrumbBar(
 
                     Text(
                         text = item.name,
-                        color = if (isLast) Color(0xFF2E7D32) else Color(0xFF424242),
+                        color = if (isLast) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
                         fontWeight = if (isLast) FontWeight.Bold else FontWeight.Medium,
                         fontSize = 15.sp
                     )
@@ -855,7 +969,7 @@ fun BreadcrumbBar(
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = null,
-                    tint = Color.LightGray,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                     modifier = Modifier.size(14.dp)
                 )
             }
@@ -875,8 +989,8 @@ fun FileItemRow(
     onMove: () -> Unit
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(1.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -888,7 +1002,7 @@ fun FileItemRow(
             Icon(
                 imageVector = if (item.isDirectory) Icons.Default.Folder else Icons.Default.Description,
                 contentDescription = null,
-                tint = if (item.isDirectory) Color(0xFFFFC107) else Color(0xFF4CAF50),
+                tint = if (item.isDirectory) Color(0xFFFFC107) else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(28.dp)
             )
 
@@ -898,10 +1012,11 @@ fun FileItemRow(
                 Text(
                     text = if (item.isDirectory) item.name else item.name.substringBeforeLast("."),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 if (!item.isDirectory) {
-                    Text("JSON 文件", fontSize = 12.sp, color = Color.Gray)
+                    Text("JSON 文件", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface)
                 }
             }
 
@@ -911,7 +1026,7 @@ fun FileItemRow(
                         Icon(
                             Icons.Default.Edit,
                             null,
-                            tint = Color.Gray,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -921,7 +1036,7 @@ fun FileItemRow(
                             Icon(
                                 Icons.Default.ContentCopy,
                                 null,
-                                tint = Color.Gray,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -929,7 +1044,7 @@ fun FileItemRow(
                             Icon(
                                 Icons.AutoMirrored.Filled.DriveFileMove,
                                 null,
-                                tint = Color.Gray,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -939,7 +1054,7 @@ fun FileItemRow(
                         Icon(
                             Icons.Default.Delete,
                             null,
-                            tint = Color.Red.copy(alpha = 0.7f),
+                            tint = MaterialTheme.colorScheme.onError.copy(alpha = 0.8f),
                             modifier = Modifier.size(20.dp)
                         )
                     }

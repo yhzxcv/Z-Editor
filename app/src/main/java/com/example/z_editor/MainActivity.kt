@@ -10,23 +10,64 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import com.example.z_editor.ui.theme.LocalDarkTheme
 import com.example.z_editor.ui.theme.PVZ2LevelEditorTheme
 import com.example.z_editor.views.screens.main.AboutScreen
 import com.example.z_editor.views.screens.main.EditorScreen
 import com.example.z_editor.views.screens.main.LevelListScreen
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PVZ2LevelEditorTheme(darkTheme = false) {
-                AppNavigation()
+            val configuration = LocalConfiguration.current
+            val systemDensity = LocalDensity.current
+
+            val screenWidthDp = configuration.screenWidthDp
+            val designWidthDp = 360f
+
+            val targetDensity = (screenWidthDp * systemDensity.density) / (designWidthDp * 1.15f)
+
+            var uiScale by rememberSaveable { mutableFloatStateOf(1.0f) }
+            val appDensity = remember(targetDensity, uiScale) {
+                Density(
+                    density = targetDensity * uiScale,
+                    fontScale = 1.0f
+                )
+            }
+            var isDarkTheme by rememberSaveable { mutableStateOf(false) }
+            CompositionLocalProvider(
+                LocalDensity provides appDensity,
+                LocalDarkTheme provides isDarkTheme
+            ) {
+                PVZ2LevelEditorTheme(darkTheme = isDarkTheme) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        AppNavigation(
+                            isDarkTheme = isDarkTheme,
+                            onToggleTheme = { isDarkTheme = !isDarkTheme },
+                            uiScale = uiScale,
+                            onUiScaleChange = { newScale -> uiScale = newScale }
+                        )
+                    }
+                }
             }
         }
     }
@@ -39,7 +80,12 @@ enum class ScreenState {
 }
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit,
+    uiScale: Float,
+    onUiScaleChange: (Float) -> Unit
+) {
     var currentScreen by remember { mutableStateOf(ScreenState.LevelList) }
     var currentFileUri by remember { mutableStateOf<Uri?>(null) }
     var currentFileName by remember { mutableStateOf("") }
@@ -64,6 +110,10 @@ fun AppNavigation() {
         when (targetState) {
             ScreenState.LevelList -> {
                 LevelListScreen(
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = onToggleTheme,
+                    uiScale = uiScale,
+                    onUiScaleChange = onUiScaleChange,
                     onLevelClick = { fileName, fileUri ->
                         currentFileName = fileName
                         currentFileUri = fileUri // 保存 Uri
@@ -79,6 +129,8 @@ fun AppNavigation() {
                 EditorScreen(
                     fileUri = currentFileUri,
                     fileName = currentFileName,
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = onToggleTheme,
                     onBack = {
                         currentScreen = ScreenState.LevelList
                     }

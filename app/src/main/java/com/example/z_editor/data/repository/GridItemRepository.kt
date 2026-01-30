@@ -114,6 +114,12 @@ object GridItemRepository {
         return ReferenceRepository.isValidGridItem(typeName)
     }
 
+    // 用于将 TypeName 转化为 RTID 包裹的代号
+    fun buildGridAliases(id: String): String {
+        return if (id == "gravestone_egypt") "gravestone"
+        else id
+    }
+
     fun search(query: String): List<GridItemInfo> {
         if (query.isBlank()) return allItems
         return allItems.filter {

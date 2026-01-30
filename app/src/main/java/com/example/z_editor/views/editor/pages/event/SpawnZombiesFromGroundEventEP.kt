@@ -38,9 +38,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -69,6 +71,10 @@ import com.example.z_editor.data.ZombieSpawnData
 import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.repository.ZombieRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzBrownDark
+import com.example.z_editor.ui.theme.PvzBrownLight
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.LaneRow
@@ -139,7 +145,7 @@ fun SpawnZombiesFromGroundEventEP(
     fun handleAddZombie() {
         onRequestZombieSelection { selectedId ->
             val isElite = ZombieRepository.isElite(selectedId)
-            val aliases = ZombieRepository.buildAliases(selectedId)
+            val aliases = ZombieRepository.buildZombieAliases(selectedId)
             val newZombie = ZombieSpawnData(
                 type = RtidParser.build(aliases, "ZombieTypes"),
                 row = addingToRowIndex,
@@ -177,11 +183,14 @@ fun SpawnZombiesFromGroundEventEP(
         ).show()
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzBrownDark else PvzBrownLight
+
     // 底部编辑抽屉
     if (showBottomSheet && editingZombie != null) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false; editingZombie = null },
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ) {
             val currentBaseType = remember(editingZombie!!.type) {
                 val rtidInfo = RtidParser.parse(editingZombie!!.type)
@@ -281,7 +290,6 @@ fun SpawnZombiesFromGroundEventEP(
     if (showBatchConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showBatchConfirmDialog = false },
-            icon = { Icon(Icons.Default.Check, null) },
             title = { Text("确认批量应用？") },
             text = {
                 val level = batchLevelFloat.roundToInt()
@@ -290,13 +298,13 @@ fun SpawnZombiesFromGroundEventEP(
             confirmButton = {
                 Button(
                     onClick = { executeBatchUpdate() },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF388E3C))
+                    colors = ButtonDefaults.buttonColors(containerColor = themeColor)
                 ) {
                     Text("确认覆盖")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showBatchConfirmDialog = false }) { Text("取消") }
+                TextButton(onClick = { showBatchConfirmDialog = false }) { Text("取消", color = themeColor) }
             }
         )
     }
@@ -304,38 +312,16 @@ fun SpawnZombiesFromGroundEventEP(
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = {
-                focusManager.clearFocus() // 点击空白处清除焦点
+                focusManager.clearFocus()
             })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            "编辑 $currentAlias",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text("事件类型：地下突袭", fontSize = 14.sp, fontWeight = FontWeight.Normal)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF936457),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "编辑 $currentAlias",
+                subtitle = "事件类型：地下突袭",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -343,7 +329,7 @@ fun SpawnZombiesFromGroundEventEP(
             EditorHelpDialog(
                 title = "地下突袭事件说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF936457)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -364,7 +350,7 @@ fun SpawnZombiesFromGroundEventEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5)),
+                .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
             // === 区域 1: 出怪范围设置 ===
@@ -373,7 +359,7 @@ fun SpawnZombiesFromGroundEventEP(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -381,7 +367,7 @@ fun SpawnZombiesFromGroundEventEP(
                             "出怪范围 (列数)",
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
-                            color = Color(0xFF936457)
+                            color = themeColor
                         )
                         Spacer(Modifier.height(12.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -392,7 +378,7 @@ fun SpawnZombiesFromGroundEventEP(
                                 },
                                 label = "起始列 (ColumnStart)",
                                 modifier = Modifier.weight(1f),
-                                color = Color(0xFF936457)
+                                color = themeColor
                             )
                             NumberInputInt(
                                 value = actionDataState.value.columnEnd,
@@ -401,28 +387,26 @@ fun SpawnZombiesFromGroundEventEP(
                                 },
                                 label = "结束列 (ColumnEnd)",
                                 modifier = Modifier.weight(1f),
-                                color = Color(0xFF936457)
+                                color = themeColor
                             )
                         }
                         Spacer(Modifier.height(8.dp))
                         Text(
                             "场地左边界为0列，右边界为9列，起始列要小于结束列。",
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
             }
 
-            // === 区域 2: 僵尸列表 (按行分组) ===
-            // 1-5 行
             items(5) { index ->
                 val rowNum = index + 1
                 val zombiesInRow = actionDataState.value.zombies.filter { it.row == rowNum }
 
                 LaneRow(
                     laneLabel = "第 $rowNum 行",
-                    laneColor = Color(0xFF936457), // 使用主题色
+                    laneColor = themeColor,
                     zombies = zombiesInRow,
                     onAddClick = {
                         addingToRowIndex = rowNum
@@ -441,7 +425,7 @@ fun SpawnZombiesFromGroundEventEP(
                     actionDataState.value.zombies.filter { it.row == null || it.row == 0 }
                 LaneRow(
                     laneLabel = "随机行",
-                    laneColor = Color(0xFF9E9E9E),
+                    laneColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     zombies = randomZombies,
                     onAddClick = {
                         addingToRowIndex = null
@@ -460,8 +444,8 @@ fun SpawnZombiesFromGroundEventEP(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(
@@ -471,7 +455,7 @@ fun SpawnZombiesFromGroundEventEP(
                             Icon(
                                 Icons.Default.Layers,
                                 null,
-                                tint = Color(0xFF936457),
+                                tint = themeColor,
                                 modifier = Modifier.size(20.dp)
                             )
                             Spacer(Modifier.width(8.dp))
@@ -479,14 +463,14 @@ fun SpawnZombiesFromGroundEventEP(
                                 "批量设置等级",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
-                                color = Color(0xFF936457)
+                                color = themeColor
                             )
                             Spacer(Modifier.weight(1f))
                             Text(
                                 text = "${batchLevelFloat.roundToInt()} 阶",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp,
-                                color = Color(0xFF936457)
+                                color = themeColor
                             )
                         }
 
@@ -497,6 +481,11 @@ fun SpawnZombiesFromGroundEventEP(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Slider(
+                                colors = SliderDefaults.colors(
+                                    inactiveTickColor = themeColor,
+                                    thumbColor = themeColor,
+                                    activeTrackColor = themeColor,
+                                ),
                                 value = batchLevelFloat,
                                 onValueChange = { batchLevelFloat = it },
                                 valueRange = 1f..10f,
@@ -509,9 +498,7 @@ fun SpawnZombiesFromGroundEventEP(
                             Button(
                                 onClick = { showBatchConfirmDialog = true },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(
-                                        0xFF936457
-                                    )
+                                    containerColor = themeColor
                                 ),
                                 contentPadding = PaddingValues(horizontal = 12.dp),
                                 modifier = Modifier.height(36.dp)
@@ -523,7 +510,7 @@ fun SpawnZombiesFromGroundEventEP(
                         Text(
                             text = "将本波次所有僵尸设为指定等级（精英不受影响）",
                             fontSize = 11.sp,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp, start = 4.dp)
                         )
                     }
@@ -536,14 +523,14 @@ fun SpawnZombiesFromGroundEventEP(
                 val isDroppingPlants = (spawnPlantList.size == count && spawnPlantList.isNotEmpty())
                 val cardTitle = if (isDroppingPlants) "掉落物配置 (植物)" else "掉落物配置 (能量豆)"
                 val cardColor =
-                    if (isDroppingPlants) Color(0xFFE65100) else Color(0xFF2E7D32)
+                    if (isDroppingPlants) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.primary
 
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -599,8 +586,8 @@ fun SpawnZombiesFromGroundEventEP(
                                         )
                                     },
                                     colors = InputChipDefaults.inputChipColors(
-                                        selectedContainerColor = Color(0xFFFFF3E0),
-                                        selectedLabelColor = Color(0xFFE65100)
+                                        selectedContainerColor = MaterialTheme.colorScheme.tertiary,
+                                        selectedLabelColor = MaterialTheme.colorScheme.onTertiary
                                     )
                                 )
                             }
@@ -629,7 +616,7 @@ fun SpawnZombiesFromGroundEventEP(
                             "当掉落植物列表的植物数等于能量豆数量时会变为掉落植物卡片",
                             fontSize = 12.sp,
                             modifier = Modifier.padding(bottom = 8.dp, top = 8.dp),
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
                         val countLabel = if (isDroppingPlants) {
@@ -646,7 +633,7 @@ fun SpawnZombiesFromGroundEventEP(
                             },
                             label = countLabel,
                             modifier = Modifier.fillMaxWidth(),
-                            color = Color(0xFF936457)
+                            color = themeColor
                         )
 
                         val explainText = if (count > 0) {
@@ -661,7 +648,7 @@ fun SpawnZombiesFromGroundEventEP(
                         Text(
                             text = explainText,
                             fontSize = 12.sp,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 6.dp)
                         )
                     }

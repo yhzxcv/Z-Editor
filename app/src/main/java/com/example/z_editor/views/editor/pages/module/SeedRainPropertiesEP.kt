@@ -20,8 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
@@ -33,11 +31,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +56,11 @@ import com.example.z_editor.data.SeedRainItem
 import com.example.z_editor.data.SeedRainPropertiesData
 import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.ZombieRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzCyanDark
+import com.example.z_editor.ui.theme.PvzCyanLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -92,22 +93,21 @@ fun SeedRainPropertiesEP(
         syncManager.sync()
     }
 
-    val themeColor = Color(0xFF009688)
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzCyanDark else PvzCyanLight
 
     // 添加物品逻辑
     fun addItems(type: Int, ids: List<String>?) {
         val newList = dataState.value.seedRains.toMutableList()
         if (type == 2) {
             newList.add(SeedRainItem(seedRainType = 2))
-        } else if (ids != null) {
-            ids.forEach { id ->
-                val newItem = when (type) {
-                    0 -> SeedRainItem(seedRainType = 0, plantTypeName = id, zombieTypeName = null)
-                    1 -> SeedRainItem(seedRainType = 1, zombieTypeName = id, plantTypeName = null)
-                    else -> null
-                }
-                newItem?.let { newList.add(it) }
+        } else ids?.forEach { id ->
+            val newItem = when (type) {
+                0 -> SeedRainItem(seedRainType = 0, plantTypeName = id, zombieTypeName = null)
+                1 -> SeedRainItem(seedRainType = 1, zombieTypeName = id, plantTypeName = null)
+                else -> null
             }
+            newItem?.let { newList.add(it) }
         }
         dataState.value = dataState.value.copy(seedRains = newList)
         sync()
@@ -136,7 +136,7 @@ fun SeedRainPropertiesEP(
     if (showAddTypeDialog) {
         AlertDialog(
             onDismissRequest = { showAddTypeDialog = false },
-            title = { Text("添加罐子内容") },
+            title = { Text("添加物品内容") },
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -154,7 +154,7 @@ fun SeedRainPropertiesEP(
                         modifier = Modifier.clickable {
                             showAddTypeDialog = false
                             onRequestZombieSelection { ids ->
-                                val processed = ids.map { ZombieRepository.buildAliases(it) }
+                                val processed = ids.map { ZombieRepository.buildZombieAliases(it) }
                                 addItems(1, processed)
                             }
                         }
@@ -171,7 +171,7 @@ fun SeedRainPropertiesEP(
             dismissButton = {
                 TextButton(onClick = {
                     showAddTypeDialog = false
-                }) { Text("取消") }
+                }) { Text("取消", color = themeColor) }
             },
             confirmButton = {}
         )
@@ -217,7 +217,7 @@ fun SeedRainPropertiesEP(
                 ) { Text("保存") }
             },
             dismissButton = {
-                TextButton(onClick = { editingItem = null }) { Text("取消") }
+                TextButton(onClick = { editingItem = null }) { Text("取消", color = themeColor) }
             }
         )
     }
@@ -236,11 +236,11 @@ fun SeedRainPropertiesEP(
                         deleteItem(item)
                         deletingItem = null
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError)
                 ) { Text("删除") }
             },
             dismissButton = {
-                TextButton(onClick = { deletingItem = null }) { Text("取消") }
+                TextButton(onClick = { deletingItem = null }) { Text("取消", color = themeColor) }
             }
         )
     }
@@ -250,23 +250,11 @@ fun SeedRainPropertiesEP(
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("种子雨设置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "种子雨设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -295,12 +283,12 @@ fun SeedRainPropertiesEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // === 顶部设置区域 ===
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(1.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(2.dp),
                 shape = RoundedCornerShape(0.dp, 0.dp, 12.dp, 12.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -330,7 +318,7 @@ fun SeedRainPropertiesEP(
             // === 列表区域 ===
             if (dataState.value.seedRains.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("暂无掉落配置，请添加", color = Color.Gray)
+                    Text("暂无掉落配置，请添加", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
                 LazyColumn(
@@ -382,6 +370,8 @@ fun SeedRainRowCard(
     val displayType: String
     val iconPath: String?
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzCyanDark else PvzCyanLight
     when (item.seedRainType) {
         0 -> {
             val alias =
@@ -423,8 +413,8 @@ fun SeedRainRowCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(1.dp)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
@@ -435,7 +425,7 @@ fun SeedRainRowCard(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFF5F5F5))
+                    .background(MaterialTheme.colorScheme.surface)
                     .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
@@ -449,7 +439,7 @@ fun SeedRainRowCard(
                             Text(
                                 typeName.take(1),
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     )
@@ -463,11 +453,15 @@ fun SeedRainRowCard(
                 Text(typeName, fontWeight = FontWeight.Bold, fontSize = 16.sp, maxLines = 1)
                 Spacer(Modifier.height(4.dp))
                 Row {
-                    Text(displayType, fontSize = 12.sp, color = Color.Gray)
+                    Text(
+                        displayType,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     Spacer(Modifier.width(12.dp))
-                    Text("权重: ${item.weight}", fontSize = 12.sp, color = Color(0xFF009688))
+                    Text("权重: ${item.weight}", fontSize = 12.sp, color = themeColor)
                     Spacer(Modifier.width(12.dp))
-                    Text("上限: ${item.maxCount}", fontSize = 12.sp, color = Color(0xFF009688))
+                    Text("上限: ${item.maxCount}", fontSize = 12.sp, color = themeColor)
                 }
             }
 
@@ -476,7 +470,7 @@ fun SeedRainRowCard(
                 Icon(
                     Icons.Default.Delete,
                     null,
-                    tint = Color.LightGray
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

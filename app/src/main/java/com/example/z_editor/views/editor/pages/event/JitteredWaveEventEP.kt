@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -39,18 +37,17 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -65,7 +62,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.PvzLevelFile
@@ -75,6 +71,7 @@ import com.example.z_editor.data.ZombieSpawnData
 import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.repository.ZombieRepository
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.LaneRow
@@ -145,7 +142,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
     fun handleAddZombie() {
         onRequestZombieSelection { selectedId ->
             val isElite = ZombieRepository.isElite(selectedId)
-            val aliases = ZombieRepository.buildAliases(selectedId)
+            val aliases = ZombieRepository.buildZombieAliases(selectedId)
             val newZombie = ZombieSpawnData(
                 type = RtidParser.build(aliases, "ZombieTypes"),
                 row = addingToRowIndex,
@@ -182,10 +179,12 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
         ).show()
     }
 
+    val themeColor = MaterialTheme.colorScheme.secondary
+
     if (showBottomSheet && editingZombie != null) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false; editingZombie = null },
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ) {
             val currentBaseType = remember(editingZombie!!.type) {
                 val rtidInfo = RtidParser.parse(editingZombie!!.type)
@@ -294,54 +293,35 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
             confirmButton = {
                 Button(
                     onClick = { executeBatchUpdate() },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF388E3C))
+                    colors = ButtonDefaults.buttonColors(containerColor = themeColor)
                 ) {
                     Text("确认覆盖")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showBatchConfirmDialog = false }) { Text("取消") }
+                TextButton(onClick = { showBatchConfirmDialog = false }) {
+                    Text(
+                        "取消",
+                        color = themeColor
+                    )
+                }
             }
         )
     }
 
-    val themeColor = Color(0xFF1976D2)
-
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = {
-                focusManager.clearFocus() // 点击空白处清除焦点
+                focusManager.clearFocus()
             })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            "编辑 $currentAlias",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text("事件类型：自然出怪", fontSize = 14.sp, fontWeight = FontWeight.Normal)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "编辑 $currentAlias",
+                subtitle = "事件类型：自然出怪",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -370,7 +350,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5)),
+                .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(bottom = 32.dp)
         ) {
             item {
@@ -391,7 +371,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -447,7 +427,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                         Text(
                             text = "此事件触发时切换背景音乐，仅对摇滚年代地图有效。",
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -459,7 +439,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
 
                 LaneRow(
                     laneLabel = "第 $rowNum 行",
-                    laneColor = Color(0xFF4CAF50),
+                    laneColor = MaterialTheme.colorScheme.primary,
                     zombies = zombiesInRow,
                     onAddClick = {
                         addingToRowIndex = rowNum
@@ -478,7 +458,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                     actionDataState.value.zombies.filter { it.row == null || it.row == 0 }
                 LaneRow(
                     laneLabel = "随机行",
-                    laneColor = Color(0xFF9E9E9E),
+                    laneColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     zombies = randomZombies,
                     onAddClick = {
                         addingToRowIndex = null
@@ -497,8 +477,8 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(
@@ -534,6 +514,11 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Slider(
+                                colors = SliderDefaults.colors(
+                                    inactiveTickColor = themeColor,
+                                    thumbColor = themeColor,
+                                    activeTrackColor = themeColor,
+                                ),
                                 value = batchLevelFloat,
                                 onValueChange = { batchLevelFloat = it },
                                 valueRange = 1f..10f,
@@ -556,7 +541,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                         Text(
                             text = "将本波次所有僵尸设为指定等级（精英不受影响）",
                             fontSize = 11.sp,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp, start = 4.dp)
                         )
                     }
@@ -569,14 +554,14 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                 val isDroppingPlants = (spawnPlantList.size == count && spawnPlantList.isNotEmpty())
                 val cardTitle = if (isDroppingPlants) "掉落物配置 (植物)" else "掉落物配置 (能量豆)"
                 val cardColor =
-                    if (isDroppingPlants) Color(0xFFE65100) else Color(0xFF2E7D32)
+                    if (isDroppingPlants) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.primary
 
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -632,13 +617,12 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                                         )
                                     },
                                     colors = InputChipDefaults.inputChipColors(
-                                        selectedContainerColor = Color(0xFFFFF3E0),
-                                        selectedLabelColor = Color(0xFFE65100)
+                                        selectedContainerColor = MaterialTheme.colorScheme.tertiary,
+                                        selectedLabelColor = MaterialTheme.colorScheme.onTertiary
                                     )
                                 )
                             }
 
-                            // 添加植物按钮
                             InputChip(
                                 selected = false,
                                 onClick = {
@@ -663,7 +647,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                             "当掉落植物列表的植物数等于能量豆数量时会变为掉落植物卡片",
                             fontSize = 12.sp,
                             modifier = Modifier.padding(bottom = 8.dp, top = 8.dp),
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
                         val countLabel = if (isDroppingPlants) {
@@ -695,7 +679,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                         Text(
                             text = explainText,
                             fontSize = 12.sp,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 6.dp)
                         )
                     }

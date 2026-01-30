@@ -1,6 +1,7 @@
 package com.example.z_editor.views.editor.pages.module
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,25 +13,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +35,10 @@ import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.LastStandMinigamePropertiesData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzBlueDark
+import com.example.z_editor.ui.theme.PvzBlueLight
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -64,28 +64,19 @@ fun LastStandMinigamePropertiesEP(
         syncManager.sync()
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzBlueDark else PvzBlueLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("坚不可摧配置", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "Help", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF1976D2),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "坚不可摧设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -93,7 +84,7 @@ fun LastStandMinigamePropertiesEP(
             EditorHelpDialog(
                 title = "坚不可摧模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF1976D2)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -111,11 +102,12 @@ fun LastStandMinigamePropertiesEP(
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(
@@ -125,7 +117,7 @@ fun LastStandMinigamePropertiesEP(
                     Text("初始资源设置", fontWeight = FontWeight.Bold, fontSize = 16.sp)
 
                     NumberInputInt(
-                        color = Color(0xFF1976D2),
+                        color = themeColor,
                         value = moduleDataState.value.startingSun,
                         onValueChange = {
                             moduleDataState.value = moduleDataState.value.copy(startingSun = it)
@@ -136,7 +128,7 @@ fun LastStandMinigamePropertiesEP(
                     )
 
                     NumberInputInt(
-                        color = Color(0xFF1976D2),
+                        color = themeColor,
                         value = moduleDataState.value.startingPlantfood,
                         onValueChange = {
                             moduleDataState.value =
@@ -150,17 +142,18 @@ fun LastStandMinigamePropertiesEP(
             }
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE5EBF5)),
-                modifier = Modifier.fillMaxWidth()
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Row(modifier = Modifier.padding(16.dp)) {
-                    Icon(Icons.Default.Info, null, tint = Color(0xFF1976D2))
+                    Icon(Icons.Default.Info, null, tint = themeColor)
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
                             text = "添加坚不可摧模块后会自动在波次管理器模块里启用手动开始游戏开关。",
                             fontSize = 12.sp,
-                            color = Color(0xFF1976D2),
+                            color = themeColor,
                             lineHeight = 16.sp
                         )
                     }

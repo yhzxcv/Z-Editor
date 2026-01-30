@@ -1,5 +1,6 @@
 package com.example.z_editor.views.editor.pages.module
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Thunderstorm
@@ -19,13 +18,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -34,13 +31,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.LevelDefinitionData
 import com.example.z_editor.data.RtidParser
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzGrayDark
+import com.example.z_editor.ui.theme.PvzGrayLight
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 
@@ -55,7 +55,8 @@ fun RainDarkPropertiesEP(
     var showHelpDialog by remember { mutableStateOf(false) }
     var localRefreshTrigger by remember { mutableIntStateOf(0) }
 
-    val themeColor = Color(0xFF607D8B)
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzGrayDark else PvzGrayLight
 
     data class WeatherOption(
         val alias: String,
@@ -118,23 +119,11 @@ fun RainDarkPropertiesEP(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("环境天气设置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "环境天气设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -159,6 +148,7 @@ fun RainDarkPropertiesEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -169,9 +159,9 @@ fun RainDarkPropertiesEP(
 
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = if (isSelected) Color(0xFFECEFF1) else Color.White
+                        containerColor = if (isSelected) MaterialTheme.colorScheme.scrim else MaterialTheme.colorScheme.surface
                     ),
-                    elevation = CardDefaults.cardElevation(if (isSelected) 4.dp else 1.dp),
+                    elevation = CardDefaults.cardElevation(2.dp),
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { selectOption(option.alias) }
@@ -191,7 +181,7 @@ fun RainDarkPropertiesEP(
                                 Icon(
                                     option.icon,
                                     null,
-                                    tint = if (isSelected) themeColor else Color.Gray
+                                    tint = if (isSelected) themeColor else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text(
@@ -199,7 +189,11 @@ fun RainDarkPropertiesEP(
                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                                 )
                             }
-                            Text(option.description, fontSize = 12.sp, color = Color.Gray)
+                            Text(
+                                option.description,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                 }

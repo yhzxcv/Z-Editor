@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -94,7 +95,7 @@ fun ZombossBattleTab(
     }
 
     val currentBossInfo = ZombossRepository.get(battleDataState.value.zombossMechType)
-    val themeColor = Color(0xFF673AB7)
+    val themeColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     fun onZombossChanged(newType: String) {
         val newInfo = ZombossRepository.get(newType) ?: return
@@ -104,9 +105,14 @@ fun ZombossBattleTab(
             "zombossmech_pvz1_robot_2", "zombossmech_pvz1_robot_3", "zombossmech_pvz1_robot_4",
             "zombossmech_pvz1_robot_5", "zombossmech_pvz1_robot_6", "zombossmech_pvz1_robot_7",
             "zombossmech_pvz1_robot_8", "zombossmech_pvz1_robot_9" -> null
+
             "zombossmech_iceage", "zombossmech_eighties", "zombossmech_renai", "zombossmech_modern_iceage",
             "zombossmech_modern_eighties", "zombossmech_iceage_vacation", "zombossmech_eighties_vacation",
-            "zombossmech_iceage_12th", "zombossmech_eighties_12th", "zombossmech_renai_12th" -> LocationData(6, 4)
+            "zombossmech_iceage_12th", "zombossmech_eighties_12th", "zombossmech_renai_12th" -> LocationData(
+                6,
+                4
+            )
+
             else -> LocationData(6, 3)
         }
 
@@ -132,8 +138,8 @@ fun ZombossBattleTab(
     ) {
         if (introObj == null) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
-                border = BorderStroke(1.dp, Color.Red),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onError),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 12.dp)
@@ -145,21 +151,21 @@ fun ZombossBattleTab(
                     Icon(
                         imageVector = Icons.Default.Warning,
                         contentDescription = null,
-                        tint = Color.Red
+                        tint = MaterialTheme.colorScheme.onError
                     )
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
                             text = "模块缺失警告",
                             fontWeight = FontWeight.Bold,
-                            color = Color.Red,
+                            color = MaterialTheme.colorScheme.onError,
                             fontSize = 15.sp
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
                             text = "关卡未检测到僵王战转场模块，请添加僵王战转场模块后重新选择僵王。",
                             fontSize = 14.sp,
-                            color = Color(0xFFC62828),
+                            color = MaterialTheme.colorScheme.onError,
                             lineHeight = 18.sp
                         )
                     }
@@ -183,7 +189,7 @@ fun ZombossBattleTab(
                         onZombossChanged(newType)
                     }
                 },
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(2.dp)
         ) {
             Row(
@@ -196,16 +202,21 @@ fun ZombossBattleTab(
                     modifier = Modifier
                         .size(48.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFFBE9E7))
                         .border(1.dp, Color.Gray, RoundedCornerShape(12.dp)),
                     filterQuality = FilterQuality.Medium,
                     placeholder = {
                         Box(
                             Modifier
                                 .fillMaxSize()
-                                .background(Color.LightGray)
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
                         ) {
-                            Text("?", Modifier.align(Alignment.Center), color = Color.White)
+                            Text(
+                                text = "?",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                modifier = Modifier.align(Alignment.Center),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                 )
@@ -216,16 +227,17 @@ fun ZombossBattleTab(
                     Text(
                         text = currentBossInfo?.name ?: "未知僵王",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = battleDataState.value.zombossMechType,
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
-                Icon(Icons.Default.Edit, "更改", tint = Color.Gray)
+                Icon(Icons.Default.Edit, "更改", tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 

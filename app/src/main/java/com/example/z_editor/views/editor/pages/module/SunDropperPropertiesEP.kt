@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -48,6 +49,9 @@ import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.SunDropperPropertiesData
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzLightOrangeDark
+import com.example.z_editor.ui.theme.PvzLightOrangeLight
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputDouble
@@ -85,7 +89,8 @@ fun SunDropperPropertiesEP(
         mutableStateOf(data)
     }
 
-    val themeColor = Color(0xFFFF9800)
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightOrangeDark else PvzLightOrangeLight
 
     fun sync() {
         if (isCustomMode) {
@@ -104,18 +109,26 @@ fun SunDropperPropertiesEP(
                 title = { Text("阳光掉落配置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            "返回",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 },
                 actions = {
                     IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
+                        Icon(
+                            Icons.AutoMirrored.Filled.HelpOutline,
+                            "帮助说明",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
                 )
             )
         }
@@ -142,12 +155,13 @@ fun SunDropperPropertiesEP(
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // === 模式切换卡片 ===
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Row(
@@ -162,15 +176,23 @@ fun SunDropperPropertiesEP(
                         Text("自定义本地参数", fontWeight = FontWeight.Bold)
                         Text(
                             text = if (isCustomMode) "当前: 本地编辑 (@CurrentLevel)" else "当前: 系统默认 (@LevelModules)",
-                            fontSize = 12.sp, color = Color.Gray
+                            fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     Switch(
                         checked = isCustomMode,
                         onCheckedChange = { checked ->
-                            // [关键修复] 直接调用回调，不在此处修改数据结构
                             onToggleMode(checked, sunDataState.value)
-                        }
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                            checkedTrackColor = themeColor,
+                            checkedBorderColor = Color.Transparent,
+
+                            uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
                     )
                 }
             }
@@ -183,7 +205,7 @@ fun SunDropperPropertiesEP(
             ) {
                 Column(
                     modifier = Modifier
-                        .background(Color.White, shape = MaterialTheme.shapes.medium)
+                        .background(MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.medium)
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {

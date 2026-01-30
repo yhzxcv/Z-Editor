@@ -40,6 +40,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -70,7 +71,12 @@ import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.PortalRepository
 import com.example.z_editor.data.repository.PortalWorldDef
 import com.example.z_editor.data.repository.ZombieRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzGridBorder
+import com.example.z_editor.ui.theme.PvzLightOrangeDark
+import com.example.z_editor.ui.theme.PvzLightOrangeLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
@@ -96,6 +102,9 @@ fun SpawnModernPortalsWaveActionPropsEP(
     fun sync() {
         syncManager.sync()
     }
+
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightOrangeDark else PvzLightOrangeLight
 
     if (previewWorldDef != null) {
         AlertDialog(
@@ -157,41 +166,17 @@ fun SpawnModernPortalsWaveActionPropsEP(
         )
     }
 
-    val themeColor = Color(0xFFFF9800)
-
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            "编辑 $currentAlias",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text("事件类型：时空裂缝", fontSize = 15.sp, fontWeight = FontWeight.Normal)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "编辑 $currentAlias",
+                subtitle = "事件类型：时空裂缝",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -219,7 +204,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -241,7 +226,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp),
                     modifier = Modifier
                         .widthIn(max = 480.dp)
@@ -287,7 +272,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp),
                     modifier = Modifier
                         .widthIn(max = 480.dp)
@@ -335,8 +320,13 @@ fun SpawnModernPortalsWaveActionPropsEP(
                                     sync()
                                 },
                                 colors = SwitchDefaults.colors(
-                                    checkedThumbColor = Color.White,
-                                    checkedTrackColor = themeColor
+                                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                                    checkedTrackColor = themeColor,
+                                    checkedBorderColor = Color.Transparent,
+
+                                    uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
                                 ),
                                 modifier = Modifier.scale(0.8f)
                             )
@@ -358,11 +348,11 @@ fun MinimalPortalCard(
     Card(
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFFFFF3E0) else Color(0xFFFAFAFA)
+            containerColor = if (isSelected) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.surfaceVariant
         ),
         border = BorderStroke(
             width = if (isSelected) 2.dp else 1.dp,
-            color = if (isSelected) Color(0xFFFF9800) else Color.LightGray.copy(alpha = 0.3f)
+            color = if (isSelected) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onSurfaceVariant
         ),
         shape = RoundedCornerShape(8.dp)
     ) {
@@ -378,7 +368,7 @@ fun MinimalPortalCard(
                     text = def.name,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                     fontSize = 13.sp,
-                    color = if (isSelected) Color.Black else Color.DarkGray,
+                    color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1
                 )
             }
@@ -390,7 +380,7 @@ fun MinimalPortalCard(
                 Icon(
                     imageVector = Icons.Outlined.Info,
                     contentDescription = "Details",
-                    tint = if (isSelected) Color(0xFFFF9800) else Color.Gray,
+                    tint = if (isSelected) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(18.dp)
                 )
             }
@@ -406,13 +396,15 @@ fun SimplePortalPositionCard(
 ) {
     val displayRow = currentRow + 1
     val displayCol = currentCol + 1
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightOrangeDark else PvzLightOrangeLight
 
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxWidth()
     ) {
         Card(
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(2.dp),
             modifier = Modifier
                 .widthIn(max = 480.dp)
@@ -430,7 +422,7 @@ fun SimplePortalPositionCard(
                         "R$displayRow : C$displayCol",
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
-                        color = Color(0xFFFF9800)
+                        color = themeColor
                     )
                 }
                 Spacer(Modifier.height(12.dp))
@@ -440,7 +432,7 @@ fun SimplePortalPositionCard(
                         .fillMaxWidth()
                         .aspectRatio(9f / 5f)
                         .clip(RoundedCornerShape(4.dp))
-                        .background(Color(0xFFEEEEEE))
+                        .background(if (isDark) Color(0xFF3F3A33) else Color(0xFFEEEEEE))
                 ) {
                     for (r in 1..5) {
                         Row(modifier = Modifier.weight(1f)) {
@@ -450,8 +442,8 @@ fun SimplePortalPositionCard(
                                     modifier = Modifier
                                         .weight(1f)
                                         .fillMaxHeight()
-                                        .padding(1.dp)
-                                        .background(if (isSelected) Color(0xFFFF9800) else Color.White)
+                                        .border(0.5.dp, PvzGridBorder)
+                                        .background(if (isSelected) themeColor else if (isDark) Color(0xFF3F3A33) else Color(0xFFEEEEEE))
                                         .clickable { onPositionSelected(r, c) },
                                     contentAlignment = Alignment.Center
                                 ) {

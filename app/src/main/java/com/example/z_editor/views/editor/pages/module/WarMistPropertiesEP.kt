@@ -19,19 +19,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +42,12 @@ import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.WarMistPropertiesData
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzGrayDark
+import com.example.z_editor.ui.theme.PvzGrayLight
+import com.example.z_editor.ui.theme.PvzGridBgDark
+import com.example.z_editor.ui.theme.PvzGridBorder
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -67,8 +66,6 @@ fun WarMistPropertiesEP(
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
 
-    val themeColor = Color(0xFF607D8B)
-
     val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
     val syncManager = rememberJsonSync(obj, WarMistPropertiesData::class.java)
     val moduleDataState = syncManager.dataState
@@ -84,28 +81,19 @@ fun WarMistPropertiesEP(
         }
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzGrayDark else PvzGrayLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("迷雾系统配置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "战争迷雾设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -131,11 +119,12 @@ fun WarMistPropertiesEP(
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -170,7 +159,7 @@ fun WarMistPropertiesEP(
                 }
             }
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -200,7 +189,7 @@ fun WarMistPropertiesEP(
                 contentAlignment = Alignment.Center
             ) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp),
                     modifier = Modifier.widthIn(max = 480.dp)
                 ) {
@@ -220,8 +209,8 @@ fun WarMistPropertiesEP(
                                 .fillMaxWidth()
                                 .aspectRatio(1.8f)
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(Color(0xFFF5F5F5))
-                                .border(1.dp, Color(0xFFBDBDBD), RoundedCornerShape(6.dp))
+                                .background(if (isDark) PvzGridBgDark else Color.White)
+                                .border(1.dp, PvzGridBorder, RoundedCornerShape(6.dp))
                         ) {
                             Column(Modifier.fillMaxSize()) {
                                 for (row in 0..4) {
@@ -233,10 +222,10 @@ fun WarMistPropertiesEP(
                                                 modifier = Modifier
                                                     .weight(1f)
                                                     .fillMaxHeight()
-                                                    .border(0.5.dp, Color(0xFF9E9E9E))
+                                                    .border(0.5.dp, PvzGridBorder)
                                                     .background(
-                                                        if (inFog) Color(0xFF607D8B).copy(alpha = 0.6f)
-                                                        else Color.White
+                                                        if (inFog) themeColor.copy(alpha = 0.6f)
+                                                        else if (isDark) PvzGridBgDark else Color.White
                                                     ),
                                                 contentAlignment = Alignment.Center
                                             ) {
@@ -259,8 +248,8 @@ fun WarMistPropertiesEP(
                                 modifier = Modifier
                                     .width(20.dp)
                                     .height(20.dp)
-                                    .background(Color(0xFF607D8B).copy(alpha = 0.6f))
-                                    .border(0.5.dp, Color(0xFF9E9E9E))
+                                    .background(themeColor.copy(alpha = 0.6f))
+                                    .border(0.5.dp, PvzGridBorder)
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
@@ -273,14 +262,14 @@ fun WarMistPropertiesEP(
                                 modifier = Modifier
                                     .width(20.dp)
                                     .height(20.dp)
-                                    .background(Color.White)
-                                    .border(0.5.dp, Color(0xFF9E9E9E))
+                                    .background(if (isDark) PvzGridBgDark else Color.White)
+                                    .border(0.5.dp, PvzGridBorder)
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
                                 "无迷雾",
                                 fontSize = 12.sp,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }

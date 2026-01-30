@@ -33,6 +33,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -60,6 +61,7 @@ import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.ModuleCategory
 import com.example.z_editor.data.ModuleMetadata
 import com.example.z_editor.data.ModuleRegistry
+import com.example.z_editor.views.components.rememberDebouncedClick
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,7 +70,8 @@ fun ModuleSelectionScreen(
     onModuleSelected: (ModuleMetadata) -> Unit,
     onBack: () -> Unit
 ) {
-    BackHandler(onBack = onBack)
+    val handleBack = rememberDebouncedClick { onBack() }
+    BackHandler(onBack = handleBack)
     val allModules = remember { ModuleRegistry.getAllKnownModules() }
 
     var searchQuery by remember { mutableStateOf("") }
@@ -89,7 +92,7 @@ fun ModuleSelectionScreen(
             .toList()
     }
 
-    val themeColor = Color(0xFF4CAF50)
+    val themeColor = MaterialTheme.colorScheme.primary
 
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
@@ -112,8 +115,8 @@ fun ModuleSelectionScreen(
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = onBack, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                        IconButton(onClick = handleBack, modifier = Modifier.size(24.dp)) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = MaterialTheme.colorScheme.surface)
                         }
                         Spacer(Modifier.width(16.dp))
 
@@ -121,7 +124,7 @@ fun ModuleSelectionScreen(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             placeholder = {
-                                Text("搜索模块名称或描述", fontSize = 16.sp, color = Color.Gray)
+                                Text("搜索模块名称或描述", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -129,19 +132,19 @@ fun ModuleSelectionScreen(
                             singleLine = true,
                             shape = RoundedCornerShape(24.dp),
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White,
+                                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
                                 cursorColor = themeColor
                             ),
                             leadingIcon = {
-                                Icon(Icons.Default.Search, null, tint = Color.Gray)
+                                Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                             },
                             trailingIcon = if (searchQuery.isNotEmpty()) {
                                 {
                                     IconButton(onClick = { searchQuery = "" }) {
-                                        Icon(Icons.Default.Clear, null, tint = Color.Gray)
+                                        Icon(Icons.Default.Clear, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                 }
                             } else null,
@@ -152,11 +155,12 @@ fun ModuleSelectionScreen(
                     TabRow(
                         selectedTabIndex = ModuleCategory.entries.indexOf(selectedCategory),
                         containerColor = Color.Transparent,
-                        contentColor = Color.White,
+                        contentColor = MaterialTheme.colorScheme.surface,
+                        divider = {},
                         indicator = { tabPositions ->
                             TabRowDefaults.SecondaryIndicator(
                                 Modifier.tabIndicatorOffset(tabPositions[ModuleCategory.entries.indexOf(selectedCategory)]),
-                                color = Color.White,
+                                color = MaterialTheme.colorScheme.surface,
                                 height = 3.dp
                             )
                         },
@@ -171,7 +175,7 @@ fun ModuleSelectionScreen(
                                         text = category.title,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                         fontSize = 16.sp,
-                                        color = if (isSelected) Color.White else Color.White.copy(alpha = 0.7f)
+                                        color = if (isSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
                                     )
                                 }
                             )
@@ -185,7 +189,7 @@ fun ModuleSelectionScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
         ) {
 
             if (filteredModules.isEmpty()) {
@@ -203,7 +207,7 @@ fun ModuleSelectionScreen(
                     Spacer(Modifier.height(16.dp))
                     Text(
                         text = if (searchQuery.isNotEmpty()) "未找到匹配 \"$searchQuery\" 的模块" else "该分类下暂无模块",
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             } else {
@@ -246,7 +250,7 @@ fun ModuleSelectionCard(
             .clip(RoundedCornerShape(12.dp))
             .clickable(enabled = isEnabled, onClick = onClick),
         colors = CardDefaults.cardColors(
-            containerColor = if (isEnabled) Color.White else Color(0xFFEEEEEE)
+            containerColor = if (isEnabled) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant
         ),
         elevation = CardDefaults.cardElevation(if (isEnabled) 2.dp else 0.dp)
     ) {
@@ -256,8 +260,8 @@ fun ModuleSelectionCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val iconBgColor = if (isEnabled) Color(0xFF4CAF50).copy(alpha = 0.1f) else Color.Gray.copy(alpha = 0.1f)
-            val iconTint = if (isEnabled) Color(0xFF4CAF50) else Color.Gray
+            val iconBgColor = if (isEnabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
+            val iconTint = if (isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
 
             Box(
                 modifier = Modifier
@@ -281,13 +285,13 @@ fun ModuleSelectionCard(
                         text = meta.title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
-                        color = if (isEnabled) Color.Black else Color.Gray
+                        color = if (isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Text(
                     text = meta.description,
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2
                 )
             }

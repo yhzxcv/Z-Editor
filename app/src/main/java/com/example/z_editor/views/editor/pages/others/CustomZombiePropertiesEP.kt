@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -30,6 +32,7 @@ import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -40,11 +43,14 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -77,6 +83,9 @@ import com.example.z_editor.data.RectData
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.ZombiePropertySheetData
 import com.example.z_editor.data.ZombieTypeData
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzOrangeDark
+import com.example.z_editor.ui.theme.PvzOrangeLight
 import com.example.z_editor.views.components.AssetImage
 import rememberJsonSync
 
@@ -125,7 +134,9 @@ fun CustomZombiePropertiesEP(
 
     fun sync() {
         val allZero = resistanceState.all { it == 0.0 }
-        val newResistances = if (allZero) { null } else {
+        val newResistances = if (allZero) {
+            null
+        } else {
             ArrayList(resistanceState.map { it.coerceIn(0.0, 1.0) })
         }
         typeDataState.value = typeDataState.value.copy(resistences = newResistances)
@@ -139,7 +150,8 @@ fun CustomZombiePropertiesEP(
     var showShadowDialog by remember { mutableStateOf(false) }
     var showSizeDialog by remember { mutableStateOf(false) }
 
-    val themeColor = Color(0xFFFF9800)
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzOrangeDark else PvzOrangeLight
 
     if (showHitRectDialog) {
         val current = propsDataState.value.hitRect ?: RectData(10, 10, 32, 95)
@@ -224,18 +236,26 @@ fun CustomZombiePropertiesEP(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            "返回",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 },
                 actions = {
                     IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
+                        Icon(
+                            Icons.AutoMirrored.Filled.HelpOutline,
+                            "帮助说明",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         }
@@ -270,6 +290,7 @@ fun CustomZombiePropertiesEP(
                     .padding(padding)
                     .fillMaxSize()
                     .padding(24.dp)
+                    .background(MaterialTheme.colorScheme.background)
                     .verticalScroll(scrollState),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -285,7 +306,7 @@ fun CustomZombiePropertiesEP(
                 Spacer(Modifier.height(8.dp))
                 Text(
                     "在关卡中未找到该自定义僵尸关联的属性对象 ($propsAlias)，表示自定义僵尸的属性定义没有明确指向关卡内部，无法在关卡内更改。",
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 22.sp,
                     textAlign = TextAlign.Center
                 )
@@ -309,7 +330,7 @@ fun CustomZombiePropertiesEP(
             )
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(
@@ -415,7 +436,7 @@ fun CustomZombiePropertiesEP(
                 color = themeColor
             )
 
-            Card(colors = CardDefaults.cardColors(containerColor = Color.White)) {
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     EditButtonRow(
                         title = "受击判定 (HitRect)",
@@ -423,28 +444,40 @@ fun CustomZombiePropertiesEP(
                         icon = Icons.Default.AspectRatio,
                         onClick = { showHitRectDialog = true }
                     )
-                    HorizontalDivider()
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     EditButtonRow(
                         title = "攻击判定 (AttackRect)",
                         subtitle = formatRect(propsDataState.value.attackRect),
                         icon = Icons.Default.AspectRatio,
                         onClick = { showAttackRectDialog = true }
                     )
-                    HorizontalDivider()
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     EditButtonRow(
                         title = "贴图中心 (ArtCenter)",
                         subtitle = formatPoint(propsDataState.value.artCenter),
                         icon = Icons.Default.CenterFocusStrong,
                         onClick = { showArtCenterDialog = true }
                     )
-                    HorizontalDivider()
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     EditButtonRow(
                         title = "阴影偏移 (ShadowOffset)",
                         subtitle = formatPoint3D(propsDataState.value.shadowOffset),
                         icon = Icons.Default.Layers,
                         onClick = { showShadowDialog = true }
                     )
-                    HorizontalDivider()
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     Spacer(Modifier.height(16.dp))
 
                     var groundExpanded by remember { mutableStateOf(false) }
@@ -452,7 +485,7 @@ fun CustomZombiePropertiesEP(
 
                     val currentGroundLabel = when (propsDataState.value.groundTrackName) {
                         "ground_swatch" -> "普通地面 (ground_swatch)"
-                        "" -> "无 (Empty)"
+                        "" -> "无 (null)"
                         else -> propsDataState.value.groundTrackName
                     }
                     ExposedDropdownMenuBox(
@@ -467,6 +500,12 @@ fun CustomZombiePropertiesEP(
                             label = { Text("行进轨迹 (GroundTrackName)") },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = groundExpanded) },
                             colors = OutlinedTextFieldDefaults.colors(
+                                cursorColor = themeColor,
+                                selectionColors = TextSelectionColors(
+                                    handleColor = themeColor,
+                                    backgroundColor = themeColor.copy(alpha = 0.4f)
+                                ),
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 focusedBorderColor = themeColor,
                                 focusedLabelColor = themeColor
                             ),
@@ -503,7 +542,7 @@ fun CustomZombiePropertiesEP(
                 color = themeColor
             )
 
-            Card(colors = CardDefaults.cardColors(containerColor = Color.White)) {
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                 Column(
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -524,12 +563,19 @@ fun CustomZombiePropertiesEP(
                             Text(
                                 propsDataState.value.sizeType ?: "null",
                                 fontSize = 14.sp,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        Icon(Icons.Default.Edit, null, tint = Color.Gray)
+                        Icon(
+                            Icons.Default.Edit,
+                            null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
-                    HorizontalDivider()
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
 
                     SwitchRow(
                         title = "受伤显示血条 (EnableShowHealthBar)",
@@ -558,6 +604,7 @@ fun CustomZombiePropertiesEP(
                                     propsDataState.value.copy(drawHealthBarTime = it)
                                 sync()
                             },
+                            color = themeColor,
                             label = "血条显示时间 (DrawHealthBarTime)",
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -591,6 +638,7 @@ fun CustomZombiePropertiesEP(
                                 propsDataState.value = propsDataState.value.copy(eliteScale = it)
                                 sync()
                             },
+                            color = themeColor,
                             label = "缩放比例 (EliteScale)",
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -649,7 +697,7 @@ fun CustomZombiePropertiesEP(
             )
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(
@@ -693,9 +741,15 @@ fun CustomZombiePropertiesEP(
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             textStyle = LocalTextStyle.current.copy(fontSize = 13.sp),
                             colors = OutlinedTextFieldDefaults.colors(
+                                cursorColor = themeColor,
+                                selectionColors = TextSelectionColors(
+                                    handleColor = themeColor,
+                                    backgroundColor = themeColor.copy(alpha = 0.4f)
+                                ),
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 focusedBorderColor = themeColor,
                                 focusedLabelColor = themeColor
-                            )
+                            ),
                         )
                     }
                     ResistanceInput(
@@ -738,18 +792,18 @@ fun CustomZombiePropertiesEP(
 
                     Text(
                         "数值范围 0.0 - 1.0，0.0 表示无影响，1.0 表示完全免疫",
-                        fontSize = 11.sp, color = Color.Gray
+                        fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
 
             Text(
                 "僵尸所属种类: ${typeDataState.value.typeName}",
-                fontSize = 14.sp, color = Color.Gray
+                fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Text(
                 "属性链接代号: $propsAlias",
-                fontSize = 14.sp, color = Color.Gray
+                fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(Modifier.height(32.dp))
@@ -767,24 +821,42 @@ fun EditButtonRow(title: String, subtitle: String, icon: ImageVector, onClick: (
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(icon, null, tint = Color(0xFFFF9800))
+        Icon(icon, null, tint = MaterialTheme.colorScheme.onTertiary)
         Spacer(Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(title, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-            Text(subtitle, fontSize = 12.sp, color = Color.Gray)
+            Text(subtitle, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Icon(Icons.Default.Edit, null, tint = Color.LightGray, modifier = Modifier.size(20.dp))
+        Icon(
+            Icons.Default.Edit,
+            null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(20.dp)
+        )
     }
 }
 
 @Composable
 fun SwitchRow(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzOrangeDark else PvzOrangeLight
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(title, modifier = Modifier.weight(1f), fontSize = 14.sp)
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Switch(
+            checked = checked, onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                checkedTrackColor = themeColor,
+                checkedBorderColor = Color.Transparent,
+
+                uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+            )
+        )
     }
 }
 
@@ -802,14 +874,16 @@ fun RectEditDialog(
     var mWidth by remember { mutableIntStateOf(initialData.mWidth) }
     var mHeight by remember { mutableIntStateOf(initialData.mHeight) }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzOrangeDark else PvzOrangeLight
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    NumberInputInt(mX, { mX = it }, "X", modifier = Modifier.weight(1f))
-                    NumberInputInt(mY, { mY = it }, "Y", modifier = Modifier.weight(1f))
+                    NumberInputInt(mX, { mX = it }, "X", modifier = Modifier.weight(1f), color = themeColor)
+                    NumberInputInt(mY, { mY = it }, "Y", modifier = Modifier.weight(1f), color = themeColor)
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     NumberInputInt(mWidth, { mWidth = it }, "Width", modifier = Modifier.weight(1f))
@@ -823,9 +897,12 @@ fun RectEditDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(RectData(mX, mY, mWidth, mHeight)) }) { Text("确定") }
+            Button(
+                onClick = { onConfirm(RectData(mX, mY, mWidth, mHeight)) },
+                colors = ButtonDefaults.buttonColors(containerColor = themeColor)
+            ) { Text("确定") }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text("取消", color = themeColor) } }
     )
 }
 
@@ -839,19 +916,24 @@ fun Point2DEditDialog(
     var x by remember { mutableIntStateOf(initialData.x) }
     var y by remember { mutableIntStateOf(initialData.y) }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzOrangeDark else PvzOrangeLight
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                NumberInputInt(x, { x = it }, "X", modifier = Modifier.weight(1f))
-                NumberInputInt(y, { y = it }, "Y", modifier = Modifier.weight(1f))
+                NumberInputInt(x, { x = it }, "X", modifier = Modifier.weight(1f), color = themeColor)
+                NumberInputInt(y, { y = it }, "Y", modifier = Modifier.weight(1f), color = themeColor)
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(Point2D(x, y)) }) { Text("确定") }
+            Button(
+                onClick = { onConfirm(Point2D(x, y)) },
+                colors = ButtonDefaults.buttonColors(containerColor = themeColor)
+            ) { Text("确定") }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text("取消", color = themeColor) } }
     )
 }
 
@@ -866,20 +948,25 @@ fun Point3DEditDialog(
     var y by remember { mutableDoubleStateOf(initialData.y) }
     var z by remember { mutableDoubleStateOf(initialData.z) }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzOrangeDark else PvzOrangeLight
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                NumberInputDouble(x, { x = it }, "X")
-                NumberInputDouble(y, { y = it }, "Y")
-                NumberInputDouble(z, { z = it }, "Z")
+                NumberInputDouble(x, { x = it }, "X", color = themeColor)
+                NumberInputDouble(y, { y = it }, "Y", color = themeColor)
+                NumberInputDouble(z, { z = it }, "Z", color = themeColor)
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(Point3DDouble(x, y, z)) }) { Text("确定") }
+            Button(
+                onClick = { onConfirm(Point3DDouble(x, y, z)) },
+                colors = ButtonDefaults.buttonColors(containerColor = themeColor)
+            ) { Text("确定") }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text("取消", color = themeColor) } }
     )
 }
 
@@ -892,6 +979,8 @@ fun SizeTypeDialog(
     val options = listOf(null, "small", "mid", "large")
     var selected by remember { mutableStateOf(currentValue) }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzOrangeDark else PvzOrangeLight
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("选择体型") },
@@ -906,6 +995,7 @@ fun SizeTypeDialog(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(
+                            colors = RadioButtonDefaults.colors(selectedColor = themeColor),
                             selected = (option == selected),
                             onClick = { selected = option }
                         )
@@ -916,9 +1006,12 @@ fun SizeTypeDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { onConfirm(selected) }) { Text("确定") }
+            Button(
+                onClick = { onConfirm(selected) },
+                colors = ButtonDefaults.buttonColors(containerColor = themeColor)
+            ) { Text("确定") }
         },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("取消") } }
+        dismissButton = { TextButton(onClick = onDismiss) { Text("取消", color = themeColor) } }
     )
 }
 

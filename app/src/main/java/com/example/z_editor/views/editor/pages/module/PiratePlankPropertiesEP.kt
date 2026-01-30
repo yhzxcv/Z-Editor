@@ -1,6 +1,7 @@
 package com.example.z_editor.views.editor.pages.module
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -15,22 +16,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,6 +47,10 @@ import com.example.z_editor.data.PiratePlankPropertiesData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.ReferenceRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzBrownDark
+import com.example.z_editor.ui.theme.PvzBrownLight
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
@@ -99,28 +99,19 @@ fun PiratePlankPropertiesEP(
         }
     }
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzBrownDark else PvzBrownLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = { Text("海盗甲板配置", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF795548),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "海盗甲板设置",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -128,7 +119,7 @@ fun PiratePlankPropertiesEP(
             EditorHelpDialog(
                 title = "海盗甲板模块说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF795548)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -146,12 +137,13 @@ fun PiratePlankPropertiesEP(
                 .padding(padding)
                 .fillMaxSize()
                 .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             if (!isPirateStage) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error),
                     modifier = Modifier
                         .fillMaxWidth()
                         .border(1.dp, Color.Red, RoundedCornerShape(8.dp)),
@@ -164,7 +156,7 @@ fun PiratePlankPropertiesEP(
                         Icon(
                             Icons.Default.Warning,
                             null,
-                            tint = Color.Red,
+                            tint = MaterialTheme.colorScheme.onError,
                             modifier = Modifier.width(24.dp)
                         )
                         Spacer(Modifier.width(12.dp))
@@ -172,13 +164,13 @@ fun PiratePlankPropertiesEP(
                             Text(
                                 text = "地图类型不匹配",
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Red,
+                                color = MaterialTheme.colorScheme.onError,
                                 fontSize = 15.sp
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(
                                 text = "当前地图类型并非海盗地图，此模块在游戏中可能无法生效，甚至导致闪退",
-                                color = Color(0xFFC62828),
+                                color = MaterialTheme.colorScheme.onError,
                                 fontSize = 14.sp,
                                 lineHeight = 18.sp
                             )
@@ -190,12 +182,12 @@ fun PiratePlankPropertiesEP(
             Text(
                 "甲板行数配置",
                 style = MaterialTheme.typography.titleMedium,
-                color = Color(0xFF795548),
+                color = themeColor,
                 fontWeight = FontWeight.Bold
             )
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -216,7 +208,7 @@ fun PiratePlankPropertiesEP(
                                 Text(
                                     "行索引: $row",
                                     fontSize = 12.sp,
-                                    color = Color.Gray
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             Switch(
@@ -231,20 +223,28 @@ fun PiratePlankPropertiesEP(
                                     } else {
                                         currentRows.remove(row)
                                     }
-                                    // 保持排序
                                     currentRows.sort()
                                     moduleDataState.value =
                                         moduleDataState.value.copy(plankRows = currentRows)
                                     sync()
                                 },
                                 colors = SwitchDefaults.colors(
-                                    checkedTrackColor = Color(0xFF795548),
-                                    checkedThumbColor = Color.White
+                                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                                    checkedTrackColor = themeColor,
+                                    checkedBorderColor = Color.Transparent,
+
+                                    uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
                                 )
                             )
                         }
                         if (row < 4) {
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                            HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                thickness = 1.dp,
+                                color = MaterialTheme.colorScheme.surfaceVariant
+                            )
                         }
                     }
                 }
@@ -253,7 +253,7 @@ fun PiratePlankPropertiesEP(
             // 显示当前选中的行
             if (moduleDataState.value.plankRows.isNotEmpty()) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -261,13 +261,13 @@ fun PiratePlankPropertiesEP(
                             "已选择的行:",
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
                             moduleDataState.value.plankRows.joinToString(", ") { "第 ${it + 1} 行" },
                             fontSize = 14.sp,
-                            color = Color(0xFF795548)
+                            color = themeColor
                         )
                     }
                 }

@@ -63,8 +63,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
@@ -98,6 +100,9 @@ import com.example.z_editor.data.WaveManagerModuleData
 import com.example.z_editor.data.WavePointAnalysis
 import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.repository.ZombieRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzPurpleDark
+import com.example.z_editor.ui.theme.PvzPurpleLight
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.EventChip
 import com.example.z_editor.views.editor.pages.others.SettingEntryCard
@@ -149,26 +154,26 @@ fun WaveTimelineTab(
                     imageVector = Icons.Default.Inbox,
                     contentDescription = null,
                     modifier = Modifier.size(64.dp),
-                    tint = Color.Gray
+                    tint = MaterialTheme.colorScheme.surfaceVariant
                 )
                 Spacer(Modifier.height(16.dp))
                 Text(
                     text = "未找到波次容器",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = "当前关卡启用了波次管理模块，但缺少存储波次数据的实体对象 (WaveManagerProperties)。",
                     fontSize = 14.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     textAlign = TextAlign.Center
                 )
                 Spacer(Modifier.height(24.dp))
                 Button(
                     onClick = onCreateContainer,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF388E3C))
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
                     Icon(Icons.Default.Add, null)
                     Spacer(Modifier.width(8.dp))
@@ -218,7 +223,9 @@ fun WaveTimelineTab(
                 if (json.has("TypeName")) {
                     baseType = json.get("TypeName").asString
                 }
-            } catch (e: Exception) { e.printStackTrace() }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
             val locations = mutableListOf<String>()
 
@@ -386,11 +393,14 @@ fun WaveTimelineTab(
             WavePointAnalysis.calculateExpectation(currentPoints, tempParsedData)
         }
 
+        val isDark = LocalDarkTheme.current
+        val expColor = if (isDark) PvzPurpleDark else PvzPurpleLight
+
         AlertDialog(
             onDismissRequest = { showExpectationDialog = null },
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Analytics, null, tint = Color(0xFF673AB7))
+                    Icon(Icons.Default.Analytics, null, tint = expColor)
                     Spacer(Modifier.width(8.dp))
                     Text("第 $waveIdx 波期望分析")
                 }
@@ -402,32 +412,36 @@ fun WaveTimelineTab(
                         Text(
                             "当前可用点数：",
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF673AB7)
+                            color = expColor
                         )
                         Spacer(Modifier.weight(1f))
                         Text(
                             "$currentPoints pt",
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
-                            color = if (currentPoints > 0) Color(0xFF388E3C) else Color.Red
+                            color = if (currentPoints > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onError
                         )
                     }
 
                     Spacer(Modifier.height(16.dp))
 
-                    Text("点数出怪期望：", fontWeight = FontWeight.Bold, color = Color(0xFF673AB7))
+                    Text("点数出怪期望：", fontWeight = FontWeight.Bold, color = expColor)
 
                     Spacer(Modifier.height(8.dp))
 
                     if (currentPoints <= 0) {
                         Text(
                             "点数不足或为负，无随机出怪。",
-                            color = Color.Red,
+                            color = MaterialTheme.colorScheme.onError,
                             fontSize = 12.sp,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     } else if (expectationMap.isEmpty()) {
-                        Text("无 (僵尸池为空或数据缺失)", color = Color.Gray, fontSize = 12.sp)
+                        Text(
+                            "无 (僵尸池为空或数据缺失)",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 12.sp
+                        )
                     } else {
                         var hasContent = false
                         expectationMap.entries
@@ -444,12 +458,7 @@ fun WaveTimelineTab(
                                             modifier = Modifier
                                                 .fillMaxSize()
                                                 .background(
-                                                    Color(0xFFEEEEEE),
-                                                    RoundedCornerShape(12.dp)
-                                                )
-                                                .border(
-                                                    1.dp,
-                                                    Color.LightGray,
+                                                    MaterialTheme.colorScheme.surfaceVariant,
                                                     RoundedCornerShape(12.dp)
                                                 ),
                                             contentAlignment = Alignment.Center
@@ -457,7 +466,7 @@ fun WaveTimelineTab(
                                             Text(
                                                 text = displayName.take(1).uppercase(),
                                                 fontWeight = FontWeight.Bold,
-                                                color = Color.Gray,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 fontSize = 24.sp
                                             )
                                         }
@@ -472,12 +481,7 @@ fun WaveTimelineTab(
                                             modifier = Modifier
                                                 .size(40.dp)
                                                 .clip(RoundedCornerShape(12.dp))
-                                                .background(Color.White)
-                                                .border(
-                                                    1.dp,
-                                                    Color.LightGray,
-                                                    RoundedCornerShape(12.dp)
-                                                ),
+                                                .background(Color.White),
                                             filterQuality = FilterQuality.Medium,
                                             placeholder = placeholderContent
                                         )
@@ -488,14 +492,22 @@ fun WaveTimelineTab(
                                             "~${String.format("%.2f", count)}",
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 14.sp,
-                                            color = Color(0xFF1565C0)
+                                            color = MaterialTheme.colorScheme.secondary
                                         )
-                                        Text(" 只", fontSize = 12.sp, color = Color.Gray)
+                                        Text(
+                                            " 只",
+                                            fontSize = 12.sp,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
                                     }
                                 }
                             }
                         if (!hasContent) {
-                            Text("点数过低，无法生成任何僵尸", color = Color.Gray, fontSize = 12.sp)
+                            Text(
+                                "点数过低，无法生成任何僵尸",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 12.sp
+                            )
                         }
                     }
                 }
@@ -515,6 +527,11 @@ fun WaveTimelineTab(
             title = { Text("复制事件引用") },
             text = {
                 OutlinedTextField(
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
+                    ),
                     value = copyTargetInput,
                     onValueChange = { copyTargetInput = it },
                     label = { Text("目标波次序号") },
@@ -560,13 +577,21 @@ fun WaveTimelineTab(
             text = {
                 Column {
                     OutlinedTextField(
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary
+                        ),
                         value = newAliasInput,
                         onValueChange = { newAliasInput = it },
                         label = { Text("新代号(Alias)") },
                         isError = isConflict,
                         supportingText = {
                             if (isConflict) {
-                                Text("该代号已被其他事件占用", color = Color.Red)
+                                Text(
+                                    "该代号已被其他事件占用",
+                                    color = MaterialTheme.colorScheme.onError
+                                )
                             }
                         },
                         modifier = Modifier.fillMaxWidth()
@@ -614,7 +639,7 @@ fun WaveTimelineTab(
                         eventToDeleteSourceWave = null
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (count > 1) Color.Gray else Color(
+                        containerColor = if (count > 1) MaterialTheme.colorScheme.onSurfaceVariant else Color(
                             0xFFD32F2F
                         )
                     )
@@ -635,6 +660,11 @@ fun WaveTimelineTab(
             title = { Text("移动事件") },
             text = {
                 OutlinedTextField(
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
+                    ),
                     value = moveTargetInput,
                     onValueChange = { moveTargetInput = it },
                     label = { Text("移动至波次序号") },
@@ -710,7 +740,7 @@ fun WaveTimelineTab(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Color.Gray.copy(alpha = 0.05f))
+                            .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.05f))
                             .clickable { confirmCheckbox = !confirmCheckbox }
                             .padding(8.dp)
                     ) {
@@ -718,7 +748,11 @@ fun WaveTimelineTab(
                             checked = confirmCheckbox,
                             onCheckedChange = { confirmCheckbox = it }
                         )
-                        Text("我确定要永久删除此波次", fontSize = 14.sp, color = Color.Gray)
+                        Text(
+                            "我确定要永久删除此波次",
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             },
@@ -750,7 +784,7 @@ fun WaveTimelineTab(
                         confirmCheckbox = false
                     },
                     enabled = confirmCheckbox,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError)
                 ) { Text("确认删除") }
             },
             dismissButton = {
@@ -766,7 +800,10 @@ fun WaveTimelineTab(
     if (editingWaveIndex != null) {
         val waveIdx = editingWaveIndex!!
         val currentWaveEvents = waveManager.waves.getOrNull(waveIdx - 1) ?: mutableListOf()
-        ModalBottomSheet(onDismissRequest = { editingWaveIndex = null }) {
+        ModalBottomSheet(
+            onDismissRequest = { editingWaveIndex = null },
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -788,7 +825,11 @@ fun WaveTimelineTab(
                         TextButton(onClick = {
                             editingWaveIndex = null; onNavigateToAddEvent(waveIdx)
                         }) {
-                            Icon(Icons.Default.Add, null); Text("新增事件")
+                            Icon(
+                                Icons.Default.Add,
+                                null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            ); Text("新增事件", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -841,7 +882,7 @@ fun WaveTimelineTab(
                         onDeleteContainer()
                         showDeleteContainerDialog = false
                     },
-                    colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onError)
                 ) {
                     Text("确认删除")
                 }
@@ -860,23 +901,6 @@ fun WaveTimelineTab(
             ZombieRepository.getZombieInfoById(realTypeName)
         }
 
-        val placeholderContent = @Composable {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFEEEEEE), RoundedCornerShape(16.dp))
-                    .border(1.dp, Color.LightGray, RoundedCornerShape(16.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = displayName.take(1).uppercase(),
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Gray,
-                    fontSize = 24.sp
-                )
-            }
-        }
-
         AlertDialog(
             onDismissRequest = { selectedZombieInfo = null },
             title = {
@@ -885,32 +909,47 @@ fun WaveTimelineTab(
                         modifier = Modifier
                             .size(48.dp)
                             .clip(RoundedCornerShape(16.dp))
-                            .border(1.dp, Color.LightGray, RoundedCornerShape(16.dp))
-                            .background(Color.LightGray)
+                            .border(
+                                1.dp,
+                                MaterialTheme.colorScheme.surfaceVariant,
+                                RoundedCornerShape(16.dp)
+                            )
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         AssetImage(
                             path = if (iconInfo?.icon != null) "images/zombies/${iconInfo.icon}" else null,
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
-                            filterQuality = FilterQuality.Medium,
-                            placeholder = placeholderContent
+                            filterQuality = FilterQuality.Medium
                         )
                     }
                     Spacer(Modifier.width(12.dp))
-                    Column(modifier = Modifier.fillMaxWidth()){
+                    Column(modifier = Modifier.fillMaxWidth()) {
                         Text(info.alias, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-                        Text("原型: $displayName", fontSize = 14.sp, color = Color.Gray)
+                        Text(
+                            "原型: $displayName",
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             },
             text = {
                 Column {
                     if (info.isUnused) {
-                        Text("此自定义僵尸当前未被任何波次或模块使用", color = Color.Gray, fontSize = 14.sp)
+                        Text(
+                            "此自定义僵尸当前未被任何波次或模块使用",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 14.sp
+                        )
                     } else {
                         Text("出现位置:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
                         Spacer(Modifier.height(4.dp))
-                        Text(info.locations.joinToString(", "), color = Color.Gray, fontSize = 14.sp)
+                        Text(
+                            info.locations.joinToString(", "),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontSize = 14.sp
+                        )
                     }
                 }
             },
@@ -920,7 +959,7 @@ fun WaveTimelineTab(
                         selectedZombieInfo = null
                         onEditCustomZombie(info.rtid)
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF9800))
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
                 ) {
                     Icon(Icons.Default.Edit, null, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(4.dp))
@@ -935,7 +974,8 @@ fun WaveTimelineTab(
                     },
                     enabled = info.isUnused,
                     colors = ButtonDefaults.textButtonColors(
-                        contentColor = Color.Red)
+                        contentColor = MaterialTheme.colorScheme.onError
+                    )
                 ) {
                     Icon(Icons.Default.Delete, null, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(4.dp))
@@ -957,26 +997,26 @@ fun WaveTimelineTab(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
-                border = BorderStroke(1.dp, Color(0xFF1976D2))
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.outline),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
             ) {
                 Row(
                     modifier = Modifier.padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(Icons.Default.Lightbulb, null, tint = Color(0xFF1976D2))
+                    Icon(Icons.Default.Lightbulb, null, tint = MaterialTheme.colorScheme.secondary)
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
                             "操作指引",
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
-                            color = Color(0xFF1976D2)
+                            color = MaterialTheme.colorScheme.secondary
                         )
                         Text(
                             "右滑：管理波次事件\n左滑：删除该波次\n点击pt：查看期望",
                             fontSize = 14.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -989,25 +1029,31 @@ fun WaveTimelineTab(
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                         .fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
-                    border = BorderStroke(1.dp, Color.Red)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onError)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row {
                             Icon(
                                 Icons.Default.GppBad,
                                 null,
-                                tint = Color.Red
+                                tint = MaterialTheme.colorScheme.onError
                             ); Spacer(Modifier.width(8.dp)); Text(
                             "引用失效报警",
-                            color = Color.Red,
+                            color = MaterialTheme.colorScheme.onError,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )
                         }
                         Spacer(Modifier.height(8.dp))
 
-                        deadLinks.forEach { Text(it, fontSize = 14.sp, color = Color.Red) }
+                        deadLinks.forEach {
+                            Text(
+                                it,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onError
+                            )
+                        }
 
                         Spacer(Modifier.height(8.dp))
                         Button(
@@ -1016,7 +1062,7 @@ fun WaveTimelineTab(
                                     it.removeAll { r -> deadLinks.contains(r) }
                                 }; onWavesChanged()
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError),
                             modifier = Modifier.align(Alignment.End)
                         ) { Text("一键清理失效波次", fontSize = 14.sp) }
                     }
@@ -1029,19 +1075,23 @@ fun WaveTimelineTab(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFDF3E3)),
-                border = BorderStroke(1.dp, Color(0xFFFF9800)),
-                elevation = CardDefaults.cardElevation(1.dp)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onTertiary),
+                elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Science, null, tint = Color(0xFFFF9800))
+                        Icon(
+                            Icons.Default.Science,
+                            null,
+                            tint = MaterialTheme.colorScheme.onTertiary
+                        )
                         Spacer(Modifier.width(8.dp))
                         Text(
                             "自定义僵尸管理",
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
-                            color = Color(0xFFFF9800)
+                            color = MaterialTheme.colorScheme.onTertiary
                         )
                         Spacer(Modifier.weight(1f))
                     }
@@ -1049,7 +1099,11 @@ fun WaveTimelineTab(
                     Spacer(Modifier.height(12.dp))
 
                     if (activeZombies.isEmpty() && unusedZombies.isEmpty()) {
-                        Text("暂无自定义僵尸数据", fontSize = 12.sp, color = Color.Gray)
+                        Text(
+                            "暂无自定义僵尸数据",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     } else {
                         @OptIn(ExperimentalLayoutApi::class)
                         FlowRow(
@@ -1062,15 +1116,25 @@ fun WaveTimelineTab(
                                     label = { Text(info.alias) },
                                     leadingIcon = {
                                         if (info.isUnused) {
-                                            Icon(Icons.Default.Warning, null, tint = Color(0xFFFF9800), modifier = Modifier.size(16.dp))
+                                            Icon(
+                                                Icons.Default.Warning,
+                                                null,
+                                                tint = MaterialTheme.colorScheme.onTertiary,
+                                                modifier = Modifier.size(16.dp)
+                                            )
                                         } else {
-                                            Icon(Icons.Default.CheckCircle, null, tint = Color(0xFF4CAF50), modifier = Modifier.size(16.dp))
+                                            Icon(
+                                                Icons.Default.CheckCircle,
+                                                null,
+                                                tint = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.size(16.dp)
+                                            )
                                         }
                                     },
                                     border = null,
                                     colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = if (info.isUnused) Color(0xFFFFF3E0) else Color(0xFFF1F8E9),
-                                        labelColor = if (info.isUnused) Color(0xFFEF6C00) else Color(0xFF33691E)
+                                        containerColor = if (info.isUnused) Color.Transparent else MaterialTheme.colorScheme.outlineVariant,
+                                        labelColor = if (info.isUnused) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.primary
                                     )
                                 )
                             }
@@ -1101,8 +1165,8 @@ fun WaveTimelineTab(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
-                    border = BorderStroke(1.dp, Color.LightGray)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant)
                 ) {
                     Column(
                         modifier = Modifier
@@ -1115,19 +1179,19 @@ fun WaveTimelineTab(
                             text = "当前波次列表为空",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
                             text = "您可以添加第一个波次，或者删除这个空的容器。",
                             fontSize = 12.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(Modifier.height(16.dp))
 
                         Button(
                             onClick = { showDeleteContainerDialog = true },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD32F2F))
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError)
                         ) {
                             Icon(Icons.Default.DeleteForever, null)
                             Spacer(Modifier.width(8.dp))
@@ -1142,25 +1206,25 @@ fun WaveTimelineTab(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFFEEEEEE))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(vertical = 8.dp, horizontal = 16.dp)
                 ) {
                     Text(
                         "#",
                         modifier = Modifier.width(36.dp),
                         fontWeight = FontWeight.Bold,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         "内容及点数预览",
                         modifier = Modifier.weight(1f),
                         fontWeight = FontWeight.Bold,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         "Total: ${waveManager.waves.size}",
                         fontWeight = FontWeight.Bold,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 13.sp
                     )
                 }
@@ -1206,8 +1270,8 @@ fun WaveTimelineTab(
                     backgroundContent = {
                         val direction = dismissState.dismissDirection
                         val color = when (direction) {
-                            SwipeToDismissBoxValue.StartToEnd -> Color(0xFF388E3C)
-                            SwipeToDismissBoxValue.EndToStart -> Color.Red
+                            SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.primary
+                            SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.onError
                             else -> Color.Transparent
                         }
                         val alignment =
@@ -1246,11 +1310,14 @@ fun WaveTimelineTab(
                     .padding(32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Button(onClick = {
-                    waveManager.waves.add(mutableListOf())
-                    waveManager.waveCount = waveManager.waves.size
-                    onWavesChanged()
-                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50))) {
+                Button(
+                    onClick = {
+                        waveManager.waves.add(mutableListOf())
+                        waveManager.waveCount = waveManager.waves.size
+                        onWavesChanged()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
                     Icon(Icons.Default.Add, null); Spacer(Modifier.width(8.dp)); Text("添加空波次")
                 }
             }
@@ -1271,7 +1338,7 @@ fun WaveRowItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.scrim)
     ) {
         Row(
             modifier = Modifier
@@ -1290,12 +1357,12 @@ fun WaveRowItem(
                         text = "$waveIndex",
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
-                        color = Color(0xFF4CAF50)
+                        color = MaterialTheme.colorScheme.primary
                     )
                     if (isFlagWave) Icon(
                         Icons.Default.Flag,
                         null,
-                        tint = Color(0xFFD32F2F),
+                        tint = MaterialTheme.colorScheme.onError,
                         modifier = Modifier
                             .size(12.dp)
                             .padding(start = 2.dp)
@@ -1310,7 +1377,11 @@ fun WaveRowItem(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 if (rtidList.isEmpty()) {
-                    Text("空波次 (左右划操作)", color = Color.LightGray, fontSize = 11.sp)
+                    Text(
+                        "空波次 (左右划操作)",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 11.sp
+                    )
                 } else {
                     rtidList.forEach { rtid ->
                         EventChip(rtid, objectMap) { onEditEvent(rtid, waveIndex) }
@@ -1326,7 +1397,7 @@ fun WaveRowItem(
                         .padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "${points}pt",
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -1334,13 +1405,13 @@ fun WaveRowItem(
                     Icon(
                         Icons.Default.Info,
                         null,
-                        tint = Color.LightGray.copy(0.7f),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(0.7f),
                         modifier = Modifier.size(14.dp)
                     )
                 }
             }
         }
-        HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray.copy(0.2f))
+        HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.surfaceVariant)
     }
 }
 
@@ -1360,7 +1431,8 @@ fun DrawerEventItem(
     val meta = EventRegistry.getMetadata(obj?.objClass ?: "")
 
     // 主题色判定
-    val themeColor = if (isInvalid) Color(0xFFD32F2F) else (meta?.color ?: Color.Gray)
+    val themeColor = if (isInvalid) MaterialTheme.colorScheme.onError else (meta?.color
+        ?: MaterialTheme.colorScheme.onSurfaceVariant)
 
     Card(
         modifier = Modifier
@@ -1368,10 +1440,13 @@ fun DrawerEventItem(
             .padding(vertical = 6.dp)
             .clickable { onEdit() },
         colors = CardDefaults.cardColors(
-            containerColor = if (isInvalid) Color(0xFFFFEBEE) else Color(0xFFF8F9FA)
+            containerColor = if (isInvalid) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surface
         ),
         shape = RoundedCornerShape(12.dp),
-        border = if (isInvalid) BorderStroke(1.dp, Color.Red.copy(0.3f)) else null
+        border = if (isInvalid) BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.onError.copy(0.3f)
+        ) else null
     ) {
         Row(
             modifier = Modifier
@@ -1407,7 +1482,7 @@ fun DrawerEventItem(
                         text = alias,
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
-                        color = if (isInvalid) themeColor else Color.Black
+                        color = if (isInvalid) themeColor else MaterialTheme.colorScheme.onSurface
                     )
                 }
                 Text(
@@ -1429,7 +1504,7 @@ fun DrawerEventItem(
                     Icon(
                         Icons.Default.DriveFileRenameOutline,
                         null,
-                        tint = Color.Gray,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -1438,7 +1513,7 @@ fun DrawerEventItem(
                     Icon(
                         Icons.Default.ContentCopy,
                         null,
-                        tint = Color.Gray,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -1447,7 +1522,7 @@ fun DrawerEventItem(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.DriveFileMove,
                         null,
-                        tint = Color.Gray,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(18.dp)
                     )
                 }

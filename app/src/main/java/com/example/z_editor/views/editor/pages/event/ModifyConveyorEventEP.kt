@@ -22,8 +22,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.Delete
@@ -38,11 +36,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -60,7 +57,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.ModifyConveyorPlantData
@@ -69,7 +65,11 @@ import com.example.z_editor.data.ModifyConveyorWaveActionData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.PlantRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzLightGreenDark
+import com.example.z_editor.ui.theme.PvzLightGreenLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputDouble
@@ -105,43 +105,20 @@ fun ModifyConveyorEventEP(
     fun wrapRtid(plantId: String): String = "RTID($plantId@PlantTypes)"
     fun unwrapRtid(rtidStr: String): String = RtidParser.parse(rtidStr)?.alias ?: rtidStr
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightGreenDark else PvzLightGreenLight
+
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            "编辑 $currentAlias",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            "事件类型：传送带变更",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助说明", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF4AC380),
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "编辑 $currentAlias",
+                subtitle = "事件类型：传送带更改",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -149,7 +126,7 @@ fun ModifyConveyorEventEP(
             EditorHelpDialog(
                 title = "传送带事件说明",
                 onDismiss = { showHelpDialog = false },
-                themeColor = Color(0xFF4AC380)
+                themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
@@ -169,15 +146,15 @@ fun ModifyConveyorEventEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             if (!hasConveyorModule) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFFEBEE)),
-                    border = BorderStroke(1.dp, Color.Red),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onError),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
@@ -187,21 +164,21 @@ fun ModifyConveyorEventEP(
                         Icon(
                             imageVector = Icons.Default.Warning,
                             contentDescription = null,
-                            tint = Color.Red
+                            tint = MaterialTheme.colorScheme.onError
                         )
                         Spacer(Modifier.width(12.dp))
                         Column {
                             Text(
                                 text = "模块缺失警告",
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Red,
+                                color = MaterialTheme.colorScheme.onError,
                                 fontSize = 15.sp
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(
                                 text = "关卡未检测到传送带模块，此事件在游戏中可能无法生效，甚至导致闪退",
                                 fontSize = 14.sp,
-                                color = Color(0xFFC62828),
+                                color = MaterialTheme.colorScheme.onError,
                                 lineHeight = 18.sp
                             )
                         }
@@ -213,7 +190,7 @@ fun ModifyConveyorEventEP(
             ModifyConveyorList(
                 title = "添加植物 (Add List)",
                 icon = Icons.Default.AddCircleOutline,
-                titleColor = Color(0xFF2E7D32),
+                titleColor = MaterialTheme.colorScheme.primary,
                 items = actionDataState.value.addList,
                 onListChanged = { newList ->
                     sync(actionDataState.value.copy(addList = newList))
@@ -228,7 +205,7 @@ fun ModifyConveyorEventEP(
             ModifyConveyorRemoveList(
                 title = "移除植物 (Remove List)",
                 icon = Icons.Default.RemoveCircleOutline,
-                titleColor = Color(0xFFC62828),
+                titleColor = MaterialTheme.colorScheme.onError,
                 items = actionDataState.value.removeList,
                 onListChanged = { newList ->
                     sync(actionDataState.value.copy(removeList = newList))
@@ -240,17 +217,17 @@ fun ModifyConveyorEventEP(
             )
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFE0F6E8)),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(modifier = Modifier.padding(16.dp)) {
-                    Icon(Icons.Default.Info, null, tint = Color(0xFF4AC380))
+                    Icon(Icons.Default.Info, null, tint = themeColor)
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
                             text = "在庭院模块下，移除植物事件不生效，可以改用添加权重为0的同种植物覆盖定义。",
                             fontSize = 12.sp,
-                            color = Color(0xFF4AC380),
+                            color = themeColor,
                             lineHeight = 16.sp
                         )
                     }
@@ -293,11 +270,10 @@ fun ModifyConveyorList(
     }
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // 标题栏
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(icon, null, tint = titleColor)
                 Spacer(Modifier.width(12.dp))
@@ -315,12 +291,16 @@ fun ModifyConveyorList(
                 }
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 0.5.dp)
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.surfaceVariant
+            )
 
             if (items.isEmpty()) {
                 Text(
                     "列表为空",
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(8.dp)
                 )
@@ -359,7 +339,7 @@ fun ModifyConveyorPlantRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
             .clickable { onEdit() }
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -374,8 +354,8 @@ fun ModifyConveyorPlantRow(
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(Color(0xFFBDBDBD), CircleShape)
-                    .border(1.dp, Color.White, CircleShape),
+                    .background(Color(0xFFBDBDBD), RoundedCornerShape(8.dp))
+                    .border(1.dp, Color.White, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -392,9 +372,9 @@ fun ModifyConveyorPlantRow(
             contentDescription = displayName,
             modifier = Modifier
                 .size(40.dp)
-                .clip(CircleShape)
+                .clip(RoundedCornerShape(8.dp))
                 .background(Color.White)
-                .border(1.dp, Color.LightGray, CircleShape),
+                .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp)),
             filterQuality = FilterQuality.Medium,
             placeholder = placeholderContent
         )
@@ -406,12 +386,17 @@ fun ModifyConveyorPlantRow(
                 Text(
                     "权重: ${plant.weight}  等级: ${plant.iLevel ?: "随账号"}",
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
         IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) {
-            Icon(Icons.Default.Delete, null, tint = Color.Gray, modifier = Modifier.size(18.dp))
+            Icon(
+                Icons.Default.Delete,
+                null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp)
+            )
         }
     }
 }
@@ -437,6 +422,9 @@ fun ModifyConveyorPlantDialog(
 
     val plantName = PlantRepository.getName(unwrapRtid(data.type))
 
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzLightGreenDark else PvzLightGreenLight
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("编辑: $plantName", fontWeight = FontWeight.Bold, fontSize = 18.sp) },
@@ -451,7 +439,7 @@ fun ModifyConveyorPlantDialog(
                         onValueChange = { tempWeight = it },
                         label = "变更后权重",
                         modifier = Modifier.weight(1f),
-                        color = Color(0xFF1976D2),
+                        color = themeColor,
                     )
 
                     NumberInputInt(
@@ -462,24 +450,26 @@ fun ModifyConveyorPlantDialog(
                         },
                         label = "植物等级",
                         modifier = Modifier.weight(1f),
-                        color = Color(0xFF1976D2)
+                        color = themeColor
                     )
                 }
                 Text(
                     "等级输入 0 表示等级跟随玩家账号",
                     fontSize = 12.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 4.dp)
                 )
-
-                HorizontalDivider(thickness = 0.5.dp)
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.surfaceVariant
+                )
 
                 Column {
                     Text(
                         "上限控制 (Max Limits)",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -488,14 +478,14 @@ fun ModifyConveyorPlantDialog(
                             onValueChange = { tempMaxCount = it },
                             label = "最大数量",
                             modifier = Modifier.weight(1f),
-                            color = Color(0xFF1976D2)
+                            color = themeColor
                         )
                         NumberInputDouble(
                             value = tempMaxWeightFactor,
                             onValueChange = { tempMaxWeightFactor = it },
                             label = "达标权重倍率",
                             modifier = Modifier.weight(1f),
-                            color = Color(0xFF1976D2)
+                            color = themeColor
                         )
                     }
                     Text(
@@ -503,7 +493,7 @@ fun ModifyConveyorPlantDialog(
                         else if (tempMaxCount > 0) "达到 $tempMaxCount 株后权重变为 ${(tempWeight * tempMaxWeightFactor).toInt()}"
                         else "",
                         fontSize = 12.sp,
-                        color = Color(0xFF1976D2),
+                        color = themeColor,
                         modifier = Modifier.padding(top = 2.dp)
                     )
                 }
@@ -513,7 +503,7 @@ fun ModifyConveyorPlantDialog(
                         "下限控制 (Min Limits)",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -522,21 +512,21 @@ fun ModifyConveyorPlantDialog(
                             onValueChange = { tempMinCount = it },
                             label = "最小数量",
                             modifier = Modifier.weight(1f),
-                            color = Color(0xFF1976D2)
+                            color = themeColor
                         )
                         NumberInputDouble(
                             value = tempMinWeightFactor,
                             onValueChange = { tempMinWeightFactor = it },
                             label = "未达标权重倍率",
                             modifier = Modifier.weight(1f),
-                            color = Color(0xFF1976D2)
+                            color = themeColor
                         )
                     }
                     Text(
                         text = if (tempMinCount > 0) "不满 $tempMinCount 株前权重变为 ${(tempWeight * tempMinWeightFactor).toInt()}"
                         else "",
                         fontSize = 12.sp,
-                        color = Color(0xFF1976D2),
+                        color = themeColor,
                         modifier = Modifier.padding(top = 2.dp)
                     )
                 }
@@ -544,7 +534,6 @@ fun ModifyConveyorPlantDialog(
         },
         confirmButton = {
             Button(onClick = {
-                // 回写数据
                 data.weight = tempWeight
                 data.maxCount = tempMaxCount
                 data.maxWeightFactor = tempMaxWeightFactor
@@ -573,7 +562,7 @@ fun ModifyConveyorRemoveList(
     val listKey = remember { mutableIntStateOf(0) }
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -594,12 +583,16 @@ fun ModifyConveyorRemoveList(
                 }
             }
 
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 0.5.dp)
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.surfaceVariant
+            )
 
             if (items.isEmpty()) {
                 Text(
                     "列表为空",
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     modifier = Modifier.padding(8.dp)
                 )
@@ -636,7 +629,7 @@ fun ModifyConveyorRemoveRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -650,8 +643,8 @@ fun ModifyConveyorRemoveRow(
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(Color(0xFFBDBDBD), CircleShape)
-                    .border(1.dp, Color.White, CircleShape),
+                    .background(Color(0xFFBDBDBD), RoundedCornerShape(8.dp))
+                    .border(1.dp, Color.White, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -667,9 +660,9 @@ fun ModifyConveyorRemoveRow(
             contentDescription = displayName,
             modifier = Modifier
                 .size(40.dp)
-                .clip(CircleShape)
+                .clip(RoundedCornerShape(8.dp))
                 .background(Color.White)
-                .border(1.dp, Color.LightGray, CircleShape),
+                .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp)),
             filterQuality = FilterQuality.Medium,
             placeholder = placeholderContent
         )
@@ -680,14 +673,19 @@ fun ModifyConveyorRemoveRow(
             Text(
                 text = realId,
                 fontSize = 11.sp,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1
             )
         }
 
         // 4. 删除按钮
         IconButton(onClick = onDelete, modifier = Modifier.size(24.dp)) {
-            Icon(Icons.Default.Delete, null, tint = Color.Gray, modifier = Modifier.size(18.dp))
+            Icon(
+                Icons.Default.Delete,
+                null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp)
+            )
         }
     }
 }

@@ -44,7 +44,7 @@ object ChallengeRepository {
             title = "不丢车挑战",
             objClass = "StarChallengeSaveMowersProps",
             defaultAlias = "SaveMowers",
-            description = "通关时所有小推车必须完好无损",
+            description = "不损失小推车，在庭院模块下会引发闪退",
             icon = Icons.Default.CleaningServices,
             initialDataFactory = { StarChallengeSaveMowerData() }
         ),

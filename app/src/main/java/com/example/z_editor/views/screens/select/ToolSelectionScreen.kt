@@ -4,16 +4,32 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,7 +41,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.repository.ToolCardInfo
 import com.example.z_editor.data.repository.ToolRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzCyanDark
+import com.example.z_editor.ui.theme.PvzCyanLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.components.rememberDebouncedClick
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,24 +54,30 @@ fun ToolSelectionScreen(
     onToolSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
-    BackHandler(onBack = onBack)
-    val themeColor = Color(0xFF009688)
-
+    val handleBack = rememberDebouncedClick { onBack() }
+    BackHandler(onBack = handleBack)
     val toolCards = remember { ToolRepository.getAll() }
+
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzCyanDark else PvzCyanLight
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("选择工具卡", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                    IconButton(onClick = handleBack) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            "Back",
+                            tint = MaterialTheme.colorScheme.surface
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                    titleContentColor = MaterialTheme.colorScheme.surface,
+                    actionIconContentColor = MaterialTheme.colorScheme.surface
                 )
             )
         }
@@ -60,7 +86,7 @@ fun ToolSelectionScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFFAFAFA))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 120.dp),
@@ -85,7 +111,7 @@ fun ToolGridItem(tool: ToolCardInfo, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .clickable(onClick = onClick)
             .border(1.dp, Color.LightGray.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
             .padding(8.dp),
@@ -102,8 +128,8 @@ fun ToolGridItem(tool: ToolCardInfo, onClick: () -> Unit) {
             modifier = Modifier
                 .size(height = 44.dp, width = 56.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(Color(0xFFEEEEEE))
-                .border(0.5.dp, Color.LightGray, RoundedCornerShape(8.dp)),
+                .background(MaterialTheme.colorScheme.scrim)
+                .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)),
             placeholder = {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -113,7 +139,7 @@ fun ToolGridItem(tool: ToolCardInfo, onClick: () -> Unit) {
                         text = tool.name.take(1),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -123,14 +149,14 @@ fun ToolGridItem(tool: ToolCardInfo, onClick: () -> Unit) {
             text = tool.name,
             fontWeight = FontWeight.Bold,
             fontSize = 13.sp,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
             maxLines = 1
         )
         Text(
             text = tool.id,
             fontSize = 10.sp,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             maxLines = 1
         )

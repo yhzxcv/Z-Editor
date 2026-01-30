@@ -1,5 +1,6 @@
 package com.example.z_editor.views.screens.select
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -31,6 +32,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
@@ -51,6 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -60,15 +63,21 @@ import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.repository.GridItemCategory
 import com.example.z_editor.data.repository.GridItemInfo
 import com.example.z_editor.data.repository.GridItemRepository
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzBrownDark
+import com.example.z_editor.ui.theme.PvzBrownLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.components.rememberDebouncedClick
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GridItemSelectionScreen(
     onGridItemSelected: (String) -> Unit,
     onBack: () -> Unit
 ) {
-    BackHandler(onBack = onBack)
+    val handleBack = rememberDebouncedClick { onBack() }
+    BackHandler(onBack = handleBack)
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(GridItemCategory.All) }
     val focusManager = LocalFocusManager.current
@@ -81,7 +90,8 @@ fun GridItemSelectionScreen(
         }
     }
 
-    val themeColor = Color(0xFF795548)
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzBrownDark else PvzBrownLight
 
     Scaffold(
         modifier = Modifier.pointerInput(Unit) {
@@ -104,8 +114,12 @@ fun GridItemSelectionScreen(
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = onBack, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+                        IconButton(onClick = handleBack, modifier = Modifier.size(24.dp)) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                "Back",
+                                tint = MaterialTheme.colorScheme.surface
+                            )
                         }
                         Spacer(Modifier.width(16.dp))
 
@@ -116,7 +130,7 @@ fun GridItemSelectionScreen(
                                 Text(
                                     "搜索物品...",
                                     fontSize = 16.sp,
-                                    color = Color.Gray
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             },
                             modifier = Modifier
@@ -125,18 +139,30 @@ fun GridItemSelectionScreen(
                             singleLine = true,
                             shape = RoundedCornerShape(25.dp),
                             colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.White,
-                                unfocusedContainerColor = Color.White,
+                                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
                                 cursorColor = themeColor
                             ),
-                            leadingIcon = { Icon(Icons.Default.Search, null, tint = Color.Gray) },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Search,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
                             trailingIcon = if (searchQuery.isNotEmpty()) {
                                 {
                                     IconButton(onClick = {
                                         searchQuery = ""
-                                    }) { Icon(Icons.Default.Clear, null, tint = Color.Gray) }
+                                    }) {
+                                        Icon(
+                                            Icons.Default.Clear,
+                                            null,
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
                                 }
                             } else null,
                             textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
@@ -147,25 +173,39 @@ fun GridItemSelectionScreen(
                     ScrollableTabRow(
                         selectedTabIndex = GridItemCategory.entries.indexOf(selectedCategory),
                         containerColor = Color.Transparent,
-                        contentColor = Color.White,
+                        contentColor = MaterialTheme.colorScheme.surface,
                         edgePadding = 16.dp,
+                        divider = {},
                         indicator = { tabPositions ->
                             val index = GridItemCategory.entries.indexOf(selectedCategory)
                             if (index < tabPositions.size) {
                                 SecondaryIndicator(
                                     Modifier.tabIndicatorOffset(tabPositions[index]),
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.surface,
                                     height = 3.dp
                                 )
                             }
                         }
                     ) {
                         GridItemCategory.entries.forEach { category ->
+                            val configuration = LocalConfiguration.current
+                            val isSelected = selectedCategory == category
+                            val screenWidth = configuration.screenWidthDp.dp
                             Tab(
+                                modifier = Modifier.width(screenWidth / 4),
                                 selected = selectedCategory == category,
                                 onClick = { selectedCategory = category },
-                                text = { Text(category.label, fontWeight = FontWeight.Bold) },
-                                unselectedContentColor = Color.White.copy(alpha = 0.7f)
+                                text = {
+                                    Text(
+                                        category.label,
+                                        fontSize = 14.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        color = MaterialTheme.colorScheme.surface
+                                    )
+                                },
+                                unselectedContentColor = MaterialTheme.colorScheme.surface.copy(
+                                    alpha = 0.6f
+                                )
                             )
                         }
                     }
@@ -177,7 +217,7 @@ fun GridItemSelectionScreen(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5))
+                .background(MaterialTheme.colorScheme.background)
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 120.dp),
@@ -207,7 +247,7 @@ fun GridItemSelectionScreen(
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(Modifier.height(8.dp))
-                    Text("未找到相关物品", color = Color.Gray)
+                    Text("未找到相关物品", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
@@ -218,7 +258,7 @@ fun GridItemSelectionScreen(
 fun GridItemSelectionCard(item: GridItemInfo, onClick: () -> Unit) {
     Card(
         onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -236,29 +276,14 @@ fun GridItemSelectionCard(item: GridItemInfo, onClick: () -> Unit) {
                     modifier = Modifier
                         .size(52.dp)
                         .clip(RoundedCornerShape(8.dp)),
-                    filterQuality = FilterQuality.Medium,
-                    placeholder = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color(0xFFF5EEE8)),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = item.name.take(1),
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF795548)
-                            )
-                        }
-                    }
+                    filterQuality = FilterQuality.Medium
                 )
             }
             Text(
                 text = item.name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -267,7 +292,7 @@ fun GridItemSelectionCard(item: GridItemInfo, onClick: () -> Unit) {
             Text(
                 text = item.typeName,
                 fontSize = 11.sp,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
