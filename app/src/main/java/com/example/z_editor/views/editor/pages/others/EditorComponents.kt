@@ -366,9 +366,18 @@ fun LaneRow(
                     .background(laneColor, RoundedCornerShape(2.dp))
             )
             Spacer(Modifier.width(8.dp))
-            Text(laneLabel, fontWeight = FontWeight.Bold, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                laneLabel,
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
             Spacer(Modifier.weight(1f))
-            Text("${zombies.size} 只", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                "${zombies.size} 只",
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
 
         LazyRow(
@@ -390,7 +399,10 @@ fun LaneRow(
                 CompactAddButton(onClick = onAddClick, color = laneColor)
             }
         }
-        HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.surfaceVariant.copy(0.2f))
+        HorizontalDivider(
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(0.2f)
+        )
     }
 }
 
@@ -449,7 +461,11 @@ fun CompactZombieCard(
             .size(48.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(if (isValid) Color.White else MaterialTheme.colorScheme.error)
-            .border(if (!isValid) 0.5.dp else 0.dp, MaterialTheme.colorScheme.onError, RoundedCornerShape(8.dp))
+            .border(
+                if (!isValid) 0.5.dp else 0.dp,
+                MaterialTheme.colorScheme.onError,
+                RoundedCornerShape(8.dp)
+            )
             .clickable(onClick = onClick)
     ) {
         if (isValid) {
@@ -603,7 +619,10 @@ fun ZombieEditSheetContent(
                         Spacer(Modifier.width(8.dp))
                         Box(
                             modifier = Modifier
-                                .background(MaterialTheme.colorScheme.onTertiary, RoundedCornerShape(4.dp))
+                                .background(
+                                    MaterialTheme.colorScheme.onTertiary,
+                                    RoundedCornerShape(4.dp)
+                                )
                                 .padding(horizontal = 4.dp, vertical = 1.dp)
                         ) {
                             Text(
@@ -617,7 +636,10 @@ fun ZombieEditSheetContent(
                         Spacer(Modifier.width(8.dp))
                         Box(
                             modifier = Modifier
-                                .background(MaterialTheme.colorScheme.surfaceTint, RoundedCornerShape(4.dp))
+                                .background(
+                                    MaterialTheme.colorScheme.surfaceTint,
+                                    RoundedCornerShape(4.dp)
+                                )
                                 .padding(horizontal = 4.dp, vertical = 1.dp)
                         ) {
                             Text(
@@ -631,9 +653,17 @@ fun ZombieEditSheetContent(
                 }
 
                 if (!isValid) {
-                    Text("引用失效 (找不到定义)", fontSize = 12.sp, color =  MaterialTheme.colorScheme.onError)
+                    Text(
+                        "引用失效 (找不到定义)",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onError
+                    )
                 } else {
-                    Text(subtitle, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        subtitle,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
@@ -684,9 +714,17 @@ fun ZombieEditSheetContent(
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("僵尸等级", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        "僵尸等级",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                     Spacer(Modifier.weight(1f))
-                    Text("Elite", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.surfaceTint)
+                    Text(
+                        "Elite",
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.surfaceTint
+                    )
                 }
             } else {
                 StepperControl(
@@ -797,10 +835,19 @@ fun ZombieEditSheetContent(
                                 modifier = Modifier.padding(12.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text(alias, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+                                Text(
+                                    alias,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
                                 Spacer(Modifier.weight(1f))
                                 if (originalZombie.type == rtid) {
-                                    Text("当前使用", fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
+                                    Text(
+                                        "当前使用",
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
                                 }
                             }
                         }

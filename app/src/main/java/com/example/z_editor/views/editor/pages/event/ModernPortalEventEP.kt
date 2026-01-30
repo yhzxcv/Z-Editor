@@ -28,8 +28,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Info
@@ -46,8 +44,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,7 +58,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.PortalEventData
@@ -443,7 +438,11 @@ fun SimplePortalPositionCard(
                                         .weight(1f)
                                         .fillMaxHeight()
                                         .border(0.5.dp, PvzGridBorder)
-                                        .background(if (isSelected) themeColor else if (isDark) Color(0xFF3F3A33) else Color(0xFFEEEEEE))
+                                        .background(
+                                            if (isSelected) themeColor else if (isDark) Color(
+                                                0xFF3F3A33
+                                            ) else Color(0xFFEEEEEE)
+                                        )
                                         .clickable { onPositionSelected(r, c) },
                                     contentAlignment = Alignment.Center
                                 ) {
