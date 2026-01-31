@@ -153,7 +153,7 @@ fun AboutScreen(
             Spacer(Modifier.height(20.dp))
 
             Text(
-                text = "Version 1.1.4",
+                text = "Version 1.1.5",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 color = Color.LightGray,

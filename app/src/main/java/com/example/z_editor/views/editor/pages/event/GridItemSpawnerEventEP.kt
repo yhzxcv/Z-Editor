@@ -21,9 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
@@ -45,8 +43,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -72,7 +68,11 @@ import com.example.z_editor.data.repository.GridItemRepository
 import com.example.z_editor.data.repository.GridItemRepository.buildGridAliases
 import com.example.z_editor.data.repository.ZombieRepository
 import com.example.z_editor.data.repository.ZombieRepository.buildZombieAliases
+import com.example.z_editor.ui.theme.LocalDarkTheme
+import com.example.z_editor.ui.theme.PvzGrayDark
+import com.example.z_editor.ui.theme.PvzGrayLight
 import com.example.z_editor.views.components.AssetImage
+import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -99,8 +99,6 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
     val focusManager = LocalFocusManager.current
     var showHelpDialog by remember { mutableStateOf(false) }
     var localRefreshTrigger by remember { mutableIntStateOf(0) }
-
-    val themeColor = Color(0xFF607D8B)
 
     val objectMap = remember(rootLevelFile, localRefreshTrigger) {
         rootLevelFile.objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
@@ -165,6 +163,9 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
     }
 
     var zombieToCustomizeIndex by remember { mutableStateOf<Int?>(null) }
+
+    val isDark = LocalDarkTheme.current
+    val themeColor = if (isDark) PvzGrayDark else PvzGrayLight
 
     if (zombieToCustomizeIndex != null) {
         val index = zombieToCustomizeIndex!!
@@ -232,7 +233,11 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
 
                     if (compatibleCustomZombies.isNotEmpty()) {
                         Spacer(Modifier.height(8.dp))
-                        Text("或切换至已有的同类定义：", fontSize = 12.sp, color = Color.Gray)
+                        Text(
+                            "或切换至已有的同类定义：",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                         compatibleCustomZombies.forEach { (alias, rtid) ->
                             Card(
                                 onClick = {
@@ -255,7 +260,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                                     Icon(
                                         Icons.AutoMirrored.Filled.ArrowForward,
                                         null,
-                                        tint = Color.Gray,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
@@ -263,7 +268,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                         }
                     } else {
                         Spacer(Modifier.height(8.dp))
-                        Text("暂无其他兼容的自定义僵尸", fontSize = 12.sp, color = Color.LightGray)
+                        Text("暂无其他兼容的自定义僵尸", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             },
@@ -278,38 +283,12 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
         topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            "编辑 $currentAlias",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            "事件类型：障碍物出怪",
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = Color.White)
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = themeColor,
-                    titleContentColor = Color.White,
-                    actionIconContentColor = Color.White
-                )
+            CommonEditorTopAppBar(
+                title = "编辑 $currentAlias",
+                subtitle = "事件类型：障碍物出怪",
+                themeColor = themeColor,
+                onBack = onBack,
+                onHelpClick = { showHelpDialog = true }
             )
         }
     ) { padding ->
@@ -339,13 +318,13 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFF5F5F5)),
+                .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -369,6 +348,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                             singleLine = true,
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 focusedBorderColor = themeColor,
                                 focusedLabelColor = themeColor
                             )
@@ -376,7 +356,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                         Text(
                             "事件开始时在屏幕中央显示的红字警告，不支持输入中文",
                             fontSize = 11.sp,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp)
                         )
 
@@ -396,7 +376,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                         Text(
                             "僵尸生成前的等待时间，若已进入下一波将不生成僵尸",
                             fontSize = 11.sp,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     }
@@ -445,11 +425,11 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                     if (source == "CurrentLevel") alias else GridItemRepository.getName(alias)
 
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = if (!isValid) Color(0xFFF8F1F1) else Color.White),
+                    colors = CardDefaults.cardColors(containerColor = if (!isValid) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp),
                     border = if (!isValid) androidx.compose.foundation.BorderStroke(
                         1.dp,
-                        Color.Red
+                        MaterialTheme.colorScheme.onError
                     ) else null
                 ) {
                     Row(
@@ -462,11 +442,15 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Color(0xFFEEEEEE)),
+                                .background(MaterialTheme.colorScheme.surfaceVariant),
                             filterQuality = FilterQuality.Medium,
                             placeholder = {
                                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Icon(Icons.Default.Widgets, null, tint = Color.Gray)
+                                    Icon(
+                                        Icons.Default.Widgets,
+                                        null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             }
                         )
@@ -479,7 +463,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                             Text(
                                 text = alias,
                                 fontSize = 10.sp,
-                                color = if (!isValid) Color.Red else Color.Gray,
+                                color = if (!isValid) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onSurfaceVariant,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -494,7 +478,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                                 sync()
                             }
                         ) {
-                            Icon(Icons.Default.Delete, null, tint = Color.LightGray)
+                            Icon(Icons.Default.Delete, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -542,11 +526,11 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                 val isElite = zombieData.isElite
 
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = if (!isValid) Color(0xFFF8F1F1) else Color.White),
+                    colors = CardDefaults.cardColors(containerColor = if (!isValid) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(2.dp),
                     border = if (!isValid) androidx.compose.foundation.BorderStroke(
                         1.dp,
-                        Color.Red
+                        MaterialTheme.colorScheme.onError
                     ) else null,
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -558,10 +542,10 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                                 modifier = Modifier
                                     .size(48.dp)
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (isValid) Color(0xFFEEEEEE) else Color(0xFFFFEBEE))
+                                    .background(if (isValid) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error)
                                     .border(
                                         0.5.dp,
-                                        if (isValid) Color.Transparent else Color.Red,
+                                        if (isValid) Color.Transparent else MaterialTheme.colorScheme.onError,
                                         RoundedCornerShape(8.dp)
                                     ),
                                 filterQuality = FilterQuality.Medium,
@@ -582,14 +566,14 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                                         text = displayName,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 16.sp,
-                                        color = if (isValid) Color.Black else Color.Red
+                                        color = if (isValid) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onError
                                     )
                                     if (isCustom) {
                                         Spacer(Modifier.width(6.dp))
                                         Box(
                                             modifier = Modifier
                                                 .background(
-                                                    Color(0xFFFF9800),
+                                                    MaterialTheme.colorScheme.onTertiary,
                                                     RoundedCornerShape(4.dp)
                                                 )
                                                 .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -606,7 +590,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                                         Box(
                                             modifier = Modifier
                                                 .background(
-                                                    Color(0xFF673AB7),
+                                                    MaterialTheme.colorScheme.surfaceTint,
                                                     RoundedCornerShape(4.dp)
                                                 )
                                                 .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -631,7 +615,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                                     Text(
                                         if (isCustom) "原型: $baseTypeName" else alias,
                                         fontSize = 12.sp,
-                                        color = Color.Gray
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -644,16 +628,22 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .background(Color(0xFFF5F5F5), RoundedCornerShape(8.dp))
-                                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
+                                        .padding(horizontal = 8.dp, vertical = 16.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text("僵尸等级", fontSize = 14.sp, color = Color.Gray)
+                                    Text(
+                                        text = "僵尸等级",
+                                        fontSize = 15.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        modifier = Modifier.padding(start = 12.dp)
+                                    )
                                     Spacer(Modifier.weight(1f))
                                     Text(
                                         "精英",
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF673AB7)
+                                        color = MaterialTheme.colorScheme.surfaceTint,
+                                        modifier = Modifier.padding(end = 24.dp)
                                     )
                                 }
                             } else {
@@ -687,7 +677,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                         }
 
                         Spacer(Modifier.height(12.dp))
-                        HorizontalDivider(color = Color(0xFFEEEEEE))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
                         Spacer(Modifier.height(8.dp))
 
                         Row(
@@ -704,8 +694,8 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                                 },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFE3F2FD),
-                                    contentColor = Color(0xFF1565C0)
+                                    containerColor = MaterialTheme.colorScheme.outline,
+                                    contentColor = MaterialTheme.colorScheme.secondary
                                 ),
                                 contentPadding = PaddingValues(0.dp),
                                 shape = RoundedCornerShape(8.dp)
@@ -720,9 +710,9 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                             }
 
                             val customBtnColor =
-                                if (isCustom) Color(0xFFFFF3E0) else Color(0xFFE8F5E9)
+                                if (isCustom) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.outlineVariant
                             val customContentColor =
-                                if (isCustom) Color(0xFFE65100) else Color(0xFF2E7D32)
+                                if (isCustom) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.primary
                             val customText = if (isCustom) "编辑属性" else "自定义"
                             val customIcon =
                                 if (isCustom) Icons.Default.Edit else Icons.Default.Science
@@ -758,8 +748,8 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                                 },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFFFEBEE),
-                                    contentColor = Color(0xFFC62828)
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = MaterialTheme.colorScheme.onError
                                 ),
                                 contentPadding = PaddingValues(0.dp),
                                 shape = RoundedCornerShape(8.dp)

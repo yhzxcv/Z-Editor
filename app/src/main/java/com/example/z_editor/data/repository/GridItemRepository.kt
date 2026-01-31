@@ -21,19 +21,19 @@ enum class GridItemCategory(val label: String) {
 object GridItemRepository {
 
     private val staticItems = listOf(
-        GridItemInfo("gravestone_egypt", "埃及墓碑", GridItemCategory.Scene, "gravestone_egypt.png"),
-        GridItemInfo("gravestone_dark", "黑暗墓碑", GridItemCategory.Scene, "gravestone_dark.png"),
-        GridItemInfo("gravestoneZombieOnDestruction", "僵尸墓碑", GridItemCategory.Scene, "gravestone_dark.png"),
-        GridItemInfo("gravestonePlantfoodOnDestruction", "能量豆墓碑", GridItemCategory.Scene, "gravestonePlantfoodOnDestruction.png"),
-        GridItemInfo("gravestoneSunOnDestruction", "阳光墓碑", GridItemCategory.Scene, "gravestoneSunOnDestruction.png"),
-        GridItemInfo("gravestone_battlez_sun", "联赛大阳光墓碑", GridItemCategory.Scene, "gravestoneSunOnDestruction.png"),
+        GridItemInfo("gravestone_egypt", "埃及墓碑", GridItemCategory.Scene, "gravestone_egypt.webp"),
+        GridItemInfo("gravestone_dark", "黑暗墓碑", GridItemCategory.Scene, "gravestone_dark.webp"),
+        GridItemInfo("gravestoneZombieOnDestruction", "僵尸墓碑", GridItemCategory.Scene, "gravestone_dark.webp"),
+        GridItemInfo("gravestonePlantfoodOnDestruction", "能量豆墓碑", GridItemCategory.Scene, "gravestonePlantfoodOnDestruction.webp"),
+        GridItemInfo("gravestoneSunOnDestruction", "阳光墓碑", GridItemCategory.Scene, "gravestoneSunOnDestruction.webp"),
+        GridItemInfo("gravestone_battlez_sun", "联赛大阳光墓碑", GridItemCategory.Scene, "gravestoneSunOnDestruction.webp"),
 
-        GridItemInfo("heian_box_sun", "阳光赛钱箱", GridItemCategory.Scene, "heian_box_sun.png"),
-        GridItemInfo("heian_box_plantfood", "能量豆赛钱箱", GridItemCategory.Scene, "heian_box_plantfood.png"),
-        GridItemInfo("heian_box_levelup", "升级赛钱箱", GridItemCategory.Scene, "heian_box_levelup.png"),
-        GridItemInfo("heian_box_seedpacket", "种子赛钱箱", GridItemCategory.Scene, "heian_box_seedpacket.png"),
-        GridItemInfo("goldtile", "黄金地砖", GridItemCategory.Scene, "goldtile.png"),
-        GridItemInfo("fake_mold", "霉菌地面", GridItemCategory.Scene, "fake_mold.png"),
+        GridItemInfo("heian_box_sun", "阳光赛钱箱", GridItemCategory.Scene, "heian_box_sun.webp"),
+        GridItemInfo("heian_box_plantfood", "能量豆赛钱箱", GridItemCategory.Scene, "heian_box_plantfood.webp"),
+        GridItemInfo("heian_box_levelup", "升级赛钱箱", GridItemCategory.Scene, "heian_box_levelup.webp"),
+        GridItemInfo("heian_box_seedpacket", "种子赛钱箱", GridItemCategory.Scene, "heian_box_seedpacket.webp"),
+        GridItemInfo("goldtile", "黄金地砖", GridItemCategory.Scene, "goldtile.webp"),
+        GridItemInfo("fake_mold", "霉菌地面", GridItemCategory.Scene, "fake_mold.webp"),
 
         GridItemInfo("printer_small_paper", "纸屑", GridItemCategory.Scene, null),
         GridItemInfo("pvz1grid", "回忆锤僵尸墓碑", GridItemCategory.Scene, null),
@@ -41,23 +41,23 @@ object GridItemRepository {
         GridItemInfo("score_3x_tile", "联赛3倍分数砖", GridItemCategory.Scene, null),
         GridItemInfo("score_5x_tile", "联赛5倍分数砖", GridItemCategory.Scene, null),
 
-        GridItemInfo("zombiepotion_speed", "疾速药水", GridItemCategory.Trap, "zombiepotion_speed.png"),
-        GridItemInfo("zombiepotion_toughness", "坚韧药水", GridItemCategory.Trap, "zombiepotion_toughness.png"),
-        GridItemInfo("zombiepotion_invisible", "隐身药水", GridItemCategory.Trap, "zombiepotion_invisible.png"),
-        GridItemInfo("zombiepotion_poison", "剧毒药水", GridItemCategory.Trap, "zombiepotion_poison.png"),
+        GridItemInfo("zombiepotion_speed", "疾速药水", GridItemCategory.Trap, "zombiepotion_speed.webp"),
+        GridItemInfo("zombiepotion_toughness", "坚韧药水", GridItemCategory.Trap, "zombiepotion_toughness.webp"),
+        GridItemInfo("zombiepotion_invisible", "隐身药水", GridItemCategory.Trap, "zombiepotion_invisible.webp"),
+        GridItemInfo("zombiepotion_poison", "剧毒药水", GridItemCategory.Trap, "zombiepotion_poison.webp"),
 
-        GridItemInfo("boulder_trap_falling_forward", "滚石陷阱", GridItemCategory.Trap, "boulder_trap_falling_forward.png"),
-        GridItemInfo("flame_spreader_trap", "火焰陷阱", GridItemCategory.Trap, "flame_spreader_trap.png"),
-        GridItemInfo("bufftile_shield", "护盾瓷砖", GridItemCategory.Trap, "bufftile_shield.png"),
-        GridItemInfo("bufftile_speed", "疾速瓷砖", GridItemCategory.Trap, "bufftile_speed.png"),
-        GridItemInfo("bufftile_attack", "攻击瓷砖", GridItemCategory.Trap, "bufftile_attack.png"),
-        GridItemInfo("zombie_bound_tile", "僵尸跳板", GridItemCategory.Trap, "zombie_bound_tile.png"),
-        GridItemInfo("zombie_changer", "僵尸改造机", GridItemCategory.Trap, "zombie_changer.png"),
+        GridItemInfo("boulder_trap_falling_forward", "滚石陷阱", GridItemCategory.Trap, "boulder_trap_falling_forward.webp"),
+        GridItemInfo("flame_spreader_trap", "火焰陷阱", GridItemCategory.Trap, "flame_spreader_trap.webp"),
+        GridItemInfo("bufftile_shield", "护盾瓷砖", GridItemCategory.Trap, "bufftile_shield.webp"),
+        GridItemInfo("bufftile_speed", "疾速瓷砖", GridItemCategory.Trap, "bufftile_speed.webp"),
+        GridItemInfo("bufftile_attack", "攻击瓷砖", GridItemCategory.Trap, "bufftile_attack.webp"),
+        GridItemInfo("zombie_bound_tile", "僵尸跳板", GridItemCategory.Trap, "zombie_bound_tile.webp"),
+        GridItemInfo("zombie_changer", "僵尸改造机", GridItemCategory.Trap, "zombie_changer.webp"),
 
-        GridItemInfo("slider_up", "上行冰河浮冰", GridItemCategory.Trap, "slider_up.png"),
-        GridItemInfo("slider_down", "下行冰河浮冰", GridItemCategory.Trap, "slider_down.png"),
-        GridItemInfo("slider_up_modern", "上行摩登浮标", GridItemCategory.Trap, "slider_up_modern.png"),
-        GridItemInfo("slider_down_modern", "下行摩登浮标", GridItemCategory.Trap, "slider_down_modern.png"),
+        GridItemInfo("slider_up", "上行冰河浮冰", GridItemCategory.Trap, "slider_up.webp"),
+        GridItemInfo("slider_down", "下行冰河浮冰", GridItemCategory.Trap, "slider_down.webp"),
+        GridItemInfo("slider_up_modern", "上行摩登浮标", GridItemCategory.Trap, "slider_up_modern.webp"),
+        GridItemInfo("slider_down_modern", "下行摩登浮标", GridItemCategory.Trap, "slider_down_modern.webp"),
 
         GridItemInfo("christmas_protect", "元宝", GridItemCategory.Trap, null),
         GridItemInfo("dumpling", "饺子", GridItemCategory.Trap, null),
@@ -98,13 +98,15 @@ object GridItemRepository {
         }
     }
 
-    fun getName(typeName: String): String {
+    fun getName(aliases: String): String {
+        val typeName = if (aliases == "gravestone") "gravestone_egypt" else aliases
         val staticName = allItems.find { it.typeName == typeName }?.name
         if (staticName != null) return staticName
         return typeName
     }
 
-    fun getIconPath(typeName: String): String? {
+    fun getIconPath(aliases: String): String? {
+        val typeName = if (aliases == "gravestone") "gravestone_egypt" else aliases
         val icon = allItems.find { it.typeName == typeName }?.icon
         return if (icon != null) "images/griditems/$icon" else null
     }

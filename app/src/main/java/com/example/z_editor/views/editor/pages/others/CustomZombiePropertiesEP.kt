@@ -764,9 +764,9 @@ fun CustomZombiePropertiesEP(
                         "寒冰抗性 (Ice)", "火焰抗性 (Fire)"
                     )
                     val icons = listOf(
-                        "images/tags/Plant_Physics.png", "images/tags/Plant_Poison.png",
-                        "images/tags/Plant_Electric.png", "images/tags/Plant_Magic.png",
-                        "images/tags/Plant_Ice.png", "images/tags/Plant_Fire.png"
+                        "images/tags/Plant_Physics.webp", "images/tags/Plant_Poison.webp",
+                        "images/tags/Plant_Electric.webp", "images/tags/Plant_Magic.webp",
+                        "images/tags/Plant_Ice.webp", "images/tags/Plant_Fire.webp"
                     )
 
                     for (i in 0 until 3) {

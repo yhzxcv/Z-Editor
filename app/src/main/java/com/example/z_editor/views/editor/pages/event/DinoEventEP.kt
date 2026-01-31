@@ -158,7 +158,7 @@ fun DinoEventEP(
                     Spacer(Modifier.height(16.dp))
 
                     val currentDinoType = eventDataState.value.dinoType
-                    val imagePath = "images/others/dino_${currentDinoType}.png"
+                    val imagePath = "images/others/dino_${currentDinoType}.webp"
 
                     // === 下拉选择框 ===
                     ExposedDropdownMenuBox(
