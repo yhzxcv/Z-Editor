@@ -1,5 +1,6 @@
 package com.example.z_editor
 
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
+import androidx.core.content.edit
 import com.example.z_editor.ui.theme.LocalDarkTheme
 import com.example.z_editor.ui.theme.PVZ2LevelEditorTheme
 import com.example.z_editor.views.screens.main.AboutScreen
@@ -34,16 +36,18 @@ import com.example.z_editor.views.screens.main.LevelListScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val prefs = getSharedPreferences("prefs", Context.MODE_PRIVATE)
         setContent {
             val configuration = LocalConfiguration.current
             val systemDensity = LocalDensity.current
+            val savedScale = prefs.getFloat("ui_scale", 1.0f)
 
             val screenWidthDp = configuration.screenWidthDp
             val designWidthDp = 360f
 
             val targetDensity = (screenWidthDp * systemDensity.density) / (designWidthDp * 1.15f)
 
-            var uiScale by rememberSaveable { mutableFloatStateOf(1.0f) }
+            var uiScale by rememberSaveable { mutableFloatStateOf(savedScale) }
             val appDensity = remember(targetDensity, uiScale) {
                 Density(
                     density = targetDensity * uiScale,
@@ -64,7 +68,10 @@ class MainActivity : ComponentActivity() {
                             isDarkTheme = isDarkTheme,
                             onToggleTheme = { isDarkTheme = !isDarkTheme },
                             uiScale = uiScale,
-                            onUiScaleChange = { newScale -> uiScale = newScale }
+                            onUiScaleChange = { newScale ->
+                                uiScale = newScale
+                                prefs.edit { putFloat("ui_scale", newScale) }
+                            }
                         )
                     }
                 }

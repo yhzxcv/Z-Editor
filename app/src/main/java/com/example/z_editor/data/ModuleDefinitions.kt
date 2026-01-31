@@ -1031,7 +1031,7 @@ object ModuleRegistry {
         ),
         "TideProperties" to ModuleMetadata(
             title = "潮水系统",
-            description = "开启关卡中的潮水系统",
+            description = "开启关卡中的潮水系统，需最后添加",
             icon = Icons.Default.WaterDrop,
             isCore = true,
             category = ModuleCategory.Scene,

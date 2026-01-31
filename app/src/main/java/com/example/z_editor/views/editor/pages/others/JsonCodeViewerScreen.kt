@@ -13,13 +13,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,11 +31,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DataObject
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,6 +49,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -61,12 +64,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.PvzLevelFile
@@ -100,11 +107,14 @@ fun JsonCodeViewerScreen(
     var fontSize by remember { mutableFloatStateOf(12f) }
 
     var isEditing by remember { mutableStateOf(false) }
-    var editingText by remember { mutableStateOf("") }
+    var editingValue by remember { mutableStateOf(TextFieldValue("")) }
     var syntaxError by remember { mutableStateOf<String?>(null) }
 
+    val focusRequester = remember { FocusRequester() }
     val expandedStates = remember { mutableStateMapOf<Int, Boolean>() }
+
     var refreshTrigger by remember { mutableIntStateOf(0) }
+    var itemToDeleteIndex by remember { mutableStateOf<Int?>(null) }
 
     val fullJsonContent by remember(viewMode, refreshTrigger) {
         derivedStateOf {
@@ -114,36 +124,31 @@ fun JsonCodeViewerScreen(
         }
     }
 
+    val lazyListState = rememberLazyListState()
     val commonVerticalScrollState = rememberScrollState()
     val commonHorizontalScrollState = rememberScrollState()
 
-    LaunchedEffect(isEditing) {
-        if (isEditing) {
-            editingText = gson.toJson(levelFile)
-        }
-    }
-
-    BackHandler {
-        if (isEditing) {
-            isEditing = false
-        } else {
-            onBack()
+    fun persistToFile() {
+        try {
+            val json = gson.toJson(levelFile)
+            context.openFileOutput(fileName, android.content.Context.MODE_PRIVATE).use {
+                it.write(json.toByteArray())
+            }
+            refreshTrigger++
+        } catch (e: Exception) {
+            Toast.makeText(context, "物理写入失败: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
     fun handleSave() {
         try {
-            val newLevelData = gson.fromJson(editingText, PvzLevelFile::class.java)
-
+            val newLevelData = gson.fromJson(editingValue.text, PvzLevelFile::class.java)
             levelFile.objects.clear()
             levelFile.objects.addAll(newLevelData.objects)
 
-            context.openFileOutput(fileName, android.content.Context.MODE_PRIVATE).use {
-                it.write(editingText.toByteArray())
-            }
-            Toast.makeText(context, "保存成功", Toast.LENGTH_SHORT).show()
-            refreshTrigger++
+            persistToFile()
 
+            Toast.makeText(context, "保存成功", Toast.LENGTH_SHORT).show()
             syntaxError = null
         } catch (e: com.google.gson.JsonSyntaxException) {
             syntaxError = "JSON格式错误: " + (e.localizedMessage?.substringAfterLast("Caused by: "))
@@ -153,37 +158,52 @@ fun JsonCodeViewerScreen(
         }
     }
 
+    BackHandler {
+        if (isEditing) isEditing = false else onBack()
+    }
+
+    // 删除确认弹窗
+    if (itemToDeleteIndex != null) {
+        AlertDialog(
+            onDismissRequest = { itemToDeleteIndex = null },
+            title = { Text("确认删除") },
+            text = { Text("确定要完全移除第 ${itemToDeleteIndex!! + 1} 个对象吗？此操作将立即同步到 JSON 文件。") },
+            confirmButton = {
+                TextButton(onClick = {
+                    val index = itemToDeleteIndex!!
+                    levelFile.objects.removeAt(index)
+                    persistToFile()
+                    Toast.makeText(context, "已删除并同步", Toast.LENGTH_SHORT).show()
+                    itemToDeleteIndex = null
+                }) {
+                    Text("确认删除", color = MaterialTheme.colorScheme.onError)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { itemToDeleteIndex = null }) { Text("取消") }
+            }
+        )
+    }
+
     Scaffold(
         modifier = Modifier.imePadding(),
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        val modeTitle = when {
-                            isEditing -> "编辑模式"
-                            viewMode == JsonViewMode.Structured -> "结构化视图"
-                            else -> "纯文本视图"
-                        }
-                        Text(modeTitle, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    val modeTitle = when {
+                        isEditing -> "编辑模式"
+                        viewMode == JsonViewMode.Structured -> "结构化视图"
+                        else -> "纯文本视图"
                     }
+                    Text(modeTitle, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                 },
                 navigationIcon = {
-                    if (isEditing) {
-                        IconButton(onClick = { isEditing = false }) {
-                            Icon(
-                                Icons.Default.Close,
-                                "取消",
-                                tint = MaterialTheme.colorScheme.surface
-                            )
-                        }
-                    } else {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                "返回",
-                                tint = MaterialTheme.colorScheme.surface
-                            )
-                        }
+                    IconButton(onClick = { if (isEditing) isEditing = false else onBack() }) {
+                        Icon(
+                            if (isEditing) Icons.Default.Close else Icons.AutoMirrored.Filled.ArrowBack,
+                            null,
+                            tint = MaterialTheme.colorScheme.surface
+                        )
                     }
                 },
                 actions = {
@@ -208,6 +228,10 @@ fun JsonCodeViewerScreen(
                             )
                         }
                         IconButton(onClick = {
+                            editingValue = TextFieldValue(
+                                text = gson.toJson(levelFile),
+                                selection = TextRange(0)
+                            )
                             isEditing = true
                         }) {
                             Icon(
@@ -242,52 +266,47 @@ fun JsonCodeViewerScreen(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        Icons.Default.FormatSize,
-                        null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(20.dp)
-                    )
+                    Icon(Icons.Default.FormatSize, null, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(12.dp))
-                    Text(
-                        "${fontSize.toInt()}",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(Modifier.width(8.dp))
+                    Text("${fontSize.toInt()}", fontSize = 14.sp)
                     Slider(
-                        colors = SliderDefaults.colors(
-                            thumbColor = if (isEditing) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
-                            activeTrackColor = if (isEditing) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
-                        ),
                         value = fontSize,
                         onValueChange = { fontSize = it },
                         valueRange = 6f..18f,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        colors = SliderDefaults.colors(
+                            thumbColor = if (isEditing) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
+                            activeTrackColor = if (isEditing) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
+                        )
                     )
                 }
             }
 
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.weight(1f)) {
                 if (isEditing) {
                     EditZone(
-                        text = editingText,
-                        onValueChange = { editingText = it },
+                        value = editingValue,
+                        onValueChange = { editingValue = it },
                         fontSize = fontSize,
                         syntaxError = syntaxError,
                         verticalScrollState = commonVerticalScrollState,
-                        horizontalScrollState = commonHorizontalScrollState
+                        horizontalScrollState = commonHorizontalScrollState,
+                        focusRequester = focusRequester
                     )
                 } else {
                     when (viewMode) {
                         JsonViewMode.Structured -> {
+                            val objectsSnapshot =
+                                remember(refreshTrigger) { levelFile.objects.toList() }
+
                             LazyColumn(
                                 modifier = Modifier.fillMaxSize(),
-                                contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                                    vertical = 8.dp
-                                )
+                                state = lazyListState
                             ) {
-                                itemsIndexed(levelFile.objects) { index, obj ->
+                                itemsIndexed(
+                                    items = objectsSnapshot,
+                                    key = { _, obj -> obj.hashCode() }
+                                ) { index, obj ->
                                     val isExpanded = expandedStates[index] != false
                                     ObjectCodeCard(
                                         index = index,
@@ -295,6 +314,7 @@ fun JsonCodeViewerScreen(
                                         fontSize = fontSize,
                                         expanded = isExpanded,
                                         onToggle = { expandedStates[index] = !isExpanded },
+                                        onDelete = { itemToDeleteIndex = index },
                                         jsonFormatter = { element -> gson.toJson(element) }
                                     )
                                 }
@@ -306,7 +326,7 @@ fun JsonCodeViewerScreen(
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .background(MaterialTheme.colorScheme.surface)
+                                        .background(MaterialTheme.colorScheme.background)
                                         .verticalScroll(commonVerticalScrollState)
                                         .horizontalScroll(commonHorizontalScrollState)
                                 ) {
@@ -315,7 +335,6 @@ fun JsonCodeViewerScreen(
                                         fontFamily = FontFamily.Monospace,
                                         fontSize = fontSize.sp,
                                         lineHeight = (fontSize * 1.3).sp,
-                                        color = MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.padding(16.dp)
                                     )
                                 }
@@ -324,18 +343,29 @@ fun JsonCodeViewerScreen(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(120.dp))
         }
     }
 }
 
 @Composable
 fun EditZone(
-    text: String, onValueChange: (String) -> Unit, fontSize: Float, syntaxError: String?,
-    verticalScrollState: ScrollState, horizontalScrollState: ScrollState
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    fontSize: Float,
+    syntaxError: String?,
+    verticalScrollState: ScrollState,
+    horizontalScrollState: ScrollState,
+    focusRequester: FocusRequester
 ) {
-    val lines = text.split("\n")
-    val lineCount = lines.size
+    val lineCount = value.text.count { it == '\n' } + 1
+    val lineNumbersWidth = remember(lineCount, fontSize) {
+        val digits = lineCount.toString().length
+        (digits * fontSize * 0.7f).dp + 20.dp
+    }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         if (syntaxError != null) {
@@ -349,25 +379,25 @@ fun EditZone(
                     .padding(8.dp)
             )
         }
-        Row(modifier = Modifier.weight(1f)) {
+        Row(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
-                    .width(45.dp)
+                    .width(lineNumbersWidth)
                     .fillMaxHeight()
                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
                     .verticalScroll(verticalScrollState)
                     .padding(vertical = 16.dp),
                 horizontalAlignment = Alignment.End
             ) {
-                for (i in 1..lineCount) {
-                    Text(
-                        text = "$i ",
-                        fontSize = fontSize.sp,
-                        fontFamily = FontFamily.Monospace,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        lineHeight = (fontSize * 1.3).sp
-                    )
-                }
+                val lineNumbersText = remember(lineCount) { (1..lineCount).joinToString("\n") }
+                Text(
+                    text = lineNumbersText,
+                    fontSize = fontSize.sp,
+                    fontFamily = FontFamily.Monospace,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    lineHeight = (fontSize * 1.3).sp,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
             }
 
             Box(
@@ -379,16 +409,18 @@ fun EditZone(
                     .padding(horizontal = 8.dp, vertical = 16.dp)
             ) {
                 BasicTextField(
-                    value = text,
+                    value = value,
                     onValueChange = onValueChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
                     textStyle = TextStyle(
                         fontFamily = FontFamily.Monospace,
                         fontSize = fontSize.sp,
                         lineHeight = (fontSize * 1.3).sp,
                         color = MaterialTheme.colorScheme.onSurface
                     ),
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                    modifier = Modifier.fillMaxWidth()
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
                 )
             }
         }
@@ -402,20 +434,16 @@ fun ObjectCodeCard(
     fontSize: Float,
     expanded: Boolean,
     onToggle: () -> Unit,
+    onDelete: () -> Unit,
     jsonFormatter: (com.google.gson.JsonElement) -> String
 ) {
-    val aliases = obj.aliases
-    val objClass = obj.objClass
-    val isLevelDef = objClass == "LevelDefinition"
-
-    val jsonContent by remember(obj.objData) {
-        derivedStateOf { jsonFormatter(obj.objData) }
-    }
+    val isLevelDef = obj.objClass == "LevelDefinition"
+    val jsonContent by remember(obj.objData) { derivedStateOf { jsonFormatter(obj.objData) } }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = 12.dp, vertical = 8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp),
         shape = RoundedCornerShape(8.dp)
@@ -423,7 +451,7 @@ fun ObjectCodeCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primaryContainer)
+                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f))
                 .clickable { onToggle() }
                 .padding(horizontal = 12.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -431,12 +459,12 @@ fun ObjectCodeCard(
             Box(
                 modifier = Modifier
                     .size(24.dp)
-                    .background(MaterialTheme.colorScheme.onSurfaceVariant, CircleShape),
+                    .background(MaterialTheme.colorScheme.primary, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "${index + 1}",
-                    color = MaterialTheme.colorScheme.surface,
+                    "${index + 1}",
+                    color = Color.White,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -445,33 +473,34 @@ fun ObjectCodeCard(
             Spacer(Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                if (!isLevelDef && !aliases.isNullOrEmpty()) {
+                if (!isLevelDef && !obj.aliases.isNullOrEmpty()) {
                     Text(
-                        text = "Aliases: ${aliases.joinToString(", ")}",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        "Aliases: ${(obj.aliases as Iterable<Any?>).joinToString(", ")}",
+                        fontSize = 12.sp
                     )
                 }
-
                 Text(
-                    text = "ObjClass: $objClass",
-                    fontSize = 13.sp,
+                    "ObjClass: ${obj.objClass}",
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
-            Icon(
-                if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
+                Icon(
+                    Icons.Default.DeleteForever,
+                    null,
+                    tint = MaterialTheme.colorScheme.onError,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            Icon(if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore, null)
         }
 
-        HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f))
-
         if (expanded) {
+            HorizontalDivider(color = Color.LightGray.copy(alpha = 0.3f))
             SelectionContainer {
                 Text(
                     text = jsonContent,
@@ -480,8 +509,7 @@ fun ObjectCodeCard(
                         .padding(12.dp),
                     fontFamily = FontFamily.Monospace,
                     fontSize = fontSize.sp,
-                    lineHeight = (fontSize * 1.3).sp,
-                    color = MaterialTheme.colorScheme.onSurface
+                    lineHeight = (fontSize * 1.3).sp
                 )
             }
         }

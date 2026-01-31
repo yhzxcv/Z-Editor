@@ -268,7 +268,7 @@ fun TidePropertiesEP(
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
-                            text = "场地最右边坐标为0，最左边为9，可以输入负数让潮水初始位置在场外。",
+                            text = "场地最右边坐标为0，最左边为9，注意潮水模块需要最后添加否则可能导致闪退。",
                             color = themeColor,
                             fontSize = 12.sp,
                             lineHeight = 16.sp

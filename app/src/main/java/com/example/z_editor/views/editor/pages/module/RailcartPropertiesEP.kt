@@ -387,7 +387,7 @@ fun RailcartPropertiesEP(
                                                     .background(PvzBrownLight.copy(alpha = 0.3f))
                                             ) {
                                                 AssetImage(
-                                                    path = "images/others/rails.png",
+                                                    path = "images/others/rails.webp",
                                                     contentDescription = "Railcart",
                                                     modifier = Modifier
                                                         .fillMaxSize()
@@ -404,7 +404,7 @@ fun RailcartPropertiesEP(
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 AssetImage(
-                                                    path = "images/others/railcarts.png",
+                                                    path = "images/others/railcarts.webp",
                                                     contentDescription = "Railcart",
                                                     modifier = Modifier
                                                         .fillMaxSize()

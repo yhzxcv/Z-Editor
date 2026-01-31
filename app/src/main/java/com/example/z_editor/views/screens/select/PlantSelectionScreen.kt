@@ -389,7 +389,7 @@ fun PlantGridItem(
     ) {
         Box {
             AssetImage(
-                path = if (plant.icon != null) "images/plants/${plant.icon}" else "images/others/unknown.jpg",
+                path = if (plant.icon != null) "images/plants/${plant.icon}" else "images/others/unknown.webp",
                 contentDescription = plant.name,
                 filterQuality = FilterQuality.High,
                 modifier = Modifier

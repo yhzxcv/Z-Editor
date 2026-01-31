@@ -415,7 +415,7 @@ fun InitialZombieEntryEP(
                                                         .weight(1f)
                                                         .fillMaxHeight()
                                                         .border(
-                                                            if (isSelected) 1.5.dp else 0.5.dp,
+                                                            0.5.dp,
                                                             if (isSelected) themeColor else Color(
                                                                 0xFF8581FA
                                                             )

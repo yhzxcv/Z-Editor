@@ -102,6 +102,14 @@ object ConflictRegistry {
         ModuleConflictRule(
             conflictingClasses = setOf("ZombossBattleIntroProperties", "StandardLevelIntroProperties"),
             description = "两种关卡开局转场不能同时出现，否则僵王血量无法正常显示。"
+        ),
+        ModuleConflictRule(
+            conflictingClasses = setOf("InitialPlantEntryProperties", "RoofProperties"),
+            description = "在屋顶无法进行预置植物，会引发闪退。"
+        ),
+        ModuleConflictRule(
+            conflictingClasses = setOf("ProtectThePlantChallengeProperties", "RoofProperties"),
+            description = "在屋顶无法进行预置植物，会引发闪退。"
         )
     )
 }
@@ -144,7 +152,7 @@ fun LevelSettingsTab(
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "当前关卡内未找到关卡定义模块 (LevelDefinition)，这是关卡文件的基础节点，缺失会导致关卡无法正常读取及运行。",
+                text = "当前关卡内未找到关卡定义模块 (LevelDefinition)，这是关卡文件的基础节点，缺失表示当前关卡已被毁坏。请尝试手动添加关卡定义模块。",
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center

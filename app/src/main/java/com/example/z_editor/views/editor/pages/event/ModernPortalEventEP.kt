@@ -343,10 +343,10 @@ fun MinimalPortalCard(
     Card(
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.surfaceVariant
+            containerColor = if (isSelected) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.surfaceVariant.copy(0.5f)
         ),
         border = BorderStroke(
-            width = if (isSelected) 2.dp else 1.dp,
+            width = if (isSelected) 1.dp else 0.5.dp,
             color = if (isSelected) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onSurfaceVariant
         ),
         shape = RoundedCornerShape(8.dp)
@@ -426,7 +426,6 @@ fun SimplePortalPositionCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(9f / 5f)
-                        .clip(RoundedCornerShape(4.dp))
                         .background(if (isDark) Color(0xFF3F3A33) else Color(0xFFEEEEEE))
                 ) {
                     for (r in 1..5) {

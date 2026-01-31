@@ -802,7 +802,7 @@ fun WaveTimelineTab(
         val currentWaveEvents = waveManager.waves.getOrNull(waveIdx - 1) ?: mutableListOf()
         ModalBottomSheet(
             onDismissRequest = { editingWaveIndex = null },
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.background
         ) {
             LazyColumn(
                 modifier = Modifier

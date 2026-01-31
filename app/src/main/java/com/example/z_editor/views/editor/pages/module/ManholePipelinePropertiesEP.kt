@@ -463,7 +463,7 @@ fun ManholePipelinePropertiesEP(
                                                         val isSelected = idx == selectedIndex
 
                                                         val imageName =
-                                                            if (isStart) "steam_down.png" else "steam_up.png"
+                                                            if (isStart) "steam_down.webp" else "steam_up.webp"
 
                                                         AssetImage(
                                                             path = "images/griditems/$imageName",

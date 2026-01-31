@@ -142,6 +142,17 @@ fun StarChallengeModulePropertiesEP(
             innerList.removeAt(index)
             syncMainModule()
 
+            val info = RtidParser.parse(challengeRtid)
+            if (info != null && info.source == "CurrentLevel") {
+                val alias = info.alias
+                val objToRemove = rootLevelFile.objects.find { it.aliases?.contains(alias) == true }
+
+                if (objToRemove != null) {
+                    rootLevelFile.objects.remove(objToRemove)
+                    Toast.makeText(context, "已删除挑战及其配置数据", Toast.LENGTH_SHORT).show()
+                }
+            }
+
             refreshTrigger++
         }
     }

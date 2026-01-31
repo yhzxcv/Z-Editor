@@ -466,7 +466,7 @@ fun MagicMirrorEventEP(
                                                         val (groupIndex, mirrorNum, typeIdx) = mirrorToShow
                                                         val isSelected = groupIndex == selectedIndex
 
-                                                        val imageName = "magic_mirror$typeIdx.png"
+                                                        val imageName = "magic_mirror$typeIdx.webp"
 
                                                         AssetImage(
                                                             path = "images/griditems/$imageName",

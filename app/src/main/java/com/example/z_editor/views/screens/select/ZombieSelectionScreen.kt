@@ -376,7 +376,7 @@ fun ZombieGridItem(
     ) {
         Box {
             AssetImage(
-                path = if (zombie.icon != null) "images/zombies/${zombie.icon}" else "images/others/unknown.jpg",
+                path = if (zombie.icon != null) "images/zombies/${zombie.icon}" else "images/others/unknown.webp",
                 contentDescription = zombie.name,
                 filterQuality = FilterQuality.High,
                 modifier = Modifier

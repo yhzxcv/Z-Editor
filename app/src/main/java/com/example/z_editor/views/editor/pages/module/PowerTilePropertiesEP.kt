@@ -71,10 +71,10 @@ enum class PowerTileGroup(
     val color: Color,
     val imageName: String
 ) {
-    Alpha("alpha", "Alpha (绿)", Color(0xFF41FF4B), "tool_powertile_alpha.png"),
-    Beta("beta", "Beta (红)", Color(0xFFFF493A), "tool_powertile_beta.png"),
-    Gamma("gamma", "Gamma (蓝)", Color(0xFF3CFFFF), "tool_powertile_gamma.png"),
-    Delta("delta", "Delta (黄)", Color(0xFFFFE837), "tool_powertile_delta.png")
+    Alpha("alpha", "Alpha (绿)", Color(0xFF41FF4B), "tool_powertile_alpha.webp"),
+    Beta("beta", "Beta (红)", Color(0xFFFF493A), "tool_powertile_beta.webp"),
+    Gamma("gamma", "Gamma (蓝)", Color(0xFF3CFFFF), "tool_powertile_gamma.webp"),
+    Delta("delta", "Delta (黄)", Color(0xFFFFE837), "tool_powertile_delta.webp")
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)

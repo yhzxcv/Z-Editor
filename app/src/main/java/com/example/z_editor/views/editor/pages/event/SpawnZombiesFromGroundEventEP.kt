@@ -182,7 +182,7 @@ fun SpawnZombiesFromGroundEventEP(
     if (showBottomSheet && editingZombie != null) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false; editingZombie = null },
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.background
         ) {
             val currentBaseType = remember(editingZombie!!.type) {
                 val rtidInfo = RtidParser.parse(editingZombie!!.type)

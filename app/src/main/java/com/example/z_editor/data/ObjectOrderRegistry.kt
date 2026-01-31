@@ -18,6 +18,7 @@ object ObjectOrderRegistry {
 
         "PiratePlankProperties",
         "TideProperties",
+        "RoofProperties",
         "RailcartProperties",
         "PowerTileProperties",
         "ZombiePotionModuleProperties",
@@ -33,7 +34,6 @@ object ObjectOrderRegistry {
         "InitialPlantEntryProperties",
         "InitialZombieProperties",
         "InitialGridItemProperties",
-
         "ProtectThePlantChallengeProperties",
         "ProtectTheGridItemChallengeProperties",
 

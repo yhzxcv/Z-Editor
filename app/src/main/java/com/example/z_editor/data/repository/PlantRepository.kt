@@ -19,27 +19,27 @@ enum class PlantTag(val label: String, val iconName: String?, val category: Plan
     All("全部植物", null, PlantCategory.Quality),
 
     // --- 按品质 (Quality) ---
-    White("白色品质", "Plant_White.png", PlantCategory.Quality),
-    Green("绿色品质", "Plant_Green.png", PlantCategory.Quality),
-    Blue("蓝色品质", "Plant_Blue.png", PlantCategory.Quality),
-    Purple("紫色品质", "Plant_Purple.png", PlantCategory.Quality),
-    Orange("橙色品质", "Plant_Orange.png", PlantCategory.Quality),
+    White("白色品质", "Plant_White.webp", PlantCategory.Quality),
+    Green("绿色品质", "Plant_Green.webp", PlantCategory.Quality),
+    Blue("蓝色品质", "Plant_Blue.webp", PlantCategory.Quality),
+    Purple("紫色品质", "Plant_Purple.webp", PlantCategory.Quality),
+    Orange("橙色品质", "Plant_Orange.webp", PlantCategory.Quality),
 
     // --- 按作用 (Role) ---
-    Assist("辅助植物", "Plant_Assist.png", PlantCategory.Role),
-    Remote("远程植物", "Plant_Remote.png", PlantCategory.Role),
-    Productor("生产植物", "Plant_Productor.png", PlantCategory.Role),
-    Defence("坚韧植物", "Plant_Defence.png", PlantCategory.Role),
-    Vanguard("先锋植物", "Plant_Vanguard.png", PlantCategory.Role),
-    Trapper("奇兵植物", "Plant_Trapper.png", PlantCategory.Role),
+    Assist("辅助植物", "Plant_Assist.webp", PlantCategory.Role),
+    Remote("远程植物", "Plant_Remote.webp", PlantCategory.Role),
+    Productor("生产植物", "Plant_Productor.webp", PlantCategory.Role),
+    Defence("坚韧植物", "Plant_Defence.webp", PlantCategory.Role),
+    Vanguard("先锋植物", "Plant_Vanguard.webp", PlantCategory.Role),
+    Trapper("奇兵植物", "Plant_Trapper.webp", PlantCategory.Role),
 
     // --- 按属性 (Attribute) ---
-    Fire("火焰属性", "Plant_Fire.png", PlantCategory.Attribute),
-    Ice("冰冻属性", "Plant_Ice.png", PlantCategory.Attribute),
-    Magic("魔法属性", "Plant_Magic.png", PlantCategory.Attribute),
-    Poison("毒液属性", "Plant_Poison.png", PlantCategory.Attribute),
-    Electric("雷电属性", "Plant_Electric.png", PlantCategory.Attribute),
-    Physics("物理属性", "Plant_Physics.png", PlantCategory.Attribute),
+    Fire("火焰属性", "Plant_Fire.webp", PlantCategory.Attribute),
+    Ice("冰冻属性", "Plant_Ice.webp", PlantCategory.Attribute),
+    Magic("魔法属性", "Plant_Magic.webp", PlantCategory.Attribute),
+    Poison("毒液属性", "Plant_Poison.webp", PlantCategory.Attribute),
+    Electric("雷电属性", "Plant_Electric.webp", PlantCategory.Attribute),
+    Physics("物理属性", "Plant_Physics.webp", PlantCategory.Attribute),
 
     // --- 其他植物 (Other) ---
     Original("一代植物", null, PlantCategory.Other),
