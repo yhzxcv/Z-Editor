@@ -61,25 +61,21 @@ object WavePointAnalysis {
         points: Int,
         parsedData: ParsedLevelData
     ): Map<String, Double> {
-        // 1. 负数或零不计算
         if (points <= 0) return emptyMap()
 
-        // 2. 获取僵尸池 (Zombie Pool)
-        // 从 WaveManagerModule 里找 DynamicZombies 配置
-        val waveModule = parsedData.waveModule
-        if (waveModule == null || waveModule.dynamicZombies.isEmpty()) {
+        val waveModule = parsedData.waveModule ?: return emptyMap()
+
+        val zombiesList = waveModule.dynamicZombies
+        if (zombiesList.isNullOrEmpty()) {
             return emptyMap()
         }
 
-        // 通常取第一组配置 (如果有多个分组逻辑需根据 waveIndex 进一步匹配，目前取[0]即可)
-        val dynamicGroup = waveModule.dynamicZombies[0]
+        val dynamicGroup = zombiesList[0]
         val zombiePool = dynamicGroup.zombiePool
 
         if (zombiePool.isEmpty()) return emptyMap()
 
-        // 3. 准备计算输入数据
         val inputs = zombiePool.map { rtid ->
-            // 解析别名 -> 查标准名 -> 查属性
             val alias = RtidParser.parse(rtid)?.alias ?: rtid
             val typeName = ZombiePropertiesRepository.getTypeNameByAlias(alias)
             val stats = ZombiePropertiesRepository.getStats(typeName.toString())
@@ -90,8 +86,6 @@ object WavePointAnalysis {
                 weight = stats.weight.toDouble()
             )
         }
-
-        // 4. 调用核心算法
         return ExpectationCalculator.calculate(inputs, points)
     }
 }

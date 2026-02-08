@@ -207,7 +207,7 @@ object LevelRepository {
             if (folder.findFile(newFileName) != null) {
                 return false
             }
-            val assetContent = context.assets.open("template/$templateName").bufferedReader().use {
+            val assetContent = context.assets.open("reference/template/$templateName").bufferedReader().use {
                 it.readText()
             }
             val newFile = folder.createFile("application/json", newFileName) ?: return false

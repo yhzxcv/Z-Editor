@@ -81,6 +81,7 @@ sealed class EditorSubScreen {
     data class SeedBank(val rtid: String) : EditorSubScreen()
     data class ConveyorBelt(val rtid: String) : EditorSubScreen()
     data class WaveManagerModule(val rtid: String) : EditorSubScreen()
+    data class InitialPlantProperties(val rtid: String) : EditorSubScreen()
     data class InitialPlantEntry(val rtid: String) : EditorSubScreen()
     data class InitialZombieEntry(val rtid: String) : EditorSubScreen()
     data class InitialGridItemEntry(val rtid: String) : EditorSubScreen()
@@ -902,6 +903,18 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.ZombieMoveFastModule(rtid) }
         ),
 
+        "InitialPlantProperties" to ModuleMetadata(
+            title = "旧版预置植物",
+            description = "预置植物传统写法，可放置冰封植物",
+            icon = Icons.Default.Widgets,
+            isCore = true,
+            allowMultiple = true,
+            category = ModuleCategory.Scene,
+            defaultAlias = "FrozenPlantPlacement",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { InitialPlantPropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.InitialPlantProperties(rtid) }
+        ),
         "InitialPlantEntryProperties" to ModuleMetadata(
             title = "预置植物",
             description = "关卡开始时场上已存在的植物",

@@ -37,7 +37,7 @@ data class LevelDefinitionData(
 
 // === 波次管理器 ===
 data class WaveManagerModuleData(
-    @SerializedName("DynamicZombies") var dynamicZombies: MutableList<DynamicZombieGroup> = mutableListOf(),
+    @SerializedName("DynamicZombies") var dynamicZombies: MutableList<DynamicZombieGroup>? = null,
     @SerializedName("WaveManagerProps") var waveManagerProps: String? = null,
     @SerializedName("ManualStartup") var manualStartup: Boolean? = null
 )
@@ -56,9 +56,9 @@ data class WaveManagerData(
     @SerializedName("FlagWaveInterval") var flagWaveInterval: Int = 10,
     @SerializedName("SuppressFlagZombie") var suppressFlagZombie: Boolean? = null,
     @SerializedName("LevelJam") var levelJam: String? = null,
-    @SerializedName("ZombieCountDownFirstWaveSecs") var zombieCountDownFirstWaveSecs: Int? = 12,
-    @SerializedName("ZombieCountDownFirstWaveConveyorSecs") var zombieCountDownFirstWaveConveyorSecs: Int? = 5,
-    @SerializedName("ZombieCountDownHugeWaveDelay") var zombieCountDownHugeWaveDelay: Int? = 5,
+    @SerializedName("ZombieCountDownFirstWaveSecs") var zombieCountDownFirstWaveSecs: Int? = null,
+    @SerializedName("ZombieCountDownFirstWaveConveyorSecs") var zombieCountDownFirstWaveConveyorSecs: Int? = null,
+    @SerializedName("ZombieCountDownHugeWaveDelay") var zombieCountDownHugeWaveDelay: Int? = null,
     @SerializedName("MaxNextWaveHealthPercentage") var maxNextWaveHealthPercentage: Double = 0.85,
     @SerializedName("MinNextWaveHealthPercentage") var minNextWaveHealthPercentage: Double = 0.70,
     @SerializedName("Waves") val waves: MutableList<MutableList<String>> = mutableListOf()
@@ -153,6 +153,20 @@ data class InitialGridItemData(
     @SerializedName("GridX") var gridX: Int = 0,
     @SerializedName("GridY") var gridY: Int = 0,
     @SerializedName("TypeName") var typeName: String = ""
+)
+
+// === 旧版预置植物 ===
+data class InitialPlantPropertiesData(
+    @SerializedName("InitialPlantPlacements") var placements: MutableList<InitialPlantPlacementData> = mutableListOf(),
+    @SerializedName("IsInitialIntensiveCarrotPlacements") var isInitialIntensiveCarrotPlacements: Boolean? = null
+)
+
+data class InitialPlantPlacementData(
+    @SerializedName("GridX") var gridX: Int = 0,
+    @SerializedName("GridY") var gridY: Int = 0,
+    @SerializedName("TypeName") var typeName: String = "",
+    @SerializedName("Level") var level: Int = 1,
+    @SerializedName("Condition") var condition: String? = null
 )
 
 // === 保护障碍物模块 ===

@@ -24,20 +24,23 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
@@ -63,8 +66,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.data.InitialPlantData
-import com.example.z_editor.data.InitialPlantEntryData
+import com.example.z_editor.data.InitialPlantPlacementData
+import com.example.z_editor.data.InitialPlantPropertiesData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.PlantRepository
@@ -80,7 +83,7 @@ import rememberJsonSync
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InitialPlantEntryEP(
+fun InitialPlantPropertiesEP(
     rtid: String,
     onBack: () -> Unit,
     rootLevelFile: PvzLevelFile,
@@ -93,72 +96,73 @@ fun InitialPlantEntryEP(
     var selectedX by remember { mutableIntStateOf(0) }
     var selectedY by remember { mutableIntStateOf(0) }
 
-    var editingPlant by remember { mutableStateOf<InitialPlantData?>(null) }
+    var editingPlacement by remember { mutableStateOf<InitialPlantPlacementData?>(null) }
 
     val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
-    val syncManager = rememberJsonSync(obj, InitialPlantEntryData::class.java)
+    val syncManager = rememberJsonSync(obj, InitialPlantPropertiesData::class.java)
     val moduleDataState = syncManager.dataState
 
     fun sync() {
         syncManager.sync()
     }
 
-    moduleDataState.value.plants.find {
-        it.gridX == selectedX && it.gridY == selectedY
-    }
-
-    moduleDataState.value.plants.filter {
-        it.gridX == selectedX && it.gridY == selectedY
-    }
-
-    val sortedPlants = remember(moduleDataState.value.plants) {
-        moduleDataState.value.plants.sortedWith(compareBy({ it.gridY }, { it.gridX }))
+    val sortedPlacements = remember(moduleDataState.value.placements) {
+        moduleDataState.value.placements.sortedWith(compareBy({ it.gridY }, { it.gridX }))
     }
 
     fun handleSelectPlant() {
         onRequestPlantSelection { plantType ->
-            val newList = moduleDataState.value.plants.toMutableList()
-            val newPlant = InitialPlantData(
+            val newList = moduleDataState.value.placements.toMutableList()
+            val newPlacement = InitialPlantPlacementData(
                 gridX = selectedX,
                 gridY = selectedY,
+                typeName = plantType,
                 level = 1,
-                plantTypes = mutableListOf(plantType),
-                avatar = false
+                condition = null
             )
-            newList.add(newPlant)
-            moduleDataState.value = moduleDataState.value.copy(plants = newList)
+            newList.add(newPlacement)
+            moduleDataState.value = moduleDataState.value.copy(placements = newList)
             sync()
         }
     }
 
-    fun updatePlant(oldPlant: InitialPlantData, newPlant: InitialPlantData) {
-        val newList = moduleDataState.value.plants.toMutableList()
-        val index = newList.indexOf(oldPlant)
+    fun updatePlacement(
+        oldPlacement: InitialPlantPlacementData,
+        newPlacement: InitialPlantPlacementData
+    ) {
+        val newList = moduleDataState.value.placements.toMutableList()
+        val index = newList.indexOf(oldPlacement)
         if (index != -1) {
-            newList[index] = newPlant
-            moduleDataState.value = moduleDataState.value.copy(plants = newList)
+            newList[index] = newPlacement
+            moduleDataState.value = moduleDataState.value.copy(placements = newList)
             sync()
         }
     }
 
-    fun deletePlant(targetPlant: InitialPlantData) {
-        val newList = moduleDataState.value.plants.toMutableList()
-        newList.remove(targetPlant)
-        moduleDataState.value = moduleDataState.value.copy(plants = newList)
+    fun deletePlacement(targetPlacement: InitialPlantPlacementData) {
+        val newList = moduleDataState.value.placements.toMutableList()
+        newList.remove(targetPlacement)
+        moduleDataState.value = moduleDataState.value.copy(placements = newList)
         sync()
     }
 
     val isDark = LocalDarkTheme.current
     val themeColor = if (isDark) PvzLightGreenDark else PvzLightGreenLight
 
-    if (editingPlant != null) {
-        var tempLevelFloat by remember { mutableFloatStateOf(editingPlant!!.level.toFloat()) }
-        var tempAvatar by remember { mutableStateOf(editingPlant!!.avatar) }
+    if (editingPlacement != null) {
+        var tempLevelFloat by remember { mutableFloatStateOf(editingPlacement!!.level.toFloat()) }
+        var tempCondition by remember { mutableStateOf(editingPlacement!!.condition) }
+        var conditionExpanded by remember { mutableStateOf(false) }
+
+        val conditionOptions = listOf(
+            null to "无状态 (null)",
+            "icecubed" to "冰封状态 (Icecubed)"
+        )
 
         AlertDialog(
-            onDismissRequest = { editingPlant = null },
+            onDismissRequest = { editingPlacement = null },
             title = {
-                val name = PlantRepository.getName(editingPlant!!.plantTypes.firstOrNull() ?: "")
+                val name = PlantRepository.getName(editingPlacement!!.typeName)
                 Text("编辑 $name")
             },
             text = {
@@ -178,52 +182,67 @@ fun InitialPlantEntryEP(
 
                     HorizontalDivider()
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { tempAvatar = !tempAvatar },
-                        verticalAlignment = Alignment.CenterVertically
+                    // 状态下拉框 (Condition)
+                    ExposedDropdownMenuBox(
+                        expanded = conditionExpanded,
+                        onExpandedChange = { conditionExpanded = !conditionExpanded }
                     ) {
-                        Text("佩戴第一装扮 (Avatar)", fontWeight = FontWeight.Bold)
-                        Spacer(Modifier.weight(1f))
-                        Switch(
-                            checked = tempAvatar, onCheckedChange = { tempAvatar = it },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                                checkedTrackColor = themeColor,
-                                checkedBorderColor = Color.Transparent,
-
-                                uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
-                                uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
-                            )
+                        OutlinedTextField(
+                            value = conditionOptions.find { it.first == tempCondition }?.second
+                                ?: "未知状态",
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("初始状态 (Condition)") },
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = conditionExpanded) },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = themeColor,
+                                focusedLabelColor = themeColor
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor()
                         )
+                        ExposedDropdownMenu(
+                            expanded = conditionExpanded,
+                            onDismissRequest = { conditionExpanded = false }
+                        ) {
+                            conditionOptions.forEach { (value, label) ->
+                                DropdownMenuItem(
+                                    text = { Text(label) },
+                                    onClick = {
+                                        tempCondition = value
+                                        conditionExpanded = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                            }
+                        }
                     }
                 }
             },
             confirmButton = {
                 Button(onClick = {
-                    val updated = editingPlant!!.copy(
+                    val updated = editingPlacement!!.copy(
                         level = tempLevelFloat.toInt(),
-                        avatar = tempAvatar
+                        condition = tempCondition
                     )
-                    updatePlant(editingPlant!!, updated)
-                    editingPlant = null
+                    updatePlacement(editingPlacement!!, updated)
+                    editingPlacement = null
                 }) { Text("保存") }
             },
             dismissButton = {
                 Row {
                     TextButton(
                         onClick = {
-                            deletePlant(editingPlant!!)
-                            editingPlant = null
+                            deletePlacement(editingPlacement!!)
+                            editingPlacement = null
                         },
                         colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onError)
                     ) { Text("删除") }
 
                     Spacer(Modifier.width(8.dp))
 
-                    TextButton(onClick = { editingPlant = null }) { Text("取消") }
+                    TextButton(onClick = { editingPlacement = null }) { Text("取消") }
                 }
             }
         )
@@ -237,7 +256,7 @@ fun InitialPlantEntryEP(
         },
         topBar = {
             CommonEditorTopAppBar(
-                title = "初始植物布局",
+                title = "初始植物配置",
                 themeColor = themeColor,
                 onBack = onBack,
                 onHelpClick = { showHelpDialog = true }
@@ -246,17 +265,21 @@ fun InitialPlantEntryEP(
     ) { padding ->
         if (showHelpDialog) {
             EditorHelpDialog(
-                title = "预置植物模块说明",
+                title = "初始植物配置模块说明",
                 onDismiss = { showHelpDialog = false },
                 themeColor = themeColor
             ) {
                 HelpSection(
                     title = "简要介绍",
-                    body = "此模块用于在关卡开始前在草坪上预先放置植物。可以设置植物的阶级和是否携带一装。"
+                    body = "此模块用于在关卡开始前配置植物布局，与预置植物布局类似，但结构不同且支持特殊状态。"
                 )
                 HelpSection(
-                    title = "格点坐标",
-                    body = "植物所在的位置用网格坐标显示，可以在同一个位置堆放多株植物。"
+                    title = "特殊状态",
+                    body = "可以为植物设置冰封状态，常见于冰河世界关卡。"
+                )
+                HelpSection(
+                    title = "复活之战模式",
+                    body = "开启复活之战模式后，初始植物将于开始游戏后被销毁。注意中文版没有销毁植物的火焰效果。"
                 )
             }
         }
@@ -270,16 +293,70 @@ fun InitialPlantEntryEP(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            // === 区域 1: 网格选择器 (跨满全宽) ===
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(1.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                val currentVal =
+                                    moduleDataState.value.isInitialIntensiveCarrotPlacements == true
+                                val newVal = if (!currentVal) true else null
+                                moduleDataState.value = moduleDataState.value.copy(
+                                    isInitialIntensiveCarrotPlacements = newVal
+                                )
+                                sync()
+                            },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "复活之战模式",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
+                            Text(
+                                "IsInitialIntensiveCarrotPlacements",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = moduleDataState.value.isInitialIntensiveCarrotPlacements == true,
+                            onCheckedChange = { checked ->
+                                val newVal = if (checked) true else null
+                                moduleDataState.value = moduleDataState.value.copy(
+                                    isInitialIntensiveCarrotPlacements = newVal
+                                )
+                                sync()
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                                checkedTrackColor = themeColor,
+                                checkedBorderColor = Color.Transparent,
+
+                                uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
+                        )
+                    }
+                }
+            }
+
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Box(contentAlignment = Alignment.Center) {
                     Card(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         elevation = CardDefaults.cardElevation(2.dp),
-                        modifier = Modifier.widthIn(max = 480.dp) // 限制最大宽度
+                        modifier = Modifier.widthIn(max = 480.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            // 状态栏
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Column {
                                     Text(
@@ -310,11 +387,10 @@ fun InitialPlantEntryEP(
 
                             Spacer(Modifier.height(16.dp))
 
-                            // 9x5 网格绘制
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .aspectRatio(1.8f) // 限制宽度后，这个高度也会被限制
+                                    .aspectRatio(1.8f)
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(if (isDark) Color(0xFF3C483D) else Color(0xFFE8F5E9))
                                     .border(1.dp, Color(0xFFC8E6C9), RoundedCornerShape(6.dp))
@@ -325,10 +401,12 @@ fun InitialPlantEntryEP(
                                             for (col in 0..8) {
                                                 val isSelected =
                                                     (row == selectedY && col == selectedX)
-                                                val cellPlants =
-                                                    moduleDataState.value.plants.filter { it.gridX == col && it.gridY == row }
-                                                val firstPlant = cellPlants.firstOrNull()
-                                                var count = cellPlants.size
+                                                val cellPlacements =
+                                                    moduleDataState.value.placements.filter {
+                                                        it.gridX == col && it.gridY == row
+                                                    }
+                                                val count = cellPlacements.size
+                                                val firstPlacement = cellPlacements.firstOrNull()
 
                                                 Box(
                                                     modifier = Modifier
@@ -350,13 +428,8 @@ fun InitialPlantEntryEP(
                                                         },
                                                     contentAlignment = Alignment.Center
                                                 ) {
-                                                    if (count > 0) {
-                                                        if (firstPlant != null) {
-                                                            val type =
-                                                                firstPlant.plantTypes.firstOrNull()
-                                                                    ?: ""
-                                                            PlantIconSmall(type)
-                                                        }
+                                                    if (count > 0 && firstPlacement != null) {
+                                                        PlantIconSmall2(firstPlacement.typeName)
                                                         if (count > 1) {
                                                             Box(
                                                                 modifier = Modifier
@@ -390,7 +463,6 @@ fun InitialPlantEntryEP(
                 }
             }
 
-            // === 区域 2: 标题 (跨满全宽) ===
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
                     "植物分布列表 (行优先排序)",
@@ -401,15 +473,14 @@ fun InitialPlantEntryEP(
                 )
             }
 
-            // === 区域 3: 物品列表 ===
-            items(sortedPlants) { plant ->
-                InitialPlantCard(
-                    plant = plant,
-                    isSelected = (plant.gridX == selectedX && plant.gridY == selectedY),
+            items(sortedPlacements) { placement ->
+                InitialPlacementCard(
+                    placement = placement,
+                    isSelected = (placement.gridX == selectedX && placement.gridY == selectedY),
                     onClick = {
-                        selectedX = plant.gridX
-                        selectedY = plant.gridY
-                        editingPlant = plant
+                        selectedX = placement.gridX
+                        selectedY = placement.gridY
+                        editingPlacement = placement
                     }
                 )
             }
@@ -417,14 +488,11 @@ fun InitialPlantEntryEP(
     }
 }
 
-
 // === 辅助组件 ===
 
 @Composable
-fun PlantIconSmall(plantType: String) {
-    val info = remember(plantType) {
-        PlantRepository.getPlantInfoById(plantType)
-    }
+fun PlantIconSmall2(plantType: String) {
+    val info = remember(plantType) { PlantRepository.getPlantInfoById(plantType) }
     val cardShape = RoundedCornerShape(4.dp)
 
     if (info?.icon != null) {
@@ -448,15 +516,15 @@ fun PlantIconSmall(plantType: String) {
 }
 
 @Composable
-fun InitialPlantCard(
-    plant: InitialPlantData,
+fun InitialPlacementCard(
+    placement: InitialPlantPlacementData,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val plantType = plant.plantTypes.firstOrNull() ?: "Unknown"
+    val plantType = placement.typeName
     val info = remember(plantType) { PlantRepository.getPlantInfoById(plantType) }
-
     val isDark = LocalDarkTheme.current
+
     Card(
         onClick = onClick,
         colors = CardDefaults.cardColors(
@@ -486,35 +554,24 @@ fun InitialPlantCard(
                         )
                     }
                 )
-                if (plant.avatar) {
-                    Icon(
-                        Icons.Default.Star,
-                        null,
-                        tint = Color(0xFFFFC107),
-                        modifier = Modifier
-                            .size(14.dp)
-                            .align(Alignment.BottomEnd)
-                            .background(Color.White, CircleShape)
-                            .border(0.5.dp, Color.LightGray, CircleShape)
-                    )
-                }
             }
 
             Spacer(Modifier.width(8.dp))
 
             Column {
                 Text(
-                    text = "R${plant.gridY + 1}:C${plant.gridX + 1}",
+                    text = "R${placement.gridY + 1}:C${placement.gridX + 1}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 12.sp,
                     color = Color(0xFF2E7D32)
                 )
-                Text(
-                    text = "等级: ${plant.level}",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "${placement.condition}",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
     }

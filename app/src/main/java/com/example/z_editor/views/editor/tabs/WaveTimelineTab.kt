@@ -273,11 +273,19 @@ fun WaveTimelineTab(
 
     // 点数计算
     fun calculatePoints(waveIndex: Int, isFlag: Boolean): Int {
-        if (waveModule == null || waveModule.dynamicZombies.isEmpty()) return 0
-        val group = waveModule.dynamicZombies[0]
+        if (waveModule == null) return 0
+
+        val zombiesList = waveModule.dynamicZombies
+        if (zombiesList.isNullOrEmpty()) {
+            return 0
+        }
+        val group = zombiesList[0]
+
         val startEffectWave = group.startingWave + 1
         if (waveIndex < startEffectWave) return 0
+
         var basePoints = group.startingPoints + (waveIndex - startEffectWave) * group.pointIncrement
+
         if (basePoints > 60000) basePoints = 60000
         return if (isFlag) (basePoints * 2.5).toInt() else basePoints
     }

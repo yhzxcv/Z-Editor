@@ -104,7 +104,6 @@ fun WaveManagerPropertiesEP(
     val currentHugeDelayVal = waveManager.zombieCountDownHugeWaveDelay ?: defaultHugeDelay
     var hugeWaveInput by remember(currentHugeDelayVal) { mutableStateOf(currentHugeDelayVal.toString()) }
 
-    // 保存时间设置的逻辑
     fun saveTimeSettings(firstValStr: String, hugeValStr: String) {
         val inputFirst = firstValStr.toIntOrNull() ?: defaultFirstWaveSecs
         val inputHuge = hugeValStr.toIntOrNull() ?: defaultHugeDelay

@@ -41,6 +41,7 @@ import com.example.z_editor.views.editor.pages.module.DeathHoleModuleEP
 import com.example.z_editor.views.editor.pages.module.IncreasedCostModulePropertiesEP
 import com.example.z_editor.views.editor.pages.module.InitialGridItemEntryEP
 import com.example.z_editor.views.editor.pages.module.InitialPlantEntryEP
+import com.example.z_editor.views.editor.pages.module.InitialPlantPropertiesEP
 import com.example.z_editor.views.editor.pages.module.InitialZombieEntryEP
 import com.example.z_editor.views.editor.pages.module.LastStandMinigamePropertiesEP
 import com.example.z_editor.views.editor.pages.module.LevelMutatorMaxSunPropsEP
@@ -320,6 +321,13 @@ fun EditorContentRouter(
             )
         }
 
+        is EditorSubScreen.WaveManagerModule -> WaveManagerModulePropertiesEP(
+            rtid = targetState.rtid,
+            rootLevelFile = rootLevelFile,
+            onBack = actions.navigateBack,
+            onRequestZombieSelection = actions.onLaunchMultiZombieSelector,
+            scrollState = getScrollState("WaveManagerModule")
+        )
 
         is EditorSubScreen.LastStandMinigame -> LastStandMinigamePropertiesEP(
             rtid = targetState.rtid,
@@ -352,6 +360,13 @@ fun EditorContentRouter(
             onRequestToolSelection = actions.onLaunchToolSelector,
             onRequestPlantSelection = actions.onLaunchPlantSelector,
             scrollState = getScrollState("ConveyorBelt")
+        )
+
+        is EditorSubScreen.InitialPlantProperties -> InitialPlantPropertiesEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onRequestPlantSelection = actions.onLaunchPlantSelector
         )
 
         is EditorSubScreen.InitialPlantEntry -> InitialPlantEntryEP(
@@ -449,14 +464,6 @@ fun EditorContentRouter(
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
             scrollState = getScrollState("PowerTile")
-        )
-
-        is EditorSubScreen.WaveManagerModule -> WaveManagerModulePropertiesEP(
-            rtid = targetState.rtid,
-            rootLevelFile = rootLevelFile,
-            onBack = actions.navigateBack,
-            onRequestZombieSelection = actions.onLaunchZombieSelector,
-            scrollState = getScrollState("WaveManagerModule")
         )
 
         is EditorSubScreen.RainDarkProperties -> RainDarkPropertiesEP(

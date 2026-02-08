@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -35,6 +36,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -77,7 +80,7 @@ fun WaveManagerModulePropertiesEP(
     rootLevelFile: PvzLevelFile,
     rtid: String,
     onBack: () -> Unit,
-    onRequestZombieSelection: ((String) -> Unit) -> Unit,
+    onRequestZombieSelection: ((List<String>) -> Unit) -> Unit,
     scrollState: ScrollState
 ) {
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
@@ -97,24 +100,32 @@ fun WaveManagerModulePropertiesEP(
 
     LaunchedEffect(Unit) {
         var needsUpdate = false
-        val currentData = syncManager.dataState.value
+        var currentData = moduleData
+        if (currentData.dynamicZombies != null) {
+            if (currentData.dynamicZombies!!.isEmpty()) {
+                currentData.dynamicZombies!!.add(DynamicZombieGroup())
+                needsUpdate = true
+            } else {
+                currentData.dynamicZombies!!.forEach { group ->
+                    if (group.zombieLevel == null) group.zombieLevel = mutableListOf()
+                    if (group.zombiePool == null) group.zombiePool = mutableListOf()
 
-        if (currentData.dynamicZombies.isEmpty()) {
-            currentData.dynamicZombies.add(DynamicZombieGroup())
-            needsUpdate = true
-        } else {
-            // 检查并修复每个组的 level 列表长度，确保与 zombiePool 长度一致
-            currentData.dynamicZombies.forEach { group ->
-                while (group.zombieLevel.size < group.zombiePool.size) {
-                    group.zombieLevel.add(1)
-                    needsUpdate = true
+                    while (group.zombieLevel.size < group.zombiePool.size) {
+                        group.zombieLevel.add(1)
+                        needsUpdate = true
+                    }
                 }
             }
         }
 
         if (needsUpdate) {
+            syncManager.dataState.value = currentData
             sync()
         }
+    }
+
+    var isDynamicZombiesEnabled by remember(moduleData.dynamicZombies) {
+        mutableStateOf(moduleData.dynamicZombies != null)
     }
 
     var refreshTrigger by remember { mutableIntStateOf(0) }
@@ -123,18 +134,15 @@ fun WaveManagerModulePropertiesEP(
         rootLevelFile.objects.find { it.objClass == "WaveManagerProperties" }?.aliases?.firstOrNull()
     }
 
-    // 使用 moduleData 获取当前值。注意处理 waveManagerProps 可能为 null 的情况
     val currentPropsAlias = RtidParser.parse(moduleData.waveManagerProps ?: "")?.alias
     val isPropsValid = actualWaveMgrAlias != null && currentPropsAlias == actualWaveMgrAlias
 
-    // 检查 LastStand 逻辑
     val hasLastStandModule = remember(rootLevelFile.objects) {
         rootLevelFile.objects.any { it.objClass == "LastStandMinigameProperties" }
     }
 
     LaunchedEffect(hasLastStandModule) {
         if (hasLastStandModule && moduleData.manualStartup != true) {
-            // 更新 State 并同步
             syncManager.dataState.value = moduleData.copy(manualStartup = true)
             sync()
         }
@@ -254,99 +262,196 @@ fun WaveManagerModulePropertiesEP(
                 }
             }
 
-            val firstGroup = moduleData.dynamicZombies[0]
-
-            Text(
-                "点数分配设置",
-                fontWeight = FontWeight.Bold,
-                color = themeColor,
-                fontSize = 16.sp
-            )
             Card(
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    NumberInputInt(
-                        firstGroup.startingWave,
-                        {
-                            firstGroup.startingWave = it
-                            sync()
-                        },
-                        "起始波次 (StartingWave)",
-                        color = themeColor
+                    Icon(
+                        Icons.Default.Timeline,
+                        contentDescription = null,
+                        tint = themeColor,
+                        modifier = Modifier.size(24.dp)
                     )
-                    NumberInputInt(
-                        firstGroup.startingPoints,
-                        {
-                            firstGroup.startingPoints = it
+                    Spacer(Modifier.width(16.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "启用点数出怪",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                        Text(
+                            text = if (isDynamicZombiesEnabled) "已启用 (使用额外点数出怪)" else "未启用 (仅使用波次事件)",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                    }
+                    Switch(
+                        checked = isDynamicZombiesEnabled,
+                        onCheckedChange = { checked ->
+                            isDynamicZombiesEnabled = checked
+                            if (checked) {
+                                if (moduleData.dynamicZombies == null) {
+                                    val newGroup = DynamicZombieGroup(
+                                        startingWave = 3,
+                                        startingPoints = 400,
+                                        pointIncrement = 60,
+                                        zombiePool = mutableListOf(),
+                                        zombieLevel = mutableListOf()
+                                    )
+                                    syncManager.dataState.value = moduleData.copy(
+                                        dynamicZombies = mutableListOf(newGroup)
+                                    )
+                                }
+                            } else {
+                                syncManager.dataState.value = moduleData.copy(
+                                    dynamicZombies = null
+                                )
+                            }
                             sync()
                         },
-                        "起始点数 (StartingPoints)",
-                        color = themeColor
-                    )
-                    NumberInputInt(
-                        firstGroup.pointIncrement,
-                        {
-                            firstGroup.pointIncrement = it
-                            sync()
-                        },
-                        "每波点数增量 (PointIncrement)",
-                        color = themeColor
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                            checkedTrackColor = themeColor,
+                            checkedBorderColor = Color.Transparent,
+
+                            uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
                     )
                 }
             }
 
-            Text(
-                "僵尸池 (ZombiePool)",
-                fontWeight = FontWeight.Bold,
-                color = themeColor,
-                fontSize = 16.sp
-            )
+            // === 仅当开关开启时显示详细配置 ===
+            if (isDynamicZombiesEnabled) {
 
-            key(refreshTrigger) {
-                ZombiePoolEditor(
-                    zombiePool = firstGroup.zombiePool,
-                    zombieLevel = firstGroup.zombieLevel,
-                    onAdd = {
-                        onRequestZombieSelection { selectedId ->
-                            val isElite = ZombieRepository.isElite(selectedId)
-                            val aliases = ZombieRepository.buildZombieAliases(selectedId)
-                            if (!isElite) {
-                                firstGroup.zombiePool.add(RtidParser.build(aliases, "ZombieTypes"))
-                                firstGroup.zombieLevel.add(1)
-                                sync()
-                                refreshTrigger++
-                            } else Toast.makeText(context, "不能添加精英僵尸", Toast.LENGTH_SHORT)
-                                .show()
+                if (isDynamicZombiesEnabled) {
+                    val firstGroup = moduleData.dynamicZombies?.firstOrNull()
+
+                    if (firstGroup != null) {
+                        Text(
+                            "点数分配设置",
+                            fontWeight = FontWeight.Bold,
+                            color = themeColor,
+                            fontSize = 16.sp
+                        )
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            elevation = CardDefaults.cardElevation(2.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                NumberInputInt(
+                                    firstGroup.startingWave,
+                                    {
+                                        firstGroup.startingWave = it
+                                        sync()
+                                    },
+                                    "起始波次 (StartingWave)",
+                                    color = themeColor
+                                )
+                                NumberInputInt(
+                                    firstGroup.startingPoints,
+                                    {
+                                        firstGroup.startingPoints = it
+                                        sync()
+                                    },
+                                    "起始点数 (StartingPoints)",
+                                    color = themeColor
+                                )
+                                NumberInputInt(
+                                    firstGroup.pointIncrement,
+                                    {
+                                        firstGroup.pointIncrement = it
+                                        sync()
+                                    },
+                                    "每波点数增量 (PointIncrement)",
+                                    color = themeColor
+                                )
+                            }
                         }
-                    },
-                    onRemove = { index ->
-                        if (index < firstGroup.zombiePool.size) {
-                            firstGroup.zombiePool.removeAt(index)
-                            if (index < firstGroup.zombieLevel.size) firstGroup.zombieLevel.removeAt(
-                                index
+
+                        Text(
+                            "僵尸池 (ZombiePool)",
+                            fontWeight = FontWeight.Bold,
+                            color = themeColor,
+                            fontSize = 16.sp
+                        )
+
+                        key(refreshTrigger) {
+                            val pool = firstGroup.zombiePool
+                            val levels = firstGroup.zombieLevel
+
+                            ZombiePoolEditor(
+                                zombiePool = pool,
+                                zombieLevel = levels,
+                                onAdd = {
+                                    onRequestZombieSelection { selectedIds ->
+                                        var addedCount = 0
+                                        selectedIds.forEach { selectedId ->
+                                            val isElite = ZombieRepository.isElite(selectedId)
+                                            if (!isElite) {
+                                                val aliases = ZombieRepository.buildZombieAliases(selectedId)
+                                                firstGroup.zombiePool.add(RtidParser.build(aliases, "ZombieTypes"))
+                                                firstGroup.zombieLevel.add(1)
+                                                addedCount++
+                                            }
+                                        }
+
+                                        if (addedCount > 0) {
+                                            sync()
+                                            refreshTrigger++
+                                            Toast.makeText(context, "已添加 $addedCount 种僵尸", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            Toast.makeText(context, "未添加任何僵尸", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                },
+                                onRemove = { index ->
+                                    if (index < pool.size) {
+                                        pool.removeAt(index)
+                                        if (index < levels.size) levels.removeAt(index)
+                                        sync()
+                                        refreshTrigger++
+                                    }
+                                },
+                                onLevelChange = { index, newLevel ->
+                                    if (index < levels.size) {
+                                        val newLevels = levels.toMutableList()
+                                        newLevels[index] = newLevel
+                                        levels.clear()
+                                        levels.addAll(newLevels)
+                                        sync()
+                                        refreshTrigger++
+                                    }
+                                }
                             )
-                            sync()
-                            refreshTrigger++
-                        }
-                    },
-                    onLevelChange = { index, newLevel ->
-                        if (index < firstGroup.zombieLevel.size) {
-                            val newLevels = firstGroup.zombieLevel.toMutableList()
-                            newLevels[index] = newLevel
-                            firstGroup.zombieLevel.clear()
-                            firstGroup.zombieLevel.addAll(newLevels)
-                            sync()
-                            refreshTrigger++
                         }
                     }
-                )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "点数出怪已关闭，将仅使用波次事件列表中的配置。",
+                            color = Color.Gray,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+                Spacer(Modifier.height(32.dp))
             }
-            Spacer(Modifier.height(32.dp))
         }
     }
 }
