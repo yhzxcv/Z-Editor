@@ -2991,6 +2991,58 @@
         "icon": "icon_duckpear.webp"
     },
     {
+        "id": "longmalily",
+        "name": "藕花白龙",
+        "tags": [
+            "Orange",
+            "Remote",
+            "Fire"
+        ],
+        "icon": "icon_longmalily.gif"
+    },
+    {
+        "id": "goldencassia",
+        "name": "金蝉花",
+        "tags": [
+            "Orange",
+            "Defence",
+            "Magic"
+        ],
+        "icon": "icon_goldencassia.webp"
+    },
+    {
+        "id": "moton",
+        "name": "魔藤",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_moton.webp"
+    },
+    {
+        "id": "uncharted_haystack",
+        "name": "草垛",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_uncharted_haystack.webp"
+    },
+    {
+        "id": "uncharted_phatbeet",
+        "name": "地宫魔音甜菜",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_phatbeet.webp"
+    },
+    {
+        "id": "uncharted_carrotlauncher",
+        "name": "地宫胡萝卜导弹",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_carrotlauncher.webp"
+    },
+    {
         "id": "parallel_sunflower",
         "name": "42号向日葵",
         "tags": [

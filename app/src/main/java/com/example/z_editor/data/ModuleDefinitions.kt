@@ -329,7 +329,7 @@ object EventRegistry {
             darkColor = Color(0xFFFFCC80),
             defaultAlias = "RaidingPartyEvent",
             defaultObjClass = "RaidingPartyZombieSpawnerProps",
-            initialDataFactory = { StormZombieSpawnerPropsData() },
+            initialDataFactory = { RaidingPartyEventData() },
             summaryProvider = { obj ->
                 try {
                     val gson = Gson()

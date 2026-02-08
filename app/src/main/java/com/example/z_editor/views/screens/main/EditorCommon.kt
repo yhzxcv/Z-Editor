@@ -12,6 +12,7 @@ import com.example.z_editor.data.EventMetadata
 import com.example.z_editor.data.ModuleMetadata
 import com.example.z_editor.data.SunDropperPropertiesData
 import com.example.z_editor.data.repository.ChallengeTypeInfo
+import com.example.z_editor.data.repository.GridItemFilterMode
 
 /**
  * 编辑器的一级 Tab 类型定义
@@ -52,7 +53,7 @@ data class EditorActions(
     val onLaunchZombieSelector: ((String) -> Unit) -> Unit,
     val onLaunchMultiPlantSelector: ((List<String>) -> Unit) -> Unit,
     val onLaunchMultiZombieSelector: ((List<String>) -> Unit) -> Unit,
-    val onLaunchGridItemSelector: ((String) -> Unit) -> Unit,
+    val onLaunchGridItemSelector: (filterMode: GridItemFilterMode, callback: (String) -> Unit) -> Unit,
     val onLaunchChallengeSelector: ((ChallengeTypeInfo) -> Unit) -> Unit,
     val onLaunchToolSelector: ((String) -> Unit) -> Unit,
     val onLaunchZombossSelector: ((String) -> Unit) -> Unit,

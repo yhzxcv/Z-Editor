@@ -231,7 +231,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
                             "世界类型",
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(Modifier.height(12.dp))
 
@@ -273,16 +273,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
                         .widthIn(max = 480.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.Settings,
-                                null,
-                                tint = themeColor,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text("高级属性", fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                        }
+                        Text("高级属性", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                         Spacer(Modifier.height(16.dp))
 
@@ -410,7 +401,7 @@ fun SimplePortalPositionCard(
                         "生成位置",
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(Modifier.weight(1f))
                     Text(

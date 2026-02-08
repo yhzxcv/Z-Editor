@@ -435,7 +435,7 @@ fun CompactZombieCard(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(if (isValid) Color(0xFFE0E0E0) else Color(0xFFFFEBEE)),
+                .background(if (isValid) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.error),
             contentAlignment = Alignment.Center
         ) {
             if (!isValid) {
@@ -460,10 +460,10 @@ fun CompactZombieCard(
         modifier = Modifier
             .size(48.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(if (isValid) Color.White else MaterialTheme.colorScheme.error)
+            .background(if (isValid) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.error)
             .border(
-                if (!isValid) 0.5.dp else 0.dp,
-                MaterialTheme.colorScheme.onError,
+                0.5.dp,
+                MaterialTheme.colorScheme.onSurfaceVariant,
                 RoundedCornerShape(8.dp)
             )
             .clickable(onClick = onClick)

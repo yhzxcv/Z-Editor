@@ -61,8 +61,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.repository.GridItemCategory
+import com.example.z_editor.data.repository.GridItemFilterMode
 import com.example.z_editor.data.repository.GridItemInfo
 import com.example.z_editor.data.repository.GridItemRepository
+import com.example.z_editor.data.repository.GridItemTag
 import com.example.z_editor.ui.theme.LocalDarkTheme
 import com.example.z_editor.ui.theme.PvzBrownDark
 import com.example.z_editor.ui.theme.PvzBrownLight
@@ -74,7 +76,8 @@ import com.example.z_editor.views.components.rememberDebouncedClick
 @Composable
 fun GridItemSelectionScreen(
     onGridItemSelected: (String) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    filterMode: GridItemFilterMode
 ) {
     val handleBack = rememberDebouncedClick { onBack() }
     BackHandler(onBack = handleBack)
@@ -82,11 +85,24 @@ fun GridItemSelectionScreen(
     var selectedCategory by remember { mutableStateOf(GridItemCategory.All) }
     val focusManager = LocalFocusManager.current
 
-    val displayList = remember(searchQuery, selectedCategory) {
-        GridItemRepository.getByCategory(selectedCategory).filter {
-            searchQuery.isBlank() ||
-                    it.name.contains(searchQuery, ignoreCase = true) ||
-                    it.typeName.contains(searchQuery, ignoreCase = true)
+    val displayList = remember(searchQuery, selectedCategory, filterMode) {
+        val baseList = if (selectedCategory == GridItemCategory.All) {
+            GridItemRepository.getAll()
+        } else {
+            GridItemRepository.getByCategory(selectedCategory)
+        }
+
+        baseList.filter { item ->
+            val isModeMatched = when (filterMode) {
+                GridItemFilterMode.All -> true
+                GridItemFilterMode.Restricted -> item.tag == GridItemTag.Normal
+            }
+
+            val isSearchMatched = searchQuery.isBlank() ||
+                    item.name.contains(searchQuery, ignoreCase = true) ||
+                    item.typeName.contains(searchQuery, ignoreCase = true)
+
+            isModeMatched && isSearchMatched
         }
     }
 

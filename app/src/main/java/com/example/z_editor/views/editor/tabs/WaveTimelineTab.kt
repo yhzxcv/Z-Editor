@@ -167,7 +167,7 @@ fun WaveTimelineTab(
                 Text(
                     text = "当前关卡启用了波次管理模块，但缺少存储波次数据的实体对象 (WaveManagerProperties)。",
                     fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
                 Spacer(Modifier.height(24.dp))

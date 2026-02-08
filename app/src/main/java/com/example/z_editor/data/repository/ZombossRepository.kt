@@ -46,7 +46,7 @@ object ZombossRepository {
 
         ZombossInfo("zombossmech_egypt_vacation", "挑战埃及僵王 (狮身终结者)", "zombossmech_egypt.webp", ZombossTag.Challenge, 3),
         ZombossInfo("zombossmech_pirate_vacation", "挑战海盗僵王 (甲板漫步者)", "zombossmech_pirate.webp", ZombossTag.Challenge, 3),
-        ZombossInfo("zombossmech_cowboy_vacation", "挑战西部僵王 (牛车格斗者)", "zombossmech_cowboy.webp", ZombossTag.Challenge, 3),
+        ZombossInfo("vacation_zombossmech_cowboy", "挑战西部僵王 (牛车格斗者)", "zombossmech_cowboy.webp", ZombossTag.Challenge, 3),
         ZombossInfo("zombossmech_future_vacation", "挑战未来僵王 (明日破译者)", "zombossmech_future.webp", ZombossTag.Challenge, 3),
         ZombossInfo("zombossmech_dark_vacation", "挑战黑暗僵王 (巨龙驾驭者)", "zombossmech_dark.webp", ZombossTag.Challenge, 3),
         ZombossInfo("zombossmech_beach_vacation", "挑战沙滩僵王 (狂鲨潜袭者)", "zombossmech_beach.webp", ZombossTag.Challenge, 3),

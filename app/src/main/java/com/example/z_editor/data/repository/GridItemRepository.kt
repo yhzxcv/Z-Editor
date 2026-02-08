@@ -1,10 +1,21 @@
 package com.example.z_editor.data.repository
 
+enum class GridItemFilterMode {
+    All,
+    Restricted
+}
+
+enum class GridItemTag {
+    Normal,
+    Special
+}
+
 data class GridItemInfo(
     val typeName: String,
     val name: String,
     val category: GridItemCategory,
-    val icon: String?
+    val icon: String?,
+    val tag: GridItemTag = GridItemTag.Normal
 )
 
 enum class GridItemCategory(val label: String) {
@@ -32,14 +43,14 @@ object GridItemRepository {
         GridItemInfo("heian_box_plantfood", "能量豆赛钱箱", GridItemCategory.Scene, "heian_box_plantfood.webp"),
         GridItemInfo("heian_box_levelup", "升级赛钱箱", GridItemCategory.Scene, "heian_box_levelup.webp"),
         GridItemInfo("heian_box_seedpacket", "种子赛钱箱", GridItemCategory.Scene, "heian_box_seedpacket.webp"),
-        GridItemInfo("goldtile", "黄金地砖", GridItemCategory.Scene, "goldtile.webp"),
-        GridItemInfo("fake_mold", "霉菌地面", GridItemCategory.Scene, "fake_mold.webp"),
+        GridItemInfo("goldtile", "黄金地砖", GridItemCategory.Scene, "goldtile.webp", GridItemTag.Special),
+        GridItemInfo("fake_mold", "霉菌地面", GridItemCategory.Scene, "fake_mold.webp", GridItemTag.Special),
 
         GridItemInfo("printer_small_paper", "纸屑", GridItemCategory.Scene, null),
         GridItemInfo("pvz1grid", "回忆锤僵尸墓碑", GridItemCategory.Scene, null),
-        GridItemInfo("score_2x_tile", "联赛2倍分数砖", GridItemCategory.Scene, null),
-        GridItemInfo("score_3x_tile", "联赛3倍分数砖", GridItemCategory.Scene, null),
-        GridItemInfo("score_5x_tile", "联赛5倍分数砖", GridItemCategory.Scene, null),
+        GridItemInfo("score_2x_tile", "联赛2倍分数砖", GridItemCategory.Scene, null, GridItemTag.Special),
+        GridItemInfo("score_3x_tile", "联赛3倍分数砖", GridItemCategory.Scene, null, GridItemTag.Special),
+        GridItemInfo("score_5x_tile", "联赛5倍分数砖", GridItemCategory.Scene, null, GridItemTag.Special),
 
         GridItemInfo("zombiepotion_speed", "疾速药水", GridItemCategory.Trap, "zombiepotion_speed.webp"),
         GridItemInfo("zombiepotion_toughness", "坚韧药水", GridItemCategory.Trap, "zombiepotion_toughness.webp"),
@@ -59,15 +70,15 @@ object GridItemRepository {
         GridItemInfo("slider_up_modern", "上行摩登浮标", GridItemCategory.Trap, "slider_up_modern.webp"),
         GridItemInfo("slider_down_modern", "下行摩登浮标", GridItemCategory.Trap, "slider_down_modern.webp"),
 
-        GridItemInfo("christmas_protect", "元宝", GridItemCategory.Trap, null),
+        GridItemInfo("christmas_protect", "元宝", GridItemCategory.Trap, null, GridItemTag.Special),
         GridItemInfo("dumpling", "饺子", GridItemCategory.Trap, null),
         GridItemInfo("turkey", "火鸡", GridItemCategory.Trap, null),
         GridItemInfo("tangyuan", "汤圆", GridItemCategory.Trap, null),
 
         GridItemInfo("lilypad", "莲叶", GridItemCategory.Plants, null),
         GridItemInfo("flowerpot", "花盆", GridItemCategory.Plants, null),
-        GridItemInfo("FrozenIcebloom", "寒冰蓓蕾", GridItemCategory.Plants, null),
-        GridItemInfo("FrozenChillyPepper", "寒冰辣椒", GridItemCategory.Plants, null),
+        GridItemInfo("FrozenIcebloom", "寒冰蓓蕾", GridItemCategory.Plants, null, GridItemTag.Special),
+        GridItemInfo("FrozenChillyPepper", "寒冰辣椒", GridItemCategory.Plants, null, GridItemTag.Special),
 
         GridItemInfo("cavalrygun", "骑兵长枪", GridItemCategory.Plants, null),
         GridItemInfo("surfboard", "冲浪板", GridItemCategory.Plants, null),
@@ -97,6 +108,8 @@ object GridItemRepository {
             allItems.filter { it.category == category }
         }
     }
+
+    fun getAll(): List<GridItemInfo> = allItems
 
     fun getName(aliases: String): String {
         val typeName = if (aliases == "gravestone") "gravestone_egypt" else aliases

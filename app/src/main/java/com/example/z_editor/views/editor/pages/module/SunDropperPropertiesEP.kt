@@ -75,14 +75,15 @@ fun SunDropperPropertiesEP(
     val currentAlias = rtidInfo?.alias ?: "DefaultSunDropper"
     val isCustomMode = rtidInfo?.source == "CurrentLevel"
 
-    val sunDataState = remember(rtid) {
-        val obj = if (isCustomMode) {
-            rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
-        } else null
+    val sunDataState = remember(rtid, rootLevelFile) {
+        val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
 
         val data = try {
-            if (obj != null) gson.fromJson(obj.objData, SunDropperPropertiesData::class.java)
-            else SunDropperPropertiesData()
+            if (obj != null) {
+                gson.fromJson(obj.objData, SunDropperPropertiesData::class.java)
+            } else {
+                SunDropperPropertiesData()
+            }
         } catch (_: Exception) {
             SunDropperPropertiesData()
         }

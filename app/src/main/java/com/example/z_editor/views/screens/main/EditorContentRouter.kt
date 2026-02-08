@@ -11,6 +11,7 @@ import com.example.z_editor.data.ModuleRegistry
 import com.example.z_editor.data.ParsedLevelData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
+import com.example.z_editor.data.repository.GridItemFilterMode
 import com.example.z_editor.data.repository.ReferenceRepository
 import com.example.z_editor.views.editor.pages.others.CustomZombiePropertiesEP
 import com.example.z_editor.views.editor.pages.event.BassRainEventEP
@@ -94,6 +95,7 @@ fun EditorContentRouter(
     currentTab: EditorTabType,
     getLazyState: (String) -> LazyListState,
     getScrollState: (String) -> ScrollState,
+    currentGridItemFilterMode: GridItemFilterMode,
     refreshTrigger: Int,
     actions: EditorActions
 ) {
@@ -370,14 +372,18 @@ fun EditorContentRouter(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
-            onRequestGridItemSelection = actions.onLaunchGridItemSelector
+            onRequestGridItemSelection = { callback ->
+                actions.onLaunchGridItemSelector(GridItemFilterMode.All, callback)
+            },
         )
 
         is EditorSubScreen.ProtectTheGridItem -> ProtectTheGridItemChallengePropertiesEP(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
-            onRequestGridItemSelection = actions.onLaunchGridItemSelector
+            onRequestGridItemSelection = { callback ->
+                actions.onLaunchGridItemSelector(GridItemFilterMode.All, callback)
+            },
         )
 
         is EditorSubScreen.ProtectThePlant -> ProtectThePlantChallengePropertiesEP(
@@ -471,7 +477,9 @@ fun EditorContentRouter(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
-            onRequestGridItemSelection = actions.onLaunchGridItemSelector,
+            onRequestGridItemSelection = { callback ->
+                actions.onLaunchGridItemSelector(GridItemFilterMode.All, callback)
+            },
             scrollState = getScrollState("ZombiePotionModuleProperties")
         )
 
@@ -662,7 +670,9 @@ fun EditorContentRouter(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
-            onRequestGridItemSelection = actions.onLaunchGridItemSelector,
+            onRequestGridItemSelection = { callback ->
+                actions.onLaunchGridItemSelector(GridItemFilterMode.Restricted, callback)
+            },
             scrollState = getLazyState(targetState.rtid)
         )
 
@@ -671,7 +681,9 @@ fun EditorContentRouter(
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
             onRequestZombieSelection = actions.onLaunchZombieSelector,
-            onRequestGridItemSelection = actions.onLaunchGridItemSelector,
+            onRequestGridItemSelection = { callback ->
+                actions.onLaunchGridItemSelector(GridItemFilterMode.Restricted, callback)
+            },
             scrollState = getLazyState(targetState.rtid),
             onInjectZombie = actions.onInjectZombie,
             onEditCustomZombie = actions.onEditCustomZombie
@@ -681,7 +693,9 @@ fun EditorContentRouter(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
-            onRequestGridItemSelection = actions.onLaunchGridItemSelector
+            onRequestGridItemSelection = { callback ->
+                actions.onLaunchGridItemSelector(GridItemFilterMode.All, callback)
+            },
         )
 
         is EditorSubScreen.MagicMirrorDetail -> MagicMirrorEventEP(
@@ -752,7 +766,8 @@ fun EditorContentRouter(
 
         EditorSubScreen.GridItemSelection -> GridItemSelectionScreen(
             onGridItemSelected = { id -> actions.onSelectorResult(id) },
-            onBack = actions.onSelectorCancel
+            onBack = actions.onSelectorCancel,
+            filterMode = currentGridItemFilterMode
         )
 
         EditorSubScreen.ModuleSelection -> {

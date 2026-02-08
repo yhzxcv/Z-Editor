@@ -4498,5 +4498,68 @@
             "Basic"
         ],
         "icon": "zombie_mausoleum_archer.webp"
+    },
+    {
+        "id": "qin_shield_segment",
+        "name": "单盾盾卫僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_qin_shield_segment.webp"
+    },
+    {
+        "id": "qin_shield_pair",
+        "name": "双盾盾卫僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_qin_shield_segment.webp"
+    },
+    {
+        "id": "qin_shield_triad",
+        "name": "多盾盾卫僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_qin_shield_segment.webp"
+    },
+    {
+        "id": "qin_jingke",
+        "name": "刺客僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_qin_jingke.webp"
+    },
+    {
+        "id": "qin_taoist",
+        "name": "方士僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_qin_taoist.webp"
+    },
+    {
+        "id": "qin_terracotta_small",
+        "name": "兵马俑僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_qin_terracotta_mid.webp"
+    },
+    {
+        "id": "qin_terracotta_mid",
+        "name": "秦俑将军僵尸",
+        "tags": [
+            "Tothewest",
+            "Strong"
+        ],
+        "icon": "zombie_qin_terracotta_mid.webp"
     }
 ]

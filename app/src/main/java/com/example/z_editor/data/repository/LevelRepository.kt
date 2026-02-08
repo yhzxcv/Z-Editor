@@ -233,7 +233,7 @@ object LevelRepository {
 
     fun getTemplateList(context: Context): List<String> {
         return try {
-            context.assets.list("template")?.toList() ?: emptyList()
+            context.assets.list("reference/template")?.toList() ?: emptyList()
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()

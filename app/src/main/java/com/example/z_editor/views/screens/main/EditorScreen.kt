@@ -61,6 +61,7 @@ import com.example.z_editor.data.StarChallengeModuleData
 import com.example.z_editor.data.WaveManagerData
 import com.example.z_editor.data.WaveManagerModuleData
 import com.example.z_editor.data.repository.ChallengeTypeInfo
+import com.example.z_editor.data.repository.GridItemFilterMode
 import com.example.z_editor.data.repository.LevelRepository
 import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.ReferenceRepository
@@ -107,6 +108,8 @@ fun EditorScreen(
 
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
+
+    var currentGridItemFilterMode by remember { mutableStateOf<GridItemFilterMode>(GridItemFilterMode.All) }
 
     // ======================== 核心逻辑 ========================
 
@@ -313,33 +316,22 @@ fun EditorScreen(
             onRemoveModule = { rtid ->
                 val info = RtidParser.parse(rtid)
                 val alias = info?.alias ?: ""
-                val objClass = if (info?.source == "CurrentLevel") {
-                    parsedData!!.objectMap[alias]?.objClass
-                } else {
-                    ReferenceRepository.getObjClass(alias)
-                }
+
+                val objClass = parsedData!!.objectMap[alias]?.objClass
+                    ?: ReferenceRepository.getObjClass(alias)
 
                 val removed = parsedData!!.levelDef!!.modules.remove(rtid)
 
                 if (removed) {
-                    val levelDefObj =
-                        rootLevelFile!!.objects.find { it.objClass == "LevelDefinition" }
-                    if (levelDefObj != null && levelDefObj.objData.isJsonObject) {
-                        try {
-                            val json = levelDefObj.objData.asJsonObject
-                            if (json.has("Modules")) {
-                                val modulesArray = json.getAsJsonArray("Modules")
-                                val iter = modulesArray.iterator()
-                                while (iter.hasNext()) {
-                                    if (iter.next().asString == rtid) {
-                                        iter.remove()
-                                        break
-                                    }
-                                }
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                    if (info?.source == "CurrentLevel") {
+                        rootLevelFile!!.objects.removeAll {
+                            it.aliases?.contains(alias) == true
                         }
+                    }
+
+                    val levelDefObj = rootLevelFile!!.objects.find { it.objClass == "LevelDefinition" }
+                    if (levelDefObj != null) {
+                        levelDefObj.objData = gson.toJsonTree(parsedData!!.levelDef!!)
                     }
 
                     if (objClass == "StarChallengeModuleProperties") {
@@ -376,11 +368,6 @@ fun EditorScreen(
                         }
                     }
 
-                    if (info?.source == "CurrentLevel") {
-                        val wasRemoved =
-                            rootLevelFile!!.objects.removeAll { it.aliases?.contains(alias) == true }
-                    }
-
                     if (objClass == "WaveManagerModuleProperties") {
                         parsedData = parsedData!!.copy(waveModule = null)
                     }
@@ -392,13 +379,9 @@ fun EditorScreen(
                         it.aliases?.firstOrNull() ?: "unknown"
                     }
 
-                    val currentLevelDef = parsedData!!.levelDef!!
-                    val newLevelDef = currentLevelDef.copy(
-                        modules = ArrayList(currentLevelDef.modules)
-                    )
                     parsedData = parsedData!!.copy(
-                        levelDef = newLevelDef,
-                        objectMap = newObjectMap
+                        objectMap = newObjectMap,
+                        levelDef = parsedData!!.levelDef!!.copy()
                     )
 
                     refreshTrigger++
@@ -693,42 +676,63 @@ fun EditorScreen(
                 val levelDef = parsedData!!.levelDef!!
                 val objects = rootLevelFile!!.objects
 
-                val moduleIndex = levelDef.modules.indexOfFirst { rtid ->
-                    val alias = RtidParser.parse(rtid)?.alias ?: ""
-                    val objClass = parsedData!!.objectMap[alias]?.objClass
-                        ?: ReferenceRepository.getObjClass(alias)
-                    objClass == "SunDropperProperties"
-                }
-                val alias = "DefaultSunDropper"
+                val defaultAlias = "DefaultSunDropper"
+                val objClass = "SunDropperProperties"
 
-                val targetRtid: String
+                var moduleIndex = levelDef.modules.indexOfFirst { rtid ->
+                    val info = RtidParser.parse(rtid)
+                    val alias = info?.alias ?: ""
+                    val type = parsedData!!.objectMap[alias]?.objClass
+                        ?: ReferenceRepository.getObjClass(alias)
+                    type == objClass || alias == defaultAlias
+                }
+
+                val newRtid: String
 
                 if (enableCustom) {
-                    targetRtid = RtidParser.build(alias, "CurrentLevel")
-                    if (moduleIndex != -1) levelDef.modules[moduleIndex] = targetRtid
-                    else levelDef.modules.add(targetRtid)
+                    newRtid = RtidParser.build(defaultAlias, "CurrentLevel")
 
-                    val existingObj = objects.find { it.aliases?.contains(alias) == true }
+                    if (moduleIndex != -1) {
+                        levelDef.modules[moduleIndex] = newRtid
+                    } else {
+                        levelDef.modules.add(newRtid)
+                        moduleIndex = levelDef.modules.lastIndex
+                    }
+                    val existingObj = objects.find { it.aliases?.contains(defaultAlias) == true }
                     if (existingObj == null) {
                         val newObj = PvzObject(
-                            aliases = listOf(alias),
-                            objClass = "SunDropperProperties",
+                            aliases = listOf(defaultAlias),
+                            objClass = objClass,
                             objData = gson.toJsonTree(currentData)
                         )
                         objects.add(newObj)
+                    } else {
+                        existingObj.objData = gson.toJsonTree(currentData)
                     }
 
                 } else {
-                    targetRtid = RtidParser.build(alias, "LevelModules")
-                    if (moduleIndex != -1) levelDef.modules[moduleIndex] = targetRtid
-                    objects.removeAll { it.aliases?.contains(alias) == true }
+                    newRtid = RtidParser.build(defaultAlias, "LevelModules")
+
+                    if (moduleIndex != -1) {
+                        levelDef.modules[moduleIndex] = newRtid
+                    } else {
+                        levelDef.modules.add(newRtid)
+                    }
+                    objects.removeAll { it.aliases?.contains(defaultAlias) == true }
+                }
+                rootLevelFile!!.objects.find { it.objClass == "LevelDefinition" }?.let {
+                    it.objData = gson.toJsonTree(levelDef)
                 }
 
                 val newObjectMap = objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
-                parsedData = parsedData!!.copy(objectMap = newObjectMap)
+                parsedData = parsedData!!.copy(
+                    objectMap = newObjectMap,
+                    levelDef = levelDef
+                )
 
                 refreshTrigger++
-                currentSubScreen = EditorSubScreen.SunDropper(targetRtid)
+
+                currentSubScreen = EditorSubScreen.SunDropper(newRtid)
             },
 
             // --- 选择器逻辑 ---
@@ -753,9 +757,11 @@ fun EditorScreen(
                 genericSelectionCallback = { id -> cb(id as String) }
                 currentSubScreen = EditorSubScreen.ZombieSelection()
             },
-            onLaunchGridItemSelector = { cb ->
-                previousSubScreen = currentSubScreen; genericSelectionCallback =
-                { id -> cb(id as String) }; currentSubScreen = EditorSubScreen.GridItemSelection
+            onLaunchGridItemSelector = { filterMode, cb ->
+                previousSubScreen = currentSubScreen
+                currentGridItemFilterMode = filterMode
+                genericSelectionCallback = { id -> cb(id as String) }
+                currentSubScreen = EditorSubScreen.GridItemSelection
             },
             onLaunchChallengeSelector = { cb ->
                 previousSubScreen = currentSubScreen; genericSelectionCallback =
@@ -942,6 +948,7 @@ fun EditorScreen(
                             getLazyState = ::getLazyState,
                             getScrollState = ::getScrollState,
                             refreshTrigger = refreshTrigger,
+                            currentGridItemFilterMode = currentGridItemFilterMode,
                             actions = actions
                         )
                     }
@@ -957,6 +964,7 @@ fun EditorScreen(
                         getLazyState = ::getLazyState,
                         getScrollState = ::getScrollState,
                         refreshTrigger = refreshTrigger,
+                        currentGridItemFilterMode = currentGridItemFilterMode,
                         actions = actions
                     )
                 }
