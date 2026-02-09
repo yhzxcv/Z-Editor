@@ -412,7 +412,7 @@ fun ProtectPlantCard(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 AssetImage(
-                    path = if (info?.icon != null) "images/plants/${info.icon}" else null,
+                    path = if (info?.icon != null) "images/plants/${info.icon}" else "images/others/unknown.webp",
                     contentDescription = null,
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))

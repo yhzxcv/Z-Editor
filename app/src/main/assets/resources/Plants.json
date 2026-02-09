@@ -3253,9 +3253,7 @@
     {
         "id": "moonflower_iz",
         "name": "iz模式月光花",
-        "tags": [
-            "Parallel"
-        ],
+        "tags": [],
         "icon": "icon_moonflower.webp"
     }
 ]

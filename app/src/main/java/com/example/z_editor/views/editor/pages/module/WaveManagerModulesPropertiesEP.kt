@@ -299,8 +299,8 @@ fun WaveManagerModulePropertiesEP(
                                 if (moduleData.dynamicZombies == null) {
                                     val newGroup = DynamicZombieGroup(
                                         startingWave = 3,
-                                        startingPoints = 400,
-                                        pointIncrement = 60,
+                                        startingPoints = 100,
+                                        pointIncrement = 40,
                                         zombiePool = mutableListOf(),
                                         zombieLevel = mutableListOf()
                                     )
@@ -504,7 +504,7 @@ fun ZombiePoolEditor(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AssetImage(
-                        path = if (info?.icon != null) "images/zombies/${info.icon}" else null,
+                        path = if (info?.icon != null) "images/zombies/${info.icon}" else "images/others/unknown.webp",
                         contentDescription = displayName,
                         modifier = Modifier
                             .size(48.dp)

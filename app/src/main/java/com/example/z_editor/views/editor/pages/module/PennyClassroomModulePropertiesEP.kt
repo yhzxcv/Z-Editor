@@ -326,7 +326,7 @@ fun PlantLevelRow(
 ) {
     val plantName = remember(plantId) { PlantRepository.getName(plantId) }
     val info = remember(plantId) { PlantRepository.getPlantInfoById(plantId) }
-    val iconPath = if (info?.icon != null) "images/plants/${info.icon}" else null
+    val iconPath = if (info?.icon != null) "images/plants/${info.icon}" else "images/others/unknown.webp"
 
     Card(
         modifier = Modifier.fillMaxWidth(),

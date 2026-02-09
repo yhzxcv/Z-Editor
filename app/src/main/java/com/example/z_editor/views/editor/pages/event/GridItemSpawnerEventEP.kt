@@ -537,7 +537,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                     Column(modifier = Modifier.padding(12.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             AssetImage(
-                                path = if (isValid && info?.icon != null) "images/zombies/${info.icon}" else null,
+                                path = if (isValid && info?.icon != null) "images/zombies/${info.icon}" else "images/others/unknown.webp",
                                 contentDescription = displayName,
                                 modifier = Modifier
                                     .size(48.dp)

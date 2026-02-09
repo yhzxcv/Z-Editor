@@ -579,13 +579,13 @@ fun VaseItemRow(
         val alias = RtidParser.parse(vase.plantTypeName!!)?.alias ?: vase.plantTypeName!!
         name = PlantRepository.getName(alias)
         val pInfo = remember(alias) { PlantRepository.getPlantInfoById(alias) }
-        iconPath = if (pInfo?.icon != null) "images/plants/${pInfo.icon}" else null
+        iconPath = if (pInfo?.icon != null) "images/plants/${pInfo.icon}" else "images/others/unknown.webp"
     } else if (vase.zombieTypeName != null) {
         type = "僵尸"
         val alias = RtidParser.parse(vase.zombieTypeName!!)?.alias ?: vase.zombieTypeName!!
         name = ZombieRepository.getName(alias)
         val zInfo = remember(alias) { ZombieRepository.getZombieInfoById(alias) }
-        iconPath = if (zInfo?.icon != null) "images/zombies/${zInfo.icon}" else null
+        iconPath = if (zInfo?.icon != null) "images/zombies/${zInfo.icon}" else "images/others/unknown.webp"
     } else {
         type = "道具"
         val info = collectableTypes.find { it.id == vase.collectableTypeName }

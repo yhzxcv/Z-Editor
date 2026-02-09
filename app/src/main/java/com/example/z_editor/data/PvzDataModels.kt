@@ -354,6 +354,23 @@ data class ZombieMoveFastModulePropertiesData(
     @SerializedName("SpeedUp") var speedUp: Double = 3.0
 )
 
+// === 关卡计时模块 ===
+data class ZombieRushModuleData(
+    @SerializedName("TimeCountDown") var timeCountDown: Double = 120.0,
+    @SerializedName("PlantBlackList") var plantBlackList: List<Int> = emptyList()
+)
+
+// === 地宫隧道模块 ===
+data class TunnelDefendModuleData(
+    @SerializedName("Roads") var roads: MutableList<TunnelRoadData> = mutableListOf()
+)
+
+data class TunnelRoadData(
+    @SerializedName("GridX") var gridX: Int = 0,
+    @SerializedName("GridY") var gridY: Int = 0,
+    @SerializedName("Img") var img: String = ""
+)
+
 // === 阳光上限覆写 ===
 data class LevelMutatorMaxSunPropsData(
     @SerializedName("MaxSunOverride") var maxSunOverride: Int = 9900,

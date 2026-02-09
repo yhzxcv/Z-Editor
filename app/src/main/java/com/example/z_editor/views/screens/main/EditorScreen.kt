@@ -109,7 +109,11 @@ fun EditorScreen(
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
-    var currentGridItemFilterMode by remember { mutableStateOf<GridItemFilterMode>(GridItemFilterMode.All) }
+    var currentGridItemFilterMode by remember {
+        mutableStateOf<GridItemFilterMode>(
+            GridItemFilterMode.All
+        )
+    }
 
     // ======================== 核心逻辑 ========================
 
@@ -329,7 +333,8 @@ fun EditorScreen(
                         }
                     }
 
-                    val levelDefObj = rootLevelFile!!.objects.find { it.objClass == "LevelDefinition" }
+                    val levelDefObj =
+                        rootLevelFile!!.objects.find { it.objClass == "LevelDefinition" }
                     if (levelDefObj != null) {
                         levelDefObj.objData = gson.toJsonTree(parsedData!!.levelDef!!)
                     }
@@ -737,36 +742,48 @@ fun EditorScreen(
 
             // --- 选择器逻辑 ---
             onLaunchMultiPlantSelector = { cb ->
-                previousSubScreen = currentSubScreen
-                genericSelectionCallback = { result -> cb(result as List<String>) }
-                currentSubScreen = EditorSubScreen.PlantSelection(isMultiSelect = true)
+                if (currentSubScreen !is EditorSubScreen.PlantSelection) {
+                    previousSubScreen = currentSubScreen
+                    genericSelectionCallback = { result -> cb(result as List<String>) }
+                    currentSubScreen = EditorSubScreen.PlantSelection(isMultiSelect = true)
+                }
             },
 
             onLaunchMultiZombieSelector = { cb ->
-                previousSubScreen = currentSubScreen
-                genericSelectionCallback = { result -> cb(result as List<String>) }
-                currentSubScreen = EditorSubScreen.ZombieSelection(isMultiSelect = true)
+                if (currentSubScreen !is EditorSubScreen.ZombieSelection) {
+                    previousSubScreen = currentSubScreen
+                    genericSelectionCallback = { result -> cb(result as List<String>) }
+                    currentSubScreen = EditorSubScreen.ZombieSelection(isMultiSelect = true)
+                }
             },
             onLaunchPlantSelector = { cb ->
-                previousSubScreen = currentSubScreen
-                genericSelectionCallback = { id -> cb(id as String) }
-                currentSubScreen = EditorSubScreen.PlantSelection()
+                if (currentSubScreen !is EditorSubScreen.PlantSelection) {
+                    previousSubScreen = currentSubScreen
+                    genericSelectionCallback = { id -> cb(id as String) }
+                    currentSubScreen = EditorSubScreen.PlantSelection()
+                }
             },
             onLaunchZombieSelector = { cb ->
-                previousSubScreen = currentSubScreen
-                genericSelectionCallback = { id -> cb(id as String) }
-                currentSubScreen = EditorSubScreen.ZombieSelection()
+                if (currentSubScreen !is EditorSubScreen.ZombieSelection) {
+                    previousSubScreen = currentSubScreen
+                    genericSelectionCallback = { id -> cb(id as String) }
+                    currentSubScreen = EditorSubScreen.ZombieSelection()
+                }
             },
             onLaunchGridItemSelector = { filterMode, cb ->
-                previousSubScreen = currentSubScreen
-                currentGridItemFilterMode = filterMode
-                genericSelectionCallback = { id -> cb(id as String) }
-                currentSubScreen = EditorSubScreen.GridItemSelection
+                if (currentSubScreen !is EditorSubScreen.GridItemSelection) {
+                    previousSubScreen = currentSubScreen
+                    currentGridItemFilterMode = filterMode
+                    genericSelectionCallback = { id -> cb(id as String) }
+                    currentSubScreen = EditorSubScreen.GridItemSelection
+                }
             },
             onLaunchChallengeSelector = { cb ->
-                previousSubScreen = currentSubScreen; genericSelectionCallback =
-                { info -> cb(info as ChallengeTypeInfo) }; currentSubScreen =
-                EditorSubScreen.ChallengeSelection
+                if (currentSubScreen !is EditorSubScreen.ChallengeSelection) {
+                    previousSubScreen = currentSubScreen; genericSelectionCallback =
+                        { info -> cb(info as ChallengeTypeInfo) }; currentSubScreen =
+                        EditorSubScreen.ChallengeSelection
+                }
             },
             onSelectorResult = { result ->
                 genericSelectionCallback?.invoke(result)
@@ -775,8 +792,11 @@ fun EditorScreen(
                 refreshTrigger++
             },
             onSelectorCancel = {
-                genericSelectionCallback = null
-                currentSubScreen = previousSubScreen
+                if (previousSubScreen != currentSubScreen) {
+                    currentSubScreen = previousSubScreen
+                } else {
+                    currentSubScreen = EditorSubScreen.None
+                }
             },
             onChallengeSelected = { info ->
                 (genericSelectionCallback as? ((ChallengeTypeInfo) -> Unit))?.invoke(info)
@@ -785,14 +805,18 @@ fun EditorScreen(
                 refreshTrigger++
             },
             onLaunchToolSelector = { cb ->
-                previousSubScreen = currentSubScreen
-                genericSelectionCallback = { id -> cb(id as String) }
-                currentSubScreen = EditorSubScreen.ToolSelection
+                if (currentSubScreen !is EditorSubScreen.ToolSelection) {
+                    previousSubScreen = currentSubScreen
+                    genericSelectionCallback = { id -> cb(id as String) }
+                    currentSubScreen = EditorSubScreen.ToolSelection
+                }
             },
             onLaunchZombossSelector = { cb ->
-                previousSubScreen = currentSubScreen
-                genericSelectionCallback = { id -> cb(id as String) }
-                currentSubScreen = EditorSubScreen.ZombossSelection
+                if (currentSubScreen !is EditorSubScreen.ZombossSelection) {
+                    previousSubScreen = currentSubScreen
+                    genericSelectionCallback = { id -> cb(id as String) }
+                    currentSubScreen = EditorSubScreen.ZombossSelection
+                }
             },
             onInjectZombie = { alias -> injectCustomZombie(alias) },
             onEditCustomZombie = { rtid ->

@@ -443,9 +443,9 @@ fun PlantRow(
     val displayName = toolInfo?.name ?: PlantRepository.getName(plant.plantType)
 
     val iconPath = if (isTool) {
-        if (!toolInfo.icon.isNullOrEmpty()) "images/tools/${toolInfo.icon}" else null
+        if (!toolInfo.icon.isNullOrEmpty()) "images/tools/${toolInfo.icon}" else "images/others/unknown.webp"
     } else {
-        if (plantInfo?.icon != null) "images/plants/${plantInfo.icon}" else null
+        if (plantInfo?.icon != null) "images/plants/${plantInfo.icon}" else "images/others/unknown.webp"
     }
 
     val themeColor = MaterialTheme.colorScheme.onSurfaceVariant

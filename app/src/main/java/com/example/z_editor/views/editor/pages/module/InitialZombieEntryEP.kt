@@ -42,11 +42,11 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -186,11 +186,20 @@ fun InitialZombieEntryEP(
                             .clickable { isCustomInput = !isCustomInput },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("开启手动输入", fontWeight = FontWeight.Medium)
+                        Text("开启手动输入", fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
                         Spacer(Modifier.weight(1f))
                         Switch(
                             checked = isCustomInput,
-                            onCheckedChange = { isCustomInput = it }
+                            onCheckedChange = { isCustomInput = it },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                                checkedTrackColor = MaterialTheme.colorScheme.primary,
+                                checkedBorderColor = Color.Transparent,
+
+                                uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
                         )
                     }
 
@@ -200,6 +209,11 @@ fun InitialZombieEntryEP(
                             value = tempCondition,
                             onValueChange = { tempCondition = it },
                             label = { Text("输入标准状态值") },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                focusedBorderColor = themeColor,
+                                focusedLabelColor = themeColor
+                            ),
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true
                         )
@@ -228,12 +242,10 @@ fun InitialZombieEntryEP(
                                 },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                                    disabledBorderColor = MaterialTheme.colorScheme.outline,
-                                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                                ),
-                                enabled = false
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    focusedBorderColor = themeColor,
+                                    focusedLabelColor = themeColor
+                                )
                             )
 
                             Box(
@@ -259,13 +271,7 @@ fun InitialZombieEntryEP(
                                         onClick = {
                                             tempCondition = value
                                             menuExpanded = false
-                                        },
-                                        colors = MenuDefaults.itemColors(
-                                            textColor = if (tempCondition == value)
-                                                MaterialTheme.colorScheme.primary
-                                            else
-                                                Color.Unspecified
-                                        )
+                                        }
                                     )
                                 }
                             }
@@ -494,25 +500,18 @@ fun ZombieIconSmall(typeName: String) {
     val info = remember(typeName) { ZombieRepository.getZombieInfoById(typeName) }
     val cardShape = RoundedCornerShape(4.dp)
 
-    if (info?.icon != null) {
-        AssetImage(
-            path = "images/zombies/${info.icon}",
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize(0.9f)
-                .clip(cardShape)
-                .border(0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant, cardShape),
-            contentScale = ContentScale.Crop,
-            filterQuality = FilterQuality.Low
-        )
-    } else {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(0.9f)
-                .background(Color.LightGray, cardShape)
-        )
-    }
+    AssetImage(
+        path = if (info?.icon != null) "images/zombies/${info.icon}" else "images/others/unknown.webp",
+        contentDescription = null,
+        modifier = Modifier
+            .fillMaxSize(0.9f)
+            .clip(cardShape)
+            .border(0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant, cardShape),
+        contentScale = ContentScale.Crop,
+        filterQuality = FilterQuality.Low
+    )
 }
+
 
 @Composable
 fun InitialZombieCard(
@@ -540,19 +539,12 @@ fun InitialZombieCard(
         ) {
             Box {
                 AssetImage(
-                    path = if (info?.icon != null) "images/zombies/${info.icon}" else null,
+                    path = if (info?.icon != null) "images/zombies/${info.icon}" else "images/others/unknown.webp",
                     contentDescription = null,
                     modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .background(Color(0xFFEFEBE9)),
-                    placeholder = {
-                        Box(
-                            Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.onSurfaceVariant)
-                        )
-                    }
                 )
             }
 

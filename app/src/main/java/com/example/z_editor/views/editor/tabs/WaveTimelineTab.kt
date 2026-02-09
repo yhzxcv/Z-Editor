@@ -484,7 +484,7 @@ fun WaveTimelineTab(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         AssetImage(
-                                            path = if (info?.icon != null) "images/zombies/${info.icon}" else null,
+                                            path = if (info?.icon != null) "images/zombies/${info.icon}" else "images/others/unknown.webp",
                                             contentDescription = displayName,
                                             modifier = Modifier
                                                 .size(40.dp)
@@ -925,7 +925,7 @@ fun WaveTimelineTab(
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         AssetImage(
-                            path = if (iconInfo?.icon != null) "images/zombies/${iconInfo.icon}" else null,
+                            path = if (iconInfo?.icon != null) "images/zombies/${iconInfo.icon}" else "images/others/unknown.webp",
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             filterQuality = FilterQuality.Medium

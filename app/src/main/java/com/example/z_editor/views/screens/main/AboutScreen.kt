@@ -156,7 +156,7 @@ fun AboutScreen(
                 text = "Version 1.1.7",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
-                color = Color.LightGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 15.sp
             )
             Spacer(Modifier.height(12.dp))

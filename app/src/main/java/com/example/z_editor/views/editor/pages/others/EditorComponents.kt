@@ -463,14 +463,14 @@ fun CompactZombieCard(
             .background(if (isValid) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.error)
             .border(
                 0.5.dp,
-                MaterialTheme.colorScheme.onSurfaceVariant,
+                if (isValid) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onError,
                 RoundedCornerShape(8.dp)
             )
             .clickable(onClick = onClick)
     ) {
         if (isValid) {
             AssetImage(
-                path = if (info?.icon != null) "images/zombies/${info.icon}" else null,
+                path = if (info?.icon != null) "images/zombies/${info.icon}" else "images/others/unknown.webp",
                 contentDescription = displayName,
                 modifier = Modifier.fillMaxSize(),
                 filterQuality = FilterQuality.Medium,
@@ -592,17 +592,12 @@ fun ZombieEditSheetContent(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AssetImage(
-                path = if (isValid && info?.icon != null) "images/zombies/${info.icon}" else null,
+                path = if (isValid && info?.icon != null) "images/zombies/${info.icon}" else "images/others/unknown.webp",
                 contentDescription = displayName,
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color.White)
-                    .border(
-                        if (!isValid) 1.dp else 0.dp,
-                        MaterialTheme.colorScheme.onError,
-                        RoundedCornerShape(8.dp)
-                    ),
+                    .background(Color.White),
                 filterQuality = FilterQuality.Medium,
                 placeholder = placeholderContent
             )

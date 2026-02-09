@@ -48,9 +48,9 @@ object GridItemRepository {
 
         GridItemInfo("printer_small_paper", "纸屑", GridItemCategory.Scene, null),
         GridItemInfo("pvz1grid", "回忆锤僵尸墓碑", GridItemCategory.Scene, null),
-        GridItemInfo("score_2x_tile", "联赛2倍分数砖", GridItemCategory.Scene, null, GridItemTag.Special),
-        GridItemInfo("score_3x_tile", "联赛3倍分数砖", GridItemCategory.Scene, null, GridItemTag.Special),
-        GridItemInfo("score_5x_tile", "联赛5倍分数砖", GridItemCategory.Scene, null, GridItemTag.Special),
+        GridItemInfo("score_2x_tile", "联赛2倍分数砖", GridItemCategory.Scene, null),
+        GridItemInfo("score_3x_tile", "联赛3倍分数砖", GridItemCategory.Scene, null),
+        GridItemInfo("score_5x_tile", "联赛5倍分数砖", GridItemCategory.Scene, null),
 
         GridItemInfo("zombiepotion_speed", "疾速药水", GridItemCategory.Trap, "zombiepotion_speed.webp"),
         GridItemInfo("zombiepotion_toughness", "坚韧药水", GridItemCategory.Trap, "zombiepotion_toughness.webp"),
@@ -121,7 +121,7 @@ object GridItemRepository {
     fun getIconPath(aliases: String): String? {
         val typeName = if (aliases == "gravestone") "gravestone_egypt" else aliases
         val icon = allItems.find { it.typeName == typeName }?.icon
-        return if (icon != null) "images/griditems/$icon" else null
+        return if (icon != null) "images/griditems/$icon" else "images/others/unknown.webp"
     }
 
     fun isValid(typeName: String): Boolean {

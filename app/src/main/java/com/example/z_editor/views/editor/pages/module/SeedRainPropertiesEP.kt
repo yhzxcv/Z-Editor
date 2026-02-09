@@ -378,7 +378,7 @@ fun SeedRainRowCard(
                 RtidParser.parse(item.plantTypeName ?: "")?.alias ?: item.plantTypeName ?: ""
             typeName = PlantRepository.getName(alias)
             val info = remember(alias) { PlantRepository.getPlantInfoById(alias) }
-            iconPath = if (info?.icon != null) "images/plants/${info.icon}" else null
+            iconPath = if (info?.icon != null) "images/plants/${info.icon}" else "images/others/unknown.webp"
             displayType = "植物"
         }
 
@@ -392,7 +392,7 @@ fun SeedRainRowCard(
                     com.example.z_editor.data.repository.ZombieTag.All
                 ).firstOrNull()
             }
-            iconPath = if (info?.icon != null) "images/zombies/${info.icon}" else null
+            iconPath = if (info?.icon != null) "images/zombies/${info.icon}" else "images/others/unknown.webp"
             displayType = "僵尸"
         }
 
@@ -404,7 +404,7 @@ fun SeedRainRowCard(
 
         else -> {
             typeName = "未知"
-            iconPath = null
+            iconPath = "images/others/unknown.webp"
             displayType = "未知"
         }
     }

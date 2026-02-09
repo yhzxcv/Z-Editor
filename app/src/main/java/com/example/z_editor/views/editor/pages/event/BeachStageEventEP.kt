@@ -189,7 +189,7 @@ fun BeachStageEventEP(
                                 contentAlignment = Alignment.Center
                             ) {
                                 AssetImage(
-                                    path = if (info?.icon != null) "images/zombies/${info.icon}" else null,
+                                    path = if (info?.icon != null) "images/zombies/${info.icon}" else "images/others/unknown.webp",
                                     contentDescription = displayName,
                                     modifier = Modifier
                                         .fillMaxSize()

@@ -197,7 +197,7 @@ fun ZombossBattleTab(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AssetImage(
-                    path = if (currentBossInfo != null) "images/zombies/${currentBossInfo.icon}" else null,
+                    path = if (currentBossInfo != null) "images/zombies/${currentBossInfo.icon}" else "images/others/unknown.webp",
                     contentDescription = null,
                     modifier = Modifier
                         .size(48.dp)

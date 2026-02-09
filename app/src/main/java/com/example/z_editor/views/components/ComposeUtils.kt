@@ -2,9 +2,8 @@ package com.example.z_editor.views.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberUpdatedState
 
 /**
  * 创建一个防抖动的点击回调。
@@ -13,17 +12,18 @@ import androidx.compose.runtime.setValue
  */
 @Composable
 fun rememberDebouncedClick(
-    waitMs: Long = 500L,
+    waitMs: Long = 300L,
     onClick: () -> Unit
 ): () -> Unit {
-    var lastClickTime by remember { mutableLongStateOf(0L) }
+    val currentOnClick by rememberUpdatedState(onClick)
+    val lastClickTime = remember { object { var value = 0L } }
 
-    return remember(onClick, waitMs) {
+    return remember {
         {
             val currentTime = System.currentTimeMillis()
-            if (currentTime - lastClickTime > waitMs) {
-                lastClickTime = currentTime
-                onClick()
+            if (currentTime - lastClickTime.value > waitMs) {
+                lastClickTime.value = currentTime
+                currentOnClick()
             }
         }
     }

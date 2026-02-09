@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.BlurCircular
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.BrightnessHigh
 import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Dangerous
 import androidx.compose.material.icons.filled.Eco
@@ -38,6 +39,7 @@ import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material.icons.filled.Storm
 import androidx.compose.material.icons.filled.Thunderstorm
 import androidx.compose.material.icons.filled.Timeline
+import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Transform
 import androidx.compose.material.icons.filled.TripOrigin
 import androidx.compose.material.icons.filled.Tsunami
@@ -75,6 +77,7 @@ sealed class EditorSubScreen {
     data class JsonView(val fileName: String) : EditorSubScreen()
 
     // 具体模块页
+    data class LawnMowerDetail(val rtid: String) : EditorSubScreen()
     data class LastStandMinigame(val rtid: String) : EditorSubScreen()
     data class SunDropper(val rtid: String) : EditorSubScreen()
     data class SunBombChallenge(val rtid: String) : EditorSubScreen()
@@ -99,11 +102,13 @@ sealed class EditorSubScreen {
     data class IncreasedCostModule(val rtid: String) : EditorSubScreen()
     data class DeathHoleModule(val rtid: String) : EditorSubScreen()
     data class ZombieMoveFastModule(val rtid: String) : EditorSubScreen()
+    data class ZombieRushModule(val rtid: String) : EditorSubScreen()
     data class MaxSunModule(val rtid: String) : EditorSubScreen()
     data class StartingPlantfoodModule(val rtid: String) : EditorSubScreen()
     data class BowlingMinigameModule(val rtid: String) : EditorSubScreen()
     data class PennyClassroomModule(val rtid: String) : EditorSubScreen()
     data class SeedRainModule(val rtid: String) : EditorSubScreen()
+    data class TunnelDefendModule(val rtid: String) : EditorSubScreen()
     data class StarChallenge(val rtid: String) : EditorSubScreen()
 
     // 波次事件页
@@ -725,6 +730,16 @@ object ModuleRegistry {
             initialDataFactory = { StarChallengeModuleData() },
             navigationFactory = { rtid -> EditorSubScreen.StarChallenge(rtid) }
         ),
+        "LawnMowerProperties" to ModuleMetadata(
+            title = "小推车",
+            description = "设置小推车样式，注意在庭院中不生效",
+            icon = Icons.Default.CleaningServices,
+            isCore = true,
+            category = ModuleCategory.Base,
+            defaultAlias = "ModernMowers",
+            defaultSource = "LevelModules",
+            navigationFactory = { rtid -> EditorSubScreen.LawnMowerDetail(rtid) }
+        ),
         "LevelScoringModuleProperties" to ModuleMetadata(
             title = "积分模块",
             description = "启用积分模块，杀死僵尸获得分数",
@@ -902,6 +917,17 @@ object ModuleRegistry {
             initialDataFactory = { ZombieMoveFastModulePropertiesData() },
             navigationFactory = { rtid -> EditorSubScreen.ZombieMoveFastModule(rtid) }
         ),
+        "ZombieRushModuleProperties" to ModuleMetadata(
+            title = "关卡倒计时",
+            description = "倒计时结束后关卡直接结算",
+            icon = Icons.Default.Timer,
+            isCore = true,
+            category = ModuleCategory.Mode,
+            defaultAlias = "ZombieRushModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { ZombieRushModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.ZombieRushModule(rtid) }
+        ),
 
         "InitialPlantProperties" to ModuleMetadata(
             title = "旧版预置植物",
@@ -1030,6 +1056,17 @@ object ModuleRegistry {
             defaultSource = "CurrentLevel",
             initialDataFactory = { ManholePipelineModuleData() },
             navigationFactory = { rtid -> EditorSubScreen.ManholePipelineModule(rtid) }
+        ),
+        "TunnelDefendModuleProperties" to ModuleMetadata(
+            title = "地宫坑道",
+            description = "设置地宫秘境的地道",
+            icon = Icons.Default.Timeline,
+            isCore = true,
+            category = ModuleCategory.Scene,
+            defaultAlias = "TunnelDefend",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { TunnelDefendModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.TunnelDefendModule(rtid) }
         ),
         "RoofProperties" to ModuleMetadata(
             title = "屋顶花盆",

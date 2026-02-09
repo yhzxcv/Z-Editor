@@ -165,7 +165,7 @@ fun InitialPlantEntryEP(
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("等级: ${tempLevelFloat.toInt()}", fontWeight = FontWeight.Bold)
+                            Text("等级: ${tempLevelFloat.toInt()}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                             Spacer(Modifier.weight(1f))
                         }
                         Slider(
@@ -176,15 +176,13 @@ fun InitialPlantEntryEP(
                         )
                     }
 
-                    HorizontalDivider()
-
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { tempAvatar = !tempAvatar },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("佩戴第一装扮 (Avatar)", fontWeight = FontWeight.Bold)
+                        Text("佩戴第一装扮 (Avatar)", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                         Spacer(Modifier.weight(1f))
                         Switch(
                             checked = tempAvatar, onCheckedChange = { tempAvatar = it },
@@ -427,24 +425,16 @@ fun PlantIconSmall(plantType: String) {
     }
     val cardShape = RoundedCornerShape(4.dp)
 
-    if (info?.icon != null) {
-        AssetImage(
-            path = "images/plants/${info.icon}",
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize(0.9f)
-                .clip(cardShape)
-                .border(0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant, cardShape),
-            contentScale = ContentScale.Crop,
-            filterQuality = FilterQuality.Low
-        )
-    } else {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(0.7f)
-                .background(Color(0xFF2E7D32), cardShape)
-        )
-    }
+    AssetImage(
+        path = if (info?.icon != null) "images/plants/${info.icon}" else "images/others/unknown.webp",
+        contentDescription = null,
+        modifier = Modifier
+            .fillMaxSize(0.9f)
+            .clip(cardShape)
+            .border(0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant, cardShape),
+        contentScale = ContentScale.Crop,
+        filterQuality = FilterQuality.Low
+    )
 }
 
 @Composable
@@ -472,7 +462,7 @@ fun InitialPlantCard(
         ) {
             Box {
                 AssetImage(
-                    path = if (info?.icon != null) "images/plants/${info.icon}" else null,
+                    path = if (info?.icon != null) "images/plants/${info.icon}" else "images/others/unknown.webp",
                     contentDescription = null,
                     modifier = Modifier
                         .size(40.dp)

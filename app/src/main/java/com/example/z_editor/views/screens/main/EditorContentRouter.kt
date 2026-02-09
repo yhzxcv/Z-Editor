@@ -44,6 +44,7 @@ import com.example.z_editor.views.editor.pages.module.InitialPlantEntryEP
 import com.example.z_editor.views.editor.pages.module.InitialPlantPropertiesEP
 import com.example.z_editor.views.editor.pages.module.InitialZombieEntryEP
 import com.example.z_editor.views.editor.pages.module.LastStandMinigamePropertiesEP
+import com.example.z_editor.views.editor.pages.module.LawnMowerPropertiesEP
 import com.example.z_editor.views.editor.pages.module.LevelMutatorMaxSunPropsEP
 import com.example.z_editor.views.editor.pages.module.LevelMutatorStartingPlantfoodPropsEP
 import com.example.z_editor.views.editor.pages.module.ManholePipelinePropertiesEP
@@ -61,10 +62,12 @@ import com.example.z_editor.views.editor.pages.module.StarChallengeModulePropert
 import com.example.z_editor.views.editor.pages.module.SunBombChallengePropertiesEP
 import com.example.z_editor.views.editor.pages.module.SunDropperPropertiesEP
 import com.example.z_editor.views.editor.pages.module.TidePropertiesEP
+import com.example.z_editor.views.editor.pages.module.TunnelDefendModuleEP
 import com.example.z_editor.views.editor.pages.module.WarMistPropertiesEP
 import com.example.z_editor.views.editor.pages.module.WaveManagerModulePropertiesEP
 import com.example.z_editor.views.editor.pages.module.ZombieMoveFastModulePropertiesEP
 import com.example.z_editor.views.editor.pages.module.ZombiePotionModulePropertiesEP
+import com.example.z_editor.views.editor.pages.module.ZombieRushModuleEP
 import com.example.z_editor.views.editor.pages.others.JsonCodeViewerScreen
 import com.example.z_editor.views.editor.pages.others.LevelDefinitionEP
 import com.example.z_editor.views.editor.pages.others.UnknownEP
@@ -329,6 +332,15 @@ fun EditorContentRouter(
             scrollState = getScrollState("WaveManagerModule")
         )
 
+        is EditorSubScreen.LawnMowerDetail -> {
+            LawnMowerPropertiesEP(
+                currentRtid = targetState.rtid,
+                levelDef = parsedData.levelDef!!,
+                onBack = actions.navigateBack,
+                onUpdate = actions.onLevelDefChanged
+            )
+        }
+
         is EditorSubScreen.LastStandMinigame -> LastStandMinigamePropertiesEP(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
@@ -511,6 +523,13 @@ fun EditorContentRouter(
             scrollState = getScrollState("ZombieMoveFastModule")
         )
 
+        is EditorSubScreen.ZombieRushModule -> ZombieRushModuleEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getScrollState("ZombieRushModule")
+        )
+
         is EditorSubScreen.MaxSunModule -> LevelMutatorMaxSunPropsEP(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
@@ -552,6 +571,13 @@ fun EditorContentRouter(
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
             scrollState = getScrollState("ManholePipelineModule")
+        )
+
+        is EditorSubScreen.TunnelDefendModule -> TunnelDefendModuleEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getScrollState("TunnelDefendModule")
         )
 
         is EditorSubScreen.UnknownDetail -> UnknownEP(

@@ -17,7 +17,6 @@ data class StageItem(
 
 object StageRepository {
     private val STAGE_DATABASE = listOf(
-
         StageItem("TutorialStage", "教程庭院", "Stage_Modern.webp", StageType.Main),
         StageItem("EgyptStage", "神秘埃及", "Stage_Egypt.webp", StageType.Main),
         StageItem("PirateStage", "海盗港湾", "Stage_Pirate.webp", StageType.Main),
@@ -50,6 +49,7 @@ object StageRepository {
         StageItem("UnchartedNeedforspeedStage", "极品飞车联动", null, StageType.Extra),
         StageItem("UnchartedNo42UniverseStage", "平行宇宙秘境", null, StageType.Extra),
         StageItem("JourneyToTheWestStage", "西游地图", null, StageType.Extra),
+        StageItem("UnchartedMausoleumStage", "地宫地图", null, StageType.Extra),
         StageItem("RiftStage", "潘妮的追击", null, StageType.Extra),
         StageItem("JoustStage", "超Z联赛", null, StageType.Extra),
 

@@ -368,7 +368,7 @@ fun ModifyConveyorPlantRow(
         }
 
         AssetImage(
-            path = if (info?.icon != null) "images/plants/${info.icon}" else null,
+            path = if (info?.icon != null) "images/plants/${info.icon}" else "images/others/unknown.webp",
             contentDescription = displayName,
             modifier = Modifier
                 .size(40.dp)
@@ -656,7 +656,7 @@ fun ModifyConveyorRemoveRow(
             }
         }
         AssetImage(
-            path = if (info?.icon != null) "images/plants/${info.icon}" else null,
+            path = if (info?.icon != null) "images/plants/${info.icon}" else "images/others/unknown.webp",
             contentDescription = displayName,
             modifier = Modifier
                 .size(40.dp)

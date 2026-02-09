@@ -169,7 +169,7 @@ fun InitialPlantPropertiesEP(
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("等级: ${tempLevelFloat.toInt()}", fontWeight = FontWeight.Bold)
+                            Text("等级: ${tempLevelFloat.toInt()}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                             Spacer(Modifier.weight(1f))
                         }
                         Slider(
@@ -179,8 +179,6 @@ fun InitialPlantPropertiesEP(
                             steps = 3
                         )
                     }
-
-                    HorizontalDivider()
 
                     // 状态下拉框 (Condition)
                     ExposedDropdownMenuBox(
@@ -195,6 +193,7 @@ fun InitialPlantPropertiesEP(
                             label = { Text("初始状态 (Condition)") },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = conditionExpanded) },
                             colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 focusedBorderColor = themeColor,
                                 focusedLabelColor = themeColor
                             ),
@@ -495,24 +494,16 @@ fun PlantIconSmall2(plantType: String) {
     val info = remember(plantType) { PlantRepository.getPlantInfoById(plantType) }
     val cardShape = RoundedCornerShape(4.dp)
 
-    if (info?.icon != null) {
-        AssetImage(
-            path = "images/plants/${info.icon}",
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize(0.9f)
-                .clip(cardShape)
-                .border(0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant, cardShape),
-            contentScale = ContentScale.Crop,
-            filterQuality = FilterQuality.Low
-        )
-    } else {
-        Box(
-            modifier = Modifier
-                .fillMaxSize(0.7f)
-                .background(Color(0xFF2E7D32), cardShape)
-        )
-    }
+    AssetImage(
+        path = if (info?.icon != null) "images/plants/${info.icon}" else "images/others/unknown.webp",
+        contentDescription = null,
+        modifier = Modifier
+            .fillMaxSize(0.9f)
+            .clip(cardShape)
+            .border(0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant, cardShape),
+        contentScale = ContentScale.Crop,
+        filterQuality = FilterQuality.Low
+    )
 }
 
 @Composable
@@ -540,7 +531,7 @@ fun InitialPlacementCard(
         ) {
             Box {
                 AssetImage(
-                    path = if (info?.icon != null) "images/plants/${info.icon}" else null,
+                    path = if (info?.icon != null) "images/plants/${info.icon}" else "images/others/unknown.webp",
                     contentDescription = null,
                     modifier = Modifier
                         .size(40.dp)

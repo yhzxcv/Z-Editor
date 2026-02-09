@@ -44,7 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,66 +52,11 @@ import com.example.z_editor.data.LevelDefinitionData
 import com.example.z_editor.data.ModuleMetadata
 import com.example.z_editor.data.ModuleRegistry
 import com.example.z_editor.data.PvzObject
-import com.example.z_editor.data.repository.ReferenceRepository
 import com.example.z_editor.data.RtidParser
+import com.example.z_editor.data.repository.ConflictRegistry
+import com.example.z_editor.data.repository.ModuleUIInfo
+import com.example.z_editor.data.repository.ReferenceRepository
 import com.example.z_editor.views.editor.pages.others.SettingEntryCard
-
-data class ModuleUIInfo(
-    val rtid: String,
-    val alias: String,
-    val objClass: String,
-    val friendlyName: String,
-    val description: String,
-    val icon: ImageVector,
-    val isCore: Boolean
-)
-
-data class ModuleConflictRule(
-    val conflictingClasses: Set<String>,
-    val title: String = "模块逻辑冲突",
-    val description: String? = null
-)
-
-object ConflictRegistry {
-    val rules = listOf(
-        ModuleConflictRule(
-            conflictingClasses = setOf("SeedBankProperties", "ConveyorSeedBankProperties"),
-            description = "种子库与传送带模块的ui会相互遮挡，而且有可能闪退，需要确保种子库处于预选模式。"
-        ),
-        ModuleConflictRule(
-            conflictingClasses = setOf("VaseBreakerPresetProperties", "StandardLevelIntroProperties"),
-            description = "砸罐子模式下不需要添加开局转场动画。"
-        ),
-        ModuleConflictRule(
-            conflictingClasses = setOf("LastStandMinigameProperties", "StandardLevelIntroProperties"),
-            description = "坚不可摧模式下不需要添加开局转场动画。"
-        ),
-        ModuleConflictRule(
-            conflictingClasses = setOf("EvilDaveProperties", "ZombiesDeadWinConProperties"),
-            description = "我是僵尸模式下不能添加僵尸掉落模块。"
-        ),
-        ModuleConflictRule(
-            conflictingClasses = setOf("EvilDaveProperties", "ZombiesAteYourBrainsProperties"),
-            description = "我是僵尸模式下不能添加僵尸胜利判定。"
-        ),
-        ModuleConflictRule(
-            conflictingClasses = setOf("ZombossBattleModuleProperties", "ZombiesDeadWinConProperties"),
-            description = "僵王战模式下使用死亡掉落会导致无法正常结算。"
-        ),
-        ModuleConflictRule(
-            conflictingClasses = setOf("ZombossBattleIntroProperties", "StandardLevelIntroProperties"),
-            description = "两种关卡开局转场不能同时出现，否则僵王血量无法正常显示。"
-        ),
-        ModuleConflictRule(
-            conflictingClasses = setOf("InitialPlantEntryProperties", "RoofProperties"),
-            description = "在屋顶无法进行预置植物，会引发闪退。"
-        ),
-        ModuleConflictRule(
-            conflictingClasses = setOf("ProtectThePlantChallengeProperties", "RoofProperties"),
-            description = "在屋顶无法进行预置植物，会引发闪退。"
-        )
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,40 +71,40 @@ fun LevelSettingsTab(
     onNavigateToAddModule: () -> Unit
 ) {
     if (levelDef == null) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = null,
-                modifier = Modifier.size(64.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = "未找到关卡定义",
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "当前关卡内未找到关卡定义模块 (LevelDefinition)，这是关卡文件的基础节点，缺失表示当前关卡已被毁坏。请尝试手动添加关卡定义模块。",
-                fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    text = "未找到关卡定义",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = "当前关卡内未找到关卡定义模块 (LevelDefinition)，这是关卡文件的基础节点，缺失表示当前关卡已被毁坏。请尝试手动添加关卡定义模块。",
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
+        return
     }
-    return
-}
 
     var pendingDeleteRtid by remember { mutableStateOf<String?>(null) }
 
@@ -293,9 +237,17 @@ fun LevelSettingsTab(
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.AddCircleOutline, null, tint = MaterialTheme.colorScheme.primary)
+                    Icon(
+                        Icons.Default.AddCircleOutline,
+                        null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
                     Spacer(Modifier.width(8.dp))
-                    Text("添加新模块", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    Text(
+                        "添加新模块",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
@@ -335,11 +287,19 @@ fun LevelSettingsTab(
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiary), // 浅黄色
                     modifier = Modifier
                         .fillMaxWidth()
-                        .border(1.dp, MaterialTheme.colorScheme.onTertiary, RoundedCornerShape(12.dp))
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.onTertiary,
+                            RoundedCornerShape(12.dp)
+                        )
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Warning, null, tint = MaterialTheme.colorScheme.onTertiary)
+                            Icon(
+                                Icons.Default.Warning,
+                                null,
+                                tint = MaterialTheme.colorScheme.onTertiary
+                            )
                             Spacer(Modifier.width(8.dp))
                             Text(
                                 "缺少必要模块",
@@ -383,12 +343,31 @@ fun ModuleCard(info: ModuleUIInfo, onClick: () -> Unit, onDelete: () -> Unit) {
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(info.icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+            Icon(
+                info.icon,
+                null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(28.dp)
+            )
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(info.friendlyName, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
-                Text(info.description, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
-                Text(info.alias, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    info.friendlyName,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    info.description,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
+                )
+                Text(
+                    info.alias,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
             IconButton(onClick = onDelete) {
                 Icon(
@@ -417,7 +396,12 @@ fun MiscModuleRow(info: ModuleUIInfo, onDelete: () -> Unit) {
         Icon(info.icon, null, tint = Color.Gray, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(info.friendlyName, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                info.friendlyName,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
             Text(info.alias, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
