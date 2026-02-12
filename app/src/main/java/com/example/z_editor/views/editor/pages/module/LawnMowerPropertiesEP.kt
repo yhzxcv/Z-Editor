@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.LevelDefinitionData
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.ui.theme.LocalDarkTheme
@@ -180,7 +181,7 @@ fun LawnMowerPropertiesEP(
                             .clickable { selectOption(option.alias) }
                     ) {
                         Row(
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             RadioButton(
@@ -188,7 +189,7 @@ fun LawnMowerPropertiesEP(
                                 onClick = { selectOption(option.alias) },
                                 colors = RadioButtonDefaults.colors(selectedColor = themeColor)
                             )
-                            Spacer(Modifier.width(16.dp))
+                            Spacer(Modifier.width(8.dp))
                             Column {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
@@ -200,7 +201,8 @@ fun LawnMowerPropertiesEP(
                                     Spacer(Modifier.width(8.dp))
                                     Text(
                                         option.label,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        fontSize = 16.sp
                                     )
                                 }
                             }

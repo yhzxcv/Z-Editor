@@ -853,6 +853,33 @@
         "icon": "zombie_dark_wizard_elite.webp"
     },
     {
+        "id": "zombie_towerdefend_wolf_imp",
+        "name": "塔防灰狼小鬼",
+        "tags": [
+            "Dark_Beach",
+            "Imp"
+        ],
+        "icon": "zombie_towerdefend_wolf_imp.webp"
+    },
+    {
+        "id": "zombie_towerdefend_wolf_fire",
+        "name": "塔防灰狼火把",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_towerdefend_wolf_fire.webp"
+    },
+    {
+        "id": "zombie_towerdefend_boss",
+        "name": "塔防灰狼头目",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_towerdefend_boss.webp"
+    },
+    {
         "id": "beach",
         "name": "飞机头僵尸",
         "tags": [

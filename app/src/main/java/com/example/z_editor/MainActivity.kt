@@ -36,7 +36,7 @@ import com.example.z_editor.views.screens.main.LevelListScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val prefs = getSharedPreferences("prefs", Context.MODE_PRIVATE)
+        val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
         setContent {
             val configuration = LocalConfiguration.current
             val systemDensity = LocalDensity.current

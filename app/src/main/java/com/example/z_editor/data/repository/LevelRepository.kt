@@ -21,6 +21,26 @@ data class FileItem(
 object LevelRepository {
     private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 
+    private fun getInternalCacheName(fileUri: Uri): String {
+        return "cache_${fileUri.hashCode()}.json"
+    }
+
+    fun prepareInternalCache(context: Context, fileUri: Uri): String? {
+        val cacheName = getInternalCacheName(fileUri)
+        return try {
+            context.contentResolver.openInputStream(fileUri)?.use { input ->
+                File(context.filesDir, cacheName).outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            cacheName
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+
     fun copyLevelToTarget(context: Context, srcFileName: String, targetFileName: String, currentDirUri: Uri): Boolean {
         val currentDoc = DocumentFile.fromTreeUri(context, currentDirUri) ?: return false
         val srcFile = currentDoc.findFile(srcFileName) ?: return false
@@ -146,37 +166,10 @@ object LevelRepository {
         }
     }
 
-    fun clearAllInternalCache(context: Context): Int {
-        val dir = context.filesDir
-        var deletedCount = 0
-        dir.listFiles()?.forEach { file ->
-            if (file.isFile && file.name.endsWith(".json", ignoreCase = true)) {
-                if (file.delete()) {
-                    deletedCount++
-                }
-            }
-        }
-        return deletedCount
-    }
+    fun saveAndExport(context: Context, fileUri: Uri, cacheName: String, levelData: PvzLevelFile) {
+        val internalFile = File(context.filesDir, cacheName)
 
-    fun prepareInternalCache(context: Context, fileUri: Uri, fileName: String): Boolean {
-        return try {
-            context.contentResolver.openInputStream(fileUri)?.use { input ->
-                File(context.filesDir, fileName).outputStream().use { output ->
-                    input.copyTo(output)
-                }
-            }
-            true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-    fun saveAndExport(context: Context, fileUri: Uri, fileName: String, levelData: PvzLevelFile) {
         levelData.objects.sortWith(ObjectOrderRegistry.comparator)
-
-        val internalFile = File(context.filesDir, fileName)
         internalFile.writer().use { gson.toJson(levelData, it) }
 
         try {
@@ -221,8 +214,8 @@ object LevelRepository {
         }
     }
 
-    fun loadLevel(context: Context, fileName: String): PvzLevelFile? {
-        val file = File(context.filesDir, fileName)
+    fun loadLevel(context: Context, cacheName: String): PvzLevelFile? {
+        val file = File(context.filesDir, cacheName)
         if (!file.exists()) return null
         return try {
             file.reader().use { gson.fromJson(it, PvzLevelFile::class.java) }

@@ -13,8 +13,6 @@ object ReferenceRepository {
 
     private val validGridItemAliases = HashSet<String>()
 
-    private val validZombieAliases = HashSet<String>()
-
     /**
      * 初始化加载参考文件
      * 在 App 启动或进入编辑器时调用

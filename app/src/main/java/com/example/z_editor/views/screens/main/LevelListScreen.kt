@@ -403,22 +403,6 @@ fun LevelListScreen(
                             )
                             HorizontalDivider()
                             DropdownMenuItem(
-                                text = { Text("释放缓存") },
-                                onClick = {
-                                    showMenu = false
-                                    val count = LevelRepository.clearAllInternalCache(context)
-                                    Toast.makeText(
-                                        context,
-                                        "已清理 $count 个缓存文件",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                },
-                                leadingIcon = {
-                                    Icon(Icons.Default.Delete, null, tint = Color.Gray)
-                                }
-                            )
-                            HorizontalDivider()
-                            DropdownMenuItem(
                                 text = { Text("界面大小") },
                                 onClick = {
                                     showMenu = false
@@ -626,12 +610,8 @@ fun LevelListScreen(
                                         if (item.isDirectory) {
                                             navigateToFolder(item)
                                         } else {
-                                            if (LevelRepository.prepareInternalCache(
-                                                    context,
-                                                    item.uri,
-                                                    item.name
-                                                )
-                                            ) {
+                                            val actualCacheName = LevelRepository.prepareInternalCache(context, item.uri)
+                                            if (actualCacheName != null) {
                                                 onLevelClick(item.name, item.uri)
                                             }
                                         }
