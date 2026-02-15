@@ -757,11 +757,21 @@ data class ZombossBattleModuleData(
     @SerializedName("ZombossStageCount") var zombossStageCount: Int = 3,
     @SerializedName("ZombossDeathRow") var zombossDeathRow: Int = 3,
     @SerializedName("ZombossDeathColumn") var zombossDeathColumn: Int = 5,
-    @SerializedName("ZombossSpawnGridPosition") var zombossSpawnGridPosition: LocationData? = LocationData()
+    @SerializedName("ZombossSpawnGridPosition") var zombossSpawnGridPosition: LocationData? = LocationData(6, 3)
 )
 
 // === 僵王战转场模块 ===
 data class ZombossBattleIntroData(
+    @SerializedName("PanStartOffset") var panStartOffset: Int = 78,
+    @SerializedName("PanEndOffset") var panEndOffset: Int = 486,
+    @SerializedName("PanRightDuration") var panRightDuration: Double = 1.5,
+    @SerializedName("PanLeftDuration") var panLeftDuration: Double = 1.5,
+    @SerializedName("ZombossPhaseCount") var zombossPhaseCount: Int = 3,
+    @SerializedName("SkipShowingStreetBossBattle") var skipShowingStreetBossBattle: Boolean = false,
+)
+
+// === 僵王战坚不可摧转场模块 ===
+data class ZombossBattleLastStandIntroData(
     @SerializedName("PanStartOffset") var panStartOffset: Int = 78,
     @SerializedName("PanEndOffset") var panEndOffset: Int = 486,
     @SerializedName("PanRightDuration") var panRightDuration: Double = 1.5,

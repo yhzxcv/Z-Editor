@@ -25,9 +25,11 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.repository.ZombossInfo
 import com.example.z_editor.data.repository.ZombossRepository
 import com.example.z_editor.data.repository.ZombossTag
@@ -84,7 +86,7 @@ fun ZombossSelectionScreen(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             placeholder = {
-                                Text("搜索僵王名称或代号", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(stringResource(R.string.zomboss_selection_screen_title), fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -164,7 +166,7 @@ fun ZombossSelectionScreen(
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(Modifier.height(16.dp))
-                    Text("未找到匹配的僵王", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.zomboss_selection_screen_notfound), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
                 LazyVerticalGrid(
@@ -202,10 +204,16 @@ fun ZombossItemCard(boss: ZombossInfo, onClick: () -> Unit) {
                     .size(48.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color.LightGray)
-                    .border(1.dp, MaterialTheme.colorScheme.onSurfaceVariant, RoundedCornerShape(12.dp)),
+                    .border(
+                        1.dp,
+                        MaterialTheme.colorScheme.onSurfaceVariant,
+                        RoundedCornerShape(12.dp)
+                    ),
                 filterQuality = FilterQuality.Medium,
                 placeholder = {
-                    Box(Modifier.fillMaxSize().background(Color.LightGray)) {
+                    Box(Modifier
+                        .fillMaxSize()
+                        .background(Color.LightGray)) {
                         Text(boss.name.take(1), Modifier.align(Alignment.Center), color = MaterialTheme.colorScheme.surface)
                     }
                 }

@@ -55,11 +55,13 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.repository.GridItemCategory
 import com.example.z_editor.data.repository.GridItemFilterMode
 import com.example.z_editor.data.repository.GridItemInfo
@@ -144,7 +146,7 @@ fun GridItemSelectionScreen(
                             onValueChange = { searchQuery = it },
                             placeholder = {
                                 Text(
-                                    "搜索物品...",
+                                    stringResource(R.string.griditem_selection_screen_search),
                                     fontSize = 16.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -263,7 +265,7 @@ fun GridItemSelectionScreen(
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(Modifier.height(8.dp))
-                    Text("未找到相关物品", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.griditem_selection_screen_notfound), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

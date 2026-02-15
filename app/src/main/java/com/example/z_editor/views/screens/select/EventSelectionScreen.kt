@@ -31,9 +31,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.EventMetadata
 import com.example.z_editor.data.EventRegistry
 import com.example.z_editor.ui.theme.LocalDarkTheme
@@ -51,7 +53,7 @@ fun EventSelectionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("为第 $waveIndex 波添加事件", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.surface) },
+                title = { Text(stringResource(R.string.event_selection_screen_title, waveIndex), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.surface) },
                 navigationIcon = {
                     IconButton(onClick = handleBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = MaterialTheme.colorScheme.surface)

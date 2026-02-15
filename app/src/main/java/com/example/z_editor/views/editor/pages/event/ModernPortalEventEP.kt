@@ -311,7 +311,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
 
                                     uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                     uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
-                                    uncheckedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    uncheckedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 ),
                                 modifier = Modifier.scale(0.8f)
                             )

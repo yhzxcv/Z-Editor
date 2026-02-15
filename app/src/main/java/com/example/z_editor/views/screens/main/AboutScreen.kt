@@ -27,10 +27,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.views.components.rememberDebouncedClick
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +49,7 @@ fun AboutScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "软件介绍",
+                        stringResource(R.string.about_screen_title),
                         fontWeight = FontWeight.Bold,
                         fontSize = 22.sp
                     )
@@ -77,7 +79,7 @@ fun AboutScreen(
                 .padding(16.dp)
         ) {
             Text(
-                text = "Z-Editor",
+                text = stringResource(R.string.about_screen_name),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = 30.sp,
@@ -89,7 +91,7 @@ fun AboutScreen(
             Spacer(Modifier.height(4.dp))
 
             Text(
-                text = "PVZ2 关卡可视化编辑器",
+                text = stringResource(R.string.about_screen_intro),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp,
@@ -98,42 +100,42 @@ fun AboutScreen(
 
             Spacer(Modifier.height(18.dp))
 
-            InfoSectionCard(title = "简介") {
+            InfoSectionCard(title = stringResource(R.string.about_screen_introduction_title)) {
                 Text(
-                    "\tZ-Editor 是一款专为《植物大战僵尸2》设计的可视化关卡编辑工具。它旨在解决直接修改 JSON 文件繁琐、易错的问题，提供直观的图形界面来管理关卡配置。",
+                    stringResource(R.string.about_screen_introduction_text),
                     lineHeight = 24.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
-            InfoSectionCard(title = "核心功能") {
-                BulletPoint("模块化编辑：对关卡模块和事件进行模块化管理，实现快速配置。")
-                BulletPoint("多模式支持：支持编辑我是僵尸、砸罐子、坚不可摧、僵王战等多种模式。")
-                BulletPoint("自定义注入：实现在关卡内注入并管理自定义僵尸、编辑其基础属性。")
-                BulletPoint("智能校验：自动检测模块依赖缺失、引用失效等问题，有效预防关卡闪退。")
-                BulletPoint("资源预览：内置植物、僵尸、障碍物图标，优化编辑体验，所见即所得。")
+            InfoSectionCard(title = stringResource(R.string.about_screen_feature_title)) {
+                BulletPoint(stringResource(R.string.about_screen_feature_text1))
+                BulletPoint(stringResource(R.string.about_screen_feature_text2))
+                BulletPoint(stringResource(R.string.about_screen_feature_text3))
+                BulletPoint(stringResource(R.string.about_screen_feature_text4))
+                BulletPoint(stringResource(R.string.about_screen_feature_text5))
             }
 
-            InfoSectionCard(title = "使用说明") {
+            InfoSectionCard(title = stringResource(R.string.about_screen_usage_title)) {
                 Text(
-                    "1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n" +
-                            "2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。\n" +
-                            "3. 模块管理：在编辑器中，可以通过“添加新模块”来扩展关卡功能。\n" +
-                            "4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。\n" +
-                            "如果有使用上的疑问或反馈建议，欢迎加入交流 QQ 群 562251204 进行交流。",
+                    text = stringResource(R.string.about_screen_usage_text1) + "\n" +
+                            stringResource(R.string.about_screen_usage_text2) + "\n" +
+                            stringResource(R.string.about_screen_usage_text3) + "\n" +
+                            stringResource(R.string.about_screen_usage_text4) + "\n" +
+                            stringResource(R.string.about_screen_usage_text5),
                     lineHeight = 24.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
-            InfoSectionCard(title = "致谢名单") {
-                BulletPoint("软件作者：")
+            InfoSectionCard(title = stringResource(R.string.about_screen_credits_title)) {
+                BulletPoint(stringResource(R.string.about_screen_credits_author))
                 Text(
                     "降维打击",
                     lineHeight = 24.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                BulletPoint("特别鸣谢：")
+                BulletPoint(stringResource(R.string.about_screen_credits_thanks))
                 Text(
                     "星寻、metal海枣、超越自我3333、桃酱、凉沈、小小师、顾小言、PhiLia093、咖啡、不留名",
                     lineHeight = 24.sp,
@@ -143,7 +145,7 @@ fun AboutScreen(
             Spacer(Modifier.height(20.dp))
 
             Text(
-                text = "穿越时空 创造无穷可能",
+                text = stringResource(R.string.about_screen_ending),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

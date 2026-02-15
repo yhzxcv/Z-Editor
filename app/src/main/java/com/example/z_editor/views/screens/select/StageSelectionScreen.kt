@@ -57,11 +57,13 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.repository.StageItem
 import com.example.z_editor.data.repository.StageRepository
@@ -83,11 +85,11 @@ fun StageSelectionScreen(
     val focusManager = LocalFocusManager.current
 
     val tabs = listOf(
-        StageType.All to "全部地图",
-        StageType.Main to "主线世界",
-        StageType.Extra to "活动/秘境",
-        StageType.Seasons to "一代/季节",
-        StageType.Special to "小游戏"
+        StageType.All to stringResource(R.string.stage_selection_screen_tab_all),
+        StageType.Main to stringResource(R.string.stage_selection_screen_tab_main),
+        StageType.Extra to stringResource(R.string.stage_selection_screen_tab_extra),
+        StageType.Seasons to stringResource(R.string.stage_selection_screen_tab_seasons),
+        StageType.Special to stringResource(R.string.stage_selection_screen_tab_special)
     )
 
     val displayStages = remember(searchQuery, selectedTab) {
@@ -136,7 +138,7 @@ fun StageSelectionScreen(
                             onValueChange = { searchQuery = it },
                             placeholder = {
                                 Text(
-                                    "搜索地图名称或代号",
+                                    stringResource(R.string.stage_selection_screen_search),
                                     fontSize = 16.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -255,7 +257,7 @@ fun StageSelectionScreen(
                         modifier = Modifier.size(64.dp)
                     )
                     Spacer(Modifier.height(8.dp))
-                    Text("未找到相关地图", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.stage_selection_screen_notfound), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

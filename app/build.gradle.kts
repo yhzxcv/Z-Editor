@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.androidx.documentfile)
     implementation(libs.androidx.remote.creation.core)
     implementation(libs.gson)
+    implementation("androidx.appcompat:appcompat:1.6.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

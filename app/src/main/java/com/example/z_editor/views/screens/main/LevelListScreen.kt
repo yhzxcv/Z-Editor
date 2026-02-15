@@ -1,5 +1,6 @@
 package com.example.z_editor.views.screens.main
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -44,10 +45,12 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -63,9 +66,13 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
@@ -88,14 +95,17 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
+import com.example.z_editor.R
 import com.example.z_editor.data.repository.FileItem
 import com.example.z_editor.data.repository.LevelRepository
+import com.example.z_editor.views.components.LocaleUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -121,7 +131,7 @@ class OpenDocumentTreeFixed : ActivityResultContract<Uri?, Uri?>() {
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
-        return if (resultCode == android.app.Activity.RESULT_OK) intent?.data else null
+        return if (resultCode == Activity.RESULT_OK) intent?.data else null
     }
 }
 
@@ -132,6 +142,7 @@ fun LevelListScreen(
     onToggleTheme: () -> Unit,
     uiScale: Float,
     onUiScaleChange: (Float) -> Unit,
+    onLanguageChange: (String) -> Unit,
     onLevelClick: (String, Uri) -> Unit,
     onAboutClick: () -> Unit
 ) {
@@ -184,6 +195,8 @@ fun LevelListScreen(
 
     var showUiScaleDialog by remember { mutableStateOf(false) }
 
+    var showLanguageSheet by remember { mutableStateOf(false) }
+
     // ======================== 2. 核心逻辑 ========================
 
     fun loadCurrentDirectory() {
@@ -214,7 +227,8 @@ fun LevelListScreen(
             rootFolderUri = uri
 
             val docFile = DocumentFile.fromTreeUri(context, uri)
-            val rootName = docFile?.name ?: "根目录"
+            val rootName =
+                docFile?.name ?: context.getString(R.string.level_list_screen_toast_root_folder)
             pathStack = listOf(Breadcrumb(rootName, uri))
 
             showNoFolderDialog = false
@@ -228,7 +242,8 @@ fun LevelListScreen(
         } else {
             if (pathStack.isEmpty()) {
                 val docFile = DocumentFile.fromTreeUri(context, rootFolderUri!!)
-                val rootName = docFile?.name ?: "根目录"
+                val rootName =
+                    docFile?.name ?: context.getString(R.string.level_list_screen_toast_root_folder)
                 pathStack = listOf(Breadcrumb(rootName, rootFolderUri!!))
             }
             loadCurrentDirectory()
@@ -262,11 +277,18 @@ fun LevelListScreen(
                 target.isDirectory
             )
         ) {
-            Toast.makeText(context, "重命名成功", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.level_list_screen_toast_rename_success),
+                Toast.LENGTH_SHORT
+            ).show()
             itemToRename = null
             loadCurrentDirectory()
         } else {
-            Toast.makeText(context, "重命名失败，已有同名文件", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.level_list_screen_toast_rename_fail), Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -275,7 +297,10 @@ fun LevelListScreen(
         val currentUri = pathStack.last().uri
 
         LevelRepository.deleteItem(context, currentUri, target.name, target.isDirectory)
-        Toast.makeText(context, "已删除", Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            context,
+            context.getString(R.string.level_list_screen_toast_delete), Toast.LENGTH_SHORT
+        ).show()
         itemToDelete = null
         loadCurrentDirectory()
     }
@@ -289,11 +314,17 @@ fun LevelListScreen(
             finalName += ".json"
         }
         if (LevelRepository.copyLevelToTarget(context, target.name, finalName, currentUri)) {
-            Toast.makeText(context, "复制成功", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.level_list_screen_toast_copy_success), Toast.LENGTH_SHORT
+            ).show()
             itemToCopy = null
             loadCurrentDirectory()
         } else {
-            Toast.makeText(context, "复制失败", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.level_list_screen_toast_copy_fail), Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -303,7 +334,10 @@ fun LevelListScreen(
         val dest = pathStack.last().uri
 
         if (source == dest) {
-            Toast.makeText(context, "源目录和目标目录相同", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.level_list_screen_toast_move_tips), Toast.LENGTH_SHORT
+            ).show()
             itemToMove = null
             moveSourceUri = null
             return
@@ -316,12 +350,20 @@ fun LevelListScreen(
             }
             isLoading = false
             if (success) {
-                Toast.makeText(context, "移动成功", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.level_list_screen_toast_move_success),
+                    Toast.LENGTH_SHORT
+                ).show()
                 itemToMove = null
                 moveSourceUri = null
                 loadCurrentDirectory()
             } else {
-                Toast.makeText(context, "移动失败", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.level_list_screen_toast_move_fail),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -330,19 +372,30 @@ fun LevelListScreen(
         if (newFolderNameInput.isBlank()) return
         val currentUri = pathStack.last().uri
         if (LevelRepository.createDirectory(context, currentUri, newFolderNameInput)) {
-            Toast.makeText(context, "文件夹创建成功", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.level_list_screen_toast_folder_success),
+                Toast.LENGTH_SHORT
+            ).show()
             showNewFolderDialog = false
             newFolderNameInput = ""
             loadCurrentDirectory()
         } else {
-            Toast.makeText(context, "创建失败", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.level_list_screen_toast_folder_fail), Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
     fun openTemplateSelector() {
         templates = LevelRepository.getTemplateList(context)
         if (templates.isEmpty()) {
-            Toast.makeText(context, "未找到模板", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.level_list_screen_toast_template_fail),
+                Toast.LENGTH_SHORT
+            ).show()
         } else {
             showTemplateDialog = true
         }
@@ -354,11 +407,18 @@ fun LevelListScreen(
         if (!name.endsWith(".json", true)) name += ".json"
 
         if (LevelRepository.createLevelFromTemplate(context, currentUri, selectedTemplate, name)) {
-            Toast.makeText(context, "创建成功", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.level_list_screen_toast_create_success),
+                Toast.LENGTH_SHORT
+            ).show()
             showCreateNameDialog = false
             loadCurrentDirectory()
         } else {
-            Toast.makeText(context, "创建失败，已有同名文件", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.level_list_screen_toast_create_fail), Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -367,7 +427,13 @@ fun LevelListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("我的关卡库", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
+                title = {
+                    Text(
+                        stringResource(R.string.level_list_screen_title),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp
+                    )
+                },
                 actions = {
                     IconButton(onClick = { loadCurrentDirectory() }) {
                         Icon(
@@ -395,35 +461,64 @@ fun LevelListScreen(
                             onDismissRequest = { showMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("切换目录") },
+                                text = { Text(stringResource(R.string.level_list_screen_item_menu)) },
                                 onClick = { folderPickerLauncher.launch(null) },
                                 leadingIcon = {
-                                    Icon(Icons.Default.FolderOpen, null, tint = Color.Gray)
+                                    Icon(
+                                        Icons.Default.FolderOpen,
+                                        null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             )
                             HorizontalDivider()
                             DropdownMenuItem(
-                                text = { Text("界面大小") },
+                                text = { Text(stringResource(R.string.level_list_screen_item_size)) },
                                 onClick = {
                                     showMenu = false
                                     showUiScaleDialog = true
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Default.AspectRatio, null, tint = Color.Gray)
+                                    Icon(
+                                        Icons.Default.AspectRatio,
+                                        null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             )
-                            HorizontalDivider()
+                            // TODO : Multiple Language Support
+//                            DropdownMenuItem(
+//                                text = { Text(stringResource(R.string.level_list_screen_item_language)) },
+//                                onClick = {
+//                                    showMenu = false
+//                                    showLanguageSheet = true
+//                                },
+//                                leadingIcon = { Icon(Icons.Default.Language, null) }
+//                            )
+//                            HorizontalDivider()
                             DropdownMenuItem(
-                                text = { Text("关于软件") },
+                                text = { Text(stringResource(R.string.level_list_screen_item_about)) },
                                 onClick = {
                                     showMenu = false
                                     onAboutClick()
                                 },
                                 leadingIcon = {
-                                    Icon(Icons.Default.Info, null, tint = Color.Gray)
+                                    Icon(
+                                        Icons.Default.Info,
+                                        null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             )
                         }
+                    }
+                    if (showLanguageSheet) {
+                        LanguageSelectSheet(
+                            onDismiss = { showLanguageSheet = false },
+                            onSelect = { langCode ->
+                                onLanguageChange(langCode)
+                            }
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -447,14 +542,14 @@ fun LevelListScreen(
                         containerColor = MaterialTheme.colorScheme.error,
                         contentColor = MaterialTheme.colorScheme.onError,
                         icon = { Icon(Icons.Default.Close, null) },
-                        text = { Text("取消") }
+                        text = { Text(stringResource(R.string.level_list_screen_moving_cancel)) }
                     )
                     ExtendedFloatingActionButton(
                         onClick = { handleMoveConfirm() },
                         containerColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                         icon = { Icon(Icons.Default.ContentPaste, null) },
-                        text = { Text("粘贴") }
+                        text = { Text(stringResource(R.string.level_list_screen_moving_paste)) }
                     )
                 }
             } else {
@@ -468,7 +563,10 @@ fun LevelListScreen(
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         elevation = FloatingActionButtonDefaults.elevation(4.dp)
                     ) {
-                        Icon(Icons.Default.CreateNewFolder, "新建文件夹")
+                        Icon(
+                            Icons.Default.CreateNewFolder,
+                            stringResource(R.string.level_list_screen_new_folder)
+                        )
                     }
 
                     FloatingActionButton(
@@ -477,7 +575,10 @@ fun LevelListScreen(
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                         elevation = FloatingActionButtonDefaults.elevation(4.dp)
                     ) {
-                        Icon(Icons.Default.Add, "新建关卡")
+                        Icon(
+                            Icons.Default.Add,
+                            stringResource(R.string.level_list_screen_new_level)
+                        )
                     }
                 }
             }
@@ -515,13 +616,16 @@ fun LevelListScreen(
                         Spacer(Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                "正在移动: ${itemToMove?.name}",
+                                stringResource(
+                                    R.string.level_list_screen_moving_title,
+                                    itemToMove!!.name
+                                ),
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 fontSize = 14.sp
                             )
                             Text(
-                                "请导航至目标文件夹，然后点击右下角粘贴",
+                                stringResource(R.string.level_list_screen_moving_tips),
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
                             )
@@ -558,13 +662,13 @@ fun LevelListScreen(
                                     Icon(
                                         Icons.Default.Folder,
                                         null,
-                                        tint = Color.Gray
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Spacer(Modifier.width(16.dp))
                                     Text(
-                                        "返回上一级",
+                                        stringResource(R.string.level_list_screen_back),
                                         fontWeight = FontWeight.Bold,
-                                        color = Color.Gray
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             }
@@ -587,7 +691,10 @@ fun LevelListScreen(
                                         modifier = Modifier.size(64.dp)
                                     )
                                     Spacer(Modifier.height(16.dp))
-                                    Text("文件夹为空", color = Color.Gray)
+                                    Text(
+                                        stringResource(R.string.level_list_screen_empty_folder),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             }
                         }
@@ -610,7 +717,11 @@ fun LevelListScreen(
                                         if (item.isDirectory) {
                                             navigateToFolder(item)
                                         } else {
-                                            val actualCacheName = LevelRepository.prepareInternalCache(context, item.uri)
+                                            val actualCacheName =
+                                                LevelRepository.prepareInternalCache(
+                                                    context,
+                                                    item.uri
+                                                )
                                             if (actualCacheName != null) {
                                                 onLevelClick(item.name, item.uri)
                                             }
@@ -652,19 +763,33 @@ fun LevelListScreen(
     if (showNoFolderDialog) {
         AlertDialog(
             onDismissRequest = {},
-            title = { Text("初始化设置") },
-            text = { Text("请选择一个文件夹作为关卡存储目录。") },
-            confirmButton = { Button(onClick = { folderPickerLauncher.launch(null) }) { Text("选择文件夹") } }
+            title = { Text(stringResource(R.string.level_list_screen_initialize)) },
+            text = { Text(stringResource(R.string.level_list_screen_initialize_tips)) },
+            confirmButton = {
+                Button(onClick = { folderPickerLauncher.launch(null) }) {
+                    Text(
+                        stringResource(R.string.level_list_screen_initialize_folder)
+                    )
+                }
+            }
         )
     }
 
     if (itemToDelete != null) {
         AlertDialog(
             onDismissRequest = { itemToDelete = null },
-            title = { Text("确认删除") },
+            title = { Text(stringResource(R.string.level_list_screen_confirm_delete)) },
             text = {
                 Column {
-                    Text("确定要删除 \"${itemToDelete?.name}\" 吗？\n${if (itemToDelete!!.isDirectory) "如果是文件夹，其内容也将被删除。" else "此操作不可恢复。"}")
+                    Text(
+                        stringResource(
+                            R.string.level_list_screen_confirm_delete_tips,
+                            itemToDelete!!.name,
+                            if (itemToDelete!!.isDirectory) stringResource(R.string.level_list_screen_confirm_delete_case1) else stringResource(
+                                R.string.level_list_screen_confirm_delete_case2
+                            )
+                        )
+                    )
                     Spacer(Modifier.height(16.dp))
 
                     Row(
@@ -672,7 +797,7 @@ fun LevelListScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Color.Gray.copy(alpha = 0.05f))
+                            .background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.05f))
                             .clickable { confirmCheckbox = !confirmCheckbox }
                             .padding(8.dp)
                     ) {
@@ -681,9 +806,11 @@ fun LevelListScreen(
                             onCheckedChange = { confirmCheckbox = it }
                         )
                         Text(
-                            if (itemToDelete!!.isDirectory) "我确定要永久删除此文件夹" else "我确定要永久删除此关卡",
+                            if (itemToDelete!!.isDirectory) stringResource(R.string.level_list_screen_confirm_delete_confirm_case1) else stringResource(
+                                R.string.level_list_screen_confirm_delete_confirm_case2
+                            ),
                             fontSize = 14.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -696,13 +823,13 @@ fun LevelListScreen(
                     },
                     enabled = confirmCheckbox,
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError)
-                ) { Text("确认删除") }
+                ) { Text(stringResource(R.string.level_list_screen_confirm_delete)) }
             },
             dismissButton = {
                 TextButton(onClick = {
                     itemToDelete = null
                     confirmCheckbox = false
-                }) { Text("取消") }
+                }) { Text(stringResource(R.string.level_list_screen_confirm_cancel)) }
             }
         )
     }
@@ -710,7 +837,7 @@ fun LevelListScreen(
     if (itemToRename != null) {
         AlertDialog(
             onDismissRequest = { itemToRename = null },
-            title = { Text("重命名") },
+            title = { Text(stringResource(R.string.level_list_screen_rename_title)) },
             text = {
                 OutlinedTextField(
                     colors = OutlinedTextFieldDefaults.colors(
@@ -721,19 +848,23 @@ fun LevelListScreen(
                     ),
                     value = renameInput,
                     onValueChange = { renameInput = it },
-                    label = { Text("新名称") },
+                    label = { Text(stringResource(R.string.level_list_screen_rename_label)) },
                     singleLine = true
                 )
             },
-            confirmButton = { Button(onClick = { handleRenameConfirm() }) { Text("确定") } },
-            dismissButton = { TextButton(onClick = { itemToRename = null }) { Text("取消") } }
+            confirmButton = { Button(onClick = { handleRenameConfirm() }) { Text(stringResource(R.string.level_list_screen_confirm)) } },
+            dismissButton = {
+                TextButton(onClick = {
+                    itemToRename = null
+                }) { Text(stringResource(R.string.level_list_screen_cancel)) }
+            }
         )
     }
 
     if (itemToCopy != null) {
         AlertDialog(
             onDismissRequest = { itemToCopy = null },
-            title = { Text("复制关卡") },
+            title = { Text(stringResource(R.string.level_list_screen_copy_title)) },
             text = {
                 OutlinedTextField(
                     colors = OutlinedTextFieldDefaults.colors(
@@ -744,17 +875,21 @@ fun LevelListScreen(
                     ),
                     value = copyInput,
                     onValueChange = { copyInput = it },
-                    label = { Text("新文件名") })
+                    label = { Text(stringResource(R.string.level_list_screen_copy_label)) })
             },
-            confirmButton = { Button(onClick = { handleCopyConfirm() }) { Text("复制") } },
-            dismissButton = { TextButton(onClick = { itemToCopy = null }) { Text("取消") } }
+            confirmButton = { Button(onClick = { handleCopyConfirm() }) { Text(stringResource(R.string.level_list_screen_confirm)) } },
+            dismissButton = {
+                TextButton(onClick = {
+                    itemToCopy = null
+                }) { Text(stringResource(R.string.level_list_screen_cancel)) }
+            }
         )
     }
 
     if (showNewFolderDialog) {
         AlertDialog(
             onDismissRequest = { showNewFolderDialog = false },
-            title = { Text("新建文件夹") },
+            title = { Text(stringResource(R.string.level_list_screen_folder_title)) },
             text = {
                 OutlinedTextField(
                     colors = OutlinedTextFieldDefaults.colors(
@@ -765,13 +900,13 @@ fun LevelListScreen(
                     ),
                     value = newFolderNameInput,
                     onValueChange = { newFolderNameInput = it },
-                    label = { Text("文件夹名称") })
+                    label = { Text(stringResource(R.string.level_list_screen_folder_label)) })
             },
-            confirmButton = { Button(onClick = { handleNewFolder() }) { Text("创建") } },
+            confirmButton = { Button(onClick = { handleNewFolder() }) { Text(stringResource(R.string.level_list_screen_confirm)) } },
             dismissButton = {
                 TextButton(onClick = {
                     showNewFolderDialog = false
-                }) { Text("取消") }
+                }) { Text(stringResource(R.string.level_list_screen_cancel)) }
             }
         )
     }
@@ -779,7 +914,7 @@ fun LevelListScreen(
     if (showTemplateDialog) {
         AlertDialog(
             onDismissRequest = { showTemplateDialog = false },
-            title = { Text("新建关卡 - 选择模板") },
+            title = { Text(stringResource(R.string.level_list_screen_create_title)) },
             text = {
                 LazyColumn(
                     modifier = Modifier.heightIn(max = 300.dp),
@@ -818,7 +953,9 @@ fun LevelListScreen(
                 }
             },
             confirmButton = {
-                TextButton(onClick = { showTemplateDialog = false }) { Text("取消") }
+                TextButton(onClick = {
+                    showTemplateDialog = false
+                }) { Text(stringResource(R.string.level_list_screen_cancel)) }
             }
         )
     }
@@ -826,7 +963,7 @@ fun LevelListScreen(
     if (showCreateNameDialog) {
         AlertDialog(
             onDismissRequest = { showCreateNameDialog = false },
-            title = { Text("命名关卡") },
+            title = { Text(stringResource(R.string.level_list_screen_create_name)) },
             text = {
                 OutlinedTextField(
                     colors = OutlinedTextFieldDefaults.colors(
@@ -838,11 +975,19 @@ fun LevelListScreen(
                     value = newLevelNameInput,
                     onValueChange = { newLevelNameInput = it })
             },
-            confirmButton = { Button(onClick = { handleCreateLevelConfirm() }) { Text("创建") } },
+            confirmButton = {
+                Button(onClick = { handleCreateLevelConfirm() }) {
+                    Text(
+                        stringResource(
+                            R.string.level_list_screen_confirm
+                        )
+                    )
+                }
+            },
             dismissButton = {
                 TextButton(onClick = {
                     showCreateNameDialog = false
-                }) { Text("取消") }
+                }) { Text(stringResource(R.string.level_list_screen_cancel)) }
             }
         )
     }
@@ -851,11 +996,14 @@ fun LevelListScreen(
 
         AlertDialog(
             onDismissRequest = { showUiScaleDialog = false },
-            title = { Text("调整界面大小") },
+            title = { Text(stringResource(R.string.level_list_screen_size_title)) },
             text = {
                 Column {
                     Text(
-                        text = "当前缩放: ${(tempScale * 100).toInt()}%",
+                        text = stringResource(
+                            R.string.level_list_screen_size_tips,
+                            (tempScale * 100).toInt()
+                        ),
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         fontWeight = FontWeight.Bold
                     )
@@ -871,9 +1019,18 @@ fun LevelListScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("小", style = MaterialTheme.typography.bodySmall)
-                        Text("标准", style = MaterialTheme.typography.bodySmall)
-                        Text("大", style = MaterialTheme.typography.bodySmall)
+                        Text(
+                            stringResource(R.string.level_list_screen_size_small),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Text(
+                            stringResource(R.string.level_list_screen_size_medium),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Text(
+                            stringResource(R.string.level_list_screen_size_large),
+                            style = MaterialTheme.typography.bodySmall
+                        )
                     }
                 }
             },
@@ -882,14 +1039,14 @@ fun LevelListScreen(
                     showUiScaleDialog = false
                     onUiScaleChange(tempScale)
                 }) {
-                    Text("完成")
+                    Text(stringResource(R.string.level_list_screen_size_done))
                 }
             },
             dismissButton = {
                 TextButton(onClick = {
                     tempScale = 1.0f
                 }) {
-                    Text("重置")
+                    Text(stringResource(R.string.level_list_screen_size_reset))
                 }
             }
         )
@@ -996,7 +1153,11 @@ fun FileItemRow(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 if (!item.isDirectory) {
-                    Text("JSON 文件", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface)
+                    Text(
+                        stringResource(R.string.level_list_screen_jsonfile),
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                 }
             }
 
@@ -1037,6 +1198,101 @@ fun FileItemRow(
                             tint = MaterialTheme.colorScheme.onError.copy(alpha = 0.8f),
                             modifier = Modifier.size(20.dp)
                         )
+                    }
+                }
+            }
+        }
+    }
+}
+
+data class LanguageOption(
+    val name: String,
+    val code: String
+)
+
+val supportedLanguages = listOf(
+    LanguageOption("简体中文", "zh"),
+    LanguageOption("English", "en"),
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LanguageSelectSheet(
+    onDismiss: () -> Unit,
+    onSelect: (String) -> Unit
+) {
+    val context = LocalContext.current
+    val currentLang = remember { LocaleUtils.getSavedLanguage(context) }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        containerColor = MaterialTheme.colorScheme.surface,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 48.dp)
+        ) {
+            Text(
+                text = stringResource(R.string.level_list_screen_language_select),
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                modifier = Modifier.padding(bottom = 16.dp, start = 12.dp)
+            )
+
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column {
+                    supportedLanguages.forEachIndexed { index, lang ->
+                        val isSelected = currentLang == lang.code
+
+                        ListItem(
+                            modifier = Modifier.clickable {
+                                if (!isSelected) onSelect(lang.code)
+                                onDismiss()
+                            },
+                            headlineContent = {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Language,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(Modifier.width(16.dp))
+                                    Text(
+                                        text = lang.name,
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                }
+                            },
+                            trailingContent = {
+                                RadioButton(
+                                    selected = isSelected,
+                                    onClick = null
+                                )
+                            },
+                            colors = ListItemDefaults.colors(
+                                containerColor = Color.Transparent
+                            )
+                        )
+                        if (index < supportedLanguages.size - 1) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 12.dp),
+                                thickness = 0.5.dp,
+                                color = MaterialTheme.colorScheme.outlineVariant
+                            )
+                        }
                     }
                 }
             }

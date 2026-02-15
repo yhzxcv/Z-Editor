@@ -58,11 +58,13 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.repository.ZombieCategory
 import com.example.z_editor.data.repository.ZombieInfo
 import com.example.z_editor.data.repository.ZombieRepository
@@ -147,7 +149,10 @@ fun ZombieSelectionScreen(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             placeholder = {
-                                Text(if (isMultiSelect) "已选择 ${selectedIds.size} 项，点击搜索" else "搜索僵尸名称或代号", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(if (isMultiSelect) stringResource(
+                                    R.string.zombie_selection_screen_search_multiple,
+                                    selectedIds.size
+                                ) else stringResource(R.string.zombie_selection_screen_search), fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -232,7 +237,10 @@ fun ZombieSelectionScreen(
                                             .tabIndicatorOffset(tabPositions[index])
                                             .height(2.5.dp)
                                             .padding(horizontal = 4.dp)
-                                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f), RoundedCornerShape(1.dp))
+                                            .background(
+                                                MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                                                RoundedCornerShape(1.dp)
+                                            )
                                     )
                                 }
                             },
@@ -302,7 +310,8 @@ fun ZombieSelectionScreen(
                     )
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        if (selectedCategory == ZombieCategory.Collection) "暂无收藏僵尸，长按僵尸即可收藏" else "未找到相关僵尸",
+                        if (selectedCategory == ZombieCategory.Collection) stringResource(R.string.zombie_selection_screen_empty_collection) 
+                        else stringResource(R.string.zombie_selection_screen_empty),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -335,7 +344,9 @@ fun ZombieSelectionScreen(
                             },
                             onLongClick = {
                                 ZombieRepository.toggleFavorite(context, zombie.id)
-                                val msg = if (ZombieRepository.isFavorite(zombie.id)) "已加入收藏" else "已取消收藏"
+                                val msg = if (ZombieRepository.isFavorite(zombie.id)) context.getString(
+                                    R.string.zombie_selection_screen_collection_add
+                                ) else context.getString(R.string.zombie_selection_screen_collection_remove)
                                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             }
                         )

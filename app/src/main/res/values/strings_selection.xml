@@ -1,0 +1,33 @@
+<resources>
+    <string name="challenge_selection_screen_title">搜索挑战名称或代码</string>
+    <string name="challenge_selection_screen_notfound">未找到相关挑战</string>
+    <string name="event_selection_screen_title">为第 %1$s 波添加事件</string>
+    <string name="griditem_selection_screen_search">搜索物品名称或代码</string>
+    <string name="griditem_selection_screen_notfound">未找到相关物品</string>
+    <string name="module_selection_screen_search">搜索模块名称或描述</string>
+    <string name="module_selection_screen_notfound">未找到相关模块</string>
+    <string name="module_selection_screen_empty">该分类下暂无模块</string>
+    <string name="plant_selection_screen_search_multiple">已选择 %1$s 项，点击搜索</string>
+    <string name="plant_selection_screen_search">搜索植物名称或代码</string>
+    <string name="plant_selection_screen_empty_collection">暂无收藏植物，长按植物即可收藏</string>
+    <string name="plant_selection_screen_empty">未找到相关植物</string>
+    <string name="plant_selection_screen_collection_add">已加入收藏</string>
+    <string name="plant_selection_screen_collection_remove">已取消收藏</string>
+    <string name="stage_selection_screen_tab_all">全部地图</string>
+    <string name="stage_selection_screen_tab_main">主线世界</string>
+    <string name="stage_selection_screen_tab_extra">活动/秘境</string>
+    <string name="stage_selection_screen_tab_seasons">一代/季节</string>
+    <string name="stage_selection_screen_tab_special">小游戏</string>
+    <string name="stage_selection_screen_search">搜索地图名称或代号</string>
+    <string name="stage_selection_screen_notfound">未找到相关地图</string>
+    <string name="tool_selection_screen_title">选择工具卡</string>
+    <string name="zombie_selection_screen_search_multiple">已选择 %1$s 项，点击搜索</string>
+    <string name="zombie_selection_screen_search">搜索僵尸名称或代号</string>
+    <string name="zombie_selection_screen_empty_collection">暂无收藏僵尸，长按僵尸即可收藏</string>
+    <string name="zombie_selection_screen_empty">未找到相关僵尸</string>
+    <string name="zombie_selection_screen_collection_add">已加入收藏</string>
+    <string name="zombie_selection_screen_collection_remove">已取消收藏</string>
+    <string name="zomboss_selection_screen_title">搜索僵王名称或代号</string>
+    <string name="zomboss_selection_screen_notfound">未找到匹配的僵王</string>
+
+</resources>

@@ -21,10 +21,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.repository.ChallengeRepository
 import com.example.z_editor.data.repository.ChallengeTypeInfo
 import com.example.z_editor.ui.theme.LocalDarkTheme
@@ -78,7 +80,7 @@ fun ChallengeSelectionScreen(
                         TextField(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
-                            placeholder = { Text("搜索挑战名称或代码", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            placeholder = { Text(stringResource(R.string.challenge_selection_screen_title), fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) },
                             modifier = Modifier
                                 .weight(1f)
                                 .height(54.dp),
@@ -115,7 +117,7 @@ fun ChallengeSelectionScreen(
                 ) {
                     Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(64.dp))
                     Spacer(Modifier.height(16.dp))
-                    Text("未找到相关挑战", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.challenge_selection_screen_notfound), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
                 LazyVerticalGrid(

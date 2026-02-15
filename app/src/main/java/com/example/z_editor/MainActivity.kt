@@ -29,11 +29,17 @@ import androidx.compose.ui.unit.Density
 import androidx.core.content.edit
 import com.example.z_editor.ui.theme.LocalDarkTheme
 import com.example.z_editor.ui.theme.PVZ2LevelEditorTheme
+import com.example.z_editor.views.components.LocaleUtils
 import com.example.z_editor.views.screens.main.AboutScreen
 import com.example.z_editor.views.screens.main.EditorScreen
 import com.example.z_editor.views.screens.main.LevelListScreen
 
 class MainActivity : ComponentActivity() {
+    override fun attachBaseContext(newBase: Context) {
+        val lang = LocaleUtils.getSavedLanguage(newBase)
+        val context = LocaleUtils.applyLocale(newBase, lang)
+        super.attachBaseContext(context)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
@@ -71,6 +77,10 @@ class MainActivity : ComponentActivity() {
                             onUiScaleChange = { newScale ->
                                 uiScale = newScale
                                 prefs.edit { putFloat("ui_scale", newScale) }
+                            },
+                            onLanguageChange = { langCode ->
+                                LocaleUtils.saveLanguage(this@MainActivity, langCode)
+                                this@MainActivity.recreate()
                             }
                         )
                     }
@@ -91,7 +101,8 @@ fun AppNavigation(
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit,
     uiScale: Float,
-    onUiScaleChange: (Float) -> Unit
+    onUiScaleChange: (Float) -> Unit,
+    onLanguageChange: (String) -> Unit
 ) {
     var currentScreen by remember { mutableStateOf(ScreenState.LevelList) }
     var currentFileUri by remember { mutableStateOf<Uri?>(null) }
@@ -123,12 +134,13 @@ fun AppNavigation(
                     onUiScaleChange = onUiScaleChange,
                     onLevelClick = { fileName, fileUri ->
                         currentFileName = fileName
-                        currentFileUri = fileUri // 保存 Uri
+                        currentFileUri = fileUri
                         currentScreen = ScreenState.Editor
                     },
                     onAboutClick = {
                         currentScreen = ScreenState.About
-                    }
+                    },
+                    onLanguageChange = onLanguageChange,
                 )
             }
 

@@ -154,14 +154,14 @@ fun WaveTimelineTab(
                     imageVector = Icons.Default.Inbox,
                     contentDescription = null,
                     modifier = Modifier.size(64.dp),
-                    tint = MaterialTheme.colorScheme.surfaceVariant
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(16.dp))
                 Text(
                     text = "未找到波次容器",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.surfaceVariant,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
@@ -647,9 +647,7 @@ fun WaveTimelineTab(
                         eventToDeleteSourceWave = null
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (count > 1) MaterialTheme.colorScheme.onSurfaceVariant else Color(
-                            0xFFD32F2F
-                        )
+                        containerColor = if (count > 1) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onError
                     )
                 ) {
                     Text(if (count > 1) "确认移除" else "确认彻底删除")

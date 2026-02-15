@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Z-Editor</string>
+    <string name="about_screen_title">软件介绍</string>
+    <string name="about_screen_name">Z-Editor</string>
+    <string name="about_screen_intro">PVZ2C 关卡可视化编辑器</string>
+    <string name="about_screen_introduction_text">Z-Editor 是一款专为《植物大战僵尸2中文版》设计的可视化关卡编辑工具。它旨在解决直接修改 JSON 文件繁琐、易错的问题，提供直观的图形界面来管理关卡配置。</string>
+    <string name="about_screen_introduction_title">简介</string>
+    <string name="about_screen_feature_title">核心功能</string>
+    <string name="about_screen_feature_text1">模块化编辑：对关卡模块和事件进行模块化管理，实现快速配置。</string>
+    <string name="about_screen_feature_text2">多模式支持：支持编辑我是僵尸、砸罐子、坚不可摧、僵王战等多种模式。</string>
+    <string name="about_screen_feature_text3">自定义注入：实现在关卡内注入并管理自定义僵尸、编辑其基础属性。</string>
+    <string name="about_screen_feature_text4">智能校验：自动检测模块依赖缺失、引用失效等问题，有效预防关卡闪退。</string>
+    <string name="about_screen_feature_text5">资源预览：内置植物、僵尸、障碍物图标，优化编辑体验，所见即所得。</string>
+    <string name="about_screen_usage_title">使用说明</string>
+    <string name="about_screen_usage_text1">1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n</string>
+    <string name="about_screen_usage_text2">"2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。 "</string>
+    <string name="about_screen_usage_text3">"3. 模块管理：在编辑器中，可以通过“添加新模块”来扩展关卡功能。 "</string>
+    <string name="about_screen_usage_text4">"4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。 "</string>
+    <string name="about_screen_usage_text5">如果有使用上的疑问或反馈建议，欢迎加入交流 QQ 群 562251204 进行交流。</string>
+    <string name="about_screen_credits_title">致谢名单</string>
+    <string name="about_screen_credits_author">软件作者：</string>
+    <string name="about_screen_credits_thanks">特别鸣谢：</string>
+    <string name="about_screen_ending">穿越时空 创造无穷可能</string>
+
+</resources>

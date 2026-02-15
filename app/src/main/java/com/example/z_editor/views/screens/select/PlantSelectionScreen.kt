@@ -58,11 +58,13 @@ import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.repository.PlantCategory
 import com.example.z_editor.data.repository.PlantInfo
 import com.example.z_editor.data.repository.PlantRepository
@@ -140,7 +142,11 @@ fun PlantSelectionScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(onClick = handleBack, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = MaterialTheme.colorScheme.surface)
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                "Back",
+                                tint = MaterialTheme.colorScheme.surface
+                            )
                         }
                         Spacer(Modifier.width(16.dp))
 
@@ -149,7 +155,10 @@ fun PlantSelectionScreen(
                             onValueChange = { searchQuery = it },
                             placeholder = {
                                 Text(
-                                    if (isMultiSelect) "已选择 ${selectedIds.size} 项，点击搜索" else "搜索植物名称或代码",
+                                    if (isMultiSelect) stringResource(
+                                        R.string.plant_selection_screen_search_multiple,
+                                        selectedIds.size
+                                    ) else stringResource(R.string.plant_selection_screen_search),
                                     fontSize = 16.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -166,12 +175,24 @@ fun PlantSelectionScreen(
                                 unfocusedIndicatorColor = Color.Transparent,
                                 cursorColor = themeColor
                             ),
-                            leadingIcon = { Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Default.Search,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
                             trailingIcon = if (searchQuery.isNotEmpty()) {
                                 {
                                     IconButton(onClick = {
                                         searchQuery = ""
-                                    }) { Icon(Icons.Default.Clear, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                                    }) {
+                                        Icon(
+                                            Icons.Default.Clear,
+                                            null,
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
                                 }
                             } else null,
                             textStyle = LocalTextStyle.current.copy(fontSize = 14.sp)
@@ -219,7 +240,9 @@ fun PlantSelectionScreen(
                                         )
                                     }
                                 },
-                                unselectedContentColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+                                unselectedContentColor = MaterialTheme.colorScheme.surface.copy(
+                                    alpha = 0.6f
+                                )
                             )
                         }
                     }
@@ -314,7 +337,9 @@ fun PlantSelectionScreen(
                     )
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        if (selectedCategory == PlantCategory.Collection) "暂无收藏植物，长按植物即可收藏" else "未找到相关植物",
+                        if (selectedCategory == PlantCategory.Collection) stringResource(R.string.plant_selection_screen_empty_collection) else stringResource(
+                            R.string.plant_selection_screen_empty
+                        ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -348,7 +373,10 @@ fun PlantSelectionScreen(
                             onLongClick = {
                                 PlantRepository.toggleFavorite(context, plant.id)
                                 val msg =
-                                    if (PlantRepository.isFavorite(plant.id)) "已加入收藏" else "已取消收藏"
+                                    if (PlantRepository.isFavorite(plant.id)) context.getString(R.string.plant_selection_screen_collection_add)
+                                    else context.getString(
+                                        R.string.plant_selection_screen_collection_remove
+                                    )
                                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             }
                         )

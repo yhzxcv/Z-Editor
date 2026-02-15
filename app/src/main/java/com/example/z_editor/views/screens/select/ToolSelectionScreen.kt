@@ -35,10 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.repository.ToolCardInfo
 import com.example.z_editor.data.repository.ToolRepository
 import com.example.z_editor.ui.theme.LocalDarkTheme
@@ -64,7 +66,7 @@ fun ToolSelectionScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("选择工具卡", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+                title = { Text(stringResource(R.string.tool_selection_screen_title), fontWeight = FontWeight.Bold, fontSize = 20.sp) },
                 navigationIcon = {
                     IconButton(onClick = handleBack) {
                         Icon(

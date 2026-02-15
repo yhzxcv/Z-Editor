@@ -55,9 +55,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.ModuleCategory
 import com.example.z_editor.data.ModuleMetadata
 import com.example.z_editor.data.ModuleRegistry
@@ -116,7 +118,11 @@ fun ModuleSelectionScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(onClick = handleBack, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = MaterialTheme.colorScheme.surface)
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                "Back",
+                                tint = MaterialTheme.colorScheme.surface
+                            )
                         }
                         Spacer(Modifier.width(16.dp))
 
@@ -124,7 +130,11 @@ fun ModuleSelectionScreen(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
                             placeholder = {
-                                Text("搜索模块名称或描述", fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(
+                                    stringResource(R.string.module_selection_screen_search),
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             },
                             modifier = Modifier
                                 .weight(1f)
@@ -139,12 +149,20 @@ fun ModuleSelectionScreen(
                                 cursorColor = themeColor
                             ),
                             leadingIcon = {
-                                Icon(Icons.Default.Search, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Icon(
+                                    Icons.Default.Search,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
                             },
                             trailingIcon = if (searchQuery.isNotEmpty()) {
                                 {
                                     IconButton(onClick = { searchQuery = "" }) {
-                                        Icon(Icons.Default.Clear, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Icon(
+                                            Icons.Default.Clear,
+                                            null,
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
                                     }
                                 }
                             } else null,
@@ -159,7 +177,11 @@ fun ModuleSelectionScreen(
                         divider = {},
                         indicator = { tabPositions ->
                             TabRowDefaults.SecondaryIndicator(
-                                Modifier.tabIndicatorOffset(tabPositions[ModuleCategory.entries.indexOf(selectedCategory)]),
+                                Modifier.tabIndicatorOffset(
+                                    tabPositions[ModuleCategory.entries.indexOf(
+                                        selectedCategory
+                                    )]
+                                ),
                                 color = MaterialTheme.colorScheme.surface,
                                 height = 3.dp
                             )
@@ -175,7 +197,9 @@ fun ModuleSelectionScreen(
                                         text = category.title,
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                         fontSize = 16.sp,
-                                        color = if (isSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(alpha = 0.7f)
+                                        color = if (isSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(
+                                            alpha = 0.7f
+                                        )
                                     )
                                 }
                             )
@@ -206,7 +230,8 @@ fun ModuleSelectionScreen(
                     )
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        text = if (searchQuery.isNotEmpty()) "未找到匹配 \"$searchQuery\" 的模块" else "该分类下暂无模块",
+                        text = if (searchQuery.isNotEmpty()) stringResource(R.string.module_selection_screen_notfound)
+                        else stringResource(R.string.module_selection_screen_empty),
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -260,8 +285,12 @@ fun ModuleSelectionCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val iconBgColor = if (isEnabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
-            val iconTint = if (isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+            val iconBgColor =
+                if (isEnabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                    alpha = 0.1f
+                )
+            val iconTint =
+                if (isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
 
             Box(
                 modifier = Modifier
