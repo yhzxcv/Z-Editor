@@ -44,10 +44,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.LevelDefinitionData
 import com.example.z_editor.data.ModuleMetadata
 import com.example.z_editor.data.ModuleRegistry
@@ -70,6 +73,10 @@ fun LevelSettingsTab(
     onRemoveModule: (String) -> Unit,
     onNavigateToAddModule: () -> Unit
 ) {
+    val conflictSeparator = stringResource(id = R.string.level_settings_conflict_separator)
+    val conflictSuffix = stringResource(id = R.string.level_settings_conflict_suffix)
+    val context = LocalContext.current
+
     if (levelDef == null) {
         Box(
             modifier = Modifier
@@ -89,14 +96,14 @@ fun LevelSettingsTab(
                 )
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    text = "未找到关卡定义",
+                    text = stringResource(id = R.string.level_settings_not_found_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "当前关卡内未找到关卡定义模块 (LevelDefinition)，这是关卡文件的基础节点，缺失表示当前关卡已被毁坏。请尝试手动添加关卡定义模块。",
+                    text = stringResource(id = R.string.level_settings_not_found_desc),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -124,8 +131,8 @@ fun LevelSettingsTab(
                 rtid = rtid,
                 alias = alias,
                 objClass = objClass,
-                friendlyName = metadata.title,
-                description = metadata.description,
+                friendlyName = context.getString(metadata.titleRes),
+                description = context.getString(metadata.descriptionRes),
                 icon = metadata.icon,
                 isCore = metadata.isCore
             )
@@ -145,9 +152,9 @@ fun LevelSettingsTab(
         }.map { rule ->
             val displayDesc = rule.description ?: run {
                 val names = rule.conflictingClasses.map { cls ->
-                    ModuleRegistry.getMetadata(cls).title
+                    context.getString(ModuleRegistry.getMetadata(cls).titleRes)
                 }
-                "${names.joinToString(" 与 ")} 发生逻辑冲突，建议只保留其中一个。"
+                names.joinToString(conflictSeparator) + conflictSuffix
             }
             rule to displayDesc
         }
@@ -158,18 +165,25 @@ fun LevelSettingsTab(
     if (pendingDeleteRtid != null) {
         AlertDialog(
             onDismissRequest = { pendingDeleteRtid = null },
-            title = { Text("移除模块") },
+            title = { Text(stringResource(id = R.string.level_settings_dialog_remove_title)) },
             text = {
-                Text("确定要移除该模块吗？\n\n如果是本地自定义模块(@CurrentLevel)，其关联的数据配置也会被一并删除，且不可恢复。")
+                Text(stringResource(id = R.string.level_settings_dialog_remove_msg))
             },
             confirmButton = {
                 TextButton(onClick = {
                     onRemoveModule(pendingDeleteRtid!!)
                     pendingDeleteRtid = null
-                }) { Text("确认移除", color = MaterialTheme.colorScheme.onError) }
+                }) {
+                    Text(
+                        stringResource(id = R.string.level_settings_dialog_remove_confirm),
+                        color = MaterialTheme.colorScheme.onError
+                    )
+                }
             },
             dismissButton = {
-                TextButton(onClick = { pendingDeleteRtid = null }) { Text("取消") }
+                TextButton(onClick = { pendingDeleteRtid = null }) {
+                    Text(stringResource(id = R.string.level_settings_dialog_remove_cancel))
+                }
             }
         )
     }
@@ -183,8 +197,8 @@ fun LevelSettingsTab(
     ) {
         item {
             SettingEntryCard(
-                title = "关卡基本信息",
-                subtitle = "名称、序号、描述、地图背景",
+                title = stringResource(id = R.string.level_settings_basic_info_title),
+                subtitle = stringResource(id = R.string.level_settings_basic_info_subtitle),
                 icon = Icons.Default.EditNote,
                 onClick = onEditBasicInfo
             )
@@ -195,7 +209,7 @@ fun LevelSettingsTab(
         // 核心模块区域
         item {
             Text(
-                "可用编辑模块",
+                text = stringResource(id = R.string.level_settings_header_editable_modules),
                 fontWeight = FontWeight.Bold,
                 fontSize = 15.sp,
                 color = MaterialTheme.colorScheme.primary,
@@ -214,7 +228,7 @@ fun LevelSettingsTab(
         if (miscModules.isNotEmpty()) {
             item {
                 Text(
-                    "默认参数模块",
+                    text = stringResource(id = R.string.level_settings_header_misc_modules),
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
                     color = Color.Gray
@@ -244,7 +258,7 @@ fun LevelSettingsTab(
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        "添加新模块",
+                        text = stringResource(id = R.string.level_settings_add_module),
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Bold
                     )
@@ -280,7 +294,7 @@ fun LevelSettingsTab(
             }
         }
 
-        // --- “缺失必要模块”警告 ---
+        // --- “缺少必要模块”警告 ---
         if (missingEssentials.isNotEmpty()) {
             item {
                 Card(
@@ -302,20 +316,20 @@ fun LevelSettingsTab(
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                "缺少必要模块",
+                                text = stringResource(id = R.string.level_settings_missing_essentials_title),
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onTertiary
                             )
                         }
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            text = "关卡可能无法正常运行。建议添加以下模块：",
+                            text = stringResource(id = R.string.level_settings_missing_essentials_desc),
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onTertiary
                         )
                         missingEssentials.forEach { meta ->
                             Text(
-                                text = "• ${meta.title}",
+                                text = "• ${stringResource(id = meta.titleRes)}",
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onTertiary,
@@ -372,7 +386,7 @@ fun ModuleCard(info: ModuleUIInfo, onClick: () -> Unit, onDelete: () -> Unit) {
             IconButton(onClick = onDelete) {
                 Icon(
                     Icons.Default.Close,
-                    "删除",
+                    stringResource(id = R.string.level_settings_delete),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
                 )
@@ -407,7 +421,7 @@ fun MiscModuleRow(info: ModuleUIInfo, onDelete: () -> Unit) {
         IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
             Icon(
                 Icons.Default.RemoveCircleOutline,
-                null,
+                stringResource(id = R.string.level_settings_delete),
                 tint = MaterialTheme.colorScheme.onError.copy(0.5f),
                 modifier = Modifier.size(18.dp)
             )

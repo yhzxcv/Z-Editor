@@ -18,7 +18,6 @@
         "MusicType": "MiniGame_A",
         "Name": "坚不可摧示例",
         "StageModule": "RTID(ModernStage@LevelModules)",
-        "StartingSun": 200,
         "VictoryModule": "RTID(VictoryOutro@LevelModules)"
       }
     },

@@ -101,6 +101,19 @@ object LevelRepository {
         }
     }
 
+    fun clearAllInternalCache(context: Context): Int {
+        val dir = context.filesDir
+        var deletedCount = 0
+        dir.listFiles()?.forEach { file ->
+            if (file.isFile && file.name.endsWith(".json", ignoreCase = true)) {
+                if (file.delete()) {
+                    deletedCount++
+                }
+            }
+        }
+        return deletedCount
+    }
+
     fun renameItem(context: Context, currentDirUri: Uri, oldName: String, newName: String, isDirectory: Boolean): Boolean {
         val parentDoc = DocumentFile.fromTreeUri(context, currentDirUri) ?: return false
         val targetFile = parentDoc.findFile(oldName) ?: return false

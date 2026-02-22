@@ -54,6 +54,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -75,6 +76,7 @@ fun ModuleSelectionScreen(
     val handleBack = rememberDebouncedClick { onBack() }
     BackHandler(onBack = handleBack)
     val allModules = remember { ModuleRegistry.getAllKnownModules() }
+    val context = LocalContext.current
 
     var searchQuery by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(ModuleCategory.Base) }
@@ -85,8 +87,8 @@ fun ModuleSelectionScreen(
             .filter { (_, meta) ->
                 val categoryMatch = meta.category == selectedCategory
                 val searchMatch = if (searchQuery.isBlank()) true else {
-                    meta.title.contains(searchQuery, ignoreCase = true) ||
-                            meta.description.contains(searchQuery, ignoreCase = true) ||
+                    context.getString(meta.titleRes).contains(searchQuery, ignoreCase = true) ||
+                            context.getString(meta.descriptionRes).contains(searchQuery, ignoreCase = true) ||
                             meta.defaultAlias.contains(searchQuery, ignoreCase = true)
                 }
                 categoryMatch && searchMatch
@@ -194,7 +196,7 @@ fun ModuleSelectionScreen(
                                 onClick = { selectedCategory = category },
                                 text = {
                                     Text(
-                                        text = category.title,
+                                        text = stringResource(category.titleRes),
                                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                         fontSize = 16.sp,
                                         color = if (isSelected) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(
@@ -311,14 +313,14 @@ fun ModuleSelectionCard(
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = meta.title,
+                        text = stringResource(id = meta.titleRes),
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         color = if (isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Text(
-                    text = meta.description,
+                    text = stringResource(id = meta.descriptionRes),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 2

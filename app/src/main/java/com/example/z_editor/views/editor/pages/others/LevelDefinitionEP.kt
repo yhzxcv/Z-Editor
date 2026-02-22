@@ -224,7 +224,7 @@ fun LevelDefinitionEP(
                     onValueChange = {
                         startingSunInput = it
                         val sunVal = it.toIntOrNull()
-                        levelDef = levelDef.copy(startingSun = sunVal)
+                        levelDef = levelDef.copy(startingSun = if (sunVal != 0) sunVal else null)
                         sync()
                     },
                     colors = OutlinedTextFieldDefaults.colors(
@@ -414,10 +414,30 @@ fun LevelDefinitionEP(
             HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             Text(
-                "限制选项",
+                "关卡选项",
                 fontWeight = FontWeight.Bold, fontSize = 16.sp,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
+            )
+
+            SwitchOptionItem(
+                title = "是否为砸罐子 (IsVasebreaker)",
+                subtitle = "如果关卡中有砸罐子模块，请开启该选项",
+                checked = levelDef.isVasebreaker == true,
+                onCheckedChange = {
+                    levelDef = levelDef.copy(isVasebreaker = if (it) true else null)
+                    sync()
+                }
+            )
+
+            SwitchOptionItem(
+                title = "是否为僵王战 (IsBossFight)",
+                subtitle = "如果关卡中有僵王战模块，请开启该选项",
+                checked = levelDef.isBossFight == true,
+                onCheckedChange = {
+                    levelDef = levelDef.copy(isBossFight = if (it) true else null)
+                    sync()
+                }
             )
 
             SwitchOptionItem(

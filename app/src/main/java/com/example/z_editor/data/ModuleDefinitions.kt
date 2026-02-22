@@ -1,5 +1,7 @@
 package com.example.z_editor.data
 
+import android.content.Context
+import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CompareArrows
 import androidx.compose.material.icons.automirrored.filled.FactCheck
@@ -51,6 +53,7 @@ import androidx.compose.material.icons.filled.Widgets
 import androidx.compose.material.icons.filled.Yard
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.z_editor.R
 import com.google.gson.Gson
 
 /**
@@ -138,401 +141,383 @@ sealed class EditorSubScreen {
 
 
 data class EventMetadata(
-    val title: String,
-    val description: String,
+    val title: Int,
+    val description: Int,
     val icon: ImageVector,
     val color: Color,
     val darkColor: Color,
     val defaultAlias: String,
     val defaultObjClass: String,
     val initialDataFactory: () -> Any,
-    val summaryProvider: ((PvzObject) -> String)? = null
+    val summaryProvider: ((Context, PvzObject) -> String)? = null
 )
 
 object EventRegistry {
     private val registry = mapOf(
         "SpawnZombiesFromGroundSpawnerProps" to EventMetadata(
-            title = "地底出怪",
-            description = "从地下生成僵尸的出怪事件",
+            title = R.string.event_ground_spawner_title,
+            description = R.string.event_ground_spawner_desc,
             icon = Icons.Default.Groups,
             color = Color(0xFF936457),
             darkColor = Color(0xFFC2A197),
             defaultAlias = "GroundSpawner",
             defaultObjClass = "SpawnZombiesFromGroundSpawnerProps",
             initialDataFactory = { WaveActionData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, SpawnZombiesFromGroundData::class.java)
-                    "${data.zombies.size} 僵尸"
+                    val data = Gson().fromJson(obj.objData, SpawnZombiesFromGroundData::class.java)
+                    context.getString(R.string.event_format_zombies, data.zombies.size)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "SpawnZombiesJitteredWaveActionProps" to EventMetadata(
-            title = "普通出怪",
-            description = "最基础的自然出怪事件",
+            title = R.string.event_jittered_title,
+            description = R.string.event_jittered_desc,
             icon = Icons.Default.Groups,
             color = Color(0xFF2196F3),
             darkColor = Color(0xFF90CAF9),
             defaultAlias = "Jittered",
             defaultObjClass = "SpawnZombiesJitteredWaveActionProps",
             initialDataFactory = { WaveActionData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, WaveActionData::class.java)
-                    "${data.zombies.size} 僵尸"
+                    val data = Gson().fromJson(obj.objData, WaveActionData::class.java)
+                    context.getString(R.string.event_format_zombies, data.zombies.size)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "FrostWindWaveActionProps" to EventMetadata(
-            title = "寒风侵袭",
-            description = "在指定行吹起寒风冻结植物",
+            title = R.string.event_frost_wind_title,
+            description = R.string.event_frost_wind_desc,
             icon = Icons.Default.AcUnit,
             color = Color(0xFF0288D1),
             darkColor = Color(0xFF90CAF9),
             defaultAlias = "FrostWindEvent",
             defaultObjClass = "FrostWindWaveActionProps",
             initialDataFactory = { FrostWindWaveActionPropsData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, FrostWindWaveActionPropsData::class.java)
-                    "${data.winds.size} 股寒风"
+                    val data = Gson().fromJson(obj.objData, FrostWindWaveActionPropsData::class.java)
+                    context.getString(R.string.event_format_winds, data.winds.size)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "BeachStageEventZombieSpawnerProps" to EventMetadata(
-            title = "退潮突袭",
-            description = "僵尸在退潮时浮现突袭",
+            title = R.string.event_low_tide_title,
+            description = R.string.event_low_tide_desc,
             icon = Icons.Default.Water,
             color = Color(0xFF00ACC1),
             darkColor = Color(0xFF81D4FA),
             defaultAlias = "LowTideEvent",
             defaultObjClass = "BeachStageEventZombieSpawnerProps",
             initialDataFactory = { BeachStageEventData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, BeachStageEventData::class.java)
-                    "${data.zombieCount} 僵尸"
+                    val data = Gson().fromJson(obj.objData, BeachStageEventData::class.java)
+                    context.getString(R.string.event_format_zombies, data.zombieCount)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "TidalChangeWaveActionProps" to EventMetadata(
-            title = "潮水变更",
-            description = "改变潮水位置",
+            title = R.string.event_tide_change_title,
+            description = R.string.event_tide_change_desc,
             icon = Icons.Default.WaterDrop,
             color = Color(0xFF00ACC1),
             darkColor = Color(0xFF81D4FA),
             defaultAlias = "TidalChangeEvent",
             defaultObjClass = "TidalChangeWaveActionProps",
             initialDataFactory = { TidalChangeWaveActionData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, TidalChangeWaveActionData::class.java)
-                    "位置: ${data.tidalChange.changeAmount}"
+                    val data = Gson().fromJson(obj.objData, TidalChangeWaveActionData::class.java)
+                    context.getString(R.string.event_format_position, data.tidalChange.changeAmount.toString())
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "ModifyConveyorWaveActionProps" to EventMetadata(
-            title = "传送带变更",
-            description = "动态添加或移除传送带上的卡片",
+            title = R.string.event_conveyor_mod_title,
+            description = R.string.event_conveyor_mod_desc,
             icon = Icons.Default.Transform,
             color = Color(0xFF4AC380),
             darkColor = Color(0xFF7CBD99),
             defaultAlias = "ModConveyorEvent",
             defaultObjClass = "ModifyConveyorWaveActionProps",
             initialDataFactory = { ModifyConveyorWaveActionData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, ModifyConveyorWaveActionData::class.java)
-                    "+${data.addList.size} / -${data.removeList.size}"
+                    val data = Gson().fromJson(obj.objData, ModifyConveyorWaveActionData::class.java)
+                    context.getString(R.string.event_format_conveyor, data.addList.size, data.removeList.size)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "DinoWaveActionProps" to EventMetadata(
-            title = "恐龙召唤",
-            description = "在指定行召唤一只恐龙协助僵尸",
+            title = R.string.event_dino_summon_title,
+            description = R.string.event_dino_summon_desc,
             icon = Icons.Default.Pets,
             color = Color(0xFF91B900),
             darkColor = Color(0xFFA2B659),
             defaultAlias = "DinoTimeEvent",
             defaultObjClass = "DinoWaveActionProps",
             initialDataFactory = { DinoWaveActionPropsData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, DinoWaveActionPropsData::class.java)
+                    val data = Gson().fromJson(obj.objData, DinoWaveActionPropsData::class.java)
                     val typeMap = mapOf(
-                        "raptor" to "迅猛龙", "stego" to "剑龙",
-                        "ptero" to "翼龙", "tyranno" to "霸王龙",
-                        "ankylo" to "甲龙"
+                        "raptor" to context.getString(R.string.event_dino_raptor),
+                        "stego" to context.getString(R.string.event_dino_stego),
+                        "ptero" to context.getString(R.string.event_dino_ptero),
+                        "tyranno" to context.getString(R.string.event_dino_tyranno),
+                        "ankylo" to context.getString(R.string.event_dino_ankylo)
                     )
                     "${typeMap[data.dinoType] ?: data.dinoType} ${data.dinoRow + 1}"
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "SpawnModernPortalsWaveActionProps" to EventMetadata(
-            title = "时空裂缝",
-            description = "在指定位置召唤时空裂缝",
+            title = R.string.event_portal_title,
+            description = R.string.event_portal_desc,
             icon = Icons.Default.HourglassEmpty,
             color = Color(0xFFFF9800),
             darkColor = Color(0xFFFFCC80),
             defaultAlias = "PortalEvent",
             defaultObjClass = "SpawnModernPortalsWaveActionProps",
             initialDataFactory = { PortalEventData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, PortalEventData::class.java)
+                    val data = Gson().fromJson(obj.objData, PortalEventData::class.java)
                     data.portalType
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "StormZombieSpawnerProps" to EventMetadata(
-            title = "风暴突袭",
-            description = "沙尘暴或暴风雪运送僵尸",
+            title = R.string.event_storm_raid_title,
+            description = R.string.event_storm_raid_desc,
             icon = Icons.Default.Storm,
             color = Color(0xFFFF9800),
             darkColor = Color(0xFFFFCC80),
             defaultAlias = "StormEvent",
             defaultObjClass = "StormZombieSpawnerProps",
             initialDataFactory = { StormZombieSpawnerPropsData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, StormZombieSpawnerPropsData::class.java)
-                    "${data.zombies.size} 僵尸"
+                    val data = Gson().fromJson(obj.objData, StormZombieSpawnerPropsData::class.java)
+                    context.getString(R.string.event_format_zombies, data.zombies.size)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "RaidingPartyZombieSpawnerProps" to EventMetadata(
-            title = "海盗登船",
-            description = "生成若干个飞索僵尸的事件",
+            title = R.string.event_pirate_raid_title,
+            description = R.string.event_pirate_raid_desc,
             icon = Icons.Default.Tsunami,
             color = Color(0xFFFF9800),
             darkColor = Color(0xFFFFCC80),
             defaultAlias = "RaidingPartyEvent",
             defaultObjClass = "RaidingPartyZombieSpawnerProps",
             initialDataFactory = { RaidingPartyEventData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, RaidingPartyEventData::class.java)
-                    "${data.swashbucklerCount} 僵尸"
+                    val data = Gson().fromJson(obj.objData, RaidingPartyEventData::class.java)
+                    context.getString(R.string.event_format_zombies, data.swashbucklerCount)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "ZombiePotionActionProps" to EventMetadata(
-            title = "投放药水",
-            description = "在场地固定位置强行生成障碍物",
+            title = R.string.event_potion_drop_title,
+            description = R.string.event_potion_drop_desc,
             icon = Icons.Default.Science,
             color = Color(0xFF607D8B),
             darkColor = Color(0xFFB0BEC5),
             defaultAlias = "PotionEvent",
             defaultObjClass = "ZombiePotionActionProps",
             initialDataFactory = { ZombiePotionActionPropsData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, ZombiePotionActionPropsData::class.java)
-                    "${data.potions.size} 个"
+                    val data = Gson().fromJson(obj.objData, ZombiePotionActionPropsData::class.java)
+                    context.getString(R.string.event_format_items, data.potions.size)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "SpawnGravestonesWaveActionProps" to EventMetadata(
-            title = "障碍物生成",
-            description = "在场地的空位处生成障碍物",
+            title = R.string.event_obstacle_gen_title,
+            description = R.string.event_obstacle_gen_desc,
             icon = Icons.Filled.Unarchive,
             color = Color(0xFF607D8B),
             darkColor = Color(0xFFB0BEC5),
             defaultAlias = "GravestonesEvent",
             defaultObjClass = "SpawnGravestonesWaveActionProps",
             initialDataFactory = { SpawnGraveStonesData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, SpawnGraveStonesData::class.java)
-                    "${data.gravestonePool.size} 种"
+                    val data = Gson().fromJson(obj.objData, SpawnGraveStonesData::class.java)
+                    context.getString(R.string.event_format_types, data.gravestonePool.size)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "SpawnZombiesFromGridItemSpawnerProps" to EventMetadata(
-            title = "障碍物出怪",
-            description = "从指定的障碍物种类生成僵尸",
+            title = R.string.event_obstacle_spawner_title,
+            description = R.string.event_obstacle_spawner_desc,
             icon = Icons.Default.Groups,
             color = Color(0xFF607D8B),
             darkColor = Color(0xFFB0BEC5),
             defaultAlias = "GraveSpawner",
             defaultObjClass = "SpawnZombiesFromGridItemSpawnerProps",
             initialDataFactory = { SpawnZombiesFromGridItemData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, SpawnZombiesFromGridItemData::class.java)
-                    "${data.zombies.size} 僵尸"
+                    val data = Gson().fromJson(obj.objData, SpawnZombiesFromGridItemData::class.java)
+                    context.getString(R.string.event_format_zombies, data.zombies.size)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "FairyTaleFogWaveActionProps" to EventMetadata(
-            title = "童话迷雾",
-            description = "生成覆盖场地的迷雾",
+            title = R.string.event_fairy_fog_title,
+            description = R.string.event_fairy_fog_desc,
             icon = Icons.Default.Cloud,
             color = Color(0xFFBE5DBA),
             darkColor = Color(0xFFBD99BB),
             defaultAlias = "FairyFogEvent",
             defaultObjClass = "FairyTaleFogWaveActionProps",
             initialDataFactory = { FairyTaleFogWaveActionData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, FairyTaleFogWaveActionData::class.java)
+                    val data = Gson().fromJson(obj.objData, FairyTaleFogWaveActionData::class.java)
                     "mX: ${data.range.mX}"
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "FairyTaleWindWaveActionProps" to EventMetadata(
-            title = "童话微风",
-            description = "把场上所有童话迷雾吹走的风",
+            title = R.string.event_fairy_wind_title,
+            description = R.string.event_fairy_wind_desc,
             icon = Icons.Default.Air,
             color = Color(0xFFBE5DBA),
             darkColor = Color(0xFFBD99BB),
             defaultAlias = "WindEvent",
             defaultObjClass = "FairyTaleWindWaveActionProps",
             initialDataFactory = { FairyTaleWindWaveActionData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, FairyTaleWindWaveActionData::class.java)
-                    "${data.duration}秒"
+                    val data = Gson().fromJson(obj.objData, FairyTaleWindWaveActionData::class.java)
+                    context.getString(R.string.event_format_seconds, data.duration)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "SpiderRainZombieSpawnerProps" to EventMetadata(
-            title = "小鬼空降",
-            description = "僵尸依靠降落伞从天而降",
+            title = R.string.event_imp_rain_title,
+            description = R.string.event_imp_rain_desc,
             icon = Icons.Default.BugReport,
             color = Color(0xFF9C27B0),
             darkColor = Color(0xFFB39DDB),
             defaultAlias = "SpiderRainEvent",
             defaultObjClass = "SpiderRainZombieSpawnerProps",
             initialDataFactory = { ParachuteRainEventData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, ParachuteRainEventData::class.java)
-                    "${data.spiderCount} 僵尸"
+                    val data = Gson().fromJson(obj.objData, ParachuteRainEventData::class.java)
+                    context.getString(R.string.event_format_zombies, data.spiderCount)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "ParachuteRainZombieSpawnerProps" to EventMetadata(
-            title = "降落伞空降",
-            description = "僵尸依靠降落伞从天而降",
+            title = R.string.event_parachute_rain_title,
+            description = R.string.event_parachute_rain_desc,
             icon = Icons.Default.AirplanemodeActive,
             color = Color(0xFF9C27B0),
             darkColor = Color(0xFFB39DDB),
             defaultAlias = "ParachuteRainEvent",
             defaultObjClass = "ParachuteRainZombieSpawnerProps",
             initialDataFactory = { ParachuteRainEventData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, ParachuteRainEventData::class.java)
-                    "${data.spiderCount} 僵尸"
+                    val data = Gson().fromJson(obj.objData, ParachuteRainEventData::class.java)
+                    context.getString(R.string.event_format_zombies, data.spiderCount)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "BassRainZombieSpawnerProps" to EventMetadata(
-            title = "贝斯/喷射空降",
-            description = "贝斯手或喷射器僵尸从天而降",
+            title = R.string.event_bass_rain_title,
+            description = R.string.event_bass_rain_desc,
             icon = Icons.Default.Speaker,
             color = Color(0xFF9C27B0),
             darkColor = Color(0xFFB39DDB),
             defaultAlias = "BassRainEvent",
             defaultObjClass = "BassRainZombieSpawnerProps",
             initialDataFactory = { ParachuteRainEventData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, ParachuteRainEventData::class.java)
-                    "${data.spiderCount} 僵尸"
+                    val data = Gson().fromJson(obj.objData, ParachuteRainEventData::class.java)
+                    context.getString(R.string.event_format_zombies, data.spiderCount)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "BlackHoleWaveActionProps" to EventMetadata(
-            title = "黑洞吸引",
-            description = "生成黑洞吸引所有植物",
+            title = R.string.event_black_hole_title,
+            description = R.string.event_black_hole_desc,
             icon = Icons.Default.BlurCircular,
             color = Color(0xFF7C30D9),
             darkColor = Color(0xFFA179D2),
             defaultAlias = "BlackHoleEvent",
             defaultObjClass = "BlackHoleWaveActionProps",
             initialDataFactory = { BlackHoleEventData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, BlackHoleEventData::class.java)
-                    "${data.colNumPlantIsDragged} 列"
+                    val data = Gson().fromJson(obj.objData, BlackHoleEventData::class.java)
+                    context.getString(R.string.event_format_columns, data.colNumPlantIsDragged)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
         "WaveActionMagicMirrorTeleportationArrayProps2" to EventMetadata(
-            title = "魔镜传送",
-            description = "在场地上生成成对的传送门",
+            title = R.string.event_magic_mirror_title,
+            description = R.string.event_magic_mirror_desc,
             icon = Icons.AutoMirrored.Filled.CompareArrows,
             color = Color(0xFF7C30D9),
             darkColor = Color(0xFFA179D2),
             defaultAlias = "MirrorEvent",
             defaultObjClass = "WaveActionMagicMirrorTeleportationArrayProps2",
             initialDataFactory = { MagicMirrorWaveActionData() },
-            summaryProvider = { obj ->
+            summaryProvider = { context, obj ->
                 try {
-                    val gson = Gson()
-                    val data = gson.fromJson(obj.objData, MagicMirrorWaveActionData::class.java)
-                    "${data.arrays.size} 组魔镜"
+                    val data = Gson().fromJson(obj.objData, MagicMirrorWaveActionData::class.java)
+                    context.getString(R.string.event_format_mirrors, data.arrays.size)
                 } catch (_: Exception) {
-                    "解析错误"
+                    context.getString(R.string.event_error_parse)
                 }
             }
         ),
@@ -552,16 +537,15 @@ object EventRegistry {
  * ==========================================
  * 定义一个模块在列表中长什么样，以及点击后去哪里
  */
-
-enum class ModuleCategory(val title: String) {
-    Base("基础功能"),
-    Mode("特殊模式"),
-    Scene("场地配置"),
+enum class ModuleCategory(@StringRes val titleRes: Int) {
+    Base(R.string.module_category_base),
+    Mode(R.string.module_category_mode),
+    Scene(R.string.module_category_scene),
 }
 
 data class ModuleMetadata(
-    val title: String,
-    val description: String,
+    @StringRes val titleRes: Int,
+    @StringRes val descriptionRes: Int,
     val icon: ImageVector,
     val isCore: Boolean,
     val category: ModuleCategory,
@@ -582,8 +566,8 @@ data class ModuleMetadata(
 object ModuleRegistry {
 
     private val DEFAULT_METADATA = ModuleMetadata(
-        title = "未知模块",
-        description = "通用参数编辑器",
+        titleRes = R.string.module_unknown_title,
+        descriptionRes = R.string.module_unknown_desc,
         icon = Icons.Default.Extension,
         isCore = false,
         category = ModuleCategory.Base,
@@ -593,8 +577,8 @@ object ModuleRegistry {
 
     private val registry = mapOf(
         "WaveManagerModuleProperties" to ModuleMetadata(
-            title = "波次管理器",
-            description = "管理关卡的波次事件总配置",
+            titleRes = R.string.module_wave_manager_title,
+            descriptionRes = R.string.module_wave_manager_desc,
             icon = Icons.Default.Timeline,
             isCore = true,
             category = ModuleCategory.Base,
@@ -616,8 +600,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.WaveManagerModule(rtid) }
         ),
         "CustomLevelModuleProperties" to ModuleMetadata(
-            title = "庭院模块",
-            description = "开启后关卡适配庭院框架",
+            titleRes = R.string.module_custom_level_title,
+            descriptionRes = R.string.module_custom_level_desc,
             icon = Icons.Default.Home,
             isCore = false,
             category = ModuleCategory.Base,
@@ -626,8 +610,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "StandardLevelIntroProperties" to ModuleMetadata(
-            title = "转场动画",
-            description = "关卡开始时的摄像机平移",
+            titleRes = R.string.module_intro_title,
+            descriptionRes = R.string.module_intro_desc,
             icon = Icons.Default.MovieFilter,
             isCore = false,
             category = ModuleCategory.Base,
@@ -636,8 +620,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "ZombiesAteYourBrainsProperties" to ModuleMetadata(
-            title = "失败判定",
-            description = "僵尸进屋判负的位置",
+            titleRes = R.string.module_zombies_ate_title,
+            descriptionRes = R.string.module_zombies_ate_desc,
             icon = Icons.Default.Dangerous,
             isCore = false,
             category = ModuleCategory.Base,
@@ -646,8 +630,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "ZombiesDeadWinConProperties" to ModuleMetadata(
-            title = "死亡掉落",
-            description = "关卡稳定运行必须模块",
+            titleRes = R.string.module_zombies_dead_title,
+            descriptionRes = R.string.module_zombies_dead_desc,
             icon = Icons.Default.Redeem,
             isCore = false,
             category = ModuleCategory.Base,
@@ -656,8 +640,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "PennyClassroomModuleProperties" to ModuleMetadata(
-            title = "阶级定义",
-            description = "全局定义植物阶级，能覆盖其他模块",
+            titleRes = R.string.module_penny_classroom_title,
+            descriptionRes = R.string.module_penny_classroom_desc,
             icon = Icons.Default.Layers,
             isCore = true,
             category = ModuleCategory.Base,
@@ -667,8 +651,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.PennyClassroomModule(rtid) }
         ),
         "SeedBankProperties" to ModuleMetadata(
-            title = "种子库",
-            description = "预设卡槽植物与选卡方式",
+            titleRes = R.string.module_seed_bank_title,
+            descriptionRes = R.string.module_seed_bank_desc,
             icon = Icons.Default.Yard,
             isCore = true,
             allowMultiple = true,
@@ -678,8 +662,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.SeedBank(rtid) }
         ),
         "ConveyorSeedBankProperties" to ModuleMetadata(
-            title = "传送带",
-            description = "预设传送带植物种类和权重",
+            titleRes = R.string.module_conveyor_title,
+            descriptionRes = R.string.module_conveyor_desc,
             icon = Icons.Default.LinearScale,
             isCore = true,
             category = ModuleCategory.Base,
@@ -688,8 +672,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.ConveyorBelt(rtid) }
         ),
         "SunDropperProperties" to ModuleMetadata(
-            title = "阳光掉落",
-            description = "控制天上掉落阳光的频率",
+            titleRes = R.string.module_sun_dropper_title,
+            descriptionRes = R.string.module_sun_dropper_desc,
             icon = Icons.Default.WbSunny,
             isCore = true,
             category = ModuleCategory.Base,
@@ -698,8 +682,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.SunDropper(rtid) }
         ),
         "LevelMutatorMaxSunProps" to ModuleMetadata(
-            title = "阳光上限",
-            description = "覆盖关卡最大阳光存储值",
+            titleRes = R.string.module_max_sun_title,
+            descriptionRes = R.string.module_max_sun_desc,
             icon = Icons.Default.BrightnessHigh,
             isCore = true,
             category = ModuleCategory.Base,
@@ -709,8 +693,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.MaxSunModule(rtid) }
         ),
         "LevelMutatorStartingPlantfoodProps" to ModuleMetadata(
-            title = "初始能量豆",
-            description = "覆盖关卡开始时的能量豆数量",
+            titleRes = R.string.module_starting_plantfood_title,
+            descriptionRes = R.string.module_starting_plantfood_desc,
             icon = Icons.Default.Eco,
             isCore = true,
             category = ModuleCategory.Base,
@@ -720,8 +704,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.StartingPlantfoodModule(rtid) }
         ),
         "StarChallengeModuleProperties" to ModuleMetadata(
-            title = "挑战模块",
-            description = "设置关卡的限制条件与挑战目标",
+            titleRes = R.string.module_star_challenge_title,
+            descriptionRes = R.string.module_star_challenge_desc,
             icon = Icons.AutoMirrored.Filled.FactCheck,
             isCore = true,
             category = ModuleCategory.Base,
@@ -731,8 +715,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.StarChallenge(rtid) }
         ),
         "LawnMowerProperties" to ModuleMetadata(
-            title = "小推车",
-            description = "设置小推车样式，注意在庭院中不生效",
+            titleRes = R.string.module_lawn_mower_title,
+            descriptionRes = R.string.module_lawn_mower_desc,
             icon = Icons.Default.CleaningServices,
             isCore = true,
             category = ModuleCategory.Base,
@@ -741,8 +725,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.LawnMowerDetail(rtid) }
         ),
         "LevelScoringModuleProperties" to ModuleMetadata(
-            title = "积分模块",
-            description = "启用积分模块，杀死僵尸获得分数",
+            titleRes = R.string.module_scoring_title,
+            descriptionRes = R.string.module_scoring_desc,
             icon = Icons.Default.Scoreboard,
             isCore = false,
             category = ModuleCategory.Base,
@@ -753,8 +737,8 @@ object ModuleRegistry {
         ),
 
         "BowlingMinigameProperties" to ModuleMetadata(
-            title = "沙滩保龄球",
-            description = "设置禁种线以及禁用铲子",
+            titleRes = R.string.module_bowling_beach_title,
+            descriptionRes = R.string.module_bowling_beach_desc,
             icon = Icons.Default.SportsEsports,
             isCore = true,
             category = ModuleCategory.Mode,
@@ -764,8 +748,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.BowlingMinigameModule(rtid) }
         ),
         "NewBowlingMinigameProperties" to ModuleMetadata(
-            title = "坚果保龄球",
-            description = "在固定位置绘制保龄球警戒线",
+            titleRes = R.string.module_bowling_nut_title,
+            descriptionRes = R.string.module_bowling_nut_desc,
             icon = Icons.Default.SportsEsports,
             isCore = false,
             category = ModuleCategory.Mode,
@@ -775,8 +759,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "VaseBreakerPresetProperties" to ModuleMetadata(
-            title = "罐子布局",
-            description = "配置罐子的内容，需要另外两个模块支持",
+            titleRes = R.string.module_vase_preset_title,
+            descriptionRes = R.string.module_vase_preset_desc,
             icon = Icons.Default.Grid4x4,
             isCore = false,
             category = ModuleCategory.Mode,
@@ -786,8 +770,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "VaseBreakerArcadeModuleProperties" to ModuleMetadata(
-            title = "砸罐子模式",
-            description = "开启砸罐子模式的基础环境与UI支持",
+            titleRes = R.string.module_vase_arcade_title,
+            descriptionRes = R.string.module_vase_arcade_desc,
             icon = Icons.Default.SportsEsports,
             isCore = false,
             category = ModuleCategory.Mode,
@@ -797,8 +781,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "VaseBreakerFlowModuleProperties" to ModuleMetadata(
-            title = "砸罐子动画",
-            description = "控制砸罐子开始前罐子掉下来的动画",
+            titleRes = R.string.module_vase_flow_title,
+            descriptionRes = R.string.module_vase_flow_desc,
             icon = Icons.AutoMirrored.Filled.NextPlan,
             isCore = false,
             category = ModuleCategory.Mode,
@@ -808,8 +792,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "EvilDaveProperties" to ModuleMetadata(
-            title = "我是僵尸模式",
-            description = "启用我是僵尸模式，需配置僵尸卡槽和预置植物",
+            titleRes = R.string.module_izombie_title,
+            descriptionRes = R.string.module_izombie_desc,
             icon = Icons.Default.EmojiPeople,
             isCore = false,
             category = ModuleCategory.Mode,
@@ -819,8 +803,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "ZombossBattleModuleProperties" to ModuleMetadata(
-            title = "僵王战模式",
-            description = "配置僵王战模式参数以及僵王种类",
+            titleRes = R.string.module_zomboss_battle_title,
+            descriptionRes = R.string.module_zomboss_battle_desc,
             icon = Icons.Default.Dangerous,
             isCore = false,
             category = ModuleCategory.Mode,
@@ -830,8 +814,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "ZombossBattleIntroProperties" to ModuleMetadata(
-            title = "僵王转场",
-            description = "控制Boss战前的过场动画与血条显示",
+            titleRes = R.string.module_zomboss_intro_title,
+            descriptionRes = R.string.module_zomboss_intro_desc,
             icon = Icons.Default.MovieFilter,
             isCore = false,
             category = ModuleCategory.Mode,
@@ -841,8 +825,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "SeedRainProperties" to ModuleMetadata(
-            title = "种子雨",
-            description = "控制植物、僵尸或能量豆从天而降",
+            titleRes = R.string.module_seed_rain_title,
+            descriptionRes = R.string.module_seed_rain_desc,
             icon = Icons.Default.Thunderstorm,
             isCore = true,
             category = ModuleCategory.Mode,
@@ -852,8 +836,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.SeedRainModule(rtid) }
         ),
         "LastStandMinigameProperties" to ModuleMetadata(
-            title = "坚不可摧",
-            description = "设置初始资源，开启布阵阶段",
+            titleRes = R.string.module_last_stand_title,
+            descriptionRes = R.string.module_last_stand_desc,
             icon = Icons.Default.Shield,
             isCore = true,
             category = ModuleCategory.Mode,
@@ -863,8 +847,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.LastStandMinigame(rtid) }
         ),
         "PVZ1OverwhelmModuleProperties" to ModuleMetadata(
-            title = "排山倒海",
-            description = "排山倒海小游戏，需配合传送带",
+            titleRes = R.string.module_overwhelm_title,
+            descriptionRes = R.string.module_overwhelm_desc,
             icon = Icons.Default.LocalFlorist,
             isCore = false,
             category = ModuleCategory.Mode,
@@ -874,8 +858,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "SunBombChallengeProperties" to ModuleMetadata(
-            title = "太阳炸弹",
-            description = "配置掉落的太阳爆炸范围和伤害",
+            titleRes = R.string.module_sun_bomb_title,
+            descriptionRes = R.string.module_sun_bomb_desc,
             icon = Icons.Default.BrightnessHigh,
             isCore = true,
             category = ModuleCategory.Mode,
@@ -885,8 +869,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.SunBombChallenge(rtid) }
         ),
         "IncreasedCostModuleProperties" to ModuleMetadata(
-            title = "通货膨胀",
-            description = "植物阳光价格随种植次数递增",
+            titleRes = R.string.module_increased_cost_title,
+            descriptionRes = R.string.module_increased_cost_desc,
             icon = Icons.AutoMirrored.Filled.TrendingUp,
             isCore = true,
             category = ModuleCategory.Mode,
@@ -896,8 +880,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.IncreasedCostModule(rtid) }
         ),
         "DeathHoleModuleProperties" to ModuleMetadata(
-            title = "遗落坑洞",
-            description = "植物消失后留下不可种植的坑洞",
+            titleRes = R.string.module_death_hole_title,
+            descriptionRes = R.string.module_death_hole_desc,
             icon = Icons.Default.TripOrigin,
             isCore = true,
             category = ModuleCategory.Mode,
@@ -907,8 +891,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.DeathHoleModule(rtid) }
         ),
         "ZombieMoveFastModuleProperties" to ModuleMetadata(
-            title = "加速进场",
-            description = "僵尸入场时快速移动一段距离",
+            titleRes = R.string.module_zombie_fast_title,
+            descriptionRes = R.string.module_zombie_fast_desc,
             icon = Icons.Default.FastForward,
             isCore = true,
             category = ModuleCategory.Mode,
@@ -918,8 +902,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.ZombieMoveFastModule(rtid) }
         ),
         "ZombieRushModuleProperties" to ModuleMetadata(
-            title = "关卡倒计时",
-            description = "倒计时结束后关卡直接结算",
+            titleRes = R.string.module_zombie_rush_title,
+            descriptionRes = R.string.module_zombie_rush_desc,
             icon = Icons.Default.Timer,
             isCore = true,
             category = ModuleCategory.Mode,
@@ -930,8 +914,8 @@ object ModuleRegistry {
         ),
 
         "InitialPlantProperties" to ModuleMetadata(
-            title = "旧版预置植物",
-            description = "预置植物传统写法，可放置冰封植物",
+            titleRes = R.string.module_initial_plant_old_title,
+            descriptionRes = R.string.module_initial_plant_old_desc,
             icon = Icons.Default.Widgets,
             isCore = true,
             allowMultiple = true,
@@ -942,8 +926,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.InitialPlantProperties(rtid) }
         ),
         "InitialPlantEntryProperties" to ModuleMetadata(
-            title = "预置植物",
-            description = "关卡开始时场上已存在的植物",
+            titleRes = R.string.module_initial_plant_title,
+            descriptionRes = R.string.module_initial_plant_desc,
             icon = Icons.Default.Widgets,
             isCore = true,
             allowMultiple = true,
@@ -954,8 +938,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.InitialPlantEntry(rtid) }
         ),
         "InitialZombieProperties" to ModuleMetadata(
-            title = "预置僵尸",
-            description = "关卡开始时场上已存在的僵尸",
+            titleRes = R.string.module_initial_zombie_title,
+            descriptionRes = R.string.module_initial_zombie_desc,
             icon = Icons.Default.Widgets,
             isCore = true,
             allowMultiple = true,
@@ -966,8 +950,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.InitialZombieEntry(rtid) }
         ),
         "InitialGridItemProperties" to ModuleMetadata(
-            title = "预置障碍物",
-            description = "关卡开始时场上已存在的障碍物",
+            titleRes = R.string.module_initial_grid_item_title,
+            descriptionRes = R.string.module_initial_grid_item_desc,
             icon = Icons.Default.Widgets,
             isCore = true,
             allowMultiple = true,
@@ -978,8 +962,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.InitialGridItemEntry(rtid) }
         ),
         "ProtectThePlantChallengeProperties" to ModuleMetadata(
-            title = "保护植物挑战",
-            description = "设置关卡中必须保护的植物",
+            titleRes = R.string.module_protect_plant_title,
+            descriptionRes = R.string.module_protect_plant_desc,
             icon = Icons.Default.Security,
             isCore = true,
             allowMultiple = true,
@@ -990,8 +974,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.ProtectThePlant(rtid) }
         ),
         "ProtectTheGridItemChallengeProperties" to ModuleMetadata(
-            title = "保护物品挑战",
-            description = "设置关卡中必须保护且不能被破坏的物品",
+            titleRes = R.string.module_protect_item_title,
+            descriptionRes = R.string.module_protect_item_desc,
             icon = Icons.Default.Security,
             isCore = true,
             allowMultiple = true,
@@ -1002,8 +986,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.ProtectTheGridItem(rtid) }
         ),
         "ZombiePotionModuleProperties" to ModuleMetadata(
-            title = "僵尸药水",
-            description = "配置黑暗时代药水自动生成机制",
+            titleRes = R.string.module_zombie_potion_title,
+            descriptionRes = R.string.module_zombie_potion_desc,
             icon = Icons.Default.Science,
             isCore = true,
             allowMultiple = true,
@@ -1014,8 +998,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.ZombiePotionModuleProperties(rtid) }
         ),
         "PiratePlankProperties" to ModuleMetadata(
-            title = "海盗甲板",
-            description = "配置海盗地图的甲板行数",
+            titleRes = R.string.module_pirate_plank_title,
+            descriptionRes = R.string.module_pirate_plank_desc,
             icon = Icons.Default.EditRoad,
             isCore = true,
             category = ModuleCategory.Scene,
@@ -1025,8 +1009,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.PiratePlank(rtid) }
         ),
         "RailcartProperties" to ModuleMetadata(
-            title = "矿车轨道",
-            description = "配置矿车与轨道初始布局",
+            titleRes = R.string.module_railcart_title,
+            descriptionRes = R.string.module_railcart_desc,
             icon = Icons.Default.EditRoad,
             isCore = true,
             category = ModuleCategory.Scene,
@@ -1036,8 +1020,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.Railcart(rtid) }
         ),
         "PowerTileProperties" to ModuleMetadata(
-            title = "能量瓷砖",
-            description = "配置能量豆联动效果与瓷砖布局",
+            titleRes = R.string.module_power_tile_title,
+            descriptionRes = R.string.module_power_tile_desc,
             icon = Icons.Default.Bolt,
             isCore = true,
             category = ModuleCategory.Scene,
@@ -1047,8 +1031,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.PowerTile(rtid) }
         ),
         "ManholePipelineModuleProperties" to ModuleMetadata(
-            title = "地下管道",
-            description = "配置蒸汽时代的地下传输管道",
+            titleRes = R.string.module_manhole_pipeline_title,
+            descriptionRes = R.string.module_manhole_pipeline_desc,
             icon = Icons.Default.Timeline,
             isCore = true,
             category = ModuleCategory.Scene,
@@ -1058,8 +1042,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.ManholePipelineModule(rtid) }
         ),
         "TunnelDefendModuleProperties" to ModuleMetadata(
-            title = "地宫坑道",
-            description = "设置地宫秘境的地道",
+            titleRes = R.string.module_tunnel_defend_title,
+            descriptionRes = R.string.module_tunnel_defend_desc,
             icon = Icons.Default.Timeline,
             isCore = true,
             category = ModuleCategory.Scene,
@@ -1069,8 +1053,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.TunnelDefendModule(rtid) }
         ),
         "RoofProperties" to ModuleMetadata(
-            title = "屋顶花盆",
-            description = "配置屋顶关卡的预置花盆列数",
+            titleRes = R.string.module_roof_props_title,
+            descriptionRes = R.string.module_roof_props_desc,
             icon = Icons.Default.LocalFlorist,
             isCore = true,
             category = ModuleCategory.Scene,
@@ -1080,8 +1064,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.RoofProperties(rtid) }
         ),
         "TideProperties" to ModuleMetadata(
-            title = "潮水系统",
-            description = "开启关卡中的潮水系统，需最后添加",
+            titleRes = R.string.module_tide_title,
+            descriptionRes = R.string.module_tide_desc,
             icon = Icons.Default.WaterDrop,
             isCore = true,
             category = ModuleCategory.Scene,
@@ -1091,8 +1075,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.Tide(rtid) }
         ),
         "WarMistProperties" to ModuleMetadata(
-            title = "迷雾系统",
-            description = "设置战场迷雾覆盖范围与交互",
+            titleRes = R.string.module_war_mist_title,
+            descriptionRes = R.string.module_war_mist_desc,
             icon = Icons.Default.Cloud,
             isCore = true,
             category = ModuleCategory.Scene,
@@ -1102,8 +1086,8 @@ object ModuleRegistry {
             navigationFactory = { rtid -> EditorSubScreen.WarMistProperties(rtid) }
         ),
         "RainDarkProperties" to ModuleMetadata(
-            title = "环境天气",
-            description = "设置关卡的雨雪、雷电等环境特效",
+            titleRes = R.string.module_rain_dark_title,
+            descriptionRes = R.string.module_rain_dark_desc,
             icon = Icons.Default.AcUnit,
             isCore = true,
             category = ModuleCategory.Scene,

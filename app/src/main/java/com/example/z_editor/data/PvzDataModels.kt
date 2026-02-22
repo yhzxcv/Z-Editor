@@ -26,11 +26,13 @@ data class LevelDefinitionData(
     @SerializedName("Description") var description: String = "",
     @SerializedName("StageModule") var stageModule: String = "",
     @SerializedName("Loot") var loot: String = "RTID(DefaultLoot@LevelModules)",
-    @SerializedName("StartingSun") var startingSun: Int? = 200,
+    @SerializedName("StartingSun") var startingSun: Int? = null,
     @SerializedName("VictoryModule") var victoryModule: String = "RTID(VictoryOutro@LevelModules)",
     @SerializedName("MusicType") var musicType: String = "",
     @SerializedName("DisablePeavine") var disablePeavine: Boolean? = null,
     @SerializedName("IsArtifactDisabled") var isArtifactDisabled: Boolean? = null,
+    @SerializedName("IsBossFight") var isBossFight: Boolean? = null,
+    @SerializedName("IsVasebreaker") var isVasebreaker: Boolean? = null,
     @SerializedName("Modules") val modules: MutableList<String> = mutableListOf()
     // 例如: ["RTID(StandardIntro@LevelModules)", "RTID(DefaultSunDropper@LevelModules)"]
 )

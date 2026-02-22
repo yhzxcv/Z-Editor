@@ -19,8 +19,8 @@
         "MusicType": "MiniGame_B",
         "Name": "砸罐子示例",
         "StageModule": "RTID(ModernStage@LevelModules)",
-        "StartingSun": 200,
-        "VictoryModule": "RTID(VictoryOutro@LevelModules)"
+        "VictoryModule": "RTID(VictoryOutro@LevelModules)",
+        "IsVasebreaker": true
       }
     },
     {

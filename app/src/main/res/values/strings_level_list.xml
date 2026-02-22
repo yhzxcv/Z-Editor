@@ -4,6 +4,11 @@
     <string name="level_list_screen_item_size">界面大小</string>
     <string name="level_list_screen_item_language">语言设置</string>
     <string name="level_list_screen_item_about">关于软件</string>
+    <string name="level_list_screen_item_cache">释放缓存</string>
+    <string name="level_list_screen_item_cache_tips">已清理 %d 个缓存文件</string>
+    <string name="level_list_screen_btn_refresh">刷新</string>
+    <string name="level_list_screen_btn_theme">切换主题</string>
+    <string name="level_list_screen_btn_more_info">更多选项</string>
     <string name="level_list_screen_moving_cancel">取消</string>
     <string name="level_list_screen_moving_paste">粘贴</string>
     <string name="level_list_screen_new_folder">新建文件夹</string>

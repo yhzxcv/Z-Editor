@@ -30,7 +30,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -100,8 +99,8 @@ fun EventSelectionScreen(
                         Spacer(Modifier.width(16.dp))
 
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(meta.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                            Text(meta.description, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(text = stringResource(id = meta.title), fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text(text = stringResource(id = meta.description), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }

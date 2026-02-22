@@ -24,8 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.EvilDavePropertiesData
 import com.example.z_editor.data.ParsedLevelData
 import com.example.z_editor.data.PvzLevelFile
@@ -47,7 +49,7 @@ fun IZombieTab(
 
     if (evilDaveObj == null) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("数据异常：未找到我是僵尸配置模块")
+            Text(stringResource(R.string.izombie_data_error))
         }
         return
     }
@@ -73,8 +75,8 @@ fun IZombieTab(
     ) {
         val currentDist = dataState.value.plantDistance
         StepperControl(
-            label = "植物预留列 (PlantDistance)",
-            valueText = "第 $currentDist 列",
+            label = stringResource(R.string.izombie_plant_distance_label),
+            valueText = stringResource(R.string.izombie_column_format, currentDist),
             onMinus = {
                 val newVal = (currentDist - 1).coerceAtLeast(0)
                 if (newVal != currentDist) {
@@ -103,7 +105,7 @@ fun IZombieTab(
                 Spacer(Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = "我是僵尸模式下的预置植物和僵尸选择分别要在关卡模块里的预置植物和种子库里配置。",
+                        text = stringResource(R.string.izombie_tip_description),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.secondary,
                         lineHeight = 16.sp

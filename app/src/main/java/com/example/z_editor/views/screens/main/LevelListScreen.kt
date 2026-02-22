@@ -438,21 +438,22 @@ fun LevelListScreen(
                     IconButton(onClick = { loadCurrentDirectory() }) {
                         Icon(
                             Icons.Default.Refresh,
-                            "刷新",
+                            stringResource(R.string.level_list_screen_btn_refresh),
                             tint = MaterialTheme.colorScheme.background
                         )
                     }
                     IconButton(onClick = onToggleTheme) {
                         Icon(
                             imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
-                            contentDescription = "切换主题",
+                            contentDescription = stringResource(R.string.level_list_screen_btn_theme),
                             tint = MaterialTheme.colorScheme.background
                         )
                     }
                     Box {
                         IconButton(onClick = { showMenu = true }) {
                             Icon(
-                                Icons.Default.MoreVert, "更多选项",
+                                Icons.Default.MoreVert,
+                                stringResource(R.string.level_list_screen_btn_more_info),
                                 tint = MaterialTheme.colorScheme.background
                             )
                         }
@@ -486,16 +487,35 @@ fun LevelListScreen(
                                     )
                                 }
                             )
-                            // TODO : Multiple Language Support
-//                            DropdownMenuItem(
-//                                text = { Text(stringResource(R.string.level_list_screen_item_language)) },
-//                                onClick = {
-//                                    showMenu = false
-//                                    showLanguageSheet = true
-//                                },
-//                                leadingIcon = { Icon(Icons.Default.Language, null) }
-//                            )
-//                            HorizontalDivider()
+                            HorizontalDivider()
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.level_list_screen_item_cache)) },
+                                onClick = {
+                                    showMenu = false
+                                    val count = LevelRepository.clearAllInternalCache(context)
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(
+                                            R.string.level_list_screen_item_cache_tips,
+                                            count
+                                        ),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                },
+                                leadingIcon = {
+                                    Icon(Icons.Default.Delete, null, tint = Color.Gray)
+                                }
+                            )
+                            HorizontalDivider()
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.level_list_screen_item_language)) },
+                                onClick = {
+                                    showMenu = false
+                                    showLanguageSheet = true
+                                },
+                                leadingIcon = { Icon(Icons.Default.Language, null) }
+                            )
+                            HorizontalDivider()
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.level_list_screen_item_about)) },
                                 onClick = {
@@ -687,7 +707,7 @@ fun LevelListScreen(
                                     Icon(
                                         Icons.Default.FolderOpen,
                                         null,
-                                        tint = MaterialTheme.colorScheme.surfaceVariant,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                         modifier = Modifier.size(64.dp)
                                     )
                                     Spacer(Modifier.height(16.dp))

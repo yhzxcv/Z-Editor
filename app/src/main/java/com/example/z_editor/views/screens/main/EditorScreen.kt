@@ -5,6 +5,8 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -47,9 +49,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.EditorSubScreen
 import com.example.z_editor.data.LevelParser
 import com.example.z_editor.data.ModuleMetadata
@@ -195,7 +199,8 @@ fun EditorScreen(
 
             missingModules = missingList.mapNotNull { objClass ->
                 val meta = ModuleRegistry.getMetadata(objClass)
-                if (meta.title == "未知模块" && objClass != "Unknown") null else meta
+                val unknownLabel = context.getString(R.string.editor_screen_label_unknown_module)
+                if (context.getString(meta.titleRes) == unknownLabel && objClass != "Unknown") null else meta
             }
         }
 
@@ -203,7 +208,11 @@ fun EditorScreen(
             val typeName = ZombiePropertiesRepository.getTypeNameByAlias(originalAlias)
             val template = ZombiePropertiesRepository.getTemplateJson(typeName)
             if (template == null) {
-                Toast.makeText(context, "无法获取 $typeName 的原始数据模板", Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.editor_screen_error_template_not_found, typeName),
+                    Toast.LENGTH_SHORT
+                )
                     .show()
                 return null
             }
@@ -252,7 +261,11 @@ fun EditorScreen(
             parsedData = parsedData!!.copy(objectMap = newObjectMap)
             refreshTrigger++
 
-            Toast.makeText(context, "已注入自定义僵尸: $newTypeAlias", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.editor_screen_msg_zombie_injected, newTypeAlias),
+                Toast.LENGTH_SHORT
+            ).show()
             return RtidParser.build(newTypeAlias, "CurrentLevel")
         }
 
@@ -271,7 +284,11 @@ fun EditorScreen(
                 recalculateLevelState()
                 selectedTabIndex = 0
             } else {
-                Toast.makeText(context, "文件加载失败", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.editor_screen_error_load_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
                 onBack()
             }
         }
@@ -285,10 +302,17 @@ fun EditorScreen(
             try {
                 val cacheName = "cache_${currentUri.hashCode()}.json"
                 LevelRepository.saveAndExport(context, currentUri, cacheName, dataToSave)
-                val msg = if (isExit) "已自动保存并退出" else "保存成功"
+                val msg = if (isExit)
+                    context.getString(R.string.editor_screen_msg_auto_saved_exit)
+                else
+                    context.getString(R.string.editor_screen_msg_save_success)
                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
-                Toast.makeText(context, "保存出错: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.editor_screen_error_save_failed, e.message),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 
@@ -383,7 +407,10 @@ fun EditorScreen(
                                     }
                                     if (deletedCount > 0) Toast.makeText(
                                         context,
-                                        "移除了 $deletedCount 个关联挑战",
+                                        context.getString(
+                                            R.string.editor_screen_msg_removed_challenges,
+                                            deletedCount
+                                        ),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 } catch (e: Exception) {
@@ -409,7 +436,11 @@ fun EditorScreen(
                         )
 
                         refreshTrigger++
-                        Toast.makeText(context, "已移除模块", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.editor_screen_msg_module_removed),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 },
 
@@ -419,7 +450,10 @@ fun EditorScreen(
                     if (!meta.allowMultiple && isDefaultExist) {
                         Toast.makeText(
                             context,
-                            "${meta.title} 模块已存在，不可重复添加",
+                            context.getString(
+                                R.string.editor_screen_error_module_exists,
+                                context.getString(meta.titleRes)
+                            ),
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
@@ -486,7 +520,11 @@ fun EditorScreen(
                         )
 
                         refreshTrigger++
-                        Toast.makeText(context, "已添加 ${meta.title}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.editor_screen_msg_module_added, context.getString(meta.titleRes)),
+                            Toast.LENGTH_SHORT
+                        ).show()
                         currentSubScreen = EditorSubScreen.None
                     }
                 },
@@ -587,7 +625,14 @@ fun EditorScreen(
                             waveModule = parsedData?.waveModule
                         )
                         refreshTrigger++
-                        Toast.makeText(context, "已初始化波次容器 ($newAlias)", Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                            context,
+                            context.getString(
+                                R.string.editor_screen_msg_wave_container_init,
+                                newAlias
+                            ),
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     }
                 },
@@ -610,7 +655,11 @@ fun EditorScreen(
                         }
 
                         if (removed) {
-                            Toast.makeText(context, "已删除波次容器", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.editor_screen_msg_wave_container_deleted),
+                                Toast.LENGTH_SHORT
+                            ).show()
                             val newObjectMap = rootLevelFile!!.objects.associateBy {
                                 it.aliases?.firstOrNull() ?: "unknown"
                             }
@@ -870,7 +919,7 @@ fun EditorScreen(
                 contentKey = { targetState -> targetState::class },
                 transitionSpec = {
                     if (initialState::class == targetState::class) {
-                        androidx.compose.animation.EnterTransition.None togetherWith androidx.compose.animation.ExitTransition.None
+                        EnterTransition.None togetherWith ExitTransition.None
                     }
                     if (targetState == EditorSubScreen.PlantSelection() || targetState == EditorSubScreen.ZombieSelection()
                         || targetState == EditorSubScreen.PlantSelection(isMultiSelect = true)
@@ -914,7 +963,7 @@ fun EditorScreen(
                                     IconButton(onClick = { handleExit() }) {
                                         Icon(
                                             Icons.AutoMirrored.Filled.ArrowBack,
-                                            "返回",
+                                            contentDescription = stringResource(R.string.editor_screen_btn_back),
                                             tint = MaterialTheme.colorScheme.background
                                         )
                                     }
@@ -926,21 +975,21 @@ fun EditorScreen(
                                     }) {
                                         Icon(
                                             Icons.Default.Code,
-                                            "查看代码",
+                                            contentDescription = stringResource(R.string.editor_screen_btn_view_code),
                                             tint = MaterialTheme.colorScheme.background
                                         )
                                     }
                                     IconButton(onClick = onToggleTheme) {
                                         Icon(
                                             imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
-                                            contentDescription = "切换主题",
+                                            contentDescription = stringResource(R.string.editor_screen_btn_toggle_theme),
                                             tint = MaterialTheme.colorScheme.onPrimary
                                         )
                                     }
                                     IconButton(onClick = { performSave(isExit = false) }) {
                                         Icon(
                                             Icons.Default.Save,
-                                            "保存",
+                                            contentDescription = stringResource(R.string.editor_screen_btn_save),
                                             tint = MaterialTheme.colorScheme.background
                                         )
                                     }

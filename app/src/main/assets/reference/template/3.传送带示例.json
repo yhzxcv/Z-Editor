@@ -18,7 +18,6 @@
         "Name": "传送带示例",
         "MusicType": "MiniGame_A",
         "StageModule": "RTID(ModernStage@LevelModules)",
-        "StartingSun": 200,
         "VictoryModule": "RTID(VictoryOutro@LevelModules)"
       }
     },

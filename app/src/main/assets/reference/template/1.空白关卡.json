@@ -9,7 +9,6 @@
         "Modules": [],
         "Name": "",
         "StageModule": "RTID(TutorialStage@LevelModules)",
-        "StartingSun": 200,
         "VictoryModule": "RTID(VictoryOutro@LevelModules)"
       }
     }

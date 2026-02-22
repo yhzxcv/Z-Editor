@@ -25,8 +25,7 @@
         "ShinyPresentTable": "egypt_shiny_01",
         "VictoryModule": "RTID(VictoryOutro@LevelModules)",
         "StageModule": "RTID(ModernStage@LevelModules)",
-        "ShowZombies": [],
-        "StartingSun": 200
+        "ShowZombies": []
       }
     },
     {

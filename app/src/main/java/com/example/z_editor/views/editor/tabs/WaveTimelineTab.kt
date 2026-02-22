@@ -1,11 +1,9 @@
 package com.example.z_editor.views.editor.tabs
 
-
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,7 +51,6 @@ import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -66,7 +63,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
@@ -84,11 +80,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.EventRegistry
 import com.example.z_editor.data.LevelParser
 import com.example.z_editor.data.ParsedLevelData
@@ -139,6 +137,8 @@ fun WaveTimelineTab(
     parsedData: ParsedLevelData?,
     onEditCustomZombie: (String) -> Unit
 ) {
+    val context = LocalContext.current
+
     if (waveManager == null) {
         Box(
             modifier = Modifier
@@ -158,14 +158,14 @@ fun WaveTimelineTab(
                 )
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    text = "未找到波次容器",
+                    text = stringResource(R.string.wave_timeline_container_not_found),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "当前关卡启用了波次管理模块，但缺少存储波次数据的实体对象 (WaveManagerProperties)。",
+                    text = stringResource(R.string.wave_timeline_container_missing_desc),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -177,7 +177,7 @@ fun WaveTimelineTab(
                 ) {
                     Icon(Icons.Default.Add, null)
                     Spacer(Modifier.width(8.dp))
-                    Text("创建空波次容器")
+                    Text(stringResource(R.string.wave_timeline_btn_create_container))
                 }
             }
         }
@@ -198,7 +198,6 @@ fun WaveTimelineTab(
     var copyTargetInput by remember { mutableStateOf("") }
 
     var eventToDeleteRtid by remember { mutableStateOf<String?>(null) }
-    val context = LocalContext.current
 
     var eventToMove by remember { mutableStateOf<String?>(null) }
     var moveSourceWaveIndex by remember { mutableStateOf<Int?>(null) }
@@ -234,7 +233,12 @@ fun WaveTimelineTab(
                     val eventAlias = RtidParser.parse(eventRtid)?.alias
                     val eventObj = objectMap[eventAlias]
                     if (eventObj != null && eventObj.objData.toString().contains(rtid)) {
-                        locations.add("第 ${index + 1} 波")
+                        locations.add(
+                            context.getString(
+                                R.string.wave_timeline_location_format,
+                                index + 1
+                            )
+                        )
                     }
                 }
             }
@@ -271,38 +275,18 @@ fun WaveTimelineTab(
 
     // ======================== 2. 核心业务逻辑 ========================
 
-    // 点数计算
-    fun calculatePoints(waveIndex: Int, isFlag: Boolean): Int {
-        if (waveModule == null) return 0
-
-        val zombiesList = waveModule.dynamicZombies
-        if (zombiesList.isNullOrEmpty()) {
-            return 0
-        }
-        val group = zombiesList[0]
-
-        val startEffectWave = group.startingWave + 1
-        if (waveIndex < startEffectWave) return 0
-
-        var basePoints = group.startingPoints + (waveIndex - startEffectWave) * group.pointIncrement
-
-        if (basePoints > 60000) basePoints = 60000
-        return if (isFlag) (basePoints * 2.5).toInt() else basePoints
-    }
-
     // 重命名
     fun performGlobalRename(oldRtid: String, newAlias: String) {
         if (newAlias.isBlank() || rootLevelFile == null) return
 
         val oldAlias = LevelParser.extractAlias(oldRtid)
-
         if (oldAlias == newAlias) return
         val isAliasTaken = rootLevelFile.objects.any { it.aliases?.contains(newAlias) == true }
 
         if (isAliasTaken) {
             Toast.makeText(
                 context,
-                "错误：代号 \"$newAlias\" 已存在，请使用其他名称",
+                context.getString(R.string.wave_timeline_toast_alias_exists, newAlias),
                 Toast.LENGTH_SHORT
             ).show()
             return
@@ -342,7 +326,7 @@ fun WaveTimelineTab(
             currentWave?.remove(rtid)
             Toast.makeText(
                 context,
-                "已移除当前波次的引用 (剩余引用: ${refCount - 1})",
+                context.getString(R.string.wave_timeline_toast_removed_ref, refCount - 1),
                 Toast.LENGTH_SHORT
             ).show()
         } else {
@@ -350,7 +334,7 @@ fun WaveTimelineTab(
             rootLevelFile.objects.removeAll { it.aliases?.contains(alias) == true }
             Toast.makeText(
                 context,
-                "已彻底删除实体数据",
+                context.getString(R.string.wave_timeline_toast_deleted_entity),
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -383,7 +367,11 @@ fun WaveTimelineTab(
             rootLevelFile.objects.remove(typeObj)
 
             onWavesChanged()
-            Toast.makeText(context, "已删除 ${info.alias} 及其属性数据", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.wave_timeline_toast_deleted_custom_zombie, info.alias),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -395,7 +383,7 @@ fun WaveTimelineTab(
     if (showExpectationDialog != null) {
         val waveIdx = showExpectationDialog!!
         val isFlag = (waveIdx % interval == 0 || waveIdx == waveManager.waves.size)
-        val currentPoints = calculatePoints(waveIdx, isFlag)
+        val currentPoints = calculatePoints(waveIdx, isFlag, waveModule)
         val expectationMap = remember(waveIdx, refreshTrigger) {
             val tempParsedData = ParsedLevelData(null, waveManager, waveModule, objectMap)
             WavePointAnalysis.calculateExpectation(currentPoints, tempParsedData)
@@ -410,7 +398,7 @@ fun WaveTimelineTab(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Analytics, null, tint = expColor)
                     Spacer(Modifier.width(8.dp))
-                    Text("第 $waveIdx 波期望分析")
+                    Text(stringResource(R.string.wave_timeline_dialog_exp_title, waveIdx))
                 }
             },
             text = {
@@ -418,13 +406,13 @@ fun WaveTimelineTab(
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            "当前可用点数：",
+                            stringResource(R.string.wave_timeline_label_available_points),
                             fontWeight = FontWeight.Bold,
                             color = expColor
                         )
                         Spacer(Modifier.weight(1f))
                         Text(
-                            "$currentPoints pt",
+                            stringResource(R.string.wave_timeline_points_value, currentPoints),
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
                             color = if (currentPoints > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onError
@@ -432,21 +420,23 @@ fun WaveTimelineTab(
                     }
 
                     Spacer(Modifier.height(16.dp))
-
-                    Text("点数出怪期望：", fontWeight = FontWeight.Bold, color = expColor)
-
+                    Text(
+                        stringResource(R.string.wave_timeline_label_spawn_exp),
+                        fontWeight = FontWeight.Bold,
+                        color = expColor
+                    )
                     Spacer(Modifier.height(8.dp))
 
                     if (currentPoints <= 0) {
                         Text(
-                            "点数不足或为负，无随机出怪。",
+                            stringResource(R.string.wave_timeline_msg_no_points),
                             color = MaterialTheme.colorScheme.onError,
                             fontSize = 12.sp,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                     } else if (expectationMap.isEmpty()) {
                         Text(
-                            "无 (僵尸池为空或数据缺失)",
+                            stringResource(R.string.wave_timeline_msg_empty_pool),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 12.sp
                         )
@@ -461,24 +451,6 @@ fun WaveTimelineTab(
                                         ZombieRepository.getZombieInfoById(typeName)
                                     }
                                     val displayName = ZombieRepository.getName(typeName)
-                                    val placeholderContent = @Composable {
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .background(
-                                                    MaterialTheme.colorScheme.surfaceVariant,
-                                                    RoundedCornerShape(12.dp)
-                                                ),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text(
-                                                text = displayName.take(1).uppercase(),
-                                                fontWeight = FontWeight.Bold,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                fontSize = 24.sp
-                                            )
-                                        }
-                                    }
                                     Row(
                                         modifier = Modifier.padding(vertical = 4.dp),
                                         verticalAlignment = Alignment.CenterVertically
@@ -490,20 +462,22 @@ fun WaveTimelineTab(
                                                 .size(40.dp)
                                                 .clip(RoundedCornerShape(12.dp))
                                                 .background(Color.White),
-                                            filterQuality = FilterQuality.Medium,
-                                            placeholder = placeholderContent
+                                            filterQuality = FilterQuality.Medium
                                         )
                                         Spacer(Modifier.width(8.dp))
                                         Text(displayName, fontSize = 14.sp)
                                         Spacer(Modifier.weight(1f))
                                         Text(
-                                            "~${String.format("%.2f", count)}",
+                                            stringResource(
+                                                R.string.wave_timeline_zombie_count_approx,
+                                                count
+                                            ),
                                             fontWeight = FontWeight.Bold,
                                             fontSize = 14.sp,
                                             color = MaterialTheme.colorScheme.secondary
                                         )
                                         Text(
-                                            " 只",
+                                            stringResource(R.string.wave_timeline_unit_zombie),
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
@@ -512,7 +486,7 @@ fun WaveTimelineTab(
                             }
                         if (!hasContent) {
                             Text(
-                                "点数过低，无法生成任何僵尸",
+                                stringResource(R.string.wave_timeline_msg_points_too_low),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontSize = 12.sp
                             )
@@ -523,7 +497,7 @@ fun WaveTimelineTab(
             confirmButton = {
                 TextButton(onClick = {
                     showExpectationDialog = null
-                }) { Text("关闭") }
+                }) { Text(stringResource(R.string.wave_timeline_btn_close)) }
             }
         )
     }
@@ -532,22 +506,19 @@ fun WaveTimelineTab(
     if (eventToCopy != null) {
         AlertDialog(
             onDismissRequest = { eventToCopy = null },
-            title = { Text("复制事件引用") },
+            title = { Text(stringResource(R.string.wave_timeline_dialog_copy_title)) },
             text = {
                 OutlinedTextField(
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        focusedLabelColor = MaterialTheme.colorScheme.primary
-                    ),
                     value = copyTargetInput,
                     onValueChange = { copyTargetInput = it },
-                    label = { Text("目标波次序号") },
+                    label = { Text(stringResource(R.string.wave_timeline_label_target_wave)) },
                     modifier = Modifier.fillMaxWidth()
                 )
             },
             dismissButton = {
-                TextButton(onClick = { eventToCopy = null }) { Text("取消") }
+                TextButton(onClick = {
+                    eventToCopy = null
+                }) { Text(stringResource(R.string.wave_timeline_btn_cancel)) }
             },
             confirmButton = {
                 Button(onClick = {
@@ -560,9 +531,13 @@ fun WaveTimelineTab(
                         onWavesChanged()
                         eventToCopy = null
                     } else {
-                        Toast.makeText(context, "无效波次序号", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.wave_timeline_toast_invalid_wave),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                }) { Text("复制") }
+                }) { Text(stringResource(R.string.wave_timeline_btn_copy)) }
             }
         )
     }
@@ -570,7 +545,6 @@ fun WaveTimelineTab(
     // --- C. 重命名 ---
     if (eventToRename != null) {
         val oldAlias = LevelParser.extractAlias(eventToRename!!)
-
         val isConflict = remember(newAliasInput) {
             newAliasInput != oldAlias && rootLevelFile?.objects?.any {
                 it.aliases?.contains(
@@ -578,30 +552,17 @@ fun WaveTimelineTab(
                 ) == true
             } == true
         }
-
         AlertDialog(
             onDismissRequest = { eventToRename = null },
-            title = { Text("全局重命名事件") },
+            title = { Text(stringResource(R.string.wave_timeline_dialog_rename_title)) },
             text = {
                 Column {
                     OutlinedTextField(
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            focusedLabelColor = MaterialTheme.colorScheme.primary
-                        ),
                         value = newAliasInput,
                         onValueChange = { newAliasInput = it },
-                        label = { Text("新代号(Alias)") },
+                        label = { Text(stringResource(R.string.wave_timeline_label_new_alias)) },
                         isError = isConflict,
-                        supportingText = {
-                            if (isConflict) {
-                                Text(
-                                    "该代号已被其他事件占用",
-                                    color = MaterialTheme.colorScheme.onError
-                                )
-                            }
-                        },
+                        supportingText = { if (isConflict) Text(stringResource(R.string.wave_timeline_error_alias_taken)) },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -613,31 +574,34 @@ fun WaveTimelineTab(
                         eventToRename = null
                     },
                     enabled = !isConflict && newAliasInput.isNotBlank()
-                ) { Text("确定") }
+                ) { Text(stringResource(R.string.wave_timeline_btn_confirm)) }
             },
             dismissButton = {
-                TextButton(onClick = { eventToRename = null }) { Text("取消") }
+                TextButton(onClick = {
+                    eventToRename = null
+                }) { Text(stringResource(R.string.wave_timeline_btn_cancel)) }
             }
         )
     }
 
     // --- D. 删除事件确认 ---
     var eventToDeleteSourceWave by remember { mutableStateOf<Int?>(null) }
-
     if (eventToDeleteRtid != null && eventToDeleteSourceWave != null) {
         val rtid = eventToDeleteRtid!!
-        val allRefs = waveManager.waves.flatten()
-        val count = allRefs.count { it == rtid }
-
+        val count = waveManager.waves.flatten().count { it == rtid }
         AlertDialog(
             onDismissRequest = { eventToDeleteRtid = null },
-            title = { Text(if (count > 1) "移除事件引用" else "彻底删除事件") },
+            title = { Text(stringResource(if (count > 1) R.string.wave_timeline_dialog_remove_ref_title else R.string.wave_timeline_dialog_delete_entity_title)) },
             text = {
-                if (count > 1) {
-                    Text("该事件在关卡中被引用了 $count 次。当前操作仅会从第 $eventToDeleteSourceWave 波中移除此引用，不会删除事件实体数据。")
-                } else {
-                    Text("这是该事件的最后一份引用。删除后将同时从文件中彻底抹除该事件的实体配置，不可恢复。")
-                }
+                Text(
+                    if (count > 1)
+                        stringResource(
+                            R.string.wave_timeline_msg_remove_ref,
+                            count,
+                            eventToDeleteSourceWave!!
+                        )
+                    else stringResource(R.string.wave_timeline_msg_delete_entity)
+                )
             },
             confirmButton = {
                 Button(
@@ -646,15 +610,15 @@ fun WaveTimelineTab(
                         eventToDeleteRtid = null
                         eventToDeleteSourceWave = null
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (count > 1) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onError
-                    )
+                    colors = ButtonDefaults.buttonColors(containerColor = if (count > 1) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onError)
                 ) {
-                    Text(if (count > 1) "确认移除" else "确认彻底删除")
+                    Text(stringResource(if (count > 1) R.string.wave_timeline_btn_confirm_remove else R.string.wave_timeline_btn_confirm_delete_all))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { eventToDeleteRtid = null }) { Text("取消") }
+                TextButton(onClick = {
+                    eventToDeleteRtid = null
+                }) { Text(stringResource(R.string.wave_timeline_btn_cancel)) }
             }
         )
     }
@@ -663,58 +627,62 @@ fun WaveTimelineTab(
     if (eventToMove != null && moveSourceWaveIndex != null) {
         AlertDialog(
             onDismissRequest = { eventToMove = null; moveSourceWaveIndex = null },
-            title = { Text("移动事件") },
+            title = { Text(stringResource(R.string.wave_timeline_dialog_move_title)) },
             text = {
                 OutlinedTextField(
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        focusedLabelColor = MaterialTheme.colorScheme.primary
-                    ),
                     value = moveTargetInput,
                     onValueChange = { moveTargetInput = it },
-                    label = { Text("移动至波次序号") },
+                    label = { Text(stringResource(R.string.wave_timeline_label_move_target)) },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             },
             dismissButton = {
-                TextButton(onClick = {
-                    eventToMove = null; moveSourceWaveIndex = null
-                }) { Text("取消") }
+                TextButton(onClick = { eventToMove = null; moveSourceWaveIndex = null }) {
+                    Text(
+                        stringResource(R.string.wave_timeline_btn_cancel)
+                    )
+                }
             },
             confirmButton = {
                 Button(onClick = {
                     val target = moveTargetInput.toIntOrNull()
-                    val sourceIdx = moveSourceWaveIndex!! - 1 // 注意：这里需要确保非空
-
+                    val sourceIdx = moveSourceWaveIndex!! - 1
                     if (target != null && target in 1..waveManager.waves.size) {
                         val targetIdx = target - 1
-
                         if (targetIdx == sourceIdx) {
-                            Toast.makeText(context, "目标波次与当前波次相同", Toast.LENGTH_SHORT)
-                                .show()
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.wave_timeline_toast_same_wave),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         } else {
                             val newSourceList = waveManager.waves[sourceIdx].toMutableList()
                             val newTargetList = waveManager.waves[targetIdx].toMutableList()
-
                             newSourceList.remove(eventToMove!!)
                             newTargetList.add(eventToMove!!)
-
                             waveManager.waves[sourceIdx] = newSourceList
                             waveManager.waves[targetIdx] = newTargetList
-
                             onWavesChanged()
-                            Toast.makeText(context, "已移动至第 $target 波", Toast.LENGTH_SHORT)
-                                .show()
-
+                            Toast.makeText(
+                                context,
+                                context.getString(
+                                    R.string.wave_timeline_toast_moved_success,
+                                    target
+                                ),
+                                Toast.LENGTH_SHORT
+                            ).show()
                             eventToMove = null
                             moveSourceWaveIndex = null
                         }
                     } else {
-                        Toast.makeText(context, "无效波次序号", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.wave_timeline_toast_invalid_wave),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                }) { Text("移动") }
+                }) { Text(stringResource(R.string.wave_timeline_btn_move)) }
             }
         )
     }
@@ -722,25 +690,23 @@ fun WaveTimelineTab(
     // --- F. 删除波次确认 ---
     if (waveToDeleteIndex != null) {
         AlertDialog(
-            onDismissRequest = {
-                waveToDeleteIndex = null
-                confirmCheckbox = false // 重置状态
-            },
+            onDismissRequest = { waveToDeleteIndex = null; confirmCheckbox = false },
             title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("删除波次 ${waveToDeleteIndex!! + 1}")
-                }
+                Text(
+                    stringResource(
+                        R.string.wave_timeline_dialog_delete_wave_title,
+                        waveToDeleteIndex!! + 1
+                    )
+                )
             },
             text = {
                 Column {
                     val eventCount = waveManager.waves[waveToDeleteIndex!!].size
                     Text(
-                        "该操作将移除此波次及其内部的 $eventCount 个事件引用，确定要删除该波次？",
+                        stringResource(R.string.wave_timeline_msg_delete_wave, eventCount),
                         fontSize = 14.sp
                     )
                     Spacer(Modifier.height(16.dp))
-
-                    // 逻辑锁：勾选框
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
@@ -752,10 +718,9 @@ fun WaveTimelineTab(
                     ) {
                         Checkbox(
                             checked = confirmCheckbox,
-                            onCheckedChange = { confirmCheckbox = it }
-                        )
+                            onCheckedChange = { confirmCheckbox = it })
                         Text(
-                            "我确定要永久删除此波次",
+                            stringResource(R.string.wave_timeline_checkbox_confirm_permanent),
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -767,23 +732,21 @@ fun WaveTimelineTab(
                     onClick = {
                         val index = waveToDeleteIndex!!
                         val eventsToRemove = waveManager.waves[index].toList()
-
                         waveManager.waves.removeAt(index)
                         waveManager.waveCount = waveManager.waves.size
-
                         if (rootLevelFile != null) {
                             val remainingRefs = waveManager.waves.flatten().toSet()
-                            var cleanedCount = 0
-
                             eventsToRemove.forEach { rtid ->
                                 if (!remainingRefs.contains(rtid)) {
                                     val alias = LevelParser.extractAlias(rtid)
-                                    val wasRemoved =
-                                        rootLevelFile.objects.removeAll { it.aliases?.contains(alias) == true }
-                                    if (wasRemoved) cleanedCount++
+                                    rootLevelFile.objects.removeAll { it.aliases?.contains(alias) == true }
                                 }
                             }
-                            Toast.makeText(context, "已删除波次", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.wave_timeline_toast_wave_deleted),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                         onWavesChanged()
                         waveToDeleteIndex = null
@@ -791,13 +754,14 @@ fun WaveTimelineTab(
                     },
                     enabled = confirmCheckbox,
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError)
-                ) { Text("确认删除") }
+                ) { Text(stringResource(R.string.wave_timeline_btn_delete)) }
             },
             dismissButton = {
-                TextButton(onClick = {
-                    waveToDeleteIndex = null
-                    confirmCheckbox = false
-                }) { Text("取消") }
+                TextButton(onClick = { waveToDeleteIndex = null; confirmCheckbox = false }) {
+                    Text(
+                        stringResource(R.string.wave_timeline_btn_cancel)
+                    )
+                }
             }
         )
     }
@@ -806,10 +770,7 @@ fun WaveTimelineTab(
     if (editingWaveIndex != null) {
         val waveIdx = editingWaveIndex!!
         val currentWaveEvents = waveManager.waves.getOrNull(waveIdx - 1) ?: mutableListOf()
-        ModalBottomSheet(
-            onDismissRequest = { editingWaveIndex = null },
-            containerColor = MaterialTheme.colorScheme.background
-        ) {
+        ModalBottomSheet(onDismissRequest = { editingWaveIndex = null }) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -823,7 +784,7 @@ fun WaveTimelineTab(
                         modifier = Modifier.padding(bottom = 8.dp)
                     ) {
                         Text(
-                            "第 $waveIdx 波事件管理",
+                            stringResource(R.string.wave_timeline_drawer_title, waveIdx),
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
@@ -833,44 +794,26 @@ fun WaveTimelineTab(
                         }) {
                             Icon(
                                 Icons.Default.Add,
-                                null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            ); Text("新增事件", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                null
+                            ); Text(stringResource(R.string.wave_timeline_btn_add_event))
                         }
                     }
                 }
-                itemsIndexed(currentWaveEvents) { index, rtid ->
-                    val alias = LevelParser.extractAlias(rtid)
-                    val obj = objectMap[alias]
-
+                itemsIndexed(currentWaveEvents) { _, rtid ->
                     DrawerEventItem(
                         rtid = rtid,
-                        obj = obj,
-                        onEdit = {
-                            editingWaveIndex = null
-                            onEditEvent(rtid, waveIdx)
-                        },
-                        onCopy = {
-                            eventToCopy = rtid
-                            copyTargetInput = waveIdx.toString()
-                        },
+                        obj = objectMap[LevelParser.extractAlias(rtid)],
+                        onEdit = { editingWaveIndex = null; onEditEvent(rtid, waveIdx) },
+                        onCopy = { eventToCopy = rtid; copyTargetInput = waveIdx.toString() },
                         onRename = {
-                            newAliasInput = alias
-                            eventToRename = rtid
+                            newAliasInput = LevelParser.extractAlias(rtid); eventToRename = rtid
                         },
-                        onDelete = {
-                            eventToDeleteRtid = rtid
-                            eventToDeleteSourceWave = waveIdx
-                        },
+                        onDelete = { eventToDeleteRtid = rtid; eventToDeleteSourceWave = waveIdx },
                         onMove = {
-                            eventToMove = rtid
-                            moveSourceWaveIndex = waveIdx
-                            moveTargetInput = waveIdx.toString()
+                            eventToMove = rtid; moveSourceWaveIndex = waveIdx; moveTargetInput =
+                            waveIdx.toString()
                         }
                     )
-                }
-                item {
-                    Spacer(Modifier.height(32.dp))
                 }
             }
         }
@@ -880,21 +823,20 @@ fun WaveTimelineTab(
     if (showDeleteContainerDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteContainerDialog = false },
-            title = { Text("删除波次容器") },
-            text = { Text("确定要删除空的波次容器吗？\n删除后您可以重新创建一个新的容器。") },
+            title = { Text(stringResource(R.string.wave_timeline_dialog_delete_container_title)) },
+            text = { Text(stringResource(R.string.wave_timeline_dialog_delete_container_desc)) },
             confirmButton = {
                 TextButton(
-                    onClick = {
-                        onDeleteContainer()
-                        showDeleteContainerDialog = false
-                    },
+                    onClick = { onDeleteContainer(); showDeleteContainerDialog = false },
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onError)
                 ) {
-                    Text("确认删除")
+                    Text(stringResource(R.string.wave_timeline_btn_delete))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteContainerDialog = false }) { Text("取消") }
+                TextButton(onClick = {
+                    showDeleteContainerDialog = false
+                }) { Text(stringResource(R.string.wave_timeline_btn_cancel)) }
             }
         )
     }
@@ -903,9 +845,7 @@ fun WaveTimelineTab(
         val info = selectedZombieInfo!!
         val realTypeName = ZombiePropertiesRepository.getTypeNameByAlias(info.baseTypeName)
         val displayName = ZombieRepository.getName(realTypeName)
-        val iconInfo = remember(realTypeName) {
-            ZombieRepository.getZombieInfoById(realTypeName)
-        }
+        val iconInfo = remember(realTypeName) { ZombieRepository.getZombieInfoById(realTypeName) }
 
         AlertDialog(
             onDismissRequest = { selectedZombieInfo = null },
@@ -915,25 +855,18 @@ fun WaveTimelineTab(
                         modifier = Modifier
                             .size(48.dp)
                             .clip(RoundedCornerShape(16.dp))
-                            .border(
-                                1.dp,
-                                MaterialTheme.colorScheme.surfaceVariant,
-                                RoundedCornerShape(16.dp)
-                            )
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                     ) {
                         AssetImage(
                             path = if (iconInfo?.icon != null) "images/zombies/${iconInfo.icon}" else "images/others/unknown.webp",
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            filterQuality = FilterQuality.Medium
+                            contentDescription = null, modifier = Modifier.fillMaxSize()
                         )
                     }
                     Spacer(Modifier.width(12.dp))
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(info.alias, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                         Text(
-                            "原型: $displayName",
+                            stringResource(R.string.wave_timeline_label_prototype, displayName),
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -944,12 +877,16 @@ fun WaveTimelineTab(
                 Column {
                     if (info.isUnused) {
                         Text(
-                            "此自定义僵尸当前未被任何波次或模块使用",
+                            stringResource(R.string.wave_timeline_msg_zombie_unused),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 14.sp
                         )
                     } else {
-                        Text("出现位置:", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text(
+                            stringResource(R.string.wave_timeline_label_locations),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
                         Spacer(Modifier.height(4.dp))
                         Text(
                             info.locations.joinToString(", "),
@@ -960,32 +897,21 @@ fun WaveTimelineTab(
                 }
             },
             confirmButton = {
-                Button(
-                    onClick = {
-                        selectedZombieInfo = null
-                        onEditCustomZombie(info.rtid)
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
-                ) {
+                Button(onClick = { selectedZombieInfo = null; onEditCustomZombie(info.rtid) }) {
                     Icon(Icons.Default.Edit, null, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(4.dp))
-                    Text("编辑属性")
+                    Text(stringResource(R.string.wave_timeline_btn_edit_props))
                 }
             },
             dismissButton = {
                 TextButton(
-                    onClick = {
-                        deleteCustomZombie(info)
-                        selectedZombieInfo = null
-                    },
+                    onClick = { deleteCustomZombie(info); selectedZombieInfo = null },
                     enabled = info.isUnused,
-                    colors = ButtonDefaults.textButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onError
-                    )
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onError)
                 ) {
                     Icon(Icons.Default.Delete, null, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(4.dp))
-                    Text("删除实体")
+                    Text(stringResource(R.string.wave_timeline_btn_delete_entity_short))
                 }
             }
         )
@@ -1001,7 +927,7 @@ fun WaveTimelineTab(
         item {
             Card(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
                     .fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.outline),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
@@ -1014,63 +940,16 @@ fun WaveTimelineTab(
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text(
-                            "操作指引",
+                            stringResource(R.string.wave_timeline_guide_title),
+                            color = MaterialTheme.colorScheme.secondary,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.secondary
+                            fontSize = 16.sp
                         )
                         Text(
-                            "右滑：管理波次事件\n左滑：删除该波次\n点击pt：查看期望",
-                            fontSize = 14.sp,
+                            stringResource(R.string.wave_timeline_guide_desc),
+                            fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                    }
-                }
-            }
-        }
-
-        if (deadLinks.isNotEmpty()) {
-            item {
-                Card(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onError)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row {
-                            Icon(
-                                Icons.Default.GppBad,
-                                null,
-                                tint = MaterialTheme.colorScheme.onError
-                            ); Spacer(Modifier.width(8.dp)); Text(
-                            "引用失效报警",
-                            color = MaterialTheme.colorScheme.onError,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        }
-                        Spacer(Modifier.height(8.dp))
-
-                        deadLinks.forEach {
-                            Text(
-                                it,
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onError
-                            )
-                        }
-
-                        Spacer(Modifier.height(8.dp))
-                        Button(
-                            onClick = {
-                                waveManager.waves.forEach {
-                                    it.removeAll { r -> deadLinks.contains(r) }
-                                }; onWavesChanged()
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError),
-                            modifier = Modifier.align(Alignment.End)
-                        ) { Text("一键清理失效波次", fontSize = 14.sp) }
                     }
                 }
             }
@@ -1080,35 +959,24 @@ fun WaveTimelineTab(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiary),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onTertiary),
-                elevation = CardDefaults.cardElevation(2.dp)
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onTertiary)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Default.Science,
-                            null,
-                            tint = MaterialTheme.colorScheme.onTertiary
-                        )
-                        Spacer(Modifier.width(8.dp))
+                        Icon(Icons.Default.Science, null); Spacer(Modifier.width(8.dp))
                         Text(
-                            "自定义僵尸管理",
+                            stringResource(R.string.wave_timeline_mgmt_custom_zombies),
                             fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onTertiary
+                            fontSize = 16.sp
                         )
-                        Spacer(Modifier.weight(1f))
                     }
-
                     Spacer(Modifier.height(12.dp))
-
                     if (activeZombies.isEmpty() && unusedZombies.isEmpty()) {
                         Text(
-                            "暂无自定义僵尸数据",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            stringResource(R.string.wave_timeline_no_custom_zombies),
+                            fontSize = 12.sp
                         )
                     } else {
                         @OptIn(ExperimentalLayoutApi::class)
@@ -1121,27 +989,12 @@ fun WaveTimelineTab(
                                     onClick = { selectedZombieInfo = info },
                                     label = { Text(info.alias) },
                                     leadingIcon = {
-                                        if (info.isUnused) {
-                                            Icon(
-                                                Icons.Default.Warning,
-                                                null,
-                                                tint = MaterialTheme.colorScheme.onTertiary,
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                        } else {
-                                            Icon(
-                                                Icons.Default.CheckCircle,
-                                                null,
-                                                tint = MaterialTheme.colorScheme.primary,
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                        }
-                                    },
-                                    border = null,
-                                    colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = if (info.isUnused) Color.Transparent else MaterialTheme.colorScheme.outlineVariant,
-                                        labelColor = if (info.isUnused) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.primary
-                                    )
+                                        Icon(
+                                            if (info.isUnused) Icons.Default.Warning else Icons.Default.CheckCircle,
+                                            null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
                                 )
                             }
                         }
@@ -1150,13 +1003,64 @@ fun WaveTimelineTab(
             }
         }
 
-        item { Spacer(Modifier.height(16.dp)) }
+
+        if (deadLinks.isNotEmpty()) {
+            item {
+                Card(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onError)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row {
+                            Icon(
+                                Icons.Default.GppBad,
+                                null,
+                                tint = MaterialTheme.colorScheme.onError
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                stringResource(R.string.wave_timeline_alert_dead_link),
+                                color = MaterialTheme.colorScheme.onError,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        deadLinks.forEach {
+                            Text(
+                                it,
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onError
+                            )
+                            Spacer(Modifier.height(2.dp))
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Button(
+                            onClick = {
+                                waveManager.waves.forEach {
+                                    it.removeAll { r -> deadLinks.contains(r) }
+                                }; onWavesChanged()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError),
+                        ) { Text(stringResource(R.string.wave_timeline_btn_clean_dead_links)) }
+                    }
+                }
+            }
+        }
 
         item {
-            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
                 SettingEntryCard(
-                    title = "波次管理器全局参数",
-                    subtitle = "旗帜间隔: $interval, 刷新血线: ${(waveManager.minNextWaveHealthPercentage * 100).toInt()}% - ${(waveManager.maxNextWaveHealthPercentage * 100).toInt()}%",
+                    title = stringResource(R.string.wave_timeline_global_params_title),
+                    subtitle = stringResource(
+                        R.string.wave_timeline_global_params_subtitle,
+                        interval,
+                        (waveManager.minNextWaveHealthPercentage * 100).toInt(),
+                        (waveManager.maxNextWaveHealthPercentage * 100).toInt()
+                    ),
                     icon = Icons.Default.Tune,
                     onClick = onEditSettings
                 )
@@ -1170,44 +1074,35 @@ fun WaveTimelineTab(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.surfaceVariant)
+                        .padding(16.dp)
                 ) {
                     Column(
                         modifier = Modifier
                             .padding(24.dp)
                             .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = "当前波次列表为空",
+                            stringResource(R.string.wave_timeline_empty_list_title),
                             fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            fontWeight = FontWeight.Bold
                         )
-                        Spacer(Modifier.height(8.dp))
                         Text(
-                            text = "您可以添加第一个波次，或者删除这个空的容器。",
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            stringResource(R.string.wave_timeline_empty_list_desc),
+                            fontSize = 12.sp
                         )
                         Spacer(Modifier.height(16.dp))
-
                         Button(
                             onClick = { showDeleteContainerDialog = true },
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError)
                         ) {
-                            Icon(Icons.Default.DeleteForever, null)
-                            Spacer(Modifier.width(8.dp))
-                            Text("删除空容器")
+                            Icon(Icons.Default.DeleteForever, null); Spacer(Modifier.width(8.dp))
+                            Text(stringResource(R.string.wave_timeline_btn_delete_empty_container))
                         }
                     }
                 }
             }
         } else {
-
             item {
                 Row(
                     modifier = Modifier
@@ -1215,22 +1110,15 @@ fun WaveTimelineTab(
                         .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(vertical = 8.dp, horizontal = 16.dp)
                 ) {
+                    Text("#", modifier = Modifier.width(36.dp), fontWeight = FontWeight.Bold)
                     Text(
-                        "#",
-                        modifier = Modifier.width(36.dp),
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        "内容及点数预览",
+                        stringResource(R.string.wave_timeline_table_header_content),
                         modifier = Modifier.weight(1f),
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        fontWeight = FontWeight.Bold
                     )
                     Text(
-                        "Total: ${waveManager.waves.size}",
+                        stringResource(R.string.wave_timeline_total_waves, waveManager.waves.size),
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 13.sp
                     )
                 }
@@ -1238,61 +1126,45 @@ fun WaveTimelineTab(
 
             itemsIndexed(
                 items = waveManager.waves,
-                key = { index, _ -> "wave_row_${index}_${refreshTrigger}" }
-            ) { index, waveEvents ->
+                key = { index, _ -> "wave_row_${index}_${refreshTrigger}" }) { index, waveEvents ->
                 val waveIndex = index + 1
                 val isFlagWave = (waveIndex % interval == 0 || waveIndex == waveManager.waves.size)
-                val points = calculatePoints(waveIndex, isFlagWave)
-
+                val points = calculatePoints(waveIndex, isFlagWave, waveModule)
                 val dismissState = rememberSwipeToDismissBoxState(
                     confirmValueChange = { value ->
                         when (value) {
                             SwipeToDismissBoxValue.StartToEnd -> {
-                                editingWaveIndex = waveIndex
-                                false
+                                editingWaveIndex = waveIndex; false
                             }
 
                             SwipeToDismissBoxValue.EndToStart -> {
-                                waveToDeleteIndex = index
-                                false
+                                waveToDeleteIndex = index; false
                             }
 
                             else -> false
                         }
-                    },
-                    positionalThreshold = { totalDistance ->
-                        totalDistance * 0.5f
                     }
                 )
-
                 LaunchedEffect(waveToDeleteIndex, editingWaveIndex, refreshTrigger) {
-                    if (waveToDeleteIndex == null && editingWaveIndex == null) {
-                        dismissState.reset()
-                    }
+                    if (waveToDeleteIndex == null && editingWaveIndex == null) dismissState.reset()
                 }
-
                 SwipeToDismissBox(
                     state = dismissState,
                     backgroundContent = {
-                        val direction = dismissState.dismissDirection
-                        val color = when (direction) {
-                            SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.primary
-                            SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.onError
-                            else -> Color.Transparent
-                        }
-                        val alignment =
-                            if (direction == SwipeToDismissBoxValue.StartToEnd) Alignment.CenterStart else Alignment.CenterEnd
-                        val icon =
-                            if (direction == SwipeToDismissBoxValue.StartToEnd) Icons.Default.Settings else Icons.Default.Delete
-
+                        val color =
+                            if (dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onError
                         Box(
                             Modifier
                                 .fillMaxSize()
                                 .background(color)
                                 .padding(horizontal = 24.dp),
-                            contentAlignment = alignment
+                            contentAlignment = if (dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) Alignment.CenterStart else Alignment.CenterEnd
                         ) {
-                            Icon(icon, null, tint = Color.White)
+                            Icon(
+                                if (dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) Icons.Default.Settings else Icons.Default.Delete,
+                                null,
+                                tint = Color.White
+                            )
                         }
                     }
                 ) {
@@ -1303,8 +1175,7 @@ fun WaveTimelineTab(
                         objectMap = objectMap,
                         points = points,
                         onEditEvent = onEditEvent,
-                        onInfoClick = { showExpectationDialog = waveIndex }
-                    )
+                        onInfoClick = { showExpectationDialog = waveIndex })
                 }
             }
         }
@@ -1316,15 +1187,14 @@ fun WaveTimelineTab(
                     .padding(32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Button(
-                    onClick = {
-                        waveManager.waves.add(mutableListOf())
-                        waveManager.waveCount = waveManager.waves.size
-                        onWavesChanged()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
-                    Icon(Icons.Default.Add, null); Spacer(Modifier.width(8.dp)); Text("添加空波次")
+                Button(onClick = {
+                    waveManager.waves.add(mutableListOf()); waveManager.waveCount =
+                    waveManager.waves.size; onWavesChanged()
+                }) {
+                    Icon(
+                        Icons.Default.Add,
+                        null
+                    ); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.wave_timeline_btn_add_wave))
                 }
             }
         }
@@ -1384,7 +1254,7 @@ fun WaveRowItem(
             ) {
                 if (rtidList.isEmpty()) {
                     Text(
-                        "空波次 (左右划操作)",
+                        stringResource(R.string.wave_timeline_empty_wave_hint),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 11.sp
                     )
@@ -1436,7 +1306,6 @@ fun DrawerEventItem(
     val isInvalid = obj == null
     val meta = EventRegistry.getMetadata(obj?.objClass ?: "")
 
-    // 主题色判定
     val themeColor = if (isInvalid) MaterialTheme.colorScheme.onError else (meta?.color
         ?: MaterialTheme.colorScheme.onSurfaceVariant)
 
@@ -1456,19 +1325,16 @@ fun DrawerEventItem(
     ) {
         Row(
             modifier = Modifier
-                .height(IntrinsicSize.Min) // 使左侧条高度撑满
+                .height(IntrinsicSize.Min)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 1. 左侧主题色条
             Box(
                 modifier = Modifier
                     .width(6.dp)
                     .fillMaxHeight()
                     .background(themeColor)
             )
-
-            // 2. 内容区
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -1492,20 +1358,20 @@ fun DrawerEventItem(
                     )
                 }
                 Text(
-                    text = if (isInvalid) "引用失效：找不到实体对象" else (meta?.title
-                        ?: "未知类型"),
+                    text = when {
+                        isInvalid -> stringResource(R.string.wave_timeline_error_invalid_ref)
+                        meta != null -> stringResource(meta.title)
+                        else -> stringResource(R.string.wave_timeline_label_unknown_type)
+                    },
                     fontSize = 11.sp,
                     color = themeColor.copy(alpha = 0.8f),
                     fontWeight = FontWeight.Medium
                 )
             }
-
-            // 3. 按钮组
             Row(
                 modifier = Modifier.padding(end = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                // 重命名
                 IconButton(onClick = onRename, modifier = Modifier.size(32.dp)) {
                     Icon(
                         Icons.Default.DriveFileRenameOutline,
@@ -1514,7 +1380,6 @@ fun DrawerEventItem(
                         modifier = Modifier.size(18.dp)
                     )
                 }
-                // 复制
                 IconButton(onClick = onCopy, modifier = Modifier.size(32.dp)) {
                     Icon(
                         Icons.Default.ContentCopy,
@@ -1523,7 +1388,6 @@ fun DrawerEventItem(
                         modifier = Modifier.size(18.dp)
                     )
                 }
-                // 移动
                 IconButton(onClick = onMove, modifier = Modifier.size(32.dp)) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.DriveFileMove,
@@ -1532,7 +1396,6 @@ fun DrawerEventItem(
                         modifier = Modifier.size(18.dp)
                     )
                 }
-                // 删除
                 IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
                     Icon(
                         imageVector = Icons.Default.DeleteForever,
@@ -1544,4 +1407,16 @@ fun DrawerEventItem(
             }
         }
     }
+}
+
+fun calculatePoints(waveIndex: Int, isFlag: Boolean, waveModule: WaveManagerModuleData?): Int {
+    if (waveModule == null) return 0
+    val zombiesList = waveModule.dynamicZombies
+    if (zombiesList.isNullOrEmpty()) return 0
+    val group = zombiesList[0]
+    val startEffectWave = group.startingWave + 1
+    if (waveIndex < startEffectWave) return 0
+    var basePoints = group.startingPoints + (waveIndex - startEffectWave) * group.pointIncrement
+    if (basePoints > 60000) basePoints = 60000
+    return if (isFlag) (basePoints * 2.5).toInt() else basePoints
 }

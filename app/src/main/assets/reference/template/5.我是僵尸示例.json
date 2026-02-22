@@ -18,7 +18,6 @@
         "MusicType": "MiniGame_B",
         "Name": "我是僵尸示例",
         "StageModule": "RTID(ModernStage@LevelModules)",
-        "StartingSun": 300,
         "VictoryModule": "RTID(VictoryOutro@LevelModules)"
       }
     },

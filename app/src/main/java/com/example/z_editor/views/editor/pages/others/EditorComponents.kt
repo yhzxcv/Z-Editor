@@ -67,6 +67,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -152,6 +153,7 @@ fun CommonEditorTopAppBar(
 
 @Composable
 fun EventChip(rtid: String, objectMap: Map<String, PvzObject>, onClick: () -> Unit) {
+    val context = LocalContext.current
     val alias = LevelParser.extractAlias(rtid)
     val obj = objectMap[alias]
     val isInvalid = obj == null
@@ -166,7 +168,7 @@ fun EventChip(rtid: String, objectMap: Map<String, PvzObject>, onClick: () -> Un
     }
 
     val summaryText = if (!isInvalid) {
-        meta?.summaryProvider?.invoke(obj)
+        meta?.summaryProvider?.invoke(context, obj)
     } else null
 
     Surface(

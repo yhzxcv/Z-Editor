@@ -16,8 +16,8 @@
         "MusicType": "",
         "Name": "僵王战示例",
         "StageModule": "RTID(FutureStage@LevelModules)",
-        "StartingSun": 200,
-        "VictoryModule": "RTID(ZombossVictoryOutro@LevelModules)"
+        "VictoryModule": "RTID(ZombossVictoryOutro@LevelModules)",
+        "IsBossFight": true
       }
     },
     {

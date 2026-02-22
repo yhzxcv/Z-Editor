@@ -17,7 +17,6 @@
         ],
         "Name": "自选卡示例",
         "StageModule": "RTID(ModernStage@LevelModules)",
-        "StartingSun": 200,
         "VictoryModule": "RTID(VictoryOutro@LevelModules)"
       }
     },

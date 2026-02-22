@@ -53,9 +53,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.data.LocationData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
@@ -164,7 +166,7 @@ fun VaseBreakerTab(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            "罐子生成范围与禁用格点",
+                            stringResource(R.string.vase_breaker_range_title),
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -176,7 +178,7 @@ fun VaseBreakerTab(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             BoundaryStepper(
-                                label = "起始列 (Min)",
+                                label = stringResource(R.string.vase_breaker_min_col),
                                 value = minCol,
                                 onMinus = {
                                     if (minCol > 0) updateData { it.minColumnIndex = minCol - 1 }
@@ -189,7 +191,7 @@ fun VaseBreakerTab(
                             )
 
                             BoundaryStepper(
-                                label = "结束列 (Max)",
+                                label = stringResource(R.string.vase_breaker_max_col),
                                 value = maxCol,
                                 onMinus = {
                                     if (maxCol > minCol) updateData {
@@ -205,7 +207,7 @@ fun VaseBreakerTab(
                         Spacer(Modifier.height(12.dp))
 
                         Text(
-                            "点击格点可切换禁用状态（禁用点将不生成罐子）",
+                            stringResource(R.string.vase_breaker_grid_hint),
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = 8.dp)
@@ -316,13 +318,18 @@ fun VaseBreakerTab(
                             Spacer(Modifier.width(8.dp))
                             Column {
                                 Text(
-                                    text = if (isCapacityError) "配置数量与有效容量不符" else "配置数量已匹配容量",
+                                    text = if (isCapacityError) stringResource(R.string.vase_breaker_capacity_mismatch)
+                                    else stringResource(R.string.vase_breaker_capacity_match),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.sp,
                                     color = if (isCapacityError) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.primary
                                 )
                                 Text(
-                                    text = "有效容量: $totalSlots  |  已配置: $currentAssigned",
+                                    text = stringResource(
+                                        R.string.vase_breaker_capacity_info,
+                                        totalSlots,
+                                        currentAssigned
+                                    ),
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
@@ -340,18 +347,17 @@ fun VaseBreakerTab(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            "特殊罐子设置",
+                            stringResource(R.string.vase_breaker_special_settings),
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = 18.sp
+                            fontSize = 16.sp
                         )
                         Spacer(Modifier.height(12.dp))
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                "植物罐子 (绿罐)",
-                                modifier = Modifier.width(150.dp),
-                                fontSize = 16.sp
+                                stringResource(R.string.vase_breaker_plant_vase_label),
+                                fontSize = 14.sp
                             )
                             Spacer(Modifier.weight(1f))
                             Stepper(
@@ -367,9 +373,8 @@ fun VaseBreakerTab(
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                "僵尸罐子 (紫罐)",
-                                modifier = Modifier.width(150.dp),
-                                fontSize = 16.sp
+                                stringResource(R.string.vase_breaker_zombie_vase_label),
+                                fontSize = 14.sp
                             )
                             Spacer(Modifier.weight(1f))
                             Stepper(
@@ -385,7 +390,7 @@ fun VaseBreakerTab(
 
             item {
                 Text(
-                    "罐子内容列表",
+                    stringResource(R.string.vase_breaker_content_list),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 16.sp
@@ -424,14 +429,14 @@ fun VaseBreakerTab(
     if (showAddDialog) {
         AlertDialog(
             onDismissRequest = { showAddDialog = false },
-            title = { Text("添加罐子内容") },
+            title = { Text(stringResource(R.string.vase_breaker_dialog_add_title)) },
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     ListItem(
-                        headlineContent = { Text("植物 (Plant)") },
+                        headlineContent = { Text(stringResource(R.string.vase_breaker_type_plant)) },
                         modifier = Modifier.clickable {
                             showAddDialog = false
                             onRequestPlantSelection { plantIds ->
@@ -444,7 +449,7 @@ fun VaseBreakerTab(
                         }
                     )
                     ListItem(
-                        headlineContent = { Text("僵尸 (Zombie)") },
+                        headlineContent = { Text(stringResource(R.string.vase_breaker_type_zombie)) },
                         modifier = Modifier.clickable {
                             showAddDialog = false
                             onRequestZombieSelection { zombieIds ->
@@ -463,7 +468,7 @@ fun VaseBreakerTab(
                         }
                     )
                     ListItem(
-                        headlineContent = { Text("道具 (Collectable)") },
+                        headlineContent = { Text(stringResource(R.string.vase_breaker_type_collectable)) },
                         modifier = Modifier.clickable {
                             showAddDialog = false
                             showCollectableDialog = true
@@ -471,7 +476,11 @@ fun VaseBreakerTab(
                     )
                 }
             },
-            dismissButton = { TextButton(onClick = { showAddDialog = false }) { Text("取消") } },
+            dismissButton = {
+                TextButton(onClick = { showAddDialog = false }) {
+                    Text(stringResource(R.string.vase_breaker_cancel))
+                }
+            },
             confirmButton = {}
         )
     }
@@ -479,12 +488,12 @@ fun VaseBreakerTab(
     if (showCollectableDialog) {
         AlertDialog(
             onDismissRequest = { showCollectableDialog = false },
-            title = { Text("选择道具类型") },
+            title = { Text(stringResource(R.string.vase_breaker_dialog_select_collectable)) },
             text = {
                 Column(
                     modifier = Modifier.verticalScroll(rememberScrollState())
                 ) {
-                    collectableTypes.forEach { info ->
+                    collectableTypes(stringResource(R.string.vase_breaker_item_plant_food), stringResource(R.string.vase_breaker_item_large_sun)).forEach { info ->
                         ListItem(
                             headlineContent = { Text(info.name) },
                             supportingContent = { Text(info.id, fontSize = 10.sp) },
@@ -531,8 +540,8 @@ fun VaseBreakerTab(
     if (vaseToDelete != null) {
         AlertDialog(
             onDismissRequest = { vaseToDelete = null },
-            title = { Text("移除配置") },
-            text = { Text("确定要移除该配置项吗？") },
+            title = { Text(stringResource(R.string.vase_breaker_dialog_remove_title)) },
+            text = { Text(stringResource(R.string.vase_breaker_dialog_remove_msg)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -542,24 +551,26 @@ fun VaseBreakerTab(
                         vaseToDelete = null
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError)
-                ) { Text("移除") }
+                ) { Text(stringResource(R.string.vase_breaker_remove)) }
             },
             dismissButton = {
-                TextButton(onClick = { vaseToDelete = null }) { Text("取消") }
+                TextButton(onClick = { vaseToDelete = null }) {
+                    Text(stringResource(R.string.vase_breaker_cancel))
+                }
             }
         )
     }
 }
-
 data class CollectableType(
     val id: String,
     val name: String,
     val iconName: String
 )
 
-private val collectableTypes = listOf(
-    CollectableType("plantfood", "能量豆", "plantfood.webp"),
-    CollectableType("sun_large", "大型阳光", "sun_large.webp")
+@Composable
+private fun collectableTypes(plantFoodName: String, largeSunName: String) = listOf(
+    CollectableType("plantfood", plantFoodName, "plantfood.webp"),
+    CollectableType("sun_large", largeSunName, "sun_large.webp")
 )
 
 
@@ -575,21 +586,24 @@ fun VaseItemRow(
     val iconPath: String?
 
     if (vase.plantTypeName != null) {
-        type = "植物"
+        type = stringResource(R.string.vase_breaker_label_plant)
         val alias = RtidParser.parse(vase.plantTypeName!!)?.alias ?: vase.plantTypeName!!
         name = PlantRepository.getName(alias)
         val pInfo = remember(alias) { PlantRepository.getPlantInfoById(alias) }
         iconPath = if (pInfo?.icon != null) "images/plants/${pInfo.icon}" else "images/others/unknown.webp"
     } else if (vase.zombieTypeName != null) {
-        type = "僵尸"
+        type = stringResource(R.string.vase_breaker_label_zombie)
         val alias = RtidParser.parse(vase.zombieTypeName!!)?.alias ?: vase.zombieTypeName!!
         name = ZombieRepository.getName(alias)
         val zInfo = remember(alias) { ZombieRepository.getZombieInfoById(alias) }
         iconPath = if (zInfo?.icon != null) "images/zombies/${zInfo.icon}" else "images/others/unknown.webp"
     } else {
-        type = "道具"
-        val info = collectableTypes.find { it.id == vase.collectableTypeName }
-        name = info?.name ?: vase.collectableTypeName ?: "未知道具"
+        type = stringResource(R.string.vase_breaker_label_collectable)
+        val plantFoodName = stringResource(R.string.vase_breaker_item_plant_food)
+        val largeSunName = stringResource(R.string.vase_breaker_item_large_sun)
+        val types = collectableTypes(plantFoodName, largeSunName)
+        val info = types.find { it.id == vase.collectableTypeName }
+        name = info?.name ?: vase.collectableTypeName ?: stringResource(R.string.vase_breaker_unknown_item)
         iconPath = info?.let { "images/others/${it.iconName}" }
     }
 
