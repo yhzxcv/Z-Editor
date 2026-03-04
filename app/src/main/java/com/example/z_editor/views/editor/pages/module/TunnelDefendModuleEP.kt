@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Foundation
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,6 +34,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -71,24 +74,32 @@ private val gson = Gson()
 fun TunnelDefendModuleEP(
     rtid: String,
     onBack: () -> Unit,
+    onToggleMode: (Boolean, TunnelDefendModuleData) -> Unit,
     rootLevelFile: PvzLevelFile,
     scrollState: ScrollState
 ) {
-    val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
-    var showHelpDialog by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
+    var showHelpDialog by remember { mutableStateOf(false) }
 
-    val moduleDataState = remember {
+    val rtidInfo = remember(rtid) { RtidParser.parse(rtid) }
+    val currentAlias = rtidInfo?.alias ?: "DefaultTunnel"
+    val isCustomMode = rtidInfo?.source == "CurrentLevel"
+
+    val moduleDataState = remember(rtid, rootLevelFile) {
         val obj = rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }
         val data = try {
-            gson.fromJson(obj?.objData, TunnelDefendModuleData::class.java)
+            if (obj != null) {
+                gson.fromJson(obj.objData, TunnelDefendModuleData::class.java)
+            } else {
+                TunnelDefendModuleData()
+            }
         } catch (_: Exception) {
             TunnelDefendModuleData()
         }
         mutableStateOf(data)
     }
 
-    val gridState = remember {
+    val gridState = remember(moduleDataState.value) {
         val matrix = Array(9) { arrayOfNulls<String>(5) }
         moduleDataState.value.roads.forEach { road ->
             if (road.gridX in 0..8 && road.gridY in 0..4) {
@@ -101,19 +112,35 @@ fun TunnelDefendModuleEP(
     }
 
     val availableAssets = listOf(
-        "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN", "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_2", "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_3",
-        "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_LEFT", "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_LEFT_2", "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_LEFT_3",
-        "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT", "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_2", "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_3",
-        "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_4", "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_5", "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_6",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_2",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_3",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_LEFT",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_LEFT_2",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_LEFT_3",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_2",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_3",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_4",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_5",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_6",
         "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_7",
-        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP", "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_2", "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_3",
-        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_LEFT", "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_LEFT_2", "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_LEFT_3",
-        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_DOWN", "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_DOWN_2",
-        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_DOWN_LEFT", "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_DOWN_LEFT_2"
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_2",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_3",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_LEFT",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_LEFT_2",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_LEFT_3",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_DOWN",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_DOWN_2",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_DOWN_LEFT",
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_DOWN_LEFT_2"
     )
     var selectedImg by remember { mutableStateOf(availableAssets[0]) }
 
     fun sync() {
+        if (!isCustomMode) return
+
         val newRoads = mutableListOf<TunnelRoadData>()
         for (x in 0..8) {
             for (y in 0..4) {
@@ -130,15 +157,9 @@ fun TunnelDefendModuleEP(
     }
 
     fun handleGridClick(x: Int, y: Int) {
-        val currentInCell = gridState[x][y]
+        if (!isCustomMode) return
         val newColumn = gridState[x].clone()
-
-        if (currentInCell == selectedImg) {
-            newColumn[y] = null
-        } else {
-            newColumn[y] = selectedImg
-        }
-
+        newColumn[y] = if (gridState[x][y] == selectedImg) null else selectedImg
         gridState[x] = newColumn
         sync()
     }
@@ -173,7 +194,6 @@ fun TunnelDefendModuleEP(
                 )
             }
         }
-
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -223,7 +243,12 @@ fun TunnelDefendModuleEP(
                 elevation = CardDefaults.cardElevation(2.dp)
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
-                    Text("选择组件", fontWeight = FontWeight.Bold, color = themeColor, fontSize = 16.sp)
+                    Text(
+                        "选择组件",
+                        fontWeight = FontWeight.Bold,
+                        color = themeColor,
+                        fontSize = 16.sp
+                    )
                     Spacer(Modifier.height(10.dp))
 
                     Box(modifier = Modifier.height(320.dp)) {
@@ -252,10 +277,11 @@ fun TunnelDefendModuleEP(
                                     AssetImage(
                                         path = "images/tunnels/$asset.webp",
                                         contentDescription = asset,
-                                        modifier = Modifier.size(48.dp)
+                                        modifier = Modifier
+                                            .size(48.dp)
                                             .border(
-                                            0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
+                                                0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
                                     )
                                     Text(
                                         text = asset.replace("IMAGE_UI_MAUSOLEUM_TUNNEL_", ""),

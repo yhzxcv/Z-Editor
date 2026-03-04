@@ -149,7 +149,7 @@ fun StormZombieSpawnerPropsEP(
 
         AlertDialog(
             onDismissRequest = { zombieToCustomizeIndex = null },
-            title = { Text(if (currentIsCustom) "配置自定义僵尸" else "创建自定义僵尸") },
+            title = { Text(if (currentIsCustom) "配置自定义僵尸" else "创建自定义僵尸", fontSize = 18.sp, fontWeight = FontWeight.Bold) },
             text = {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),

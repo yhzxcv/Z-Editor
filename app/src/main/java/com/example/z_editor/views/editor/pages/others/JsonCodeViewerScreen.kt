@@ -166,7 +166,7 @@ fun JsonCodeViewerScreen(
     if (itemToDeleteIndex != null) {
         AlertDialog(
             onDismissRequest = { itemToDeleteIndex = null },
-            title = { Text("确认删除") },
+            title = { Text("确认删除", fontSize = 18.sp, fontWeight = FontWeight.Bold) },
             text = { Text("确定要完全移除第 ${itemToDeleteIndex!! + 1} 个对象吗？此操作将立即同步到 JSON 文件。") },
             confirmButton = {
                 TextButton(onClick = {

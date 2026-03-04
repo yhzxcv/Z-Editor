@@ -51,6 +51,7 @@ import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -398,7 +399,11 @@ fun WaveTimelineTab(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Analytics, null, tint = expColor)
                     Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.wave_timeline_dialog_exp_title, waveIdx))
+                    Text(
+                        stringResource(R.string.wave_timeline_dialog_exp_title, waveIdx),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             },
             text = {
@@ -815,6 +820,7 @@ fun WaveTimelineTab(
                         }
                     )
                 }
+                item { Spacer(Modifier.height(20.dp)) }
             }
         }
     }
@@ -989,12 +995,27 @@ fun WaveTimelineTab(
                                     onClick = { selectedZombieInfo = info },
                                     label = { Text(info.alias) },
                                     leadingIcon = {
-                                        Icon(
-                                            if (info.isUnused) Icons.Default.Warning else Icons.Default.CheckCircle,
-                                            null,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                    }
+                                        if (info.isUnused) {
+                                            Icon(
+                                                Icons.Default.Warning,
+                                                null,
+                                                tint = MaterialTheme.colorScheme.onTertiary,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        } else {
+                                            Icon(
+                                                Icons.Default.CheckCircle,
+                                                null,
+                                                tint = MaterialTheme.colorScheme.primary,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
+                                    },
+                                    border = null,
+                                    colors = AssistChipDefaults.assistChipColors(
+                                        containerColor = if (info.isUnused) Color.Transparent else MaterialTheme.colorScheme.outlineVariant,
+                                        labelColor = if (info.isUnused) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.primary
+                                    )
                                 )
                             }
                         }
@@ -1128,7 +1149,7 @@ fun WaveTimelineTab(
                 items = waveManager.waves,
                 key = { index, _ -> "wave_row_${index}_${refreshTrigger}" }) { index, waveEvents ->
                 val waveIndex = index + 1
-                val isFlagWave = (waveIndex % interval == 0 || waveIndex == waveManager.waves.size)
+                val isFlagWave = (waveIndex % interval == 0)
                 val points = calculatePoints(waveIndex, isFlagWave, waveModule)
                 val dismissState = rememberSwipeToDismissBoxState(
                     confirmValueChange = { value ->

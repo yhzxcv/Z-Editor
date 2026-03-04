@@ -11,6 +11,7 @@ import com.example.z_editor.data.EditorSubScreen
 import com.example.z_editor.data.EventMetadata
 import com.example.z_editor.data.ModuleMetadata
 import com.example.z_editor.data.SunDropperPropertiesData
+import com.example.z_editor.data.TunnelDefendModuleData
 import com.example.z_editor.data.repository.ChallengeTypeInfo
 import com.example.z_editor.data.repository.GridItemFilterMode
 
@@ -62,5 +63,6 @@ data class EditorActions(
     val onSelectorCancel: () -> Unit,
 
     val onToggleSunDropperMode: (Boolean, SunDropperPropertiesData) -> Unit = { _, _ -> },
+    val onToggleTunnelDefend: (Boolean, TunnelDefendModuleData) -> Unit = { _, _ -> },
     val onChallengeSelected: (ChallengeTypeInfo) -> Unit
 )

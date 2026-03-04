@@ -118,7 +118,7 @@ fun PennyClassroomModulePropertiesEP(
         AlertDialog(
             onDismissRequest = { showBatchConfirmDialog = false },
             icon = { Icon(Icons.Default.Check, null) },
-            title = { Text("确认批量设置") },
+            title = { Text("确认批量设置", fontSize = 18.sp, fontWeight = FontWeight.Bold) },
             text = {
                 val level = batchLevelFloat.roundToInt()
                 Text("此操作将把列表中已添加的所有 ${dataState.value.plantMap.size} 种植物的等级统一设置为 $level 阶。")

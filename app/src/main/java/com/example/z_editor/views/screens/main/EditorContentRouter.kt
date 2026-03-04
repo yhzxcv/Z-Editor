@@ -36,6 +36,7 @@ import com.example.z_editor.views.editor.pages.event.StormZombieSpawnerPropsEP
 import com.example.z_editor.views.editor.pages.event.TidalChangeEventEP
 import com.example.z_editor.views.editor.pages.event.ZombiePotionActionPropsEP
 import com.example.z_editor.views.editor.pages.module.BowlingMinigamePropertiesEP
+import com.example.z_editor.views.editor.pages.module.BungeeWaveActionEP
 import com.example.z_editor.views.editor.pages.module.ConveyorSeedBankPropertiesEP
 import com.example.z_editor.views.editor.pages.module.DeathHoleModuleEP
 import com.example.z_editor.views.editor.pages.module.IncreasedCostModulePropertiesEP
@@ -46,9 +47,11 @@ import com.example.z_editor.views.editor.pages.module.InitialZombieEntryEP
 import com.example.z_editor.views.editor.pages.module.LastStandMinigamePropertiesEP
 import com.example.z_editor.views.editor.pages.module.LawnMowerPropertiesEP
 import com.example.z_editor.views.editor.pages.module.LevelMutatorMaxSunPropsEP
+import com.example.z_editor.views.editor.pages.module.LevelMutatorRiftTimedSunEP
 import com.example.z_editor.views.editor.pages.module.LevelMutatorStartingPlantfoodPropsEP
 import com.example.z_editor.views.editor.pages.module.ManholePipelinePropertiesEP
 import com.example.z_editor.views.editor.pages.module.PennyClassroomModulePropertiesEP
+import com.example.z_editor.views.editor.pages.module.PickupCollectableTutorialEP
 import com.example.z_editor.views.editor.pages.module.PiratePlankPropertiesEP
 import com.example.z_editor.views.editor.pages.module.PowerTilePropertiesEP
 import com.example.z_editor.views.editor.pages.module.ProtectTheGridItemChallengePropertiesEP
@@ -245,6 +248,11 @@ fun EditorContentRouter(
                                     )
 
                                     "FairyTaleWindWaveActionProps" -> EditorSubScreen.FairyTaleWindDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
+
+                                    "BungeeWaveActionProps" -> EditorSubScreen.BungeeActionDetail(
                                         rtid,
                                         waveIdx
                                     )
@@ -577,7 +585,22 @@ fun EditorContentRouter(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
+            onToggleMode = actions.onToggleTunnelDefend,
             scrollState = getScrollState("TunnelDefendModule")
+        )
+
+        is EditorSubScreen.PickupCollectableTutorial -> PickupCollectableTutorialEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onRequestZombieSelection = actions.onLaunchZombieSelector
+        )
+
+        is EditorSubScreen.RiftTimedSunModule -> LevelMutatorRiftTimedSunEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onRequestZombieSelection = actions.onLaunchMultiZombieSelector,
         )
 
         is EditorSubScreen.UnknownDetail -> UnknownEP(
@@ -749,6 +772,13 @@ fun EditorContentRouter(
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
             scrollState = getScrollState("FairyTaleWindDetail")
+        )
+
+        is EditorSubScreen.BungeeActionDetail -> BungeeWaveActionEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onRequestZombieSelection = actions.onLaunchZombieSelector
         )
 
         is EditorSubScreen.InvalidEvent -> InvalidEventEP(

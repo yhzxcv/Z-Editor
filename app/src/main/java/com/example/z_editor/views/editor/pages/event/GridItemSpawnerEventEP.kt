@@ -196,7 +196,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
 
         AlertDialog(
             onDismissRequest = { zombieToCustomizeIndex = null },
-            title = { Text("自定义僵尸配置") },
+            title = { Text("自定义僵尸配置", fontSize = 18.sp, fontWeight = FontWeight.Bold) },
             text = {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),

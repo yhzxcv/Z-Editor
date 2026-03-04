@@ -32,6 +32,7 @@ object ObjectOrderRegistry {
         "LevelScoringModuleProperties",
         "LevelMutatorStartingPlantfoodProps",
         "LevelMutatorMaxSunProps",
+        "LevelMutatorRiftTimedSunProps",
 
         "InitialPlantProperties",
         "InitialPlantEntryProperties",
@@ -64,6 +65,7 @@ object ObjectOrderRegistry {
         "StarChallengeBlowZombieProps",
         "StarChallengeTargetScoreProps",
 
+        "PickupCollectableTutorialProperties",
 
         "WaveManagerModuleProperties",
         "WaveManagerProperties",

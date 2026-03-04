@@ -16,7 +16,7 @@
     <string name="level_list_screen_moving_title">正在移动: %1$s</string>
     <string name="level_list_screen_moving_tips">请导航至目标文件夹，然后点击右下角粘贴</string>
     <string name="level_list_screen_back">返回上一级</string>
-    <string name="level_list_screen_empty_folder">文件夹为空</string>
+    <string name="level_list_screen_empty_folder">文件夹为空，点击左下角从模板新建关卡</string>
     <string name="level_list_screen_initialize">初始化设置</string>
     <string name="level_list_screen_initialize_tips">请选择一个文件夹作为关卡存储目录。</string>
     <string name="level_list_screen_initialize_folder">选择文件夹</string>
@@ -59,6 +59,6 @@
     <string name="level_list_screen_toast_rename_fail">重命名失败，已有同名文件</string>
     <string name="level_list_screen_toast_rename_success">重命名成功</string>
     <string name="level_list_screen_toast_root_folder">根目录</string>
-    <string name="level_list_screen_language_select">选择语言</string>
+    <string name="level_list_screen_language_select">选择语言（功能待完善）</string>
 
 </resources>

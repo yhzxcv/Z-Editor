@@ -447,6 +447,29 @@ data class SeedRainItem(
     @SerializedName("Weight") var weight: Int = 100
 )
 
+// === 捡钱对话模块 ===
+data class PickupCollectableTutorialData(
+    @SerializedName("DropperZombieType") var dropperZombieType: String = "mummy",
+    @SerializedName("LootType") var lootType: String = "GoldCoin",
+    @SerializedName("PostPickupAdvice") var postPickupAdvice: String = "",
+    @SerializedName("PickupAdvice") var pickupAdvice: String = ""
+)
+
+// === 追5阳光掉落模块 ===
+data class RiftTimedSunModuleData(
+    @SerializedName("LevelModuleOverride") var levelModuleOverride: String? = null,
+    @SerializedName("DifficultyProps") var difficultyProps: String = "RTID(LevelModuleDifficultyRiftTimedSun@LevelModulesDifficulty)",
+    @SerializedName("IconImage") var iconImage: String = "IMAGE_UI_PENNY_PURSUITS_DIFFICULTY_MODIFIER_ICONS_DIFFICULTY_MODIFIER_NO_SUN_DROP",
+    @SerializedName("IconText") var iconText: String = "",
+    @SerializedName("SunDrops") var sunDrops: MutableList<RiftTimedSunData> = mutableListOf(),
+    @SerializedName("InvalidPlantTypes") var invalidPlantTypes: List<String> = emptyList()
+)
+
+data class RiftTimedSunData(
+    @SerializedName("ZombieTypeName") var zombieTypeName: String = "",
+    @SerializedName("SunDropValues") var sunDropValues: MutableList<Int> = mutableListOf(0, 0, 0, 0, 0, 0)
+)
+
 // ======================== 2. 物体属性解析 ========================
 
 // === 通用僵尸数据 ===
@@ -722,6 +745,18 @@ data class FairyTaleWindWaveActionData(
     @SerializedName("VelocityScale") var velocityScale: Double = 2.0
 )
 
+// === 蹦极投放事件 ===
+data class BungeeWaveActionData(
+    @SerializedName("zombieName") var zombieName: String = "tutorial",
+    @SerializedName("target") var target: BungeeTarget = BungeeTarget(),
+    @SerializedName("Level") var level: Int = 1
+)
+
+data class BungeeTarget(
+    @SerializedName("mX") var mX: Int = 0,
+    @SerializedName("mY") var mY: Int = 0
+)
+
 // ======================== 4. 特殊模式模块数据定义 ========================
 
 // === 罐子内容配置===
@@ -764,16 +799,6 @@ data class ZombossBattleModuleData(
 
 // === 僵王战转场模块 ===
 data class ZombossBattleIntroData(
-    @SerializedName("PanStartOffset") var panStartOffset: Int = 78,
-    @SerializedName("PanEndOffset") var panEndOffset: Int = 486,
-    @SerializedName("PanRightDuration") var panRightDuration: Double = 1.5,
-    @SerializedName("PanLeftDuration") var panLeftDuration: Double = 1.5,
-    @SerializedName("ZombossPhaseCount") var zombossPhaseCount: Int = 3,
-    @SerializedName("SkipShowingStreetBossBattle") var skipShowingStreetBossBattle: Boolean = false,
-)
-
-// === 僵王战坚不可摧转场模块 ===
-data class ZombossBattleLastStandIntroData(
     @SerializedName("PanStartOffset") var panStartOffset: Int = 78,
     @SerializedName("PanEndOffset") var panEndOffset: Int = 486,
     @SerializedName("PanRightDuration") var panRightDuration: Double = 1.5,

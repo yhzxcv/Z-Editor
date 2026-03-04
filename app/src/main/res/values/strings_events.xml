@@ -54,4 +54,6 @@
     <string name="event_black_hole_desc">生成黑洞吸引所有植物</string>
     <string name="event_magic_mirror_title">魔镜传送</string>
     <string name="event_magic_mirror_desc">在场地上生成成对的传送门</string>
+    <string name="event_bungee_title">蹦极投放</string>
+    <string name="event_bungee_desc">由蹦极僵尸投放一只僵尸到场内</string>
 </resources>

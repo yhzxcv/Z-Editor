@@ -103,36 +103,24 @@ fun SpawnModernPortalsWaveActionPropsEP(
     if (previewWorldDef != null) {
         AlertDialog(
             onDismissRequest = { previewWorldDef = null },
-            title = { Text(text = "${previewWorldDef!!.name} - 僵尸预览") },
+            title = { Text(text = "${previewWorldDef!!.name} - 僵尸预览", fontSize = 18.sp, fontWeight = FontWeight.Bold) },
             text = {
                 Column(
                     modifier = Modifier.verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text("该裂缝将生成以下僵尸:", fontSize = 14.sp, color = Color.Gray)
-                    HorizontalDivider()
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.surfaceVariant
+                    )
                     previewWorldDef!!.representativeZombies.forEach { typeName ->
                         val info = remember(typeName) {
                             ZombieRepository.getZombieInfoById(typeName)
                         }
                         val displayName = ZombieRepository.getName(typeName)
 
-                        val placeholderContent = @Composable {
-                            Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .background(Color(0xFFBDBDBD), CircleShape)
-                                    .border(1.dp, Color.White, CircleShape),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = displayName.take(1).uppercase(),
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White,
-                                    fontSize = 18.sp
-                                )
-                            }
-                        }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             AssetImage(
                                 path = if (info?.icon != null) "images/zombies/${info.icon}" else "images/others/unknown.webp",
@@ -140,15 +128,13 @@ fun SpawnModernPortalsWaveActionPropsEP(
                                 modifier = Modifier
                                     .size(40.dp)
                                     .clip(CircleShape)
-                                    .background(Color.White)
-                                    .border(1.dp, Color.LightGray, CircleShape),
-                                filterQuality = FilterQuality.Medium,
-                                placeholder = placeholderContent
+                                    .border(1.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape),
+                                filterQuality = FilterQuality.Medium
                             )
                             Spacer(Modifier.width(8.dp))
                             Column {
-                                Text(displayName, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                Text(typeName, fontSize = 10.sp, color = Color.Gray)
+                                Text(displayName, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
+                                Text(typeName, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                     }
@@ -229,8 +215,8 @@ fun SpawnModernPortalsWaveActionPropsEP(
                         Text(
                             "世界类型",
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            fontSize = 16.sp,
+                            color = themeColor
                         )
                         Spacer(Modifier.height(12.dp))
 
@@ -272,7 +258,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
                         .widthIn(max = 480.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
-                        Text("高级属性", fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("高级属性", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = themeColor)
 
                         Spacer(Modifier.height(16.dp))
 
@@ -294,7 +280,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
                                 Text(
                                     "开启后裂缝可无视障碍物生成",
                                     fontSize = 11.sp,
-                                    color = Color.Gray
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             Switch(
@@ -336,7 +322,7 @@ fun MinimalPortalCard(
             containerColor = if (isSelected) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.surfaceVariant.copy(0.5f)
         ),
         border = BorderStroke(
-            width = if (isSelected) 1.dp else 0.5.dp,
+            width = if (isSelected) 0.5.dp else 0.dp,
             color = if (isSelected) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onSurfaceVariant
         ),
         shape = RoundedCornerShape(8.dp)
@@ -351,9 +337,9 @@ fun MinimalPortalCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = def.name,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    fontWeight = FontWeight.Normal,
                     fontSize = 13.sp,
-                    color = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = if (isSelected) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1
                 )
             }
@@ -383,6 +369,7 @@ fun SimplePortalPositionCard(
     val displayCol = currentCol + 1
     val isDark = LocalDarkTheme.current
     val themeColor = if (isDark) PvzLightOrangeDark else PvzLightOrangeLight
+    val orangeGridHighlight = themeColor.copy(alpha = 0.3f)
 
     Box(
         contentAlignment = Alignment.Center,
@@ -391,57 +378,68 @@ fun SimplePortalPositionCard(
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             elevation = CardDefaults.cardElevation(2.dp),
-            modifier = Modifier
-                .widthIn(max = 480.dp)
+            modifier = Modifier.widthIn(max = 480.dp)
         ) {
             Column(modifier = Modifier.padding(16.dp)) {
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "生成位置",
+                        "当前目标: Col $displayCol, Row $displayRow",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = themeColor,
+                        fontSize = 16.sp,
                     )
                     Spacer(Modifier.weight(1f))
                     Text(
-                        "R$displayRow : C$displayCol",
-                        fontWeight = FontWeight.Bold,
+                        "(X: ${currentCol}, Y: ${currentRow})",
                         fontSize = 14.sp,
-                        color = themeColor
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                Spacer(Modifier.height(12.dp))
 
-                Column(
+                Spacer(Modifier.height(16.dp))
+
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(9f / 5f)
-                        .background(if (isDark) Color(0xFF3F3A33) else Color(0xFFEEEEEE))
+                        .aspectRatio(1.8f)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(if (isDark) Color(0xFF403A33) else Color(0xFFFFF9EF))
+                        .border(
+                            1.dp,
+                            themeColor.copy(alpha = 0.5f),
+                            RoundedCornerShape(6.dp)
+                        )
                 ) {
-                    for (r in 1..5) {
-                        Row(modifier = Modifier.weight(1f)) {
-                            for (c in 1..9) {
-                                val isSelected = r == displayRow && c == displayCol
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxHeight()
-                                        .border(0.5.dp, PvzGridBorder)
-                                        .background(
-                                            if (isSelected) themeColor else if (isDark) Color(
-                                                0xFF3F3A33
-                                            ) else Color(0xFFEEEEEE)
-                                        )
-                                        .clickable { onPositionSelected(r, c) },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    if (isSelected) {
-                                        Icon(
-                                            Icons.Default.Check,
-                                            null,
-                                            tint = Color.White,
-                                            modifier = Modifier.size(12.dp)
-                                        )
+                    Column(Modifier.fillMaxSize()) {
+                        for (r in 0..4) {
+                            Row(Modifier.weight(1f)) {
+                                for (c in 0..8) {
+                                    val isSelected = (r == currentRow && c == currentCol)
+
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .fillMaxHeight()
+                                            .border(
+                                                0.5.dp,
+                                                if (isSelected) themeColor else themeColor.copy(alpha = 0.2f)
+                                            )
+                                            .background(
+                                                if (isSelected) orangeGridHighlight else Color.Transparent
+                                            )
+                                            .clickable {
+                                                onPositionSelected(r + 1, c + 1)
+                                            },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        if (isSelected) {
+                                            Icon(
+                                                Icons.Default.Check,
+                                                null,
+                                                tint = themeColor,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }

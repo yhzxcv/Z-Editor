@@ -158,7 +158,7 @@ fun InitialPlantEntryEP(
             onDismissRequest = { editingPlant = null },
             title = {
                 val name = PlantRepository.getName(editingPlant!!.plantTypes.firstOrNull() ?: "")
-                Text("编辑 $name")
+                Text("编辑 $name", fontSize = 18.sp, fontWeight = FontWeight.Bold)
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {

@@ -33,6 +33,10 @@ object ConflictRegistry {
             description = "坚不可摧模式下不需要添加开局转场动画。"
         ),
         ModuleConflictRule(
+            conflictingClasses = setOf("LastStandMinigameProperties", "ZombossBattleModuleProperties"),
+            description = "僵王战需要特殊的僵王战坚不可摧模式开启。"
+        ),
+        ModuleConflictRule(
             conflictingClasses = setOf("EvilDaveProperties", "ZombiesDeadWinConProperties"),
             description = "我是僵尸模式下不能添加僵尸掉落模块。"
         ),

@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CompareArrows
 import androidx.compose.material.icons.automirrored.filled.FactCheck
+import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.automirrored.filled.NextPlan
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AcUnit
@@ -31,6 +32,7 @@ import androidx.compose.material.icons.filled.LinearScale
 import androidx.compose.material.icons.filled.LocalFlorist
 import androidx.compose.material.icons.filled.MovieFilter
 import androidx.compose.material.icons.filled.Pets
+import androidx.compose.material.icons.filled.PinDrop
 import androidx.compose.material.icons.filled.Redeem
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Scoreboard
@@ -54,6 +56,7 @@ import androidx.compose.material.icons.filled.Yard
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.z_editor.R
+import com.example.z_editor.data.BungeeTarget
 import com.google.gson.Gson
 
 /**
@@ -113,6 +116,8 @@ sealed class EditorSubScreen {
     data class SeedRainModule(val rtid: String) : EditorSubScreen()
     data class TunnelDefendModule(val rtid: String) : EditorSubScreen()
     data class StarChallenge(val rtid: String) : EditorSubScreen()
+    data class PickupCollectableTutorial(val rtid: String) : EditorSubScreen()
+    data class RiftTimedSunModule(val rtid: String) : EditorSubScreen()
 
     // 波次事件页
     data class UnknownDetail(val rtid: String) : EditorSubScreen()
@@ -136,6 +141,7 @@ sealed class EditorSubScreen {
     data class MagicMirrorDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class FairyTaleFogDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class FairyTaleWindDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class BungeeActionDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class InvalidEvent(val rtid: String, val waveIndex: Int) : EditorSubScreen()
 }
 
@@ -201,7 +207,8 @@ object EventRegistry {
             initialDataFactory = { FrostWindWaveActionPropsData() },
             summaryProvider = { context, obj ->
                 try {
-                    val data = Gson().fromJson(obj.objData, FrostWindWaveActionPropsData::class.java)
+                    val data =
+                        Gson().fromJson(obj.objData, FrostWindWaveActionPropsData::class.java)
                     context.getString(R.string.event_format_winds, data.winds.size)
                 } catch (_: Exception) {
                     context.getString(R.string.event_error_parse)
@@ -238,7 +245,10 @@ object EventRegistry {
             summaryProvider = { context, obj ->
                 try {
                     val data = Gson().fromJson(obj.objData, TidalChangeWaveActionData::class.java)
-                    context.getString(R.string.event_format_position, data.tidalChange.changeAmount.toString())
+                    context.getString(
+                        R.string.event_format_position,
+                        data.tidalChange.changeAmount.toString()
+                    )
                 } catch (_: Exception) {
                     context.getString(R.string.event_error_parse)
                 }
@@ -255,8 +265,13 @@ object EventRegistry {
             initialDataFactory = { ModifyConveyorWaveActionData() },
             summaryProvider = { context, obj ->
                 try {
-                    val data = Gson().fromJson(obj.objData, ModifyConveyorWaveActionData::class.java)
-                    context.getString(R.string.event_format_conveyor, data.addList.size, data.removeList.size)
+                    val data =
+                        Gson().fromJson(obj.objData, ModifyConveyorWaveActionData::class.java)
+                    context.getString(
+                        R.string.event_format_conveyor,
+                        data.addList.size,
+                        data.removeList.size
+                    )
                 } catch (_: Exception) {
                     context.getString(R.string.event_error_parse)
                 }
@@ -287,6 +302,24 @@ object EventRegistry {
                 }
             }
         ),
+        "BungeeWaveActionProps" to EventMetadata(
+            title = R.string.event_bungee_title,
+            description = R.string.event_bungee_desc,
+            icon = Icons.Default.PinDrop,
+            color = Color(0xFFFF9800),
+            darkColor = Color(0xFFFFCC80),
+            defaultAlias = "BungeeActionEvent",
+            defaultObjClass = "BungeeWaveActionProps",
+            initialDataFactory = { BungeeWaveActionData() },
+            summaryProvider = { context, obj ->
+                try {
+                    val data = Gson().fromJson(obj.objData, BungeeWaveActionData::class.java)
+                    "${data.target.mX}, ${data.target.mY}"
+                } catch (_: Exception) {
+                    context.getString(R.string.event_error_parse)
+                }
+            }
+        ),
         "SpawnModernPortalsWaveActionProps" to EventMetadata(
             title = R.string.event_portal_title,
             description = R.string.event_portal_desc,
@@ -299,7 +332,7 @@ object EventRegistry {
             summaryProvider = { context, obj ->
                 try {
                     val data = Gson().fromJson(obj.objData, PortalEventData::class.java)
-                    data.portalType
+                    "${data.portalColumn}, ${data.portalRow}"
                 } catch (_: Exception) {
                     context.getString(R.string.event_error_parse)
                 }
@@ -388,7 +421,8 @@ object EventRegistry {
             initialDataFactory = { SpawnZombiesFromGridItemData() },
             summaryProvider = { context, obj ->
                 try {
-                    val data = Gson().fromJson(obj.objData, SpawnZombiesFromGridItemData::class.java)
+                    val data =
+                        Gson().fromJson(obj.objData, SpawnZombiesFromGridItemData::class.java)
                     context.getString(R.string.event_format_zombies, data.zombies.size)
                 } catch (_: Exception) {
                     context.getString(R.string.event_error_parse)
@@ -911,6 +945,28 @@ object ModuleRegistry {
             defaultSource = "CurrentLevel",
             initialDataFactory = { ZombieRushModuleData() },
             navigationFactory = { rtid -> EditorSubScreen.ZombieRushModule(rtid) }
+        ),
+        "PickupCollectableTutorialProperties" to ModuleMetadata(
+            titleRes = R.string.module_pick_coin_title,
+            descriptionRes = R.string.module_pick_coin_desc,
+            icon = Icons.AutoMirrored.Filled.Message,
+            isCore = true,
+            category = ModuleCategory.Mode,
+            defaultAlias = "FirstCoinTutorial",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { PickupCollectableTutorialData() },
+            navigationFactory = { rtid -> EditorSubScreen.PickupCollectableTutorial(rtid) }
+        ),
+        "LevelMutatorRiftTimedSunProps" to ModuleMetadata(
+            titleRes = R.string.module_rift_sun_title,
+            descriptionRes = R.string.module_rift_sun_desc,
+            icon = Icons.Default.WbSunny,
+            isCore = true,
+            category = ModuleCategory.Mode,
+            defaultAlias = "OverrideRiftTimedSun",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { RiftTimedSunModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.RiftTimedSunModule(rtid) }
         ),
 
         "InitialPlantProperties" to ModuleMetadata(

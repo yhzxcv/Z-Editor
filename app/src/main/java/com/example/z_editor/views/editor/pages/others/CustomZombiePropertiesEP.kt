@@ -983,7 +983,7 @@ fun SizeTypeDialog(
     val themeColor = if (isDark) PvzOrangeDark else PvzOrangeLight
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("选择体型") },
+        title = { Text("选择体型", fontSize = 18.sp, fontWeight = FontWeight.Bold) },
         text = {
             Column {
                 options.forEach { option ->

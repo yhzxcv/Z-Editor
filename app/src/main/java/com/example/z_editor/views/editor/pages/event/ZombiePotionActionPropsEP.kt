@@ -130,7 +130,7 @@ fun ZombiePotionActionPropsEP(
     if (itemToDelete != null) {
         AlertDialog(
             onDismissRequest = { itemToDelete = null },
-            title = { Text("移除药水") },
+            title = { Text("移除药水", fontSize = 18.sp, fontWeight = FontWeight.Bold) },
             text = {
                 Text(
                     "确定要移除 R${itemToDelete!!.location.y + 1}:C${itemToDelete!!.location.x + 1} 处的 ${

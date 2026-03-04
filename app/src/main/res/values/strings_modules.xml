@@ -96,4 +96,8 @@
     <string name="module_war_mist_desc">设置战场迷雾覆盖范围与交互</string>
     <string name="module_rain_dark_title">环境天气</string>
     <string name="module_rain_dark_desc">设置关卡的雨雪、雷电等环境特效</string>
+    <string name="module_pick_coin_title">捡取教程</string>
+    <string name="module_pick_coin_desc">击败特定僵尸弹出对话教程</string>
+    <string name="module_rift_sun_title">追击阳光掉落</string>
+    <string name="module_rift_sun_desc">击败僵尸掉落阳光</string>
 </resources>

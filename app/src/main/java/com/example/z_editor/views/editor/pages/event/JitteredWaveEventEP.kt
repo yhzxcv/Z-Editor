@@ -285,7 +285,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
         AlertDialog(
             onDismissRequest = { showBatchConfirmDialog = false },
             icon = { Icon(Icons.Default.Check, null) },
-            title = { Text("确认批量应用？") },
+            title = { Text("确认批量应用？", fontSize = 18.sp, fontWeight = FontWeight.Bold) },
             text = {
                 val level = batchLevelFloat.roundToInt()
                 Text("此操作将把当前波次内的所有僵尸等级统一设置为 $level 阶。")

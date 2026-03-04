@@ -79,9 +79,7 @@ fun SeedRainPropertiesEP(
     var showHelpDialog by remember { mutableStateOf(false) }
     var showAddTypeDialog by remember { mutableStateOf(false) }
 
-    // 编辑弹窗状态
     var editingItem by remember { mutableStateOf<SeedRainItem?>(null) }
-    // 删除确认弹窗状态
     var deletingItem by remember { mutableStateOf<SeedRainItem?>(null) }
 
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
@@ -188,7 +186,7 @@ fun SeedRainPropertiesEP(
 
         AlertDialog(
             onDismissRequest = { editingItem = null },
-            title = { Text("编辑属性: $typeName") },
+            title = { Text("编辑属性: $typeName", fontSize = 18.sp, fontWeight = FontWeight.Bold) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     NumberInputInt(
@@ -228,7 +226,7 @@ fun SeedRainPropertiesEP(
         val typeName = getSeedRainItemName(item)
         AlertDialog(
             onDismissRequest = { deletingItem = null },
-            title = { Text("确认删除") },
+            title = { Text("确认删除", fontSize = 18.sp, fontWeight = FontWeight.Bold) },
             text = { Text("确定要移除 $typeName 吗？") },
             confirmButton = {
                 Button(

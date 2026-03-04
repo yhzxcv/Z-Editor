@@ -63,7 +63,7 @@
     <string name="level_list_screen_toast_rename_fail">Rename failed, name already exist</string>
     <string name="level_list_screen_toast_rename_success">Rename success</string>
     <string name="level_list_screen_toast_root_folder">Root folder</string>
-    <string name="level_list_screen_language_select">Select Language</string>
+    <string name="level_list_screen_language_select">Select Language (under construction)</string>
 
     <!-- Selection Screens -->
     <string name="challenge_selection_screen_title">Search</string>
@@ -319,6 +319,8 @@
     <string name="event_black_hole_desc">Generate a black hole to pull all plants</string>
     <string name="event_magic_mirror_title">Magic Mirror</string>
     <string name="event_magic_mirror_desc">Generate paired teleportation portals</string>
+    <string name="event_bungee_title">Bungee Drop</string>
+    <string name="event_bungee_desc">Drop a zombie by bungee to the lawn</string>
 
     <!-- Modules -->
     <string name="module_category_base">Basic</string>
@@ -418,4 +420,8 @@
     <string name="module_war_mist_desc">Set battlefield fog coverage and interaction</string>
     <string name="module_rain_dark_title">Environmental Weather</string>
     <string name="module_rain_dark_desc">Set rain, snow, and lightning effects</string>
+    <string name="module_pick_coin_title">Pick Coin Dialogue</string>
+    <string name="module_pick_coin_desc">Show dialog box during the game</string>
+    <string name="module_rift_sun_title">Rift Sun Drop</string>
+    <string name="module_rift_sun_desc">Configure sun amount to drop defeat zombies</string>
 </resources>

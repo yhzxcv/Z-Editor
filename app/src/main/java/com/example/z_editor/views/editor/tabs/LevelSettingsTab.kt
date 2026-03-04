@@ -165,7 +165,7 @@ fun LevelSettingsTab(
     if (pendingDeleteRtid != null) {
         AlertDialog(
             onDismissRequest = { pendingDeleteRtid = null },
-            title = { Text(stringResource(id = R.string.level_settings_dialog_remove_title)) },
+            title = { Text(stringResource(id = R.string.level_settings_dialog_remove_title), fontSize = 18.sp) },
             text = {
                 Text(stringResource(id = R.string.level_settings_dialog_remove_msg))
             },

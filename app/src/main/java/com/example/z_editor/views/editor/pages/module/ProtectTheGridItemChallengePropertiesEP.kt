@@ -140,7 +140,7 @@ fun ProtectTheGridItemChallengePropertiesEP(
     if (itemToDelete != null) {
         AlertDialog(
             onDismissRequest = { itemToDelete = null },
-            title = { Text("移除保护目标") },
+            title = { Text("移除保护目标", fontSize = 18.sp, fontWeight = FontWeight.Bold) },
             text = {
                 Text(
                     "确定要移除 R${itemToDelete!!.gridY + 1}:C${itemToDelete!!.gridX + 1} 处的 ${

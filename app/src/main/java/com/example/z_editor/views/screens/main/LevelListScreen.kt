@@ -707,7 +707,7 @@ fun LevelListScreen(
                                     Icon(
                                         Icons.Default.FolderOpen,
                                         null,
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        tint = Color.Gray,
                                         modifier = Modifier.size(64.dp)
                                     )
                                     Spacer(Modifier.height(16.dp))
@@ -783,7 +783,7 @@ fun LevelListScreen(
     if (showNoFolderDialog) {
         AlertDialog(
             onDismissRequest = {},
-            title = { Text(stringResource(R.string.level_list_screen_initialize)) },
+            title = { Text(stringResource(R.string.level_list_screen_initialize), fontSize = 18.sp, fontWeight = FontWeight.Bold) },
             text = { Text(stringResource(R.string.level_list_screen_initialize_tips)) },
             confirmButton = {
                 Button(onClick = { folderPickerLauncher.launch(null) }) {
