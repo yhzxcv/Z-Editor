@@ -6,7 +6,7 @@
     <string name="event_format_conveyor">+%1$d / -%2$d</string>
     <string name="event_format_items">%1$d 个</string>
     <string name="event_format_types">%1$d 种</string>
-    <string name="event_format_seconds">%1$d秒</string>
+    <string name="event_format_seconds">%1$.1f 秒</string>
     <string name="event_format_columns">%1$d 列</string>
     <string name="event_format_mirrors">%1$d 组魔镜</string>
     <string name="event_dino_raptor">迅猛龙</string>

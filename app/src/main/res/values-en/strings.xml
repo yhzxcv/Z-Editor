@@ -271,7 +271,7 @@
     <string name="event_format_conveyor">+%1$d / -%2$d</string>
     <string name="event_format_items">%1$d items</string>
     <string name="event_format_types">%1$d types</string>
-    <string name="event_format_seconds">%1$ds</string>
+    <string name="event_format_seconds">%1$.1f s</string>
     <string name="event_format_columns">%1$d Col</string>
     <string name="event_format_mirrors">%1$d Pairs</string>
     <string name="event_dino_raptor">Raptor</string>

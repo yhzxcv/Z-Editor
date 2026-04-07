@@ -95,6 +95,7 @@
         "name": "双驼峰骆驼牌",
         "tags": [
             "Egypt_Pirate",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_camel_onehump.webp"
@@ -176,6 +177,7 @@
         "name": "飞索僵尸",
         "tags": [
             "Egypt_Pirate",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_swashbuckler.webp"
@@ -194,6 +196,7 @@
         "name": "滚桶僵尸",
         "tags": [
             "Egypt_Pirate",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_barrelroller.webp"
@@ -204,7 +207,8 @@
         "tags": [
             "Egypt_Pirate",
             "Evildave",
-            "Basic"
+            "Basic",
+            "Pet"
         ],
         "icon": "zombie_pirate_captain.webp"
     },
@@ -222,6 +226,7 @@
         "name": "小鬼僵尸炮",
         "tags": [
             "Egypt_Pirate",
+            "Evildave",
             "Imp"
         ],
         "icon": "zombie_cannon.webp"
@@ -231,6 +236,7 @@
         "name": "牛仔僵尸",
         "tags": [
             "West_Future",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_cowboy.webp"
@@ -240,6 +246,7 @@
         "name": "牛仔路障僵尸",
         "tags": [
             "West_Future",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_cowboy_armor1.webp"
@@ -249,6 +256,7 @@
         "name": "牛仔铁桶僵尸",
         "tags": [
             "West_Future",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_cowboy_armor2.webp"
@@ -294,18 +302,10 @@
         "name": "淘金僵尸",
         "tags": [
             "West_Future",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_prospector.webp"
-    },
-    {
-        "id": "chicken",
-        "name": "僵尸鸡",
-        "tags": [
-            "West_Future",
-            "Pet"
-        ],
-        "icon": "zombie_chicken.webp"
     },
     {
         "id": "chicken_farmer",
@@ -319,10 +319,20 @@
         "icon": "zombie_chicken_farmer.webp"
     },
     {
+        "id": "chicken",
+        "name": "僵尸鸡",
+        "tags": [
+            "West_Future",
+            "Pet"
+        ],
+        "icon": "zombie_chicken.webp"
+    },
+    {
         "id": "piano",
         "name": "钢琴僵尸",
         "tags": [
             "West_Future",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_piano.webp"
@@ -359,6 +369,7 @@
         "name": "功夫僵尸",
         "tags": [
             "Kongfu_Skycity",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_kongfu_basic.webp"
@@ -386,6 +397,7 @@
         "name": "功夫元帅僵尸",
         "tags": [
             "Kongfu_Skycity",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_kongfu_basic_armor3.webp"
@@ -413,6 +425,7 @@
         "name": "自爆僵尸",
         "tags": [
             "Kongfu_Skycity",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_kongfu_selfexplode.webp"
@@ -449,6 +462,7 @@
         "name": "功夫气功僵尸",
         "tags": [
             "Kongfu_Skycity",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_kongfu_qigong.webp"
@@ -530,6 +544,7 @@
         "name": "喝酒武僧僵尸",
         "tags": [
             "Kongfu_Skycity",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_kongfu_monk_drink.webp"
@@ -539,6 +554,7 @@
         "name": "双截棍武僧僵尸",
         "tags": [
             "Kongfu_Skycity",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_kongfu_monk_nunchaku.webp"
@@ -548,6 +564,7 @@
         "name": "大汉铜人僵尸",
         "tags": [
             "Kongfu_Skycity",
+            "Evildave",
             "Gargantuar"
         ],
         "icon": "zombie_kongfu_strong_bronze.webp"
@@ -624,6 +641,7 @@
         "name": "机器虫小鬼僵尸",
         "tags": [
             "West_Future",
+            "Evildave",
             "Imp"
         ],
         "icon": "zombie_future_imp.webp"
@@ -726,6 +744,7 @@
         "name": "骑士僵尸",
         "tags": [
             "Dark_Beach",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_dark_armor3.webp"
@@ -809,6 +828,7 @@
         "name": "魔法师僵尸",
         "tags": [
             "Dark_Beach",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_dark_wizard.webp"
@@ -818,6 +838,7 @@
         "name": "恶龙小鬼僵尸",
         "tags": [
             "Dark_Beach",
+            "Evildave",
             "Imp",
             "Pet"
         ],
@@ -975,6 +996,7 @@
         "name": "渔夫僵尸",
         "tags": [
             "Dark_Beach",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_beach_fisherman.webp"
@@ -984,6 +1006,7 @@
         "name": "冲浪僵尸",
         "tags": [
             "Dark_Beach",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_beach_surfer.webp"
@@ -993,6 +1016,7 @@
         "name": "浮潜僵尸",
         "tags": [
             "Dark_Beach",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_beach_snorkel.webp"
@@ -1002,9 +1026,20 @@
         "name": "贝壳僵尸",
         "tags": [
             "Dark_Beach",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_beach_shell.webp"
+    },
+    {
+        "id": "beach_imp_quiff",
+        "name": "飞机头小鬼僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Universe",
+            "Imp"
+        ],
+        "icon": "zombie_beach_imp_quiff.webp"
     },
     {
         "id": "iceage",
@@ -1084,6 +1119,7 @@
         "name": "猎人僵尸",
         "tags": [
             "Iceage_Lostcity",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_iceage_hunter.webp"
@@ -1093,6 +1129,7 @@
         "name": "海象僵尸",
         "tags": [
             "Iceage_Lostcity",
+            "Evildave",
             "Pet"
         ],
         "icon": "zombie_iceage_walrus.webp"
@@ -1102,6 +1139,7 @@
         "name": "滑雪僵尸",
         "tags": [
             "Iceage_Lostcity",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_iceage_ski.webp"
@@ -1116,15 +1154,6 @@
         "icon": "zombie_iceage_chief.webp"
     },
     {
-        "id": "iceage_weasel",
-        "name": "冰鼬",
-        "tags": [
-            "Iceage_Lostcity",
-            "Pet"
-        ],
-        "icon": "zombie_iceage_weasel.webp"
-    },
-    {
         "id": "iceage_weaselhoarder",
         "name": "冰鼬僵尸",
         "tags": [
@@ -1135,10 +1164,21 @@
         "icon": "zombie_iceage_weaselhoarder.webp"
     },
     {
+        "id": "iceage_weasel",
+        "name": "冰鼬",
+        "tags": [
+            "Iceage_Lostcity",
+            "Evildave",
+            "Pet"
+        ],
+        "icon": "zombie_iceage_weasel.webp"
+    },
+    {
         "id": "iceage_dodo",
         "name": "渡渡鸟骑士僵尸",
         "tags": [
             "Iceage_Lostcity",
+            "Evildave",
             "Pet"
         ],
         "icon": "zombie_iceage_dodo.webp"
@@ -1163,16 +1203,6 @@
         "icon": "zombie_iceage_hunter_elite.webp"
     },
     {
-        "id": "iceage_weasel_elite",
-        "name": "精英冰鼬",
-        "tags": [
-            "Iceage_Lostcity",
-            "Elite",
-            "Pet"
-        ],
-        "icon": "zombie_iceage_weasel_elite.webp"
-    },
-    {
         "id": "iceage_weaselhoarder_elite",
         "name": "精英冰鼬僵尸",
         "tags": [
@@ -1182,6 +1212,16 @@
             "Basic"
         ],
         "icon": "zombie_iceage_weaselhoarder_elite.webp"
+    },
+    {
+        "id": "iceage_weasel_elite",
+        "name": "精英冰鼬",
+        "tags": [
+            "Iceage_Lostcity",
+            "Elite",
+            "Pet"
+        ],
+        "icon": "zombie_iceage_weasel_elite.webp"
     },
     {
         "id": "iceage_chief_elite",
@@ -1350,6 +1390,7 @@
         "name": "昆虫僵尸",
         "tags": [
             "Iceage_Lostcity",
+            "Evildave",
             "Pet"
         ],
         "icon": "zombie_lostcity_bug.webp"
@@ -1451,6 +1492,7 @@
         "name": "考古学家僵尸",
         "tags": [
             "Iceage_Lostcity",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_lostcity_crystalskull.webp"
@@ -1469,6 +1511,7 @@
         "name": "向导僵尸",
         "tags": [
             "Iceage_Lostcity",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_lostcity_guide.webp"
@@ -1514,6 +1557,7 @@
         "name": "重金属巨人僵尸",
         "tags": [
             "Eighties_Dino",
+            "Evildave",
             "Gargantuar"
         ],
         "icon": "zombie_eighties_gargantuar.webp"
@@ -1532,6 +1576,7 @@
         "name": "朋克僵尸",
         "tags": [
             "Eighties_Dino",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_eighties_punk.webp"
@@ -1541,6 +1586,7 @@
         "name": "说唱僵尸",
         "tags": [
             "Eighties_Dino",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_eighties_mc.webp"
@@ -1595,6 +1641,7 @@
         "name": "霹雳舞僵尸",
         "tags": [
             "Eighties_Dino",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_eighties_breakdancer.webp"
@@ -2001,6 +2048,36 @@
             "Basic"
         ],
         "icon": "zombie_ladder.webp"
+    },
+    {
+        "id": "bobsled_punk",
+        "name": "冰车僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_bobsled_punk.webp"
+    },
+    {
+        "id": "sled_punk",
+        "name": "雪橇车小队",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_sled_punk.webp"
+    },
+    {
+        "id": "pogo",
+        "name": "跳跳僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_pogo.webp"
     },
     {
         "id": "treasureyeti",
@@ -2604,6 +2681,7 @@
         "name": "新雇员僵尸",
         "tags": [
             "Tale_ZCorp",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_zcorp.webp"
@@ -2613,6 +2691,7 @@
         "name": "新雇员路障僵尸",
         "tags": [
             "Tale_ZCorp",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_zcorp_armor1.webp"
@@ -2622,6 +2701,7 @@
         "name": "新雇员铁桶僵尸",
         "tags": [
             "Tale_ZCorp",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_zcorp_armor2.webp"
@@ -2667,6 +2747,7 @@
         "name": "顾问僵尸",
         "tags": [
             "Tale_ZCorp",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_zcorp_consultant.webp"
@@ -2676,6 +2757,7 @@
         "name": "办公室赛车手僵尸",
         "tags": [
             "Tale_ZCorp",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_zcorp_racer.webp"
@@ -2694,6 +2776,7 @@
         "name": "技术支持僵尸",
         "tags": [
             "Tale_ZCorp",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_zcorp_helpdesk.webp"
@@ -2712,6 +2795,7 @@
         "name": "法律部小巨人僵尸",
         "tags": [
             "Tale_ZCorp",
+            "Evildave",
             "Imp",
             "Gargantuar"
         ],
@@ -2815,6 +2899,7 @@
         "name": "竞速普通僵尸",
         "tags": [
             "Parkour_Speed",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_needforspeed.webp"
@@ -2824,6 +2909,7 @@
         "name": "竞速路障僵尸",
         "tags": [
             "Parkour_Speed",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_needforspeed_armor1.webp"
@@ -2833,6 +2919,7 @@
         "name": "竞速铁桶僵尸",
         "tags": [
             "Parkour_Speed",
+            "Evildave",
             "Basic"
         ],
         "icon": "zombie_needforspeed_armor2.webp"
@@ -3195,6 +3282,15 @@
             "Basic"
         ],
         "icon": "zombie_feastivus_swashbuckler.webp"
+    },
+    {
+        "id": "lion_dance",
+        "name": "舞狮僵尸",
+        "tags": [
+            "Festival1",
+            "Basic"
+        ],
+        "icon": "zombie_lion_dance.webp"
     },
     {
         "id": "zombie_yearmonster",
@@ -3901,6 +3997,15 @@
         "icon": "zombie_nutcracker_gargantuar.webp"
     },
     {
+        "id": "bobsled",
+        "name": "圣诞节冰车僵尸",
+        "tags": [
+            "Festival2",
+            "Basic"
+        ],
+        "icon": "zombie_bobsled.webp"
+    },
+    {
         "id": "sled",
         "name": "圣诞节雪橇车小队",
         "tags": [
@@ -3917,15 +4022,6 @@
             "Basic"
         ],
         "icon": "zombie_sled.webp"
-    },
-    {
-        "id": "bobsled",
-        "name": "圣诞节冰车僵尸",
-        "tags": [
-            "Festival2",
-            "Basic"
-        ],
-        "icon": "zombie_bobsled.webp"
     },
     {
         "id": "pole_vaulting_feastivus",
@@ -4588,5 +4684,22 @@
             "Strong"
         ],
         "icon": "zombie_qin_terracotta_mid.webp"
+    },
+    {
+        "id": "carnie_magician",
+        "name": "魔术师僵尸",
+        "tags": [
+            "Basic",
+            "Pet"
+        ],
+        "icon": null
+    },
+    {
+        "id": "carnie_dove",
+        "name": "魔术师鸽子",
+        "tags": [
+            "Pet"
+        ],
+        "icon": null
     }
 ]

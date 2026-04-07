@@ -3011,10 +3011,33 @@
         "icon": "icon_goldencassia.webp"
     },
     {
+        "id": "levitater",
+        "name": "悬浮洋芋",
+        "tags": [
+            "Orange",
+            "Remote",
+            "Magic"
+        ],
+        "icon": "icon_levitater.webp"
+    },
+    {
+        "id": "apsarlotus",
+        "name": "祥云飞莲",
+        "tags": [
+            "Orange",
+            "Assist",
+            "Magic"
+        ],
+        "icon": "icon_apsarlotus.webp"
+    },
+    {
         "id": "moton",
         "name": "魔藤",
         "tags": [
-            "Parallel"
+            "Parallel",
+            "Blue",
+            "Remote",
+            "Electric"
         ],
         "icon": "icon_moton.webp"
     },
@@ -3255,5 +3278,11 @@
         "name": "iz模式月光花",
         "tags": [],
         "icon": "icon_moonflower.webp"
+    },
+    {
+        "id": "sunflowerzombie",
+        "name": "僵尸向日葵",
+        "tags": [],
+        "icon": "icon_sunflowerzombie.webp"
     }
 ]

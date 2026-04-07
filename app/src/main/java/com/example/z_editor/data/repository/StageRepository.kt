@@ -37,8 +37,9 @@ object StageRepository {
         StageItem("DeepseaStage", "深海地图", "Stage_Atlantis.webp", StageType.Main),
         StageItem("DeepseaLandStage", "亚特兰蒂斯", "Stage_Atlantis.webp", StageType.Main),
 
-        StageItem("FairyTaleStage", "童话森林", null, StageType.Extra),
-        StageItem("ZCorpStage", "Z公司", null, StageType.Extra),
+        StageItem("FairyTaleStage", "童话森林", "Stage_FairyTale.webp", StageType.Extra),
+        StageItem("ZCorpStage", "Z公司", "Stage_ZCorp.webp", StageType.Extra),
+        StageItem("UnchartedMausoleumStage", "地宫寻遗", "Stage_Mausoleum.webp", StageType.Extra),
         StageItem("FrontLawnSpringStage", "复活节", null, StageType.Extra),
         StageItem("ChildrenDayStage", "儿童节", null, StageType.Extra),
         StageItem("HalloweenStage", "万圣节", null, StageType.Extra),
@@ -49,7 +50,6 @@ object StageRepository {
         StageItem("UnchartedNeedforspeedStage", "极品飞车联动", null, StageType.Extra),
         StageItem("UnchartedNo42UniverseStage", "平行宇宙秘境", null, StageType.Extra),
         StageItem("JourneyToTheWestStage", "西游地图", null, StageType.Extra),
-        StageItem("UnchartedMausoleumStage", "地宫地图", null, StageType.Extra),
         StageItem("RiftStage", "潘妮的追击", null, StageType.Extra),
         StageItem("JoustStage", "超Z联赛", null, StageType.Extra),
 
