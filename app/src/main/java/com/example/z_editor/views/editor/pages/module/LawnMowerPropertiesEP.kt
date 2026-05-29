@@ -157,6 +157,7 @@ fun LawnMowerPropertiesEP(
                 text = "选择小推车类型",
                 fontWeight = FontWeight.Bold,
                 color = themeColor,
+                fontSize = 18.sp,
                 modifier = Modifier.padding(16.dp)
             )
 

@@ -3031,6 +3031,68 @@
         "icon": "icon_apsarlotus.webp"
     },
     {
+        "id": "goldmagnet",
+        "name": "吸金磁",
+        "tags": [
+            "Orange",
+            "Assist",
+            "Magic",
+            "Original"
+        ],
+        "icon": "icon_goldmagnet.webp"
+    },
+    {
+        "id": "glaciershroom",
+        "name": "冰川菇",
+        "tags": [
+            "Orange",
+            "Ice",
+            "Remote",
+            "Original"
+        ],
+        "icon": "icon_glaciershroom.webp"
+    },
+    {
+        "id": "doombell",
+        "name": "安息木编钟",
+        "tags": [
+            "Blue",
+            "Defence",
+            "Physics"
+        ],
+        "icon": "icon_doombell.webp"
+    },
+    {
+        "id": "gloombara",
+        "name": "幽谭婆罗",
+        "tags": [
+            "Purple",
+            "Trapper",
+            "Magic"
+        ],
+        "icon": "icon_gloombara.webp"
+    },
+    {
+        "id": "exorcislily",
+        "name": "钟馗石蒜",
+        "tags": [
+            "Purple",
+            "Remote",
+            "Magic"
+        ],
+        "icon": "icon_exorcislily.webp"
+    },
+    {
+        "id": "solarsage",
+        "name": "阳光鼠尾草",
+        "tags": [
+            "Orange",
+            "Productor",
+            "Magic"
+        ],
+        "icon": "icon_solarsage.webp"
+    },
+    {
         "id": "moton",
         "name": "魔藤",
         "tags": [
@@ -3272,6 +3334,22 @@
             "Parallel"
         ],
         "icon": "icon_wintermelon.gif"
+    },
+    {
+        "id": "parallel_jackfruit",
+        "name": "41号菠萝蜜帝",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_jackfruit.webp"
+    },
+    {
+        "id": "parallel_doomshroom",
+        "name": "41号毁灭菇",
+        "tags": [
+            "Parallel"
+        ],
+        "icon": "icon_doomshroom.gif"
     },
     {
         "id": "moonflower_iz",

@@ -27,7 +27,9 @@ object ReferenceRepository {
         try {
             val inputStream = context.assets.open("reference/LevelModules.json")
             val root = gson.fromJson(InputStreamReader(inputStream), PvzLevelFile::class.java)
-            moduleCache = root.objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
+            moduleCache = root.objects
+                .distinctBy { it.aliases?.firstOrNull() ?: "unknown" }
+                .associateBy { it.aliases?.firstOrNull() ?: "unknown" }
         } catch (e: Exception) {
             e.printStackTrace()
         }

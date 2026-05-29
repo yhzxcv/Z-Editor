@@ -2080,6 +2080,46 @@
         "icon": "zombie_pogo.webp"
     },
     {
+        "id": "ScreenDoor",
+        "name": "铁门僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_ScreenDoor.webp"
+    },
+    {
+        "id": "SwimmingRing",
+        "name": "鸭子救生圈",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_SwimmingRing.webp"
+    },
+    {
+        "id": "SwimmingRingCone",
+        "name": "路障鸭子救生圈",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_SwimmingRingCone.webp"
+    },
+    {
+        "id": "SwimmingRingBucket",
+        "name": "铁桶鸭子救生圈",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_SwimmingRingBucket.webp"
+    },
+    {
         "id": "treasureyeti",
         "name": "宝藏雪人",
         "tags": [
@@ -2087,6 +2127,120 @@
             "Fat"
         ],
         "icon": "zombie_treasureyeti.webp"
+    },
+    {
+        "id": "zombie_snowpea",
+        "name": "寒冰豌豆僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Evildave",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_zombie_snowpea.webp"
+    },
+    {
+        "id": "zombie_gatlingpea",
+        "name": "机枪豌豆僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Evildave",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_zombie_gatlingpea.webp"
+    },
+    {
+        "id": "zombie_explodenut",
+        "name": "爆炸坚果僵尸",
+        "tags": [
+            "Memory",
+            "Evildave",
+            "Basic"
+        ],
+        "icon": "zombie_zombie_explodenut.webp"
+    },
+    {
+        "id": "zombie_jalapeno",
+        "name": "火爆辣椒僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_zombie_jalapeno.webp"
+    },
+    {
+        "id": "izombie_sunflower",
+        "name": "ZVZ-向日葵僵尸",
+        "tags": [
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_izombie_sunflower.webp"
+    },
+    {
+        "id": "izombie_zombie_gatlingpea",
+        "name": "ZVZ-豌豆射手僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_izombie_zombie_gatlingpea.webp"
+    },
+    {
+        "id": "izombie_zombie_wallnut",
+        "name": "ZVZ-坚果僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_izombie_zombie_wallnut.webp"
+    },
+    {
+        "id": "izombie_chicken_farmer",
+        "name": "ZVZ-豆腐贼鸡僵尸",
+        "tags": [
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_izombie_chicken_farmer.webp"
+    },
+    {
+        "id": "izombie_tutorial_gargantuar",
+        "name": "ZVZ-高坚果巨人僵尸",
+        "tags": [
+            "Memory",
+            "Gargantuar"
+        ],
+        "icon": "zombie_izombie_tutorial_gargantuar.webp"
+    },
+    {
+        "id": "izombie_lostcity_doctor",
+        "name": "ZVZ-仙桃僵尸",
+        "tags": [
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_izombie_lostcity_doctor.webp"
+    },
+    {
+        "id": "slimes",
+        "name": "史莱姆僵尸",
+        "tags": [
+            "Memory"
+        ],
+        "icon": "zombie_slimes.webp"
+    },
+    {
+        "id": "slimes_gargantuar_memo",
+        "name": "恐怖史莱姆僵尸",
+        "tags": [
+            "Memory"
+        ],
+        "icon": "zombie_slimes.webp"
     },
     {
         "id": "steam_worker",
@@ -3185,6 +3339,32 @@
         "icon": "zombie_gargantuar_uncharted_imp.webp"
     },
     {
+        "id": "treasureyeti_egypt",
+        "name": "法老王雪人",
+        "tags": [
+            "Universe",
+            "Fat"
+        ],
+        "icon": "zombie_treasureyeti.webp"
+    },
+    {
+        "id": "roman_ballista_no42",
+        "name": "41号罗马攻城车",
+        "tags": [
+            "Universe",
+            "Imp"
+        ],
+        "icon": "zombie_roman_ballista.webp"
+    },
+    {
+        "id": "slimes_gargantuar_no42",
+        "name": "41号史莱姆僵尸",
+        "tags": [
+            "Universe"
+        ],
+        "icon": "zombie_slimes.webp"
+    },
+    {
         "id": "lny",
         "name": "新春僵尸",
         "tags": [
@@ -3513,6 +3693,24 @@
         "icon": "zombie_children_lollipops.webp"
     },
     {
+        "id": "trench_coat_imps",
+        "name": "大衣伪装僵尸",
+        "tags": [
+            "Festival1",
+            "Strong"
+        ],
+        "icon": "zombie_trench_coat_imps.webp"
+    },
+    {
+        "id": "plushie_cart",
+        "name": "玩偶售卖车",
+        "tags": [
+            "Festival1",
+            "Imp"
+        ],
+        "icon": "zombie_plushie_cart.webp"
+    },
+    {
         "id": "bumpercar",
         "name": "碰碰车僵尸",
         "tags": [
@@ -3693,6 +3891,78 @@
             "Elite"
         ],
         "icon": "zombie_caketank.webp"
+    },
+    {
+        "id": "sportzball_buckethead",
+        "name": "足球铁桶僵尸",
+        "tags": [
+            "Festival2",
+            "Basic"
+        ],
+        "icon": "zombie_sportzball_buckethead.webp"
+    },
+    {
+        "id": "sportzball_wizard",
+        "name": "足球巫师僵尸",
+        "tags": [
+            "Festival2",
+            "Basic"
+        ],
+        "icon": "zombie_sportzball_wizard.webp"
+    },
+    {
+        "id": "sportzball_imp",
+        "name": "足球小鬼僵尸",
+        "tags": [
+            "Festival2",
+            "Imp"
+        ],
+        "icon": "zombie_sportzball_imp.webp"
+    },
+    {
+        "id": "sportzball_gargantuar",
+        "name": "足球巨人僵尸",
+        "tags": [
+            "Festival2",
+            "Gargantuar"
+        ],
+        "icon": "zombie_sportzball_gargantuar.webp"
+    },
+    {
+        "id": "Goalkeeper_Zombie",
+        "name": "守门员僵尸",
+        "tags": [
+            "Festival2",
+            "Basic"
+        ],
+        "icon": "zombie_Goalkeeper_Zombie.webp"
+    },
+    {
+        "id": "general_treadmill_phase1",
+        "name": "跑步机僵尸一阶段",
+        "tags": [
+            "Festival2",
+            "Elite"
+        ],
+        "icon": "zombie_general_treadmill_phase1.webp"
+    },
+    {
+        "id": "general_treadmill_phase2",
+        "name": "跑步机僵尸二阶段",
+        "tags": [
+            "Festival2",
+            "Elite"
+        ],
+        "icon": "zombie_general_treadmill_phase1.webp"
+    },
+    {
+        "id": "general_treadmill_phase3",
+        "name": "跑步机僵尸三阶段",
+        "tags": [
+            "Festival2",
+            "Elite"
+        ],
+        "icon": "zombie_general_treadmill_phase1.webp"
     },
     {
         "id": "halloween",
@@ -4097,120 +4367,6 @@
             "Elite"
         ],
         "icon": "zombie_fairy_tale_imp_elite.webp"
-    },
-    {
-        "id": "zombie_snowpea",
-        "name": "寒冰豌豆僵尸",
-        "tags": [
-            "Modern_Pvz1",
-            "Evildave",
-            "Memory",
-            "Basic"
-        ],
-        "icon": "zombie_zombie_snowpea.webp"
-    },
-    {
-        "id": "zombie_gatlingpea",
-        "name": "机枪豌豆僵尸",
-        "tags": [
-            "Modern_Pvz1",
-            "Evildave",
-            "Memory",
-            "Basic"
-        ],
-        "icon": "zombie_zombie_gatlingpea.webp"
-    },
-    {
-        "id": "zombie_explodenut",
-        "name": "爆炸坚果僵尸",
-        "tags": [
-            "Memory",
-            "Evildave",
-            "Basic"
-        ],
-        "icon": "zombie_zombie_explodenut.webp"
-    },
-    {
-        "id": "zombie_jalapeno",
-        "name": "火爆辣椒僵尸",
-        "tags": [
-            "Modern_Pvz1",
-            "Memory",
-            "Basic"
-        ],
-        "icon": "zombie_zombie_jalapeno.webp"
-    },
-    {
-        "id": "izombie_sunflower",
-        "name": "ZVZ-向日葵僵尸",
-        "tags": [
-            "Memory",
-            "Basic"
-        ],
-        "icon": "zombie_izombie_sunflower.webp"
-    },
-    {
-        "id": "izombie_zombie_gatlingpea",
-        "name": "ZVZ-豌豆射手僵尸",
-        "tags": [
-            "Modern_Pvz1",
-            "Memory",
-            "Basic"
-        ],
-        "icon": "zombie_izombie_zombie_gatlingpea.webp"
-    },
-    {
-        "id": "izombie_zombie_wallnut",
-        "name": "ZVZ-坚果僵尸",
-        "tags": [
-            "Modern_Pvz1",
-            "Memory",
-            "Basic"
-        ],
-        "icon": "zombie_izombie_zombie_wallnut.webp"
-    },
-    {
-        "id": "izombie_chicken_farmer",
-        "name": "ZVZ-豆腐贼鸡僵尸",
-        "tags": [
-            "Memory",
-            "Basic"
-        ],
-        "icon": "zombie_izombie_chicken_farmer.webp"
-    },
-    {
-        "id": "izombie_tutorial_gargantuar",
-        "name": "ZVZ-高坚果巨人僵尸",
-        "tags": [
-            "Memory",
-            "Gargantuar"
-        ],
-        "icon": "zombie_izombie_tutorial_gargantuar.webp"
-    },
-    {
-        "id": "izombie_lostcity_doctor",
-        "name": "ZVZ-仙桃僵尸",
-        "tags": [
-            "Memory",
-            "Basic"
-        ],
-        "icon": "zombie_izombie_lostcity_doctor.webp"
-    },
-    {
-        "id": "slimes",
-        "name": "史莱姆僵尸",
-        "tags": [
-            "Memory"
-        ],
-        "icon": "zombie_slimes.webp"
-    },
-    {
-        "id": "slimes_gargantuar_memo",
-        "name": "恐怖史莱姆僵尸",
-        "tags": [
-            "Memory"
-        ],
-        "icon": "zombie_slimes.webp"
     },
     {
         "id": "roman",
@@ -4684,6 +4840,159 @@
             "Strong"
         ],
         "icon": "zombie_qin_terracotta_mid.webp"
+    },
+    {
+        "id": "mausoleum_drunkard",
+        "name": "醉汉僵尸",
+        "tags": [
+            "Tothewest",
+            "Fat"
+        ],
+        "icon": "zombie_mausoleum_drunkard.webp"
+    },
+    {
+        "id": "mausoleum_drunkard_ghost",
+        "name": "幽冥醉汉僵尸",
+        "tags": [
+            "Tothewest",
+            "Fat"
+        ],
+        "icon": "zombie_mausoleum_drunkard_ghost.webp"
+    },
+    {
+        "id": "mausoleum_drunkard_ghost_spirit",
+        "name": "灵体醉汉僵尸",
+        "tags": [
+            "Tothewest",
+            "Fat"
+        ],
+        "icon": "zombie_mausoleum_drunkard_ghost.webp"
+    },
+    {
+        "id": "mausoleum_basic_ghost",
+        "name": "幽冥地宫普通僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_mausoleum_basic_ghost.webp"
+    },
+    {
+        "id": "mausoleum_basic_ghost_spirit",
+        "name": "灵体地宫普通僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_mausoleum_basic_ghost.webp"
+    },
+    {
+        "id": "mausoleum_armor1_ghost",
+        "name": "幽冥地宫路障僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_mausoleum_armor1_ghost.webp"
+    },
+    {
+        "id": "mausoleum_armor1_ghost_spirit",
+        "name": "灵体地宫路障僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_mausoleum_armor1_ghost.webp"
+    },
+    {
+        "id": "mausoleum_armor2_ghost",
+        "name": "幽冥地宫铁桶僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_mausoleum_armor2_ghost.webp"
+    },
+    {
+        "id": "mausoleum_armor2_ghost_spirit",
+        "name": "灵体地宫铁桶僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_mausoleum_armor2_ghost.webp"
+    },
+    {
+        "id": "mausoleum_gargantuar_ghost",
+        "name": "幽冥百夫长巨人僵尸",
+        "tags": [
+            "Tothewest",
+            "Gargantuar"
+        ],
+        "icon": "zombie_mausoleum_gargantuar_ghost.webp"
+    },
+    {
+        "id": "mausoleum_gargantuar_ghost_sp",
+        "name": "灵体百夫长巨人僵尸",
+        "tags": [
+            "Tothewest",
+            "Gargantuar"
+        ],
+        "icon": "zombie_mausoleum_gargantuar_ghost.webp"
+    },
+    {
+        "id": "mausoleum_archer_ghost",
+        "name": "幽冥弓箭手僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_mausoleum_archer_ghost.webp"
+    },
+    {
+        "id": "mausoleum_archer_ghost_spirit",
+        "name": "灵体弓箭手僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_mausoleum_archer_ghost.webp"
+    },
+    {
+        "id": "qin_jingke_ghost",
+        "name": "幽冥刺客僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_qin_jingke_ghost.webp"
+    },
+    {
+        "id": "qin_jingke_ghost_spirit",
+        "name": "灵体刺客僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_qin_jingke_ghost.webp"
+    },
+    {
+        "id": "qin_mystic_formation_summon",
+        "name": "召唤布阵僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_qin_mystic_formation_summon.webp"
+    },
+    {
+        "id": "qin_mystic_formation_defense",
+        "name": "防御布阵僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_qin_mystic_formation_summon.webp"
     },
     {
         "id": "carnie_magician",

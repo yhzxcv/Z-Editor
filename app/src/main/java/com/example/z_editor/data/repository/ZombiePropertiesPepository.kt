@@ -71,7 +71,9 @@ object ZombiePropertiesRepository {
         return try {
             val inputStream = context.assets.open(path)
             val root = gson.fromJson(InputStreamReader(inputStream), PvzLevelFile::class.java)
-            root.objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
+            root.objects
+                .distinctBy { it.aliases?.firstOrNull() ?: "unknown" }
+                .associateBy { it.aliases?.firstOrNull() ?: "unknown" }
         } catch (e: Exception) {
             println("Error loading $path: ${e.message}")
             emptyMap()

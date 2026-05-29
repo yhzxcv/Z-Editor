@@ -882,6 +882,20 @@
 		{
 			"objclass": "GridItemType",
 			"aliases": [
+				"puddle1"
+			],
+			"objdata": {
+				"TypeName": "puddle1",
+				"GridItemClass": "GridItemPuddle",
+				"Properties": "RTID(GridItemPuddle1Default@PropertySheets)",
+				"ResourceGroups": [
+					"PlantDuckPear"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
 				"frozen_grid"
 			],
 			"objdata": {
@@ -2175,6 +2189,34 @@
 		{
 			"objclass": "GridItemType",
 			"aliases": [
+				"enchantment_summon"
+			],
+			"objdata": {
+				"TypeName": "enchantment_summon",
+				"GridItemClass": "GridItemEnchantmentSummon",
+				"Properties": "RTID(GridItemEnchantmentSummon@PropertySheets)",
+				"ResourceGroups": [
+					"Enchantment"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"enchantment_defence"
+			],
+			"objdata": {
+				"TypeName": "enchantment_defence",
+				"GridItemClass": "GridItemEnchantmentDefence",
+				"Properties": "RTID(GridItemEnchantmentDefence@PropertySheets)",
+				"ResourceGroups": [
+					"Enchantment"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
 				"heian_box_sun"
 			],
 			"objdata": {
@@ -2447,6 +2489,20 @@
 				"TypeName": "ladder",
 				"GridItemClass": "GridItemLadder",
 				"Properties": "RTID(GridItemLadderDefault@PropertySheets)",
+				"ResourceGroups": [
+					"PlantLavaGuava"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"ScreenDoor"
+			],
+			"objdata": {
+				"TypeName": "ScreenDoor",
+				"GridItemClass": "GridItemScreenDoor",
+				"Properties": "RTID(GridItemScreenDoorDefault@PropertySheets)",
 				"ResourceGroups": [
 					"PlantLavaGuava"
 				]
@@ -3360,6 +3416,67 @@
 					"UI_WHACKZOMBIE",
 					"UI_WHACKZOMBIEAudio",
 					"ZombieLionDanceGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"gingle_jane"
+			],
+			"objdata": {
+				"TypeName": "gingle_jane",
+				"GridItemClass": "PVZ2GingleCityjaneGridItem",
+				"Properties": "RTID(PVZ2GinglejaneGridItemDefault@PropertySheets)",
+				"ResourceGroups": [
+					"UI_WHACKZOMBIE",
+					"UI_WHACKZOMBIEAudio"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"gingle_giantchicken"
+			],
+			"objdata": {
+				"TypeName": "gingle_giantchicken",
+				"GridItemClass": "PVZ2GingleGiantChickenGridItem",
+				"Properties": "RTID(PVZ2GingleGiantChickenGridItemDefault@PropertySheets)",
+				"ResourceGroups": [
+					"UI_WHACKZOMBIE",
+					"UI_WHACKZOMBIEAudio",
+					"ZombieWestChickenFarmerGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"gingle_drunkard"
+			],
+			"objdata": {
+				"TypeName": "gingle_drunkard",
+				"GridItemClass": "PVZ2GingleDrunkardGridItem",
+				"Properties": "RTID(PVZ2GingleDrunkardGridItemDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieWestChickenFarmerGroup",
+					"ZombieMausoleumDrunkGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"gingle_toycar"
+			],
+			"objdata": {
+				"TypeName": "gingle_toycar",
+				"GridItemClass": "PVZ2GingleBumpercarGridItem",
+				"Properties": "RTID(PVZ2GingleBumpercarGridItemDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieWestChickenFarmerGroup",
+					"ZombieMausoleumDrunkGroup"
 				]
 			}
 		},
@@ -5411,6 +5528,20 @@
 		{
 			"objclass": "GridItemType",
 			"aliases": [
+				"zomboss_soulfire_element_ball"
+			],
+			"objdata": {
+				"TypeName": "zomboss_soulfire_element_ball",
+				"GridItemClass": "ZombossElementBall",
+				"Properties": "RTID(GridItemZombossSoulFireElementBall@PropertySheets)",
+				"ResourceGroups": [
+					""
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
 				"pumpkin_scarecrow"
 			],
 			"objdata": {
@@ -6036,6 +6167,20 @@
 		{
 			"objclass": "GridItemType",
 			"aliases": [
+				"ghostfire1"
+			],
+			"objdata": {
+				"TypeName": "ghostfire1",
+				"GridItemClass": "GridItemGhostfire",
+				"Properties": "RTID(GridItemGhostfire1Default@PropertySheets)",
+				"ResourceGroups": [
+					"PlantRapeflower"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
 				"gravestone_memo"
 			],
 			"objdata": {
@@ -6161,6 +6306,218 @@
 				"Properties": "RTID(GridItemUnchartedHaystackDefault@PropertySheets)",
 				"ResourceGroups": [
 					"PlantUnchartedHaystack"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"pvz1Passage"
+			],
+			"objdata": {
+				"TypeName": "pvz1Passage",
+				"GridItemClass": "GridItemPassage",
+				"Properties": "RTID(GridItemPassageDefault@PropertySheets)",
+				"ResourceGroups": [
+					"PVZ1ModePassage"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"apsarlotus_cloud"
+			],
+			"objdata": {
+				"TypeName": "apsarlotus_cloud",
+				"GridItemClass": "GridItemApsarlotusCloud",
+				"Properties": "RTID(GridItemApsarlotusCloudDefault@PropertySheets)",
+				"ResourceGroups": [
+					"PlantApsarlotus"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"apsarlotus_cloud_plantfood"
+			],
+			"objdata": {
+				"TypeName": "apsarlotus_cloud_plantfood",
+				"GridItemClass": "GridItemApsarlotusPlantfoodCloud",
+				"Properties": "RTID(GridItemApsarlotusPlantfoodCloudDefault@PropertySheets)",
+				"ResourceGroups": [
+					"PlantApsarlotus"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"apsarlotus_cloud_plantfood_avatar"
+			],
+			"objdata": {
+				"TypeName": "apsarlotus_cloud_plantfood_avatar",
+				"GridItemClass": "GridItemApsarlotusPlantfoodCloud",
+				"Properties": "RTID(GridItemApsarlotusPlantfoodAvatarCloudDefault@PropertySheets)",
+				"ResourceGroups": [
+					"PlantApsarlotus"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"eightiesarcadecabinet_memo"
+			],
+			"objdata": {
+				"TypeName": "eightiesarcadecabinet_memo",
+				"GridItemClass": "GridItemEightiesArcadeCabinet",
+				"Properties": "RTID(GridItemEightiesArcadeCabinetMemo@CurrentLevel)",
+				"ResourceGroups": [
+					"ZombieImpPorterGroup",
+					"ZombieEightiesArcadeGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"zombieportal_memo"
+			],
+			"objdata": {
+				"TypeName": "zombieportal_memo",
+				"GridItemClass": "GridItemZombiePortal",
+				"Properties": "RTID(GridItemZombiePortalMemo@CurrentLevel)",
+				"ResourceGroups": [
+					"ModernPortalGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"dumpling_memo"
+			],
+			"objdata": {
+				"TypeName": "dumpling_memo",
+				"GridItemClass": "GridItemDumpling",
+				"Properties": "RTID(GridItemDumplingMemoDefault@CurrentLevel)",
+				"ResourceGroups": [
+					"HeianBox"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"zombie_changer_memo"
+			],
+			"objdata": {
+				"TypeName": "zombie_changer_memo",
+				"GridItemClass": "GridItemZombieChanger",
+				"Properties": "RTID(GridItemZombieChangerMemoDefault@CurrentLevel)",
+				"ResourceGroups": [
+					"UI_ModifyParts",
+					"HeianBox"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"cardgame_gravestoneZombieTimeSpawner_memo"
+			],
+			"objdata": {
+				"TypeName": "cardgame_gravestoneZombieTimeSpawner_memo",
+				"GridItemClass": "GridItemCardGameGravestoneZombieTimeSpawner",
+				"ResourceGroups": [
+					"UI_CardGame_Effect"
+				],
+				"Properties": "RTID(GridItemCardGameGravestoneZombieTimeSpawnerMemo@CurrentLevel)"
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"cardgame_gravestoneZombieTimeSpawner_enemy_memo"
+			],
+			"objdata": {
+				"TypeName": "cardgame_gravestoneZombieTimeSpawner_enemy_memo",
+				"GridItemClass": "GridItemCardGameGravestoneZombieTimeSpawnerEnemy",
+				"ResourceGroups": [
+					"UI_CardGame_Effect"
+				],
+				"Properties": "RTID(GridItemCardGameGravestoneZombieTimeSpawnerEnemyMemo@CurrentLevel)"
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"goldmagnet_level5_coin"
+			],
+			"objdata": {
+				"TypeName": "goldmagnet_level5_coin",
+				"GridItemClass": "GridItemGoldmagnetlevel5Coin",
+				"Properties": "RTID(GridItemGoldmagnetLevel5CoinDefault@PropertySheets)",
+				"ResourceGroups": [
+					"PlantGoldMagnet"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"sunflower_plushie"
+			],
+			"objdata": {
+				"TypeName": "sunflower_plushie",
+				"GridItemClass": "GridItem_SunflowerPlushie",
+				"Properties": "RTID(GridItemSunflowerPlushieDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombiePlushieCartGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"hard_candy"
+			],
+			"objdata": {
+				"TypeName": "hard_candy",
+				"GridItemClass": "GridItemHardCandy",
+				"Properties": "RTID(GridItemHardCandyDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieBubbleMachineImpGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"gulliver_tunnel"
+			],
+			"objdata": {
+				"TypeName": "gulliver_tunnel",
+				"GridItemClass": "GridItemGulliverTunnel",
+				"Properties": "RTID(GridItemGulliverTunnelDefault@PropertySheets)",
+				"ResourceGroups": [
+					"GulliverTunnelGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"sportzball"
+			],
+			"objdata": {
+				"TypeName": "sportzball",
+				"GridItemClass": "GridItemSportzball",
+				"Properties": "RTID(GridItemSportzballDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieSportzballImpGroup"
 				]
 			}
 		}

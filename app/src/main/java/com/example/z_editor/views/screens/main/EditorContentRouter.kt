@@ -58,6 +58,7 @@ import com.example.z_editor.views.editor.pages.module.ProtectTheGridItemChalleng
 import com.example.z_editor.views.editor.pages.module.ProtectThePlantChallengePropertiesEP
 import com.example.z_editor.views.editor.pages.module.RailcartPropertiesEP
 import com.example.z_editor.views.editor.pages.module.RainDarkPropertiesEP
+import com.example.z_editor.views.editor.pages.module.RiftThemeDemoModuleEP
 import com.example.z_editor.views.editor.pages.module.RoofPropertiesEP
 import com.example.z_editor.views.editor.pages.module.SeedBankPropertiesEP
 import com.example.z_editor.views.editor.pages.module.SeedRainPropertiesEP
@@ -601,6 +602,12 @@ fun EditorContentRouter(
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
             onRequestZombieSelection = actions.onLaunchMultiZombieSelector,
+        )
+
+        is EditorSubScreen.RiftThemeDemo -> RiftThemeDemoModuleEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile
         )
 
         is EditorSubScreen.UnknownDetail -> UnknownEP(

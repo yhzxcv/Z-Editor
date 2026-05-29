@@ -8,6 +8,7 @@ object ObjectOrderRegistry {
         "SeedBankProperties",
         "ConveyorSeedBankProperties",
         "PennyClassroomModuleProperties",
+        "RiftThemeDemoModuleProperties",
 
         "SunDropperProperties",
         "SunBombChallengeProperties",

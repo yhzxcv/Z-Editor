@@ -470,6 +470,11 @@ data class RiftTimedSunData(
     @SerializedName("SunDropValues") var sunDropValues: MutableList<Int> = mutableListOf(0, 0, 0, 0, 0, 0)
 )
 
+// === 裂痕主题演示模块 ===
+data class RiftThemeDemoModuleData(
+    @SerializedName("DemoRiftThemeName") var demoRiftThemeName: MutableList<String> = mutableListOf()
+)
+
 // ======================== 2. 物体属性解析 ========================
 
 // === 通用僵尸数据 ===

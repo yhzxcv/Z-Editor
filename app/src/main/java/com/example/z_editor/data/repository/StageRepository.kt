@@ -39,7 +39,8 @@ object StageRepository {
 
         StageItem("FairyTaleStage", "童话森林", "Stage_FairyTale.webp", StageType.Extra),
         StageItem("ZCorpStage", "Z公司", "Stage_ZCorp.webp", StageType.Extra),
-        StageItem("UnchartedMausoleumStage", "地宫寻遗", "Stage_Mausoleum.webp", StageType.Extra),
+        StageItem("UnchartedMausoleumStage", "地宫寻遗", null, StageType.Extra),
+        StageItem("UnchartedMausoleum2Stage", "幽冥地宫", null, StageType.Extra),
         StageItem("FrontLawnSpringStage", "复活节", null, StageType.Extra),
         StageItem("ChildrenDayStage", "儿童节", null, StageType.Extra),
         StageItem("HalloweenStage", "万圣节", null, StageType.Extra),

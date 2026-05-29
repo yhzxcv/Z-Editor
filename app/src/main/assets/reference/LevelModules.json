@@ -2660,6 +2660,499 @@
 		{
 			"objclass": "StageModuleProperties",
 			"aliases": [
+				"UnchartedMausoleum2Stage"
+			],
+			"objdata": {
+				"ResourceGroupNames": [
+					"Game_Tombstones_Dynamic",
+					"AudioModern",
+					"Uncharted_Music",
+					"DelayLoad_Background_Uncharted_Mausoleum",
+					"Game_Tombstones_Dynamic"
+				],
+				"StagePrefix": "uncharted_mausoleum",
+				"BackgroundImagePrefix": "IMAGE_BACKGROUNDS_UNCHARTED_MAUSOLEUM_2",
+				"BackgroundImageLeft": "TEXTURE_LEFT",
+				"BackgroundImageMiddle": "TEXTURE",
+				"BackgroundImageRight": "TEXTURE_RIGHT",
+				"BasicZombieTypeName": "mausoleum_basic",
+				"FlagZombieTypeName": "mausoleum_flag",
+				"Armor1ZombieTypeName": "mausoleum_armor1",
+				"Armor2ZombieTypeName": "mausoleum_armor2",
+				"MusicSuffix": "Ghostdom",
+				"RailcartDefaultTypeName": "railcart_egypt",
+				"DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
+				"ZombieEventType": "sandstorm",
+				"DisabledStreetCells": [
+					{
+						"mX": 0,
+						"mY": 0
+					},
+					{
+						"mX": 0,
+						"mY": 1
+					},
+					{
+						"mX": 0,
+						"mY": 2
+					},
+					{
+						"mX": 0,
+						"mY": 3
+					},
+					{
+						"mX": 0,
+						"mY": 4
+					},
+					{
+						"mX": 0,
+						"mY": 5
+					},
+					{
+						"mX": 0,
+						"mY": 6
+					},
+					{
+						"mX": 0,
+						"mY": 7
+					},
+					{
+						"mX": 0,
+						"mY": 8
+					},
+					{
+						"mX": 0,
+						"mY": 9
+					},
+					{
+						"mX": 1,
+						"mY": 0
+					},
+					{
+						"mX": 1,
+						"mY": 1
+					},
+					{
+						"mX": 1,
+						"mY": 2
+					},
+					{
+						"mX": 1,
+						"mY": 3
+					},
+					{
+						"mX": 1,
+						"mY": 4
+					},
+					{
+						"mX": 1,
+						"mY": 5
+					},
+					{
+						"mX": 1,
+						"mY": 6
+					},
+					{
+						"mX": 1,
+						"mY": 7
+					},
+					{
+						"mX": 1,
+						"mY": 8
+					},
+					{
+						"mX": 1,
+						"mY": 9
+					},
+					{
+						"mX": 2,
+						"mY": 0
+					},
+					{
+						"mX": 2,
+						"mY": 1
+					},
+					{
+						"mX": 2,
+						"mY": 2
+					},
+					{
+						"mX": 2,
+						"mY": 3
+					},
+					{
+						"mX": 2,
+						"mY": 4
+					},
+					{
+						"mX": 2,
+						"mY": 5
+					},
+					{
+						"mX": 2,
+						"mY": 6
+					},
+					{
+						"mX": 2,
+						"mY": 7
+					},
+					{
+						"mX": 2,
+						"mY": 8
+					},
+					{
+						"mX": 2,
+						"mY": 9
+					},
+					{
+						"mX": 3,
+						"mY": 9
+					},
+					{
+						"mX": 3,
+						"mY": 8
+					},
+					{
+						"mX": 3,
+						"mY": 7
+					},
+					{
+						"mX": 4,
+						"mY": 9
+					},
+					{
+						"mX": 4,
+						"mY": 8
+					},
+					{
+						"mX": 5,
+						"mY": 9
+					},
+					{
+						"mX": 5,
+						"mY": 8
+					},
+					{
+						"mX": 5,
+						"mY": 7
+					},
+					{
+						"mX": 6,
+						"mY": 9
+					},
+					{
+						"mX": 6,
+						"mY": 8
+					},
+					{
+						"mX": 7,
+						"mY": 9
+					},
+					{
+						"mX": 7,
+						"mY": 8
+					},
+					{
+						"mX": 7,
+						"mY": 7
+					},
+					{
+						"mX": 7,
+						"mY": 6
+					},
+					{
+						"mX": 7,
+						"mY": 0
+					},
+					{
+						"mX": 7,
+						"mY": 1
+					},
+					{
+						"mX": 7,
+						"mY": 2
+					},
+					{
+						"mX": 8,
+						"mY": 9
+					},
+					{
+						"mX": 8,
+						"mY": 8
+					},
+					{
+						"mX": 8,
+						"mY": 7
+					},
+					{
+						"mX": 8,
+						"mY": 6
+					},
+					{
+						"mX": 8,
+						"mY": 2
+					},
+					{
+						"mX": 8,
+						"mY": 1
+					},
+					{
+						"mX": 8,
+						"mY": 0
+					}
+				]
+			}
+		},
+		{
+			"objclass": "StageModuleProperties",
+			"aliases": [
+				"UnchartedMausoleumBoss2Stage"
+			],
+			"objdata": {
+				"ResourceGroupNames": [
+					"Game_Tombstones_Dynamic",
+					"AudioModern",
+					"MausoleumAudio",
+					"Uncharted_Music",
+					"DelayLoad_Background_Uncharted_Mausoleum",
+					"Game_Tombstones_Dynamic"
+				],
+				"StagePrefix": "uncharted_mausoleum",
+				"BackgroundImagePrefix": "IMAGE_BACKGROUNDS_UNCHARTED_MAUSOLEUM_2",
+				"BackgroundImageLeft": "TEXTURE_LEFT",
+				"BackgroundImageMiddle": "TEXTURE",
+				"BackgroundImageRight": "TEXTURE_RIGHT",
+				"BasicZombieTypeName": "mausoleum_basic",
+				"FlagZombieTypeName": "mausoleum_flag",
+				"Armor1ZombieTypeName": "mausoleum_armor1",
+				"Armor2ZombieTypeName": "mausoleum_armor2",
+				"MusicSuffix": "Mausoleum",
+				"RailcartDefaultTypeName": "railcart_egypt",
+				"DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
+				"ZombieEventType": "sandstorm",
+				"DisabledStreetCells": [
+					{
+						"mX": 0,
+						"mY": 0
+					},
+					{
+						"mX": 0,
+						"mY": 1
+					},
+					{
+						"mX": 0,
+						"mY": 2
+					},
+					{
+						"mX": 0,
+						"mY": 3
+					},
+					{
+						"mX": 0,
+						"mY": 4
+					},
+					{
+						"mX": 0,
+						"mY": 5
+					},
+					{
+						"mX": 0,
+						"mY": 6
+					},
+					{
+						"mX": 0,
+						"mY": 7
+					},
+					{
+						"mX": 0,
+						"mY": 8
+					},
+					{
+						"mX": 0,
+						"mY": 9
+					},
+					{
+						"mX": 1,
+						"mY": 0
+					},
+					{
+						"mX": 1,
+						"mY": 1
+					},
+					{
+						"mX": 1,
+						"mY": 2
+					},
+					{
+						"mX": 1,
+						"mY": 3
+					},
+					{
+						"mX": 1,
+						"mY": 4
+					},
+					{
+						"mX": 1,
+						"mY": 5
+					},
+					{
+						"mX": 1,
+						"mY": 6
+					},
+					{
+						"mX": 1,
+						"mY": 7
+					},
+					{
+						"mX": 1,
+						"mY": 8
+					},
+					{
+						"mX": 1,
+						"mY": 9
+					},
+					{
+						"mX": 2,
+						"mY": 0
+					},
+					{
+						"mX": 2,
+						"mY": 1
+					},
+					{
+						"mX": 2,
+						"mY": 2
+					},
+					{
+						"mX": 2,
+						"mY": 3
+					},
+					{
+						"mX": 2,
+						"mY": 4
+					},
+					{
+						"mX": 2,
+						"mY": 5
+					},
+					{
+						"mX": 2,
+						"mY": 6
+					},
+					{
+						"mX": 2,
+						"mY": 7
+					},
+					{
+						"mX": 2,
+						"mY": 8
+					},
+					{
+						"mX": 2,
+						"mY": 9
+					},
+					{
+						"mX": 3,
+						"mY": 9
+					},
+					{
+						"mX": 3,
+						"mY": 8
+					},
+					{
+						"mX": 3,
+						"mY": 7
+					},
+					{
+						"mX": 4,
+						"mY": 9
+					},
+					{
+						"mX": 4,
+						"mY": 8
+					},
+					{
+						"mX": 5,
+						"mY": 9
+					},
+					{
+						"mX": 5,
+						"mY": 8
+					},
+					{
+						"mX": 5,
+						"mY": 7
+					},
+					{
+						"mX": 6,
+						"mY": 9
+					},
+					{
+						"mX": 6,
+						"mY": 8
+					},
+					{
+						"mX": 7,
+						"mY": 9
+					},
+					{
+						"mX": 7,
+						"mY": 8
+					},
+					{
+						"mX": 7,
+						"mY": 7
+					},
+					{
+						"mX": 7,
+						"mY": 6
+					},
+					{
+						"mX": 7,
+						"mY": 0
+					},
+					{
+						"mX": 7,
+						"mY": 1
+					},
+					{
+						"mX": 7,
+						"mY": 2
+					},
+					{
+						"mX": 8,
+						"mY": 9
+					},
+					{
+						"mX": 8,
+						"mY": 8
+					},
+					{
+						"mX": 8,
+						"mY": 7
+					},
+					{
+						"mX": 8,
+						"mY": 6
+					},
+					{
+						"mX": 8,
+						"mY": 2
+					},
+					{
+						"mX": 8,
+						"mY": 1
+					},
+					{
+						"mX": 8,
+						"mY": 0
+					}
+				]
+			}
+		},
+		{
+			"objclass": "StageModuleProperties",
+			"aliases": [
 				"UnchartedMausoleumBossStage"
 			],
 			"objdata": {
@@ -3732,7 +4225,8 @@
 						"sugarcane",
 						"cactus",
 						"celerystalker",
-						"olivepit"
+						"olivepit",
+						"levitater"
 					]
 				},
 				"MusicSuffix": "Pirate",
@@ -16376,6 +16870,39 @@
 		{
 			"objclass": "PVZ2UnchartedModeOutroProperties",
 			"aliases": [
+				"PVZ2UnchartedModeOutroGulliver"
+			],
+			"objdata": {
+				"Modes": [
+					"GULLIVER"
+				]
+			}
+		},
+		{
+			"objclass": "PVZ2UnchartedModeOutroProperties",
+			"aliases": [
+				"PVZ2UnchartedModeOutroPlushie"
+			],
+			"objdata": {
+				"Modes": [
+					"PLUSHIE"
+				]
+			}
+		},
+		{
+			"objclass": "PVZ2UnchartedModeOutroProperties",
+			"aliases": [
+				"PVZ2UnchartedModeOutroBMIelite"
+			],
+			"objdata": {
+				"Modes": [
+					"BMIELITE"
+				]
+			}
+		},
+		{
+			"objclass": "PVZ2UnchartedModeOutroProperties",
+			"aliases": [
 				"PVZ2UnchartedModeOutroNEEDFORSPEED1"
 			],
 			"objdata": {
@@ -17068,7 +17595,26 @@
 					"pvz1_s26_32_n",
 					"pvz1_s28_28_n",
 					"pvz1_s28_20_n",
-					"pvz1_s29_boss_robot_2"
+					"pvz1_s29_boss_robot_2",
+					"pvz1_s30_boss_robot_1",
+					"pvz1_s30_boss_robot_2",
+					"pvz1_s30_boss_robot_3",
+					"pvz1_s30_boss_robot_4",
+					"pvz1_s30_boss_robot_5",
+					"pvz1_s30_boss_robot_6",
+					"pvz1_s30_boss_robot_7",
+					"pvz1_s30_boss_robot_8",
+					"pvz1_s30_boss_robot_9",
+					"pvz1_s30_60_n",
+					"pvz1_s31_boss_robot_1",
+					"pvz1_s31_boss_robot_2",
+					"pvz1_s31_boss_robot_3",
+					"pvz1_s31_boss_robot_4",
+					"pvz1_s31_boss_robot_5",
+					"pvz1_s31_boss_robot_6",
+					"pvz1_s31_boss_robot_7",
+					"pvz1_s31_boss_robot_8",
+					"pvz1_s31_boss_robot_9"
 				],
 				"ThemeDisabledInfos": [
 					{
@@ -17180,7 +17726,26 @@
 							"pvz1_s29_boss_robot_6",
 							"pvz1_s29_boss_robot_7",
 							"pvz1_s29_boss_robot_8",
-							"pvz1_s29_boss_robot_9"
+							"pvz1_s29_boss_robot_9",
+							"pvz1_s30_boss_robot_1",
+							"pvz1_s30_boss_robot_2",
+							"pvz1_s30_boss_robot_3",
+							"pvz1_s30_boss_robot_4",
+							"pvz1_s30_boss_robot_5",
+							"pvz1_s30_boss_robot_6",
+							"pvz1_s30_boss_robot_7",
+							"pvz1_s30_boss_robot_8",
+							"pvz1_s30_boss_robot_9",
+							"pvz1_s30_60_n",
+							"pvz1_s31_boss_robot_1",
+							"pvz1_s31_boss_robot_2",
+							"pvz1_s31_boss_robot_3",
+							"pvz1_s31_boss_robot_4",
+							"pvz1_s31_boss_robot_5",
+							"pvz1_s31_boss_robot_6",
+							"pvz1_s31_boss_robot_7",
+							"pvz1_s31_boss_robot_8",
+							"pvz1_s31_boss_robot_9"
 						]
 					}
 				]
@@ -17729,6 +18294,31 @@
 			],
 			"objdata": {
 				"ZombossTimeLimit": 20.0
+			}
+		},
+		{
+			"objclass": "DaveCupConvergenceProperties",
+			"aliases": [
+				"DaveCupConvergence"
+			],
+			"objdata": {
+				"DaveCupConvergenceStageData": [
+					{
+						"TimeCondition": 20,
+						"ZombieMoveSpeedUp": 0.5,
+						"PlantAttackSpeedUp": 0.5
+					},
+					{
+						"TimeCondition": 60,
+						"ZombieMoveSpeedUp": 1.0,
+						"PlantAttackSpeedUp": 1.0
+					},
+					{
+						"TimeCondition": 60,
+						"ZombieMoveSpeedUp": 1.0,
+						"PlantAttackSpeedUp": 1.0
+					}
+				]
 			}
 		},
 		{
@@ -20771,6 +21361,253 @@
 		{
 			"objclass": "StageModuleProperties",
 			"aliases": [
+				"DaveCupStage"
+			],
+			"objdata": {
+				"ResourceGroupNames": [
+					"Egypt_Gravestone",
+					"Game_Tombstones_Dynamic",
+					"DelayLoad_Background_DaveCup",
+					"AudioTutorial"
+				],
+				"BelongsToWorld": "davecup",
+				"StagePrefix": "davecup",
+				"BackgroundImagePrefix": "IMAGE_BACKGROUNDS_DAVECUP",
+				"BackgroundImageLeft": "TEXTURE_LEFT",
+				"BackgroundImageMiddle": "TEXTURE",
+				"BackgroundImageRight": "TEXTURE_RIGHT",
+				"BasicZombieTypeName": "tutorial",
+				"FlagZombieTypeName": "tutorial_flag",
+				"Armor1ZombieTypeName": "tutorial_armor1",
+				"Armor2ZombieTypeName": "tutorial_armor2",
+				"MusicSuffix": "Egypt",
+				"AmbientAudioSuffix": "Egypt_Wind_BG",
+				"RailcartDefaultTypeName": "railcart_tutotial",
+				"GravestoneDefaultTypeName": "gravestone_tutorial",
+				"DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
+				"DisabledStreetCells": [
+					{
+						"mX": 0,
+						"mY": 0
+					},
+					{
+						"mX": 0,
+						"mY": 1
+					},
+					{
+						"mX": 0,
+						"mY": 2
+					},
+					{
+						"mX": 0,
+						"mY": 3
+					},
+					{
+						"mX": 0,
+						"mY": 4
+					},
+					{
+						"mX": 0,
+						"mY": 5
+					},
+					{
+						"mX": 0,
+						"mY": 6
+					},
+					{
+						"mX": 0,
+						"mY": 7
+					},
+					{
+						"mX": 0,
+						"mY": 8
+					},
+					{
+						"mX": 0,
+						"mY": 9
+					},
+					{
+						"mX": 1,
+						"mY": 0
+					},
+					{
+						"mX": 1,
+						"mY": 1
+					},
+					{
+						"mX": 1,
+						"mY": 2
+					},
+					{
+						"mX": 1,
+						"mY": 3
+					},
+					{
+						"mX": 1,
+						"mY": 4
+					},
+					{
+						"mX": 1,
+						"mY": 5
+					},
+					{
+						"mX": 1,
+						"mY": 6
+					},
+					{
+						"mX": 1,
+						"mY": 7
+					},
+					{
+						"mX": 1,
+						"mY": 8
+					},
+					{
+						"mX": 1,
+						"mY": 9
+					},
+					{
+						"mX": 2,
+						"mY": 0
+					},
+					{
+						"mX": 2,
+						"mY": 1
+					},
+					{
+						"mX": 2,
+						"mY": 2
+					},
+					{
+						"mX": 2,
+						"mY": 3
+					},
+					{
+						"mX": 2,
+						"mY": 4
+					},
+					{
+						"mX": 2,
+						"mY": 5
+					},
+					{
+						"mX": 2,
+						"mY": 6
+					},
+					{
+						"mX": 2,
+						"mY": 7
+					},
+					{
+						"mX": 2,
+						"mY": 8
+					},
+					{
+						"mX": 2,
+						"mY": 9
+					},
+					{
+						"mX": 3,
+						"mY": 9
+					},
+					{
+						"mX": 3,
+						"mY": 8
+					},
+					{
+						"mX": 3,
+						"mY": 7
+					},
+					{
+						"mX": 4,
+						"mY": 9
+					},
+					{
+						"mX": 4,
+						"mY": 8
+					},
+					{
+						"mX": 5,
+						"mY": 9
+					},
+					{
+						"mX": 5,
+						"mY": 8
+					},
+					{
+						"mX": 5,
+						"mY": 7
+					},
+					{
+						"mX": 6,
+						"mY": 9
+					},
+					{
+						"mX": 6,
+						"mY": 8
+					},
+					{
+						"mX": 7,
+						"mY": 9
+					},
+					{
+						"mX": 7,
+						"mY": 8
+					},
+					{
+						"mX": 7,
+						"mY": 7
+					},
+					{
+						"mX": 7,
+						"mY": 6
+					},
+					{
+						"mX": 7,
+						"mY": 0
+					},
+					{
+						"mX": 7,
+						"mY": 1
+					},
+					{
+						"mX": 7,
+						"mY": 2
+					},
+					{
+						"mX": 8,
+						"mY": 9
+					},
+					{
+						"mX": 8,
+						"mY": 8
+					},
+					{
+						"mX": 8,
+						"mY": 7
+					},
+					{
+						"mX": 8,
+						"mY": 6
+					},
+					{
+						"mX": 8,
+						"mY": 2
+					},
+					{
+						"mX": 8,
+						"mY": 1
+					},
+					{
+						"mX": 8,
+						"mY": 0
+					}
+				]
+			}
+		},
+		{
+			"objclass": "StageModuleProperties",
+			"aliases": [
 				"UnchartedIceageStage"
 			],
 			"objdata": {
@@ -21612,6 +22449,17 @@
 			],
 			"objclass": "TunnelDefendModuleProperties",
 			"objdata": {
+				"Roads": [],
+				"TunnelSequenceInterval": 0.4
+			}
+		},
+		{
+			"aliases": [
+				"TunnelDefend2Default0"
+			],
+			"objclass": "TunnelDefendModuleProperties",
+			"objdata": {
+				"BrickMapIndex": 2,
 				"Roads": [],
 				"TunnelSequenceInterval": 0.4
 			}
@@ -23880,6 +24728,20 @@
 				"MowerEntryAnimDuration": 2.5,
 				"MowerActivatedAudioEvent": "Play_Egypt_Lawnmower",
 				"MowerPopAnim": "POPANIM_MOWERS_MOWER_MAUSOLEUM"
+			}
+		},
+		{
+			"objclass": "LawnMowerProperties",
+			"aliases": [
+				"QinGhostMowers"
+			],
+			"objdata": {
+				"ResourceGroupNames": [
+					"MausoleumMowerGroup"
+				],
+				"MowerEntryAnimDuration": 2.5,
+				"MowerActivatedAudioEvent": "Play_Egypt_Lawnmower",
+				"MowerPopAnim": "POPANIM_MOWERS_MOWER_MAUSOLEUM_2"
 			}
 		},
 		{

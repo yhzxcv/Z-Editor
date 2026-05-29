@@ -118,6 +118,7 @@ sealed class EditorSubScreen {
     data class StarChallenge(val rtid: String) : EditorSubScreen()
     data class PickupCollectableTutorial(val rtid: String) : EditorSubScreen()
     data class RiftTimedSunModule(val rtid: String) : EditorSubScreen()
+    data class RiftThemeDemo(val rtid: String) : EditorSubScreen()
 
     // 波次事件页
     data class UnknownDetail(val rtid: String) : EditorSubScreen()
@@ -967,6 +968,17 @@ object ModuleRegistry {
             defaultSource = "CurrentLevel",
             initialDataFactory = { RiftTimedSunModuleData() },
             navigationFactory = { rtid -> EditorSubScreen.RiftTimedSunModule(rtid) }
+        ),
+        "RiftThemeDemoModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_rift_theme_demo_title,
+            descriptionRes = R.string.module_rift_theme_demo_desc,
+            icon = Icons.Default.Bolt,
+            isCore = true,
+            category = ModuleCategory.Mode,
+            defaultAlias = "RiftThemeDemo",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { RiftThemeDemoModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.RiftThemeDemo(rtid) }
         ),
 
         "InitialPlantProperties" to ModuleMetadata(

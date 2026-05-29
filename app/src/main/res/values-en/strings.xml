@@ -114,7 +114,7 @@
     <string name="about_screen_usage_text2">2. Open/Create: Tap a level to edit or use+ to create from template.</string>
     <string name="about_screen_usage_text3">3. Modules: Add modules in the editor.</string>
     <string name="about_screen_usage_text4">4. Save: Tap save to write back to the JSON fille.</string>
-    <string name="about_screen_usage_text5">QQ group: 562251204</string>
+    <string name="about_screen_usage_text5">QQ group: 960722092</string>
     <string name="about_screen_credits_title">Credits</string>
     <string name="about_screen_credits_author">Author:</string>
     <string name="about_screen_credits_thanks">Thanks:</string>
@@ -424,4 +424,6 @@
     <string name="module_pick_coin_desc">Show dialog box during the game</string>
     <string name="module_rift_sun_title">Rift Sun Drop</string>
     <string name="module_rift_sun_desc">Configure sun amount to drop defeat zombies</string>
+    <string name="module_rift_theme_demo_title">Rift Theme</string>
+    <string name="module_rift_theme_demo_desc">Select active rift themes for Penny\'s Pursuit</string>
 </resources>

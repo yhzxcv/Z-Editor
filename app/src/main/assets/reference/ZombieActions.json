@@ -49,6 +49,243 @@
 			}
 		},
 		{
+			"objclass": "ZombieWalkActionDefinition",
+			"aliases": [
+				"ZombieGeneralWalkOn"
+			],
+			"objdata": {
+				"Weight": 1,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"Phase": "Entering",
+				"PhaseAfter": "Attacking",
+				"SoundOnStart": "Play_Zomb_Premium_Cardio_Enter",
+				"StopAtColumn": 6,
+				"HasTransition": false
+			}
+		},
+		{
+			"objclass": "ZombieWalkActionDefinition",
+			"aliases": [
+				"ZombieGeneralWalkOff"
+			],
+			"objdata": {
+				"Weight": 1,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"WalkBackwards": true,
+				"Phase": "Retreat",
+				"PhaseAfter": "Attacking",
+				"HasTransition": false
+			}
+		},
+		{
+			"objclass": "ZombiePlayAnimationActionDefinition",
+			"aliases": [
+				"ZombieGeneralIdle"
+			],
+			"objdata": {
+				"Weight": 1,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"Phase": "Attacking",
+				"AnimationToPlay": "idle",
+				"CanPickAgain": true
+			}
+		},
+		{
+			"objclass": "ZombiePlayAnimationActionDefinition",
+			"aliases": [
+				"ZombieGeneralZmechIdle"
+			],
+			"objdata": {
+				"Weight": 1,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"Phase": "Attacking",
+				"AnimationToPlay": "idle",
+				"CanPickAgain": "true"
+			}
+		},
+		{
+			"objclass": "ZombiePlayAnimationActionDefinition",
+			"aliases": [
+				"ZombieGeneralInjured"
+			],
+			"objdata": {
+				"Weight": 1,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"Phase": "Dying",
+				"PhaseAfter": "RetreatInjured",
+				"AnimationToPlay": "injury"
+			}
+		},
+		{
+			"objclass": "ZombiePlayAnimationActionDefinition",
+			"aliases": [
+				"ZombieGeneralRetreatInjured"
+			],
+			"objdata": {
+				"Weight": 1,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"Phase": "RetreatInjured",
+				"PhaseAfter": "Destroy",
+				"AnimationToPlay": "walk_off2"
+			}
+		},
+		{
+			"objclass": "ZombiePlayAnimationActionDefinition",
+			"aliases": [
+				"ZombieGeneralDying"
+			],
+			"objdata": {
+				"Weight": 1,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"Phase": "Dying",
+				"PhaseAfter": "Destroy",
+				"AnimationToPlay": "die"
+			}
+		},
+		{
+			"objclass": "ZombiePlayAnimationActionDefinition",
+			"aliases": [
+				"ZombieGeneralTaunt"
+			],
+			"objdata": {
+				"Weight": 0,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"Phase": "Attacking",
+				"AnimationToPlay": "eat"
+			}
+		},
+		{
+			"objclass": "ZombieProjectileLaunchActionDefinition",
+			"aliases": [
+				"ZombieGeneralTreadmillProjectileAction"
+			],
+			"objdata": {
+				"Weight": 99,
+				"RepeatMin": 3,
+				"RepeatMax": 5,
+				"Phase": "Attacking",
+				"PhaseAfter": "Cooldown",
+				"TargetType": "FriendlyZombies",
+				"OnlyHitTarget": true,
+				"NoRepeatTargets": false,
+				"Projectile": "RTID(PowerDrinkDefault@ProjectileTypes)",
+				"ProjectileSound": "Play_Zomb_Egypt_Zomboss_Attack_Rush",
+				"SpawnOffset": {
+					"x": 0.0,
+					"y": 0.0,
+					"z": 50.0
+				},
+				"ApexHeight": 200,
+				"TimeUntilHit": 1.0
+			}
+		},
+		{
+			"objclass": "ZombiePlayAnimationActionDefinition",
+			"aliases": [
+				"ZombieGeneralTreadmillCooldownPhase1"
+			],
+			"objdata": {
+				"Weight": 1,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"Phase": "Cooldown",
+				"PhaseAfter": "Attacking",
+				"AnimationToPlay": "idle",
+				"MinDuration": 8.0,
+				"MaxDuration": 12.0
+			}
+		},
+		{
+			"objclass": "ZombieProjectileLaunchActionDefinition",
+			"aliases": [
+				"ZombieGeneralTreadmillProjectilePhase2Action"
+			],
+			"objdata": {
+				"Weight": 99,
+				"RepeatMin": 5,
+				"RepeatMax": 8,
+				"Phase": "Attacking",
+				"PhaseAfter": "Cooldown",
+				"TargetType": "FriendlyZombies",
+				"OnlyHitTarget": true,
+				"NoRepeatTargets": false,
+				"Projectile": "RTID(PowerDrinkSquared@ProjectileTypes)",
+				"ProjectileSound": "Play_Zomb_Egypt_Zomboss_Attack_Rush",
+				"SpawnOffset": {
+					"x": 0.0,
+					"y": 0.0,
+					"z": 50.0
+				},
+				"ApexHeight": 250,
+				"TimeUntilHit": 1.0
+			}
+		},
+		{
+			"objclass": "ZombiePlayAnimationActionDefinition",
+			"aliases": [
+				"ZombieGeneralTreadmillCooldownPhase2"
+			],
+			"objdata": {
+				"Weight": 1,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"Phase": "Cooldown",
+				"PhaseAfter": "Attacking",
+				"AnimationToPlay": "idle",
+				"MinDuration": 5.0,
+				"MaxDuration": 8.0
+			}
+		},
+		{
+			"objclass": "ZombieProjectileLaunchActionDefinition",
+			"aliases": [
+				"ZombieGeneralTreadmillProjectilePhase3Action"
+			],
+			"objdata": {
+				"Weight": 99,
+				"RepeatMin": 8,
+				"RepeatMax": 12,
+				"Phase": "Attacking",
+				"PhaseAfter": "Cooldown",
+				"TargetType": "FriendlyZombies",
+				"OnlyHitTarget": true,
+				"NoRepeatTargets": false,
+				"Projectile": "RTID(PowerDrinkCubed@ProjectileTypes)",
+				"ProjectileSound": "Play_Zomb_Egypt_Zomboss_Attack_Rush",
+				"SpawnOffset": {
+					"x": 0.0,
+					"y": 0.0,
+					"z": 50.0
+				},
+				"ApexHeight": 300,
+				"TimeUntilHit": 1.0
+			}
+		},
+		{
+			"objclass": "ZombiePlayAnimationActionDefinition",
+			"aliases": [
+				"ZombieGeneralTreadmillCooldownPhase3"
+			],
+			"objdata": {
+				"Weight": 1,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"Phase": "Cooldown",
+				"PhaseAfter": "Attacking",
+				"AnimationToPlay": "idle",
+				"MinDuration": 3.5,
+				"MaxDuration": 5.0
+			}
+		},
+		{
 			"objclass": "ZombieElectricProjectileActionDefinition",
 			"aliases": [
 				"ZombieElectricProjectileAction"
@@ -9921,6 +10158,80 @@
 			}
 		},
 		{
+			"objclass": "ZombieRomanHealerHealActionDefinition",
+			"aliases": [
+				"ZombieNewPvPRomanHealerHeal"
+			],
+			"objdata": {
+				"TimeBeforeFirstHeal": {
+					"Min": 1.0,
+					"Max": 3.0
+				},
+				"TimeBetweenHeal": {
+					"Min": 4.5,
+					"Max": 6.5
+				},
+				"TimeBeforeHealRecheck": {
+					"Min": 0.5,
+					"Max": 1.5
+				},
+				"TimeBeforeFirstHypnoHeal": {
+					"Min": 1.0,
+					"Max": 4.0
+				},
+				"TimeBetweenHypnoHeal": {
+					"Min": 5.0,
+					"Max": 7.0
+				},
+				"TimeBeforeHypnoHealRecheck": {
+					"Min": 0.5,
+					"Max": 1.5
+				},
+				"TimeBeforeFirstPoisonHeal": {
+					"Min": 1.0,
+					"Max": 5.0
+				},
+				"TimeBetweenPoisonHeal": {
+					"Min": 7.0,
+					"Max": 9.0
+				},
+				"TimeBeforePoisonHealRecheck": {
+					"Min": 0.5,
+					"Max": 1.5
+				},
+				"SoundOnActivate": "Play_RaZombie_WandActivate",
+				"HealingAuraPopAnim": "POPANIM_EFFECTS_ZOMBIE_ROMAN_HEALER_EFFECT",
+				"ProjectilePopAnim": "POPANIM_EFFECTS_ZOMBIE_ROMAN_HEALER_BEAM",
+				"AuraOffset": {
+					"mX": 0,
+					"mY": -25
+				},
+				"HealPercent": 0.5,
+				"#comment": "also update grid item healer's staff",
+				"UnhealableZombies": {
+					"ListType": "blacklist",
+					"List": [
+						"cannon",
+						"roman_ballista",
+						"dark_king",
+						"beach_fisherman",
+						"pirate_barrel",
+						"joustyeti",
+						"mech_cone",
+						"future_gargantuar",
+						"football_mech",
+						"disco_mech",
+						"west_bull",
+						"west_bull",
+						"caketank",
+						"future_protector",
+						"future_protector",
+						"future_imp"
+					]
+				}
+			}
+		},
+		{
 			"############ Zomboss Dino Actions END ############": 0,
 			"############ Zomboss PVZ1 Robot Actions BEGIN ############": 0
 		},
@@ -10852,7 +11163,7 @@
 				"RampUpAnimation": "teleport",
 				"LoopingAnimation": "",
 				"RampDownAnimation": "idle",
-				"NoRepeatTargets": true,
+				"NoRepeatTargets": false,
 				"DoOnlySelfTeleport": false,
 				"IgnoreSelfWhileTeleportingOther": true,
 				"CanShiftLane": false,
@@ -10931,7 +11242,7 @@
 				"RampUpAnimation": "teleport",
 				"LoopingAnimation": "",
 				"RampDownAnimation": "idle",
-				"NoRepeatTargets": true,
+				"NoRepeatTargets": false,
 				"DoOnlySelfTeleport": true,
 				"IgnoreSelfWhileTeleportingOther": false,
 				"CanShiftLane": true,

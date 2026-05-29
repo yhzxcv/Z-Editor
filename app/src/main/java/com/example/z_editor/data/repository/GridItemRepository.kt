@@ -52,6 +52,10 @@ object GridItemRepository {
         GridItemInfo("score_3x_tile", "联赛3倍分数砖", GridItemCategory.Scene, null),
         GridItemInfo("score_5x_tile", "联赛5倍分数砖", GridItemCategory.Scene, null),
 
+        GridItemInfo("terracottaArmy", "秦俑将军残骸", GridItemCategory.Scene, null),
+        GridItemInfo("enchantment_summon", "召唤法阵", GridItemCategory.Scene, null),
+        GridItemInfo("enchantment_defence", "防御法阵", GridItemCategory.Scene, null),
+
         GridItemInfo("zombiepotion_speed", "疾速药水", GridItemCategory.Trap, "zombiepotion_speed.webp"),
         GridItemInfo("zombiepotion_toughness", "坚韧药水", GridItemCategory.Trap, "zombiepotion_toughness.webp"),
         GridItemInfo("zombiepotion_invisible", "隐身药水", GridItemCategory.Trap, "zombiepotion_invisible.webp"),

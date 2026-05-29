@@ -152,8 +152,7 @@ fun SeedRainPropertiesEP(
                         modifier = Modifier.clickable {
                             showAddTypeDialog = false
                             onRequestZombieSelection { ids ->
-                                val processed = ids.map { ZombieRepository.buildZombieAliases(it) }
-                                addItems(1, processed)
+                                addItems(1, ids)
                             }
                         }
                     )
@@ -376,7 +375,8 @@ fun SeedRainRowCard(
                 RtidParser.parse(item.plantTypeName ?: "")?.alias ?: item.plantTypeName ?: ""
             typeName = PlantRepository.getName(alias)
             val info = remember(alias) { PlantRepository.getPlantInfoById(alias) }
-            iconPath = if (info?.icon != null) "images/plants/${info.icon}" else "images/others/unknown.webp"
+            iconPath =
+                if (info?.icon != null) "images/plants/${info.icon}" else "images/others/unknown.webp"
             displayType = "植物"
         }
 
@@ -390,7 +390,8 @@ fun SeedRainRowCard(
                     com.example.z_editor.data.repository.ZombieTag.All
                 ).firstOrNull()
             }
-            iconPath = if (info?.icon != null) "images/zombies/${info.icon}" else "images/others/unknown.webp"
+            iconPath =
+                if (info?.icon != null) "images/zombies/${info.icon}" else "images/others/unknown.webp"
             displayType = "僵尸"
         }
 
@@ -427,21 +428,19 @@ fun SeedRainRowCard(
                     .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                if (iconPath != null) {
-                    AssetImage(
-                        path = iconPath,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize(),
-                        filterQuality = FilterQuality.Medium,
-                        placeholder = {
-                            Text(
-                                typeName.take(1),
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    )
-                }
+                AssetImage(
+                    path = iconPath,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    filterQuality = FilterQuality.Medium,
+                    placeholder = {
+                        Text(
+                            typeName.take(1),
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                )
             }
 
             Spacer(Modifier.width(12.dp))
