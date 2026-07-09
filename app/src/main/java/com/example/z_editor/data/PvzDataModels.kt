@@ -275,6 +275,21 @@ data class StarChallengeTargetScoreData(
     @SerializedName("TargetScore") var targetScore: Int = 20000
 )
 
+// === 植物消灭僵尸挑战 ===
+data class StarChallengePlantDefeatZombieData(
+    @SerializedName("Description") var description: String = "[KILL_DESC]",
+    @SerializedName("NumZombiesToKill") var numZombiesToKill: Int = 40,
+    @SerializedName("PlantTypeName") var plantTypeName: String = "melonpult"
+)
+
+// === 赋予僵尸状态挑战 ===
+data class StarChallengeApplyZombieConditionsData(
+    @SerializedName("ConditionToInflict") var conditionToInflict: MutableList<String> = mutableListOf("hypnotized"),
+    @SerializedName("IncludeBurnedToAsh") var includeBurnedToAsh: Boolean? = null,
+    @SerializedName("IncludeElectrified") var includeElectrified: Boolean? = null,
+    @SerializedName("NumZombieConditionsToApply") var numZombieConditionsToApply: Int = 5
+)
+
 // === 甲板模块 ===
 data class PiratePlankPropertiesData(
     @SerializedName("PlankRows") var plankRows: MutableList<Int> = mutableListOf()
@@ -473,6 +488,23 @@ data class RiftTimedSunData(
 // === 裂痕主题演示模块 ===
 data class RiftThemeDemoModuleData(
     @SerializedName("DemoRiftThemeName") var demoRiftThemeName: MutableList<String> = mutableListOf()
+)
+
+// === 霉菌殖民挑战模块 ===
+data class MoldColonyChallengePropsData(
+    @SerializedName("Description") var description: String = "",
+    @SerializedName("Locations") var locations: String = "RTID(Mold@LevelModules)"
+)
+
+// === 棋盘网格映射模块 ===
+data class BoardGridMapPropsData(
+    @SerializedName("Values") var values: MutableList<MutableList<Int>> = mutableListOf(
+        mutableListOf(1, 1, 0, 0, 0, 0, 0, 0, 0),
+        mutableListOf(1, 1, 0, 0, 0, 0, 0, 0, 0),
+        mutableListOf(1, 1, 0, 0, 0, 0, 0, 0, 0),
+        mutableListOf(1, 1, 0, 0, 0, 0, 0, 0, 0),
+        mutableListOf(1, 1, 0, 0, 0, 0, 0, 0, 0)
+    )
 )
 
 // ======================== 2. 物体属性解析 ========================

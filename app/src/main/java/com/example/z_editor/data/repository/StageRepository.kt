@@ -51,6 +51,7 @@ object StageRepository {
         StageItem("UnchartedNeedforspeedStage", "极品飞车联动", null, StageType.Extra),
         StageItem("UnchartedNo42UniverseStage", "平行宇宙秘境", null, StageType.Extra),
         StageItem("JourneyToTheWestStage", "西游地图", null, StageType.Extra),
+        StageItem("DaveCupStage", "戴夫杯地图", null, StageType.Extra),
         StageItem("RiftStage", "潘妮的追击", null, StageType.Extra),
         StageItem("JoustStage", "超Z联赛", null, StageType.Extra),
 

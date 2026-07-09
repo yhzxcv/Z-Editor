@@ -18,6 +18,8 @@ import com.example.z_editor.data.StarChallengeSunUsedData
 import com.example.z_editor.data.StarChallengeTargetScoreData
 import com.example.z_editor.data.StarChallengeUnfreezePlantsData
 import com.example.z_editor.data.StarChallengeZombieDistanceData
+import com.example.z_editor.data.StarChallengeApplyZombieConditionsData
+import com.example.z_editor.data.StarChallengePlantDefeatZombieData
 import com.example.z_editor.data.StarChallengeZombieSpeedData
 
 // 挑战元数据模型
@@ -159,6 +161,22 @@ object ChallengeRepository {
             description = "获取目标积分，需要开启关卡计分模块",
             icon = Icons.Default.Scoreboard,
             initialDataFactory = { StarChallengeTargetScoreData() }
+        ),
+        ChallengeTypeInfo(
+            title = "植物消灭僵尸挑战",
+            objClass = "PlantDefeatZombieChallengeProps",
+            defaultAlias = "DefeatZombie",
+            description = "使用指定植物消灭一定数量的僵尸",
+            icon = Icons.Default.LocalFlorist,
+            initialDataFactory = { StarChallengePlantDefeatZombieData() }
+        ),
+        ChallengeTypeInfo(
+            title = "赋予僵尸状态挑战",
+            objClass = "ApplyZombieConditionsChallengeProps",
+            defaultAlias = "ApplyZombieConditionsChallenge",
+            description = "给僵尸赋予指定状态效果并统计数量",
+            icon = Icons.Default.Science,
+            initialDataFactory = { StarChallengeApplyZombieConditionsData() }
         ),
     )
 

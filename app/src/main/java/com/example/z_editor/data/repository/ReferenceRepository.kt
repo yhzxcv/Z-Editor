@@ -55,6 +55,10 @@ object ReferenceRepository {
         return moduleCache?.get(alias)?.objClass
     }
 
+    fun getObject(alias: String): PvzObject? {
+        return moduleCache?.get(alias)
+    }
+
     fun isValidGridItem(alias: String): Boolean {
         if (validGridItemAliases.isEmpty()) return true
         return validGridItemAliases.contains(alias)

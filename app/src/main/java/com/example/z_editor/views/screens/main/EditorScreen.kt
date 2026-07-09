@@ -102,6 +102,10 @@ fun EditorScreen(
 
         var missingModules by remember { mutableStateOf<List<ModuleMetadata>>(emptyList()) }
 
+        // 挑战编辑弹窗状态（提升到此级别以在导航切换时存活）
+        // 只有 index+rtid 需要存活；编辑数据通过 PvzObject 自身持久化
+        var starChallengeEditingPair by remember { mutableStateOf<Pair<Int, String>?>(null) }
+
         // 滚动状态保持
         val lazyListStates = remember { mutableMapOf<String, LazyListState>() }
         val scrollStates = remember { mutableMapOf<String, ScrollState>() }
@@ -1050,7 +1054,9 @@ fun EditorScreen(
                                 getScrollState = ::getScrollState,
                                 refreshTrigger = refreshTrigger,
                                 currentGridItemFilterMode = currentGridItemFilterMode,
-                                actions = actions
+                                actions = actions,
+                                starChallengeEditingPair = starChallengeEditingPair,
+                                onStarChallengeEditingPairChange = { starChallengeEditingPair = it }
                             )
                         }
                     }
@@ -1066,7 +1072,9 @@ fun EditorScreen(
                             getScrollState = ::getScrollState,
                             refreshTrigger = refreshTrigger,
                             currentGridItemFilterMode = currentGridItemFilterMode,
-                            actions = actions
+                            actions = actions,
+                            starChallengeEditingPair = starChallengeEditingPair,
+                            onStarChallengeEditingPairChange = { starChallengeEditingPair = it }
                         )
                     }
                 }

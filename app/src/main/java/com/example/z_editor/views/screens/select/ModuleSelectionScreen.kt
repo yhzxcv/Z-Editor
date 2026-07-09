@@ -84,6 +84,7 @@ fun ModuleSelectionScreen(
 
     val filteredModules = remember(selectedCategory, searchQuery) {
         allModules.entries
+            .filter { (_, meta) -> meta.showInSelector }
             .filter { (_, meta) ->
                 val categoryMatch = meta.category == selectedCategory
                 val searchMatch = if (searchQuery.isBlank()) true else {

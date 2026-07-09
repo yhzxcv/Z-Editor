@@ -1,6 +1,7 @@
 package com.example.z_editor.views.editor.pages.module
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -65,10 +67,12 @@ import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.PvzObject
 import com.example.z_editor.data.RtidParser
+import com.example.z_editor.data.StarChallengeApplyZombieConditionsData
 import com.example.z_editor.data.StarChallengeBeatTheLevelData
 import com.example.z_editor.data.StarChallengeBlowZombieData
 import com.example.z_editor.data.StarChallengeKillZombiesInTimeData
 import com.example.z_editor.data.StarChallengeModuleData
+import com.example.z_editor.data.StarChallengePlantDefeatZombieData
 import com.example.z_editor.data.StarChallengePlantSurviveData
 import com.example.z_editor.data.StarChallengePlantsLostData
 import com.example.z_editor.data.StarChallengeSimultaneousPlantsData
@@ -81,6 +85,7 @@ import com.example.z_editor.data.StarChallengeUnfreezePlantsData
 import com.example.z_editor.data.StarChallengeZombieDistanceData
 import com.example.z_editor.data.StarChallengeZombieSpeedData
 import com.example.z_editor.data.repository.ChallengeRepository
+import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.ReferenceRepository
 import com.example.z_editor.ui.theme.LocalDarkTheme
 import com.example.z_editor.ui.theme.PvzOrangeDark
@@ -91,6 +96,7 @@ import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputDouble
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 
 private val gson = Gson()
 
@@ -102,7 +108,10 @@ fun StarChallengeModulePropertiesEP(
     objectMap: Map<String, PvzObject>,
     onBack: () -> Unit,
     onNavigateToAddChallenge: () -> Unit,
-    scrollState: ScrollState
+    scrollState: ScrollState,
+    onRequestPlantSelection: ((String) -> Unit) -> Unit,
+    editingPair: Pair<Int, String>?,
+    onEditingPairChange: (Pair<Int, String>?) -> Unit
 ) {
     val context = LocalContext.current
     val currentAlias = RtidParser.parse(rtid)?.alias ?: "ChallengeModule"
@@ -126,8 +135,8 @@ fun StarChallengeModulePropertiesEP(
         mutableStateOf(data)
     }
 
-    // === 2. 弹窗编辑状态 ===
-    var editingChallenge by remember { mutableStateOf<Pair<Int, String>?>(null) }
+    // === 2. 弹窗编辑状态（提升至 EditorScreen 级别以跨导航存活） ===
+    val editingChallenge = editingPair
 
     fun syncMainModule() {
         rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }?.let {
@@ -170,7 +179,7 @@ fun StarChallengeModulePropertiesEP(
         } else {
             Toast.makeText(context, "错误：找不到本地对象", Toast.LENGTH_SHORT).show()
         }
-        editingChallenge = null
+        onEditingPairChange(null)
     }
 
     // === 4. 弹窗组件 ===
@@ -179,8 +188,9 @@ fun StarChallengeModulePropertiesEP(
         ChallengeEditDialog(
             rtid = rtidStr,
             rootLevelFile = rootLevelFile,
-            onDismiss = { editingChallenge = null },
-            onSave = { newData -> handleSaveSubObject(rtidStr, newData) }
+            onDismiss = { onEditingPairChange(null) },
+            onSave = { newData -> handleSaveSubObject(rtidStr, newData) },
+            onRequestPlantSelection = onRequestPlantSelection
         )
     }
 
@@ -251,7 +261,7 @@ fun StarChallengeModulePropertiesEP(
                             ChallengeItemCard(
                                 rtid = challengeRtid,
                                 objectMap = objectMap,
-                                onClick = { editingChallenge = index to challengeRtid },
+                                onClick = { onEditingPairChange(index to challengeRtid) },
                                 onDelete = { handleDeleteChallenge(index, challengeRtid) }
                             )
                         }
@@ -321,7 +331,7 @@ fun ChallengeItemCard(
         onClick = onClick,
         colors = CardDefaults.cardColors(containerColor = containerColor),
         elevation = CardDefaults.cardElevation(2.dp),
-        border = if (isMissing) androidx.compose.foundation.BorderStroke(
+        border = if (isMissing) BorderStroke(
             1.dp,
             MaterialTheme.colorScheme.onTertiary
         ) else null,
@@ -407,7 +417,8 @@ fun ChallengeEditDialog(
     rtid: String,
     rootLevelFile: PvzLevelFile,
     onDismiss: () -> Unit,
-    onSave: (Any) -> Unit
+    onSave: (Any) -> Unit,
+    onRequestPlantSelection: ((String) -> Unit) -> Unit
 ) {
     val info = RtidParser.parse(rtid) ?: return
     val alias = info.alias
@@ -600,6 +611,33 @@ fun ChallengeEditDialog(
                     obj.objData,
                     StarChallengeTargetScoreData::class.java
                 ),
+                onDismiss = onDismiss,
+                onConfirm = onSave
+            )
+        }
+
+        "PlantDefeatZombieChallengeProps" -> {
+            val initialData = gson.fromJson(
+                obj.objData,
+                StarChallengePlantDefeatZombieData::class.java
+            )
+            PlantDefeatZombieEditDialog(
+                initialData = initialData,
+                obj = obj,
+                onDismiss = onDismiss,
+                onConfirm = onSave,
+                onRequestPlantSelection = onRequestPlantSelection
+            )
+        }
+
+        "ApplyZombieConditionsChallengeProps" -> {
+            val initialData = gson.fromJson(
+                obj.objData,
+                StarChallengeApplyZombieConditionsData::class.java
+            )
+            ApplyZombieConditionsEditDialog(
+                initialData = initialData,
+                obj = obj,
                 onDismiss = onDismiss,
                 onConfirm = onSave
             )
@@ -1395,6 +1433,330 @@ fun TargetScoreEditDialog(
 }
 
 
+@Composable
+fun PlantDefeatZombieEditDialog(
+    initialData: StarChallengePlantDefeatZombieData,
+    obj: PvzObject,
+    onDismiss: () -> Unit,
+    onConfirm: (StarChallengePlantDefeatZombieData) -> Unit,
+    onRequestPlantSelection: ((String) -> Unit) -> Unit
+) {
+    var numZombiesToKill by remember { mutableIntStateOf(initialData.numZombiesToKill) }
+    var plantTypeName by remember { mutableStateOf(initialData.plantTypeName) }
+    val plantName = remember(plantTypeName) { PlantRepository.getName(plantTypeName) }
+
+    // Snapshot original data for cancel restoration
+    val originalJson = remember { obj.objData.toString() }
+
+    fun currentData() = initialData.copy(
+        numZombiesToKill = numZombiesToKill,
+        plantTypeName = plantTypeName
+    )
+
+    fun persistToObject(data: StarChallengePlantDefeatZombieData) {
+        obj.objData = gson.toJsonTree(data)
+    }
+
+    AlertDialog(
+        onDismissRequest = {
+            // Restore original data on cancel
+            obj.objData = gson.fromJson(originalJson, JsonElement::class.java)
+            onDismiss()
+        },
+        title = {
+            Text(
+                "植物消灭僵尸挑战",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        text = {
+            Column {
+                Text("使用指定植物消灭一定数量僵尸", fontSize = 14.sp, color = Color.Gray)
+                Spacer(Modifier.height(16.dp))
+                NumberInputInt(
+                    color = MaterialTheme.colorScheme.onTertiary,
+                    value = numZombiesToKill,
+                    onValueChange = { numZombiesToKill = it },
+                    label = "击杀数量 (NumZombiesToKill)",
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(16.dp))
+                Text("指定植物", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Spacer(Modifier.height(8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = if (plantName != plantTypeName) "$plantName ($plantTypeName)" else plantTypeName,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Button(
+                        onClick = {
+                            // Write current state to PvzObject so it survives navigation
+                            persistToObject(currentData())
+                            onRequestPlantSelection { selectedId ->
+                                // Selection callback: update PvzObject and local state
+                                plantTypeName = selectedId
+                                persistToObject(currentData())
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.onTertiary
+                        )
+                    ) {
+                        Text("选择植物", fontSize = 12.sp)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onConfirm(currentData()) },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
+            ) {
+                Text("保存")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    obj.objData = gson.fromJson(originalJson, JsonElement::class.java)
+                    onDismiss()
+                }
+            ) {
+                Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+    )
+}
+
+@Composable
+fun ApplyZombieConditionsEditDialog(
+    initialData: StarChallengeApplyZombieConditionsData,
+    obj: PvzObject,
+    onDismiss: () -> Unit,
+    onConfirm: (StarChallengeApplyZombieConditionsData) -> Unit
+) {
+    var numToApply by remember { mutableIntStateOf(initialData.numZombieConditionsToApply) }
+    var conditionToInflict by remember { mutableStateOf(initialData.conditionToInflict.toMutableList()) }
+    var burnedToAsh by remember { mutableStateOf(initialData.includeBurnedToAsh) }
+    var electrified by remember { mutableStateOf(initialData.includeElectrified) }
+
+    // Helpers that create a NEW list to trigger MutableState recomposition
+    fun toggleCondition(key: String) {
+        conditionToInflict = if (conditionToInflict.contains(key))
+            conditionToInflict.filter { it != key }.toMutableList()
+        else
+            (conditionToInflict + key).toMutableList()
+    }
+
+    fun clearConditions() {
+        conditionToInflict = mutableListOf()
+    }
+
+    val originalJson = remember { obj.objData.toString() }
+
+    val allConditions = listOf(
+        "chill" to "Chill",
+        "freeze" to "Freeze",
+        "stun" to "Stun",
+        "dazeystunned" to "DazeyStunned",
+        "butter" to "Butter",
+        "hypnotized" to "Hypnotized",
+        "stalled" to "Stalled",
+        "shrunken" to "Shrunken",
+        "poisoned" to "Poisoned",
+        "chemist_poison" to "Chemist Poison",
+        "shadowpoisoned" to "Shadow Poisoned",
+        "contagiouspoison" to "Contagious Poison",
+        "sapped" to "Sapped",
+        "slowdown" to "Slowdown",
+        "tossed" to "Tossed"
+    )
+
+    fun currentData() = initialData.copy(
+        numZombieConditionsToApply = numToApply,
+        conditionToInflict = conditionToInflict.toMutableList(),
+        includeBurnedToAsh = if (burnedToAsh == true) true else null,
+        includeElectrified = if (electrified == true) true else null
+    )
+
+    AlertDialog(
+        onDismissRequest = {
+            obj.objData = gson.fromJson(originalJson, JsonElement::class.java)
+            onDismiss()
+        },
+        title = {
+            Text(
+                "赋予僵尸状态挑战",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .heightIn(max = 480.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("选择目标模式", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+
+                // Radio-like mode selection
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (burnedToAsh != true && electrified != true)
+                            MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.15f)
+                        else Color.Transparent
+                    ),
+                    border = if (burnedToAsh != true && electrified != true)
+                        BorderStroke(1.dp, MaterialTheme.colorScheme.onTertiary)
+                    else null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            burnedToAsh = false
+                            electrified = false
+                        }
+                ) {
+                    Text(
+                        "指定僵尸状态",
+                        modifier = Modifier.padding(12.dp),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (burnedToAsh == true) MaterialTheme.colorScheme.onTertiary.copy(
+                            alpha = 0.15f
+                        )
+                        else Color.Transparent
+                    ),
+                    border = if (burnedToAsh == true)
+                        BorderStroke(1.dp, MaterialTheme.colorScheme.onTertiary)
+                    else null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            burnedToAsh = true; electrified = false; clearConditions()
+                        }
+                ) {
+                    Text(
+                        "仅统计化灰",
+                        modifier = Modifier.padding(12.dp),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (electrified == true) MaterialTheme.colorScheme.onTertiary.copy(
+                            alpha = 0.15f
+                        )
+                        else Color.Transparent
+                    ),
+                    border = if (electrified == true)
+                        BorderStroke(1.dp, MaterialTheme.colorScheme.onTertiary)
+                    else null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            electrified = true; burnedToAsh = false; clearConditions()
+                        }
+                ) {
+                    Text(
+                        "仅统计电死",
+                        modifier = Modifier.padding(12.dp),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                // Condition checkbox grid (only in "specify" mode)
+                if (burnedToAsh != true && electrified != true) {
+                    Text("选择条件类型", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        allConditions.chunked(2).forEach { rowPair ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                rowPair.forEach { (key, label) ->
+                                    val checked = conditionToInflict.contains(key)
+                                    Card(
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = if (checked)
+                                                MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.15f)
+                                            else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                                        ),
+                                        border = if (checked) BorderStroke(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.onTertiary
+                                        ) else null,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .clickable {
+                                                toggleCondition(key)
+                                            }
+                                    ) {
+                                        Text(
+                                            label,
+                                            modifier = Modifier.padding(
+                                                horizontal = 10.dp,
+                                                vertical = 6.dp
+                                            ),
+                                            fontSize = 12.sp,
+                                            fontWeight = if (checked) FontWeight.Bold else FontWeight.Normal,
+                                            color = if (checked) MaterialTheme.colorScheme.onTertiary
+                                            else MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                                // Pad last row if odd count
+                                if (rowPair.size < 2) {
+                                    Spacer(Modifier.weight(1f))
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(4.dp))
+                NumberInputInt(
+                    color = MaterialTheme.colorScheme.onTertiary,
+                    value = numToApply,
+                    onValueChange = { numToApply = it },
+                    label = "赋予次数 (NumZombieConditionsToApply)",
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onConfirm(currentData()) },
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onTertiary)
+            ) {
+                Text("保存")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    obj.objData = gson.fromJson(originalJson, JsonElement::class.java)
+                    onDismiss()
+                }
+            ) {
+                Text("取消", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+    )
+}
+
 private fun getChallengeDisplayName(objClass: String): String {
     return ChallengeRepository.getInfo(objClass)?.title
         ?: when (objClass) {
@@ -1414,6 +1776,8 @@ private fun getChallengeDisplayName(objClass: String): String {
             "StarChallengeUnfreezePlantsProps" -> "解冻植物挑战"
             "StarChallengeBlowZombieProps" -> "吹飞僵尸挑战"
             "StarChallengeTargetScoreProps" -> "获取积分挑战"
+            "PlantDefeatZombieChallengeProps" -> "植物消灭僵尸挑战"
+            "ApplyZombieConditionsChallengeProps" -> "赋予僵尸状态挑战"
             else -> objClass.replace("StarChallenge", "").replace("Props", "")
         }
 }

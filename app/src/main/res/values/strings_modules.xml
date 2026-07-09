@@ -102,4 +102,6 @@
     <string name="module_rift_sun_desc">击败僵尸掉落阳光</string>
     <string name="module_rift_theme_demo_title">追击主题配置</string>
     <string name="module_rift_theme_demo_desc">在关卡中配置回忆或追击的主题</string>
+    <string name="module_mold_colony_title">霉菌区域</string>
+    <string name="module_mold_colony_desc">设置关卡中禁止种植的霉菌覆盖区域</string>
 </resources>

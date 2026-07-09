@@ -119,6 +119,7 @@ sealed class EditorSubScreen {
     data class PickupCollectableTutorial(val rtid: String) : EditorSubScreen()
     data class RiftTimedSunModule(val rtid: String) : EditorSubScreen()
     data class RiftThemeDemo(val rtid: String) : EditorSubScreen()
+    data class MoldColonyChallenge(val rtid: String) : EditorSubScreen()
 
     // 波次事件页
     data class UnknownDetail(val rtid: String) : EditorSubScreen()
@@ -590,7 +591,8 @@ data class ModuleMetadata(
     val allowMultiple: Boolean = false,
 
     val initialDataFactory: (() -> Any)? = null,
-    val navigationFactory: (String) -> EditorSubScreen
+    val navigationFactory: (String) -> EditorSubScreen,
+    val showInSelector: Boolean = true
 )
 
 /**
@@ -978,7 +980,8 @@ object ModuleRegistry {
             defaultAlias = "RiftThemeDemo",
             defaultSource = "CurrentLevel",
             initialDataFactory = { RiftThemeDemoModuleData() },
-            navigationFactory = { rtid -> EditorSubScreen.RiftThemeDemo(rtid) }
+            navigationFactory = { rtid -> EditorSubScreen.RiftThemeDemo(rtid) },
+            showInSelector = false
         ),
 
         "InitialPlantProperties" to ModuleMetadata(
@@ -1052,6 +1055,17 @@ object ModuleRegistry {
             defaultSource = "CurrentLevel",
             initialDataFactory = { ProtectTheGridItemChallengePropertiesData() },
             navigationFactory = { rtid -> EditorSubScreen.ProtectTheGridItem(rtid) }
+        ),
+        "MoldColonyChallengeProps" to ModuleMetadata(
+            titleRes = R.string.module_mold_colony_title,
+            descriptionRes = R.string.module_mold_colony_desc,
+            icon = Icons.Default.Grid4x4,
+            isCore = true,
+            category = ModuleCategory.Scene,
+            defaultAlias = "DoNotPlantBeforeLine",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { MoldColonyChallengePropsData() },
+            navigationFactory = { rtid -> EditorSubScreen.MoldColonyChallenge(rtid) }
         ),
         "ZombiePotionModuleProperties" to ModuleMetadata(
             titleRes = R.string.module_zombie_potion_title,

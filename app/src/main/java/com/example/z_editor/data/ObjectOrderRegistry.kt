@@ -17,6 +17,8 @@ object ObjectOrderRegistry {
         "NewBowlingMinigameProperties",
         "SeedRainProperties",
 
+        "MoldColonyChallengeProps",
+        "BoardGridMapProps",
         "PiratePlankProperties",
         "TideProperties",
         "RoofProperties",
@@ -65,6 +67,8 @@ object ObjectOrderRegistry {
         "StarChallengeUnfreezePlantsProps",
         "StarChallengeBlowZombieProps",
         "StarChallengeTargetScoreProps",
+        "ApplyZombieConditionsChallengeProps",
+        "PlantDefeatZombieChallengeProps",
 
         "PickupCollectableTutorialProperties",
 

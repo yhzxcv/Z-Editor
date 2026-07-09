@@ -59,6 +59,7 @@ import com.example.z_editor.views.editor.pages.module.ProtectThePlantChallengePr
 import com.example.z_editor.views.editor.pages.module.RailcartPropertiesEP
 import com.example.z_editor.views.editor.pages.module.RainDarkPropertiesEP
 import com.example.z_editor.views.editor.pages.module.RiftThemeDemoModuleEP
+import com.example.z_editor.views.editor.pages.module.MoldColonyChallengeEP
 import com.example.z_editor.views.editor.pages.module.RoofPropertiesEP
 import com.example.z_editor.views.editor.pages.module.SeedBankPropertiesEP
 import com.example.z_editor.views.editor.pages.module.SeedRainPropertiesEP
@@ -105,7 +106,9 @@ fun EditorContentRouter(
     getScrollState: (String) -> ScrollState,
     currentGridItemFilterMode: GridItemFilterMode,
     refreshTrigger: Int,
-    actions: EditorActions
+    actions: EditorActions,
+    starChallengeEditingPair: Pair<Int, String>? = null,
+    onStarChallengeEditingPairChange: (Pair<Int, String>?) -> Unit = {}
 ) {
     if (parsedData == null || rootLevelFile == null) return
 
@@ -447,7 +450,10 @@ fun EditorContentRouter(
                     actions.navigateTo(EditorSubScreen.StarChallenge(targetState.rtid))
                 }
             },
-            scrollState = getScrollState("StarChallenge")
+            scrollState = getScrollState("StarChallenge"),
+            onRequestPlantSelection = { cb -> actions.onLaunchPlantSelector(cb) },
+            editingPair = starChallengeEditingPair,
+            onEditingPairChange = onStarChallengeEditingPairChange
         )
 
         is EditorSubScreen.PiratePlank -> PiratePlankPropertiesEP(
@@ -608,6 +614,13 @@ fun EditorContentRouter(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile
+        )
+
+        is EditorSubScreen.MoldColonyChallenge -> MoldColonyChallengeEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onUpdate = actions.onLevelDefChanged
         )
 
         is EditorSubScreen.UnknownDetail -> UnknownEP(
