@@ -365,7 +365,7 @@ fun CustomZombiePropertiesEP(
                                 propsDataState.value = propsDataState.value.copy(speedVariance = it)
                                 sync()
                             },
-                            label = "移速方差 (Variance)",
+                            label = "移速浮动 (Variance)",
                             color = themeColor,
                             modifier = Modifier.weight(1f)
                         )
@@ -886,13 +886,8 @@ fun RectEditDialog(
                     NumberInputInt(mY, { mY = it }, "Y", modifier = Modifier.weight(1f), color = themeColor)
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    NumberInputInt(mWidth, { mWidth = it }, "Width", modifier = Modifier.weight(1f))
-                    NumberInputInt(
-                        mHeight,
-                        { mHeight = it },
-                        "Height",
-                        modifier = Modifier.weight(1f)
-                    )
+                    NumberInputInt(mWidth, { mWidth = it }, "Width", modifier = Modifier.weight(1f), color = themeColor)
+                    NumberInputInt(mHeight, { mHeight = it }, "Height", modifier = Modifier.weight(1f), color = themeColor)
                 }
             }
         },

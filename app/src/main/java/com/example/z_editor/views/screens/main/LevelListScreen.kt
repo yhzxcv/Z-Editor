@@ -49,6 +49,8 @@ import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Science
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
@@ -144,7 +146,8 @@ fun LevelListScreen(
     onUiScaleChange: (Float) -> Unit,
     onLanguageChange: (String) -> Unit,
     onLevelClick: (String, Uri) -> Unit,
-    onAboutClick: () -> Unit
+    onAboutClick: () -> Unit,
+    onDataPackToolsClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -514,6 +517,21 @@ fun LevelListScreen(
                                     showLanguageSheet = true
                                 },
                                 leadingIcon = { Icon(Icons.Default.Language, null) }
+                            )
+                            HorizontalDivider()
+                            DropdownMenuItem(
+                                text = { Text("实验性功能") },
+                                onClick = {
+                                    showMenu = false
+                                    onDataPackToolsClick()
+                                },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Default.Science,
+                                        null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             )
                             HorizontalDivider()
                             DropdownMenuItem(
@@ -1148,7 +1166,7 @@ fun FileItemRow(
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier

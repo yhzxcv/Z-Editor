@@ -15,8 +15,8 @@ android {
         applicationId = "com.example.pvz2leveleditor"
         minSdk = 24
         targetSdk = 36
-        versionCode = 25
-        versionName = "1.2.5"
+        versionCode = 26
+        versionName = "1.2.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

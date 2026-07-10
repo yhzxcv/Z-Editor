@@ -41,6 +41,13 @@ object LevelRepository {
     }
 
 
+    private fun getMimeType(fileName: String): String {
+        return when {
+            fileName.endsWith(".json", ignoreCase = true) -> "application/json"
+            else -> "*/*"
+        }
+    }
+
     fun copyLevelToTarget(context: Context, srcFileName: String, targetFileName: String, currentDirUri: Uri): Boolean {
         val currentDoc = DocumentFile.fromTreeUri(context, currentDirUri) ?: return false
         val srcFile = currentDoc.findFile(srcFileName) ?: return false
@@ -48,7 +55,7 @@ object LevelRepository {
         if (currentDoc.findFile(targetFileName) != null) return false
 
         return try {
-            val newFile = currentDoc.createFile("application/json", targetFileName) ?: return false
+            val newFile = currentDoc.createFile(getMimeType(targetFileName), targetFileName) ?: return false
             context.contentResolver.openInputStream(srcFile.uri)?.use { input ->
                 context.contentResolver.openOutputStream(newFile.uri)?.use { output ->
                     input.copyTo(output)
@@ -158,7 +165,7 @@ object LevelRepository {
 
         var newFile: DocumentFile? = null
         try {
-            newFile = destDir.createFile("application/json", srcName) ?: return false
+            newFile = destDir.createFile(getMimeType(srcName), srcName) ?: return false
 
             context.contentResolver.openInputStream(srcFile.uri)?.use { input ->
                 context.contentResolver.openOutputStream(newFile.uri)?.use { output ->

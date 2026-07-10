@@ -30,6 +30,7 @@ import androidx.core.content.edit
 import com.example.z_editor.ui.theme.LocalDarkTheme
 import com.example.z_editor.ui.theme.PVZ2LevelEditorTheme
 import com.example.z_editor.views.components.LocaleUtils
+import com.example.z_editor.datapack.ui.DataPackToolsScreen
 import com.example.z_editor.views.screens.main.AboutScreen
 import com.example.z_editor.views.screens.main.EditorScreen
 import com.example.z_editor.views.screens.main.LevelListScreen
@@ -93,7 +94,8 @@ class MainActivity : ComponentActivity() {
 enum class ScreenState {
     LevelList,
     Editor,
-    About
+    About,
+    DataPackTools
 }
 
 @Composable
@@ -112,7 +114,7 @@ fun AppNavigation(
         targetState = currentScreen,
         label = "MainNavigationTransition",
         transitionSpec = {
-            if (targetState == ScreenState.Editor || targetState == ScreenState.About) {
+            if (targetState == ScreenState.Editor || targetState == ScreenState.About || targetState == ScreenState.DataPackTools) {
                 (slideInHorizontally { width -> width } + fadeIn())
                     .togetherWith(
                         slideOutHorizontally { width -> -width / 3 } + fadeOut()
@@ -140,6 +142,9 @@ fun AppNavigation(
                     onAboutClick = {
                         currentScreen = ScreenState.About
                     },
+                    onDataPackToolsClick = {
+                        currentScreen = ScreenState.DataPackTools
+                    },
                     onLanguageChange = onLanguageChange,
                 )
             }
@@ -158,6 +163,14 @@ fun AppNavigation(
 
             ScreenState.About -> {
                 AboutScreen(
+                    onBack = {
+                        currentScreen = ScreenState.LevelList
+                    }
+                )
+            }
+
+            ScreenState.DataPackTools -> {
+                DataPackToolsScreen(
                     onBack = {
                         currentScreen = ScreenState.LevelList
                     }
