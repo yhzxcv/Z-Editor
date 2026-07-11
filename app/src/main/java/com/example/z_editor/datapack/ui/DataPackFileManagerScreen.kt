@@ -14,7 +14,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -39,9 +38,8 @@ import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.example.z_editor.data.repository.FileItem
 import com.example.z_editor.data.repository.LevelRepository
-import com.example.z_editor.datapack.hujson.HujsonConverter
+import com.example.z_editor.datapack.hotupdate.HotUpdateJSONConverter
 import com.example.z_editor.datapack.rton.RtonConverter
-import com.example.z_editor.ui.theme.PvzBluePrimary
 import com.example.z_editor.views.components.rememberDebouncedClick
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
@@ -64,8 +62,8 @@ private enum class ConvertTarget(
     PLAIN_RTON_TO_JSON("json", "解析为 JSON 文本", Icons.Default.Code),
     PLAIN_RTON_TO_ENCRYPTED("rton", "加密为 游戏 RTON", Icons.Default.Lock, true),
     ENCRYPTED_RTON_TO_PLAIN("rton", "解密为 普通 RTON", Icons.Default.Description, true),
-    HUJSON_TO_JSON("json", "解密热更新 → JSON", Icons.Default.Code, true),
-    JSON_TO_HUJSON("json", "加密为热更新 (Hujson)", Icons.Default.Security, true)
+    HOTUPDATE_TO_JSON("json", "解密热更新 JSON", Icons.Default.Code, true),
+    JSON_TO_HOTUPDATE("json", "加密为热更新 JSON", Icons.Default.Security, true)
 }
 
 /** 目标格式对应的图标颜色，与文件列表中的格式颜色一致 */
@@ -74,8 +72,8 @@ private fun ConvertTarget.formatColor(themeColor: Color): Color = when (this) {
     ConvertTarget.PLAIN_RTON_TO_JSON -> themeColor           // JSON 主题色
     ConvertTarget.PLAIN_RTON_TO_ENCRYPTED -> Color(0xFFE91E63) // 加密 RTON 红色
     ConvertTarget.ENCRYPTED_RTON_TO_PLAIN -> Color(0xFFFF9800) // RTON 橙色
-    ConvertTarget.HUJSON_TO_JSON -> themeColor               // JSON 主题色
-    ConvertTarget.JSON_TO_HUJSON -> Color(0xFF9C27B0)        // Hujson 紫色
+    ConvertTarget.HOTUPDATE_TO_JSON -> themeColor               // JSON 主题色
+    ConvertTarget.JSON_TO_HOTUPDATE -> Color(0xFF9C27B0)        // 热更新 JSON 紫色
 }
 
 // ---- SAF Launcher ----
@@ -127,8 +125,8 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
     }
     var showNoFolderDialog by remember { mutableStateOf(false) }
 
-    // Hujson 检测（纯内容检测，像 RTON 一样通过读取文件内容判断格式）
-    fun isHujsonFile(uri: Uri): Boolean {
+    // 热更新 JSON 检测（纯内容检测，像 RTON 一样通过读取文件内容判断格式）
+    fun isHotUpdateFile(uri: Uri): Boolean {
         val segment = uri.lastPathSegment ?: return false
         if (!segment.endsWith(".json", true)) return false
         return try {
@@ -136,7 +134,7 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                 val bytes = ByteArray(4096)
                 val count = stream.read(bytes)
                 if (count <= 0) return false
-                HujsonConverter.isHotUpdateFormat(String(bytes, 0, count, Charsets.UTF_8))
+                HotUpdateJSONConverter.isHotUpdateFormat(String(bytes, 0, count, Charsets.UTF_8))
             } ?: false
         } catch (_: Exception) { false }
     }
@@ -236,8 +234,8 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                     ConvertTarget.PLAIN_RTON_TO_JSON -> RtonConverter.plainRtonToJson(context, item.uri, dirUri, outputName)
                     ConvertTarget.PLAIN_RTON_TO_ENCRYPTED -> RtonConverter.encryptRton(context, item.uri, dirUri, outputName, encryptionKey)
                     ConvertTarget.ENCRYPTED_RTON_TO_PLAIN -> RtonConverter.decryptRtonToPlain(context, item.uri, dirUri, outputName, encryptionKey)
-                    ConvertTarget.HUJSON_TO_JSON -> HujsonConverter.convertToNormalJson(context, item.uri, dirUri, outputName, encryptionKey)
-                    ConvertTarget.JSON_TO_HUJSON -> HujsonConverter.convertToHotUpdateJson(context, item.uri, dirUri, outputName, encryptionKey)
+                    ConvertTarget.HOTUPDATE_TO_JSON -> HotUpdateJSONConverter.convertToNormalJson(context, item.uri, dirUri, outputName, encryptionKey)
+                    ConvertTarget.JSON_TO_HOTUPDATE -> HotUpdateJSONConverter.convertToHotUpdateJson(context, item.uri, dirUri, outputName, encryptionKey)
                 }
             }
             isProcessing = false
@@ -270,8 +268,8 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
             ConvertTarget.PLAIN_RTON_TO_JSON -> "$baseName.json"
             ConvertTarget.PLAIN_RTON_TO_ENCRYPTED -> "${baseName}_enc.rton"
             ConvertTarget.ENCRYPTED_RTON_TO_PLAIN -> "${baseName}_plain.rton"
-            ConvertTarget.HUJSON_TO_JSON -> "${baseName}_decoded.json"
-            ConvertTarget.JSON_TO_HUJSON -> "${baseName}_encoded.json"
+            ConvertTarget.HOTUPDATE_TO_JSON -> "${baseName}_decoded.json"
+            ConvertTarget.JSON_TO_HOTUPDATE -> "${baseName}_encoded.json"
         }
 
         val currentDir = pathStack.lastOrNull()?.uri ?: return
@@ -293,20 +291,20 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
             val targets = withContext(Dispatchers.IO) {
                 when (ext) {
                     "json" -> {
-                        // 检测是否为 hujson 格式（Base64 热更新）
-                        val isHujson = try {
+                        // 检测是否为 HotUpdate 格式（Base64 热更新）
+                        val isHotUpdate = try {
                             context.contentResolver.openInputStream(item.uri)?.use { stream ->
                                 val bytes = ByteArray(4096)
                                 val count = stream.read(bytes)
-                                if (count > 0) HujsonConverter.isHotUpdateFormat(String(bytes, 0, count, Charsets.UTF_8))
+                                if (count > 0) HotUpdateJSONConverter.isHotUpdateFormat(String(bytes, 0, count, Charsets.UTF_8))
                                 else false
                             } ?: false
                         } catch (_: Exception) { false }
 
-                        if (isHujson) {
-                            listOf(ConvertTarget.HUJSON_TO_JSON)
+                        if (isHotUpdate) {
+                            listOf(ConvertTarget.JSON_TO_HOTUPDATE)
                         } else {
-                            listOf(ConvertTarget.JSON_TO_PLAIN_RTON, ConvertTarget.JSON_TO_HUJSON)
+                            listOf(ConvertTarget.JSON_TO_PLAIN_RTON, ConvertTarget.JSON_TO_HOTUPDATE)
                         }
                     }
                     "rton" -> {
@@ -624,7 +622,7 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                                 }
                             } else {
                                 val encrypted = remember(item.uri) { isEncryptedRton(item.uri) }
-                                val isHujson = remember(item.uri) { isHujsonFile(item.uri) }
+                                val isHotUpdate = remember(item.uri) { isHotUpdateFile(item.uri) }
                                 Card(modifier = Modifier.fillMaxWidth()
                                     .alpha(if (dimmed) 0.5f else 1f)
                                     .clickable(enabled = !isMovingMode) { detectAndShowMenu(item) },
@@ -636,7 +634,7 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                                         val isJson = item.name.endsWith(".json", true)
                                         val (fileIcon, iconTint, fileLabel) = when {
                                             encrypted -> Triple(Icons.Default.Lock, Color(0xFFE91E63), "加密 RTON")
-                                            isHujson -> Triple(Icons.Default.Security, Color(0xFF9C27B0), "热更新 (Hujson)")
+                                            isHotUpdate -> Triple(Icons.Default.Security, Color(0xFF9C27B0), "热更新 JSON")
                                             isRton -> Triple(Icons.Default.Description, Color(0xFFFF9800), "RTON 文件")
                                             isSmf -> Triple(Icons.Default.Inventory2, Color(0xFF00BCD4), "数据包 (SMF)")
                                             isJson -> Triple(Icons.Default.Code, themeColor, "JSON 文件")
@@ -896,19 +894,19 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
         ) {
             HelpSection(
                 title = "功能介绍",
-                body = "文件管理器用于浏览、转换和操作游戏数据包中的文件。支持 JSON、RTON（普通/加密）、Hujson（热更新）等格式。"
+                body = "文件管理器用于浏览、转换和操作游戏数据包中的文件。支持 JSON、RTON（普通/加密）、热更新 JSON 等格式。"
             )
             HelpSection(
                 title = "格式识别",
                 body = "• JSON 文件（.json）— 蓝色图标，可直接查看和编辑\n" +
                     "• RTON 文件（.rton）— 橙色图标，游戏使用的二进制格式\n" +
                     "• 加密 RTON — 红色图标，需密钥才能解密查看\n" +
-                    "• Hujson — 紫色图标，Base64 编码的热更新格式\n" +
+                    "• 热更新JSON — 紫色图标，Base64 编码的热更新格式\n" +
                     "• SMF 数据包 — 青色图标，游戏资源容器文件"
             )
             HelpSection(
                 title = "加密操作",
-                body = "加解密 RTON 和 Hujson 需要提前设置密钥，点击顶栏钥匙图标配置密钥。软件不提供密钥。"
+                body = "加解密 RTON 和热更新 JSON 需要提前设置密钥，点击顶栏钥匙图标配置密钥。软件不提供密钥。"
             )
         }
     }

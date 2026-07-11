@@ -253,10 +253,10 @@ private fun DataPackToolsMainContent(
                 )
                 HelpSection(
                     title = "文件格式转换",
-                    body = "支持 JSON、RTON、加密 RTON、Hujson（热更新）等格式之间的相互转换。\n" +
+                    body = "支持 JSON、RTON、加密 RTON、热更新 JSON 等格式之间的相互转换。\n" +
                         "• JSON ↔ RTON：关卡文件编辑的核心流程\n" +
                         "• RTON ↔ 加密 RTON：游戏使用的加密格式\n" +
-                        "• JSON ↔ Hujson：热更新补丁的编解码"
+                        "• JSON ↔ 热更新JSON：热更新补丁的编解码"
                 )
                 HelpSection(
                     title = "数据包补丁",
