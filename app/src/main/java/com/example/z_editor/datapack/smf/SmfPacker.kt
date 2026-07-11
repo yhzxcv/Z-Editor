@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
+import com.example.z_editor.datapack.smf.SmfPacker.patchRsbLegacy
 import java.io.ByteArrayOutputStream
 import java.util.zip.Deflater
 import java.util.zip.Inflater
@@ -27,8 +28,10 @@ object SmfPacker {
     private const val TAG = "SmfPacker"
     private const val POPCAP_ZLIB_MAGIC = 0xDEADFED4.toInt()
 
-    private val RSB_MAGIC = byteArrayOf('1'.code.toByte(), 'b'.code.toByte(), 's'.code.toByte(), 'r'.code.toByte())
-    private val RSGP_MAGIC = byteArrayOf('p'.code.toByte(), 'g'.code.toByte(), 's'.code.toByte(), 'r'.code.toByte())
+    private val RSB_MAGIC =
+        byteArrayOf('1'.code.toByte(), 'b'.code.toByte(), 's'.code.toByte(), 'r'.code.toByte())
+    private val RSGP_MAGIC =
+        byteArrayOf('p'.code.toByte(), 'g'.code.toByte(), 's'.code.toByte(), 'r'.code.toByte())
 
     // ---- Public data classes ----
 
@@ -133,13 +136,14 @@ object SmfPacker {
             Log.d(TAG, "Pack: ${patchIndex.fileCount} patches indexed")
 
             // Read template
-            val rawBytes = context.contentResolver.openInputStream(templateUri)?.use { it.readBytes() }
-                ?: return Result.failure(Exception("无法读取模板文件"))
+            val rawBytes =
+                context.contentResolver.openInputStream(templateUri)?.use { it.readBytes() }
+                    ?: return Result.failure(Exception("无法读取模板文件"))
 
             // ---- Step 1: Handle outer PopCap Zlib compression (0xDEADFED4) ----
             val outerCompressed = rawBytes.size >= 4 &&
-                rawBytes[0] == 0xD4.toByte() && rawBytes[1] == 0xFE.toByte() &&
-                rawBytes[2] == 0xAD.toByte() && rawBytes[3] == 0xDE.toByte()
+                    rawBytes[0] == 0xD4.toByte() && rawBytes[1] == 0xFE.toByte() &&
+                    rawBytes[2] == 0xAD.toByte() && rawBytes[3] == 0xDE.toByte()
 
             var rawData: ByteArray
             if (outerCompressed) {
@@ -177,6 +181,7 @@ object SmfPacker {
                     subgroupsModified = rsbResult.subgroupsModified
                     patchesApplied = rsbResult.patchesApplied
                 }
+
                 magic.contentEquals(RSGP_MAGIC) -> {
                     Log.d(TAG, "Detected standalone RSGP container")
                     val (patched, wasModified) = patchRsgpLegacy(rawData, patchIndex)
@@ -187,6 +192,7 @@ object SmfPacker {
                         patchesApplied = patchIndex.fileCount
                     }
                 }
+
                 else -> {
                     val hex = magic.joinToString("") { "%02X".format(it) }
                     return Result.failure(Exception("未知文件格式: magic=$hex"))
@@ -222,9 +228,18 @@ object SmfPacker {
                 ?: return Result.failure(Exception("无法创建输出文件"))
             context.contentResolver.openOutputStream(outFile.uri)?.use { it.write(finalData) }
 
-            Log.d(TAG, "Written: $outputName (${finalData.size} bytes), " +
-                "$patchesApplied patches in $subgroupsModified subgroups")
-            Result.success(PackResult(outputName, patchesApplied, subgroupsModified, finalData.size.toLong()))
+            Log.d(
+                TAG, "Written: $outputName (${finalData.size} bytes), " +
+                        "$patchesApplied patches in $subgroupsModified subgroups"
+            )
+            Result.success(
+                PackResult(
+                    outputName,
+                    patchesApplied,
+                    subgroupsModified,
+                    finalData.size.toLong()
+                )
+            )
         } catch (e: Exception) {
             Log.e(TAG, "packSmf failed", e)
             Result.failure(e)
@@ -251,7 +266,8 @@ object SmfPacker {
             val basename = rawName.substringAfterLast('/').substringAfterLast('\\')
             if (basename.isEmpty()) continue
             try {
-                val bytes = context.contentResolver.openInputStream(file.uri)?.use { it.readBytes() }
+                val bytes =
+                    context.contentResolver.openInputStream(file.uri)?.use { it.readBytes() }
                 if (bytes != null) {
                     map[basename] = bytes
                     lowerMap[basename.lowercase()] = basename
@@ -357,14 +373,16 @@ object SmfPacker {
             val decodedName = fileName.replace('\\', '/')
 
             if (decodedName.isNotEmpty()) {
-                entries.add(RsgpFileEntry(
-                    name = decodedName,
-                    isImage = isImage,
-                    offset = foffset,
-                    size = fsize,
-                    sizePos = sizePos,
-                    offsetPos = sizePos - 4
-                ))
+                entries.add(
+                    RsgpFileEntry(
+                        name = decodedName,
+                        isImage = isImage,
+                        offset = foffset,
+                        size = fsize,
+                        sizePos = sizePos,
+                        offsetPos = sizePos - 4
+                    )
+                )
             }
         }
 
@@ -480,7 +498,12 @@ object SmfPacker {
             if (compFlags and 1 == 0) {
                 imageData = subdata.copyOfRange(imageDataOffset, imageDataOffset + compImageSize)
             } else {
-                imageData = zlibDecompress(subdata.copyOfRange(imageDataOffset, imageDataOffset + compImageSize))
+                imageData = zlibDecompress(
+                    subdata.copyOfRange(
+                        imageDataOffset,
+                        imageDataOffset + compImageSize
+                    )
+                )
             }
         } else {
             imageData = ByteArray(0)
@@ -761,7 +784,9 @@ object SmfPacker {
             val rsgOffset = oldOffset + rsgShift
 
             // Subgroup filter
-            if (subgroupFilter != null && !name.lowercase().startsWith(subgroupFilter.lowercase())) {
+            if (subgroupFilter != null && !name.lowercase()
+                    .startsWith(subgroupFilter.lowercase())
+            ) {
                 // Still cascade offset
                 data.writeU32LE(infoStart + 128, rsgOffset)
                 continue
@@ -835,7 +860,13 @@ object SmfPacker {
             data.writeU32LE(infoStart + 128, rsgOffset)
         }
 
-        return RsbLegacyResult(data, anyModified, emptyList(), subgroupsModified, patchIndex.fileCount)
+        return RsbLegacyResult(
+            data,
+            anyModified,
+            emptyList(),
+            subgroupsModified,
+            patchIndex.fileCount
+        )
     }
 
     // =========================================================================
@@ -896,9 +927,9 @@ object SmfPacker {
 
     private fun ByteArray.readU32LE(offset: Int): Int {
         return (this[offset].toInt() and 0xFF) or
-            ((this[offset + 1].toInt() and 0xFF) shl 8) or
-            ((this[offset + 2].toInt() and 0xFF) shl 16) or
-            ((this[offset + 3].toInt() and 0xFF) shl 24)
+                ((this[offset + 1].toInt() and 0xFF) shl 8) or
+                ((this[offset + 2].toInt() and 0xFF) shl 16) or
+                ((this[offset + 3].toInt() and 0xFF) shl 24)
     }
 
     private fun ByteArray.writeU32LE(offset: Int, value: Int) {
@@ -910,8 +941,8 @@ object SmfPacker {
 
     private fun ByteArray.readU24LE(offset: Int): Int {
         return (this[offset].toInt() and 0xFF) or
-            ((this[offset + 1].toInt() and 0xFF) shl 8) or
-            ((this[offset + 2].toInt() and 0xFF) shl 16)
+                ((this[offset + 1].toInt() and 0xFF) shl 8) or
+                ((this[offset + 2].toInt() and 0xFF) shl 16)
     }
 
     // ---- Zlib helpers ----

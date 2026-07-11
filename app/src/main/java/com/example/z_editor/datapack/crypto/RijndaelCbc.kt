@@ -103,7 +103,8 @@ class RijndaelCbc(
                 val pivot = aug[i][i]
                 for (j in 0 until 8) {
                     if (aug[i][j] != 0) {
-                        aug[i][j] = aLog[(255 + log[aug[i][j] and 0xFF] - log[pivot and 0xFF]) % 255]
+                        aug[i][j] =
+                            aLog[(255 + log[aug[i][j] and 0xFF] - log[pivot and 0xFF]) % 255]
                     }
                 }
                 for (t in 0 until 4) {
@@ -183,9 +184,9 @@ class RijndaelCbc(
             val tk = IntArray(kC) { i ->
                 val off = i * 4
                 (key[off].toInt() and 0xFF shl 24) or
-                    (key[off + 1].toInt() and 0xFF shl 16) or
-                    (key[off + 2].toInt() and 0xFF shl 8) or
-                    (key[off + 3].toInt() and 0xFF)
+                        (key[off + 1].toInt() and 0xFF shl 16) or
+                        (key[off + 2].toInt() and 0xFF shl 8) or
+                        (key[off + 3].toInt() and 0xFF)
             }
 
             // Copy values into round key arrays
@@ -202,12 +203,12 @@ class RijndaelCbc(
                 // Extrapolate using phi (the round key evolution function)
                 var tt = tk[kC - 1]
                 tk[0] = tk[0] xor (
-                    ((S[(tt ushr 16) and 0xFF] and 0xFF) shl 24) xor
-                        ((S[(tt ushr 8) and 0xFF] and 0xFF) shl 16) xor
-                        ((S[tt and 0xFF] and 0xFF) shl 8) xor
-                        (S[(tt ushr 24) and 0xFF] and 0xFF) xor
-                        ((rCon[rConPtr] and 0xFF) shl 24)
-                    )
+                        ((S[(tt ushr 16) and 0xFF] and 0xFF) shl 24) xor
+                                ((S[(tt ushr 8) and 0xFF] and 0xFF) shl 16) xor
+                                ((S[tt and 0xFF] and 0xFF) shl 8) xor
+                                (S[(tt ushr 24) and 0xFF] and 0xFF) xor
+                                ((rCon[rConPtr] and 0xFF) shl 24)
+                        )
                 rConPtr++
                 if (kC != 8) {
                     for (i in 1 until kC) tk[i] = tk[i] xor tk[i - 1]
@@ -215,11 +216,11 @@ class RijndaelCbc(
                     for (i in 1 until kC / 2) tk[i] = tk[i] xor tk[i - 1]
                     tt = tk[kC / 2 - 1]
                     tk[kC / 2] = tk[kC / 2] xor (
-                        (S[tt and 0xFF] and 0xFF) xor
-                            ((S[(tt ushr 8) and 0xFF] and 0xFF) shl 8) xor
-                            ((S[(tt ushr 16) and 0xFF] and 0xFF) shl 16) xor
-                            ((S[(tt ushr 24) and 0xFF] and 0xFF) shl 24)
-                        )
+                            (S[tt and 0xFF] and 0xFF) xor
+                                    ((S[(tt ushr 8) and 0xFF] and 0xFF) shl 8) xor
+                                    ((S[(tt ushr 16) and 0xFF] and 0xFF) shl 16) xor
+                                    ((S[(tt ushr 24) and 0xFF] and 0xFF) shl 24)
+                            )
                     for (i in kC / 2 + 1 until kC) tk[i] = tk[i] xor tk[i - 1]
                 }
                 // Copy values into round key arrays
@@ -236,9 +237,9 @@ class RijndaelCbc(
                 for (c in 0 until bC) {
                     val w = kD[r][c]
                     kD[r][c] = U1[(w ushr 24) and 0xFF] xor
-                        U2[(w ushr 16) and 0xFF] xor
-                        U3[(w ushr 8) and 0xFF] xor
-                        U4[w and 0xFF]
+                            U2[(w ushr 16) and 0xFF] xor
+                            U3[(w ushr 8) and 0xFF] xor
+                            U4[w and 0xFF]
                 }
             }
             return Pair(kE, kD)
@@ -261,7 +262,9 @@ class RijndaelCbc(
     private val Kd: Array<IntArray> = keyPair.second
     private val rounds = Ke.size - 1
     private val bC = blockSize / 4
-    private val sC = when (bC) { 4 -> 0; 6 -> 1; else -> 2 }
+    private val sC = when (bC) {
+        4 -> 0; 6 -> 1; else -> 2
+    }
 
     // ---- Encrypt ----
 
@@ -276,7 +279,8 @@ class RijndaelCbc(
         for (blockStart in ppt.indices step blockSize) {
             val block = ppt.copyOfRange(blockStart, blockStart + blockSize)
             // XOR with previous block (CBC)
-            val xored = ByteArray(blockSize) { i -> (block[i].toInt() and 0xFF xor (prevBlock[i].toInt() and 0xFF)).toByte() }
+            val xored =
+                ByteArray(blockSize) { i -> (block[i].toInt() and 0xFF xor (prevBlock[i].toInt() and 0xFF)).toByte() }
 
             // Encrypt one block
             val s1 = shifts[sC][1][0]
@@ -287,17 +291,17 @@ class RijndaelCbc(
             var t = IntArray(bC) { i ->
                 val off = i * 4
                 ((xored[off].toInt() and 0xFF) shl 24) or
-                    ((xored[off + 1].toInt() and 0xFF) shl 16) or
-                    ((xored[off + 2].toInt() and 0xFF) shl 8) or
-                    (xored[off + 3].toInt() and 0xFF) xor Ke[0][i]
+                        ((xored[off + 1].toInt() and 0xFF) shl 16) or
+                        ((xored[off + 2].toInt() and 0xFF) shl 8) or
+                        (xored[off + 3].toInt() and 0xFF) xor Ke[0][i]
             }
             // Apply round transforms
             for (r in 1 until rounds) {
                 val a = IntArray(bC) { i ->
                     T1[(t[i] ushr 24) and 0xFF] xor
-                        T2[(t[(i + s1) % bC] ushr 16) and 0xFF] xor
-                        T3[(t[(i + s2) % bC] ushr 8) and 0xFF] xor
-                        T4[t[(i + s3) % bC] and 0xFF] xor Ke[r][i]
+                            T2[(t[(i + s1) % bC] ushr 16) and 0xFF] xor
+                            T3[(t[(i + s2) % bC] ushr 8) and 0xFF] xor
+                            T4[t[(i + s3) % bC] and 0xFF] xor Ke[r][i]
                 }
                 t = a
             }
@@ -306,8 +310,10 @@ class RijndaelCbc(
             for (i in 0 until bC) {
                 val rk = Ke[rounds][i]
                 encBlock[i * 4] = (S[(t[i] ushr 24) and 0xFF] xor ((rk ushr 24) and 0xFF)).toByte()
-                encBlock[i * 4 + 1] = (S[(t[(i + s1) % bC] ushr 16) and 0xFF] xor ((rk ushr 16) and 0xFF)).toByte()
-                encBlock[i * 4 + 2] = (S[(t[(i + s2) % bC] ushr 8) and 0xFF] xor ((rk ushr 8) and 0xFF)).toByte()
+                encBlock[i * 4 + 1] =
+                    (S[(t[(i + s1) % bC] ushr 16) and 0xFF] xor ((rk ushr 16) and 0xFF)).toByte()
+                encBlock[i * 4 + 2] =
+                    (S[(t[(i + s2) % bC] ushr 8) and 0xFF] xor ((rk ushr 8) and 0xFF)).toByte()
                 encBlock[i * 4 + 3] = (S[t[(i + s3) % bC] and 0xFF] xor (rk and 0xFF)).toByte()
             }
             encBlock.copyInto(ct, blockStart)
@@ -337,17 +343,17 @@ class RijndaelCbc(
             var t = IntArray(bC) { i ->
                 val off = i * 4
                 ((block[off].toInt() and 0xFF) shl 24) or
-                    ((block[off + 1].toInt() and 0xFF) shl 16) or
-                    ((block[off + 2].toInt() and 0xFF) shl 8) or
-                    (block[off + 3].toInt() and 0xFF) xor Kd[0][i]
+                        ((block[off + 1].toInt() and 0xFF) shl 16) or
+                        ((block[off + 2].toInt() and 0xFF) shl 8) or
+                        (block[off + 3].toInt() and 0xFF) xor Kd[0][i]
             }
             // Apply round transforms
             for (r in 1 until rounds) {
                 val a = IntArray(bC) { i ->
                     T5[(t[i] ushr 24) and 0xFF] xor
-                        T6[(t[(i + s1) % bC] ushr 16) and 0xFF] xor
-                        T7[(t[(i + s2) % bC] ushr 8) and 0xFF] xor
-                        T8[t[(i + s3) % bC] and 0xFF] xor Kd[r][i]
+                            T6[(t[(i + s1) % bC] ushr 16) and 0xFF] xor
+                            T7[(t[(i + s2) % bC] ushr 8) and 0xFF] xor
+                            T8[t[(i + s3) % bC] and 0xFF] xor Kd[r][i]
                 }
                 t = a
             }
@@ -356,13 +362,16 @@ class RijndaelCbc(
             for (i in 0 until bC) {
                 val rk = Kd[rounds][i]
                 decBlock[i * 4] = (Si[(t[i] ushr 24) and 0xFF] xor ((rk ushr 24) and 0xFF)).toByte()
-                decBlock[i * 4 + 1] = (Si[(t[(i + s1) % bC] ushr 16) and 0xFF] xor ((rk ushr 16) and 0xFF)).toByte()
-                decBlock[i * 4 + 2] = (Si[(t[(i + s2) % bC] ushr 8) and 0xFF] xor ((rk ushr 8) and 0xFF)).toByte()
+                decBlock[i * 4 + 1] =
+                    (Si[(t[(i + s1) % bC] ushr 16) and 0xFF] xor ((rk ushr 16) and 0xFF)).toByte()
+                decBlock[i * 4 + 2] =
+                    (Si[(t[(i + s2) % bC] ushr 8) and 0xFF] xor ((rk ushr 8) and 0xFF)).toByte()
                 decBlock[i * 4 + 3] = (Si[t[(i + s3) % bC] and 0xFF] xor (rk and 0xFF)).toByte()
             }
             // XOR with previous block (CBC inverse)
             for (i in 0 until blockSize) {
-                ppt[blockStart + i] = (decBlock[i].toInt() and 0xFF xor (prevBlock[i].toInt() and 0xFF)).toByte()
+                ppt[blockStart + i] =
+                    (decBlock[i].toInt() and 0xFF xor (prevBlock[i].toInt() and 0xFF)).toByte()
             }
             prevBlock = block
         }

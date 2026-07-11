@@ -49,11 +49,18 @@ object RtonConverter {
         outputName: String
     ): Result<String> {
         return try {
-            val inputBytes = context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
+            val inputBytes =
+                context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
             val map = RtonParser.parse(inputBytes)
             val jsonStr = gson.toJson(map)
 
-            writeFile(context, outputDirUri, outputName, jsonStr.toByteArray(Charsets.UTF_8), "application/json")
+            writeFile(
+                context,
+                outputDirUri,
+                outputName,
+                jsonStr.toByteArray(Charsets.UTF_8),
+                "application/json"
+            )
             Result.success(outputName)
         } catch (e: Exception) {
             Result.failure(e)
@@ -71,7 +78,8 @@ object RtonConverter {
         key: String
     ): Result<String> {
         return try {
-            val inputBytes = context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
+            val inputBytes =
+                context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
             val keyBytes = Pvz2Crypto.prepareKey(key)
             val cipher = RijndaelCbc(keyBytes, RijndaelCbc.BLOCK_SIZE)
             val encrypted = cipher.encrypt(inputBytes)
@@ -95,7 +103,8 @@ object RtonConverter {
         key: String
     ): Result<String> {
         return try {
-            var inputBytes = context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
+            var inputBytes =
+                context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
             // Strip 0x1000 header
             if (inputBytes.size >= 2 &&
                 inputBytes[0] == Pvz2Crypto.ENCRYPTION_HEADER[0] &&
@@ -125,7 +134,8 @@ object RtonConverter {
         key: String
     ): Result<String> {
         return try {
-            var inputBytes = context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
+            var inputBytes =
+                context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
             // Strip 0x1000 header
             if (inputBytes.size >= 2 &&
                 inputBytes[0] == Pvz2Crypto.ENCRYPTION_HEADER[0] &&
@@ -139,7 +149,13 @@ object RtonConverter {
 
             val map = RtonParser.parse(decrypted)
             val jsonStr = gson.toJson(map)
-            writeFile(context, outputDirUri, outputName, jsonStr.toByteArray(Charsets.UTF_8), "application/json")
+            writeFile(
+                context,
+                outputDirUri,
+                outputName,
+                jsonStr.toByteArray(Charsets.UTF_8),
+                "application/json"
+            )
             Result.success(outputName)
         } catch (e: Exception) {
             Result.failure(e)
@@ -177,7 +193,13 @@ object RtonConverter {
 
     // ---- Internal ----
 
-    private fun writeFile(context: Context, dirUri: Uri, fileName: String, data: ByteArray, mimeType: String) {
+    private fun writeFile(
+        context: Context,
+        dirUri: Uri,
+        fileName: String,
+        data: ByteArray,
+        mimeType: String
+    ) {
         val dir = DocumentFile.fromTreeUri(context, dirUri)!!
         val existing = dir.findFile(fileName)
         if (existing != null) {
