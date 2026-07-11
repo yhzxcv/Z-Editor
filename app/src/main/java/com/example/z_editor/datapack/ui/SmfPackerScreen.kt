@@ -7,20 +7,60 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Archive
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.FolderOff
+import androidx.compose.material.icons.filled.InsertDriveFile
+import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.NoteAdd
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.SaveAlt
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -127,7 +167,8 @@ fun SmfPackerScreen(onBack: () -> Unit) {
         isLoading = true
         scope.launch {
             val files = withContext(Dispatchers.IO) {
-                val dir = DocumentFile.fromTreeUri(context, dirUri) ?: return@withContext emptyList<DisplayFile>()
+                val dir = DocumentFile.fromTreeUri(context, dirUri)
+                    ?: return@withContext emptyList<DisplayFile>()
                 dir.listFiles()
                     .filter { it.isFile }
                     .mapNotNull { f ->
@@ -151,7 +192,8 @@ fun SmfPackerScreen(onBack: () -> Unit) {
         val dirUri = patchesDirUri ?: return
         scope.launch {
             val files = withContext(Dispatchers.IO) {
-                val dir = DocumentFile.fromTreeUri(context, dirUri) ?: return@withContext emptyList<DisplayFile>()
+                val dir = DocumentFile.fromTreeUri(context, dirUri)
+                    ?: return@withContext emptyList<DisplayFile>()
                 dir.listFiles()
                     .filter { it.isFile }
                     .mapNotNull { f ->
@@ -198,10 +240,17 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                 onSuccess = { r ->
                     packResult = r
                     if (r.patchesApplied == 0 && r.subgroupsModified == 0) {
-                        Toast.makeText(context, "未检测到匹配的补丁文件，已保存原文件", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            "未检测到匹配的补丁文件，已保存原文件",
+                            Toast.LENGTH_LONG
+                        ).show()
                     } else {
-                        Toast.makeText(context,
-                            "打包完成！${r.subgroupsModified} 个子组, ${r.patchesApplied} 个文件补丁已注入", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            "打包完成！${r.subgroupsModified} 个子组, ${r.patchesApplied} 个文件补丁已注入",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                     // Refresh patches (in case user wants to pack again with different patches)
                     scanPatches()
@@ -232,7 +281,11 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                 title = { Text("数据包补丁", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
                 navigationIcon = {
                     IconButton(onClick = handleBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = MaterialTheme.colorScheme.onPrimary)
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            "返回",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 },
                 actions = {
@@ -240,15 +293,25 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                         scanTemplates()
                         scanPatches()
                     }) {
-                        Icon(Icons.Default.Refresh, "刷新", tint = MaterialTheme.colorScheme.onPrimary)
+                        Icon(
+                            Icons.Default.Refresh,
+                            "刷新",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                     IconButton(onClick = { keyInput = encryptionKey; showKeyDialog = true }) {
-                        Icon(Icons.Default.Key, "密钥",
+                        Icon(
+                            Icons.Default.Key, "密钥",
                             tint = if (encryptionKey.isNotBlank()) MaterialTheme.colorScheme.tertiary
-                                   else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f))
+                            else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                        )
                     }
                     IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助", tint = MaterialTheme.colorScheme.onPrimary)
+                        Icon(
+                            Icons.AutoMirrored.Filled.HelpOutline,
+                            "帮助",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -260,14 +323,18 @@ fun SmfPackerScreen(onBack: () -> Unit) {
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.padding(padding).fillMaxSize(),
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize(),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // ---- Template selection ----
             item {
-                SectionHeader(icon = Icons.Default.InsertDriveFile, title = "选择数据包",
-                    subtitle = "来自 packer/original/")
+                SectionHeader(
+                    icon = Icons.Default.InsertDriveFile, title = "选择数据包",
+                    subtitle = "来自 packer/original/"
+                )
             }
 
             if (templateFiles.isEmpty()) {
@@ -296,8 +363,10 @@ fun SmfPackerScreen(onBack: () -> Unit) {
             // ---- Patches ----
             item {
                 Spacer(Modifier.height(8.dp))
-                SectionHeader(icon = Icons.Default.Folder, title = "补丁文件",
-                    subtitle = "来自 packer/patches/")
+                SectionHeader(
+                    icon = Icons.Default.Folder, title = "补丁文件",
+                    subtitle = "来自 packer/patches/"
+                )
             }
 
             if (patchFiles.isEmpty()) {
@@ -315,10 +384,12 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                 }
                 if (patchFiles.size > 50) {
                     item {
-                        Text("... 还有 ${patchFiles.size - 50} 个文件未显示",
+                        Text(
+                            "... 还有 ${patchFiles.size - 50} 个文件未显示",
                             fontSize = 13.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(start = 16.dp))
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
                     }
                 }
                 item {
@@ -335,8 +406,10 @@ fun SmfPackerScreen(onBack: () -> Unit) {
             // ---- Output name ----
             item {
                 Spacer(Modifier.height(8.dp))
-                SectionHeader(icon = Icons.Default.SaveAlt, title = "输出文件名",
-                    subtitle = "将保存到 packer/output/")
+                SectionHeader(
+                    icon = Icons.Default.SaveAlt, title = "输出文件名",
+                    subtitle = "将保存到 packer/output/"
+                )
             }
 
             item {
@@ -364,11 +437,17 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Warning, null,
-                                    tint = MaterialTheme.colorScheme.onTertiary, modifier = Modifier.size(20.dp))
+                                Icon(
+                                    Icons.Default.Warning,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.onTertiary,
+                                    modifier = Modifier.size(20.dp)
+                                )
                                 Spacer(Modifier.width(8.dp))
-                                Text("文件名冲突", fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onTertiary)
+                                Text(
+                                    "文件名冲突", fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onTertiary
+                                )
                             }
                             Spacer(Modifier.height(8.dp))
                             conflictErrors.forEach { c ->
@@ -392,11 +471,19 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.CheckCircle, null,
-                                    tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+                                Icon(
+                                    Icons.Default.CheckCircle,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(24.dp)
+                                )
                                 Spacer(Modifier.width(12.dp))
-                                Text("打包成功", fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 16.sp)
+                                Text(
+                                    "打包成功",
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    fontSize = 16.sp
+                                )
                             }
                             Spacer(Modifier.height(8.dp))
                             ResultRow("输出文件", result.outputName)
@@ -416,11 +503,17 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Error, null,
-                                    tint = MaterialTheme.colorScheme.onError, modifier = Modifier.size(24.dp))
+                                Icon(
+                                    Icons.Default.Error,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.onError,
+                                    modifier = Modifier.size(24.dp)
+                                )
                                 Spacer(Modifier.width(12.dp))
-                                Text("打包失败", fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onError, fontSize = 16.sp)
+                                Text(
+                                    "打包失败", fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onError, fontSize = 16.sp
+                                )
                             }
                             Spacer(Modifier.height(8.dp))
                             Text(error, fontSize = 13.sp, color = MaterialTheme.colorScheme.onError)
@@ -435,7 +528,9 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                 Button(
                     onClick = { doPack() },
                     enabled = selectedTemplate != null && !isPacking,
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = themeColor),
                     shape = RoundedCornerShape(12.dp)
                 ) {
@@ -460,8 +555,8 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = "补丁文件按文件名 (basename) 自动匹配数据包内文件。\n" +
-                        "请确保补丁文件名与数据包内文件同名。\n" +
-                        "输出文件将保存到 packer/output/ 目录。",
+                            "请确保补丁文件名与数据包内文件同名。\n" +
+                            "输出文件将保存到 packer/output/ 目录。",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
                     textAlign = TextAlign.Center,
@@ -499,22 +594,22 @@ fun SmfPackerScreen(onBack: () -> Unit) {
             HelpSection(
                 title = "使用步骤",
                 body = "1. 将原始数据包文件（.smf 或 .rsb）放入 packer/original/ 目录\n" +
-                    "2. 将修改后的补丁文件放入 packer/patches/ 目录\n" +
-                    "3. 补丁文件名需与数据包内文件同名（按 basename 自动匹配）\n" +
-                    "4. 选择数据包模板，确认输出文件名，点击「开始打包」"
+                        "2. 将修改后的补丁文件放入 packer/patches/ 目录\n" +
+                        "3. 补丁文件名需与数据包内文件同名（按 basename 自动匹配）\n" +
+                        "4. 选择数据包模板，确认输出文件名，点击「开始打包」"
             )
             HelpSection(
                 title = "目录结构",
                 body = "packer/original/ — 存放原始数据包模板\n" +
-                    "packer/patches/ — 存放修改后的补丁文件\n" +
-                    "packer/output/ — 打包输出目录"
+                        "packer/patches/ — 存放修改后的补丁文件\n" +
+                        "packer/output/ — 打包输出目录"
             )
             HelpSection(
                 title = "注意事项",
                 body = "• 补丁按文件名自动匹配，不区分大小写\n" +
-                    "• 输出文件默认与模板同名，可手动修改\n" +
-                    "• 如多个子组中存在同名文件，将报告冲突\n" +
-                    "• 操作前建议备份原始文件"
+                        "• 输出文件默认与模板同名，可手动修改\n" +
+                        "• 如多个子组中存在同名文件，将报告冲突\n" +
+                        "• 操作前建议备份原始文件"
             )
         }
     }
@@ -566,39 +661,68 @@ private data class DisplayFile(
 // ---- Components ----
 
 @Composable
-private fun SectionHeader(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, subtitle: String) {
+private fun SectionHeader(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    subtitle: String
+) {
     Column(modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(20.dp))
+            Icon(
+                icon,
+                null,
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.size(20.dp)
+            )
             Spacer(Modifier.width(6.dp))
-            Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onSurface)
+            Text(
+                title, fontWeight = FontWeight.Bold, fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
         Spacer(Modifier.height(2.dp))
-        Text(subtitle, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = 26.dp))
+        Text(
+            subtitle, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 26.dp)
+        )
     }
 }
 
 @Composable
-private fun EmptyHint(icon: androidx.compose.ui.graphics.vector.ImageVector, message: String, path: String) {
+private fun EmptyHint(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    message: String,
+    path: String
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(
+                alpha = 0.5f
+            )
+        ),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(
-            modifier = Modifier.padding(24.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(24.dp)
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(icon, null, tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier.size(40.dp))
+            Icon(
+                icon, null, tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                modifier = Modifier.size(40.dp)
+            )
             Spacer(Modifier.height(12.dp))
-            Text(message, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center)
+            Text(
+                message, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
             Spacer(Modifier.height(4.dp))
-            Text(path, fontSize = 13.sp, color = MaterialTheme.colorScheme.secondary,
-                fontWeight = FontWeight.Medium, textAlign = TextAlign.Center)
+            Text(
+                path, fontSize = 13.sp, color = MaterialTheme.colorScheme.secondary,
+                fontWeight = FontWeight.Medium, textAlign = TextAlign.Center
+            )
         }
     }
 }
@@ -611,7 +735,9 @@ private fun TemplateCard(
     onClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) themeColor.copy(alpha = 0.1f)
             else MaterialTheme.colorScheme.surface
@@ -631,13 +757,22 @@ private fun TemplateCard(
             )
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(file.name, fontWeight = FontWeight.Bold, fontSize = 15.sp,
-                    color = if (isSelected) themeColor else MaterialTheme.colorScheme.onSurface)
-                Text(formatSize(file.size), fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    file.name, fontWeight = FontWeight.Bold, fontSize = 15.sp,
+                    color = if (isSelected) themeColor else MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    formatSize(file.size), fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
             if (isSelected) {
-                Icon(Icons.Default.CheckCircle, "已选择", tint = themeColor, modifier = Modifier.size(24.dp))
+                Icon(
+                    Icons.Default.CheckCircle,
+                    "已选择",
+                    tint = themeColor,
+                    modifier = Modifier.size(24.dp)
+                )
             }
         }
     }
@@ -652,25 +787,42 @@ private fun PatchFileRow(file: DisplayFile) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(Modifier.width(4.dp))
-        Icon(Icons.Default.InsertDriveFile, null,
+        Icon(
+            Icons.Default.InsertDriveFile, null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-            modifier = Modifier.size(18.dp))
+            modifier = Modifier.size(18.dp)
+        )
         Spacer(Modifier.width(8.dp))
-        Text(file.name, fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.weight(1f))
-        Text(formatSize(file.size), fontSize = 13.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f))
+        Text(
+            file.name, fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            formatSize(file.size), fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+        )
     }
 }
 
 @Composable
 private fun ResultRow(label: String, value: String) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, fontSize = 13.sp, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f))
-        Text(value, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onPrimaryContainer)
+        Text(
+            label,
+            fontSize = 13.sp,
+            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+        )
+        Text(
+            value,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onPrimaryContainer
+        )
     }
 }
 

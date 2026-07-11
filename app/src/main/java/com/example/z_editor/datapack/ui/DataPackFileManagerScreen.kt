@@ -11,7 +11,18 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,9 +31,51 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.DriveFileMove
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.ContentPaste
+import androidx.compose.material.icons.filled.CreateNewFolder
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.FolderOpen
+import androidx.compose.material.icons.filled.InsertDriveFile
+import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -136,7 +189,9 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                 if (count <= 0) return false
                 HotUpdateJSONConverter.isHotUpdateFormat(String(bytes, 0, count, Charsets.UTF_8))
             } ?: false
-        } catch (_: Exception) { false }
+        } catch (_: Exception) {
+            false
+        }
     }
 
     // 加密 RTON 检测（前 2 字节 = 0x1000）
@@ -148,7 +203,9 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                 val header = ByteArray(2)
                 stream.read(header) == 2 && header[0] == 0x10.toByte() && header[1] == 0x00.toByte()
             } ?: false
-        } catch (_: Exception) { false }
+        } catch (_: Exception) {
+            false
+        }
     }
 
     // 操作菜单状态
@@ -182,14 +239,16 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
         isLoading = true
         scope.launch {
             val items = withContext(Dispatchers.IO) {
-                val docDir = DocumentFile.fromTreeUri(context, currentUri) ?: return@withContext emptyList<FileItem>()
+                val docDir = DocumentFile.fromTreeUri(context, currentUri)
+                    ?: return@withContext emptyList<FileItem>()
                 docDir.listFiles().mapNotNull { file ->
                     val name = file.name ?: return@mapNotNull null
                     val isDir = file.isDirectory
                     if (isDir || !name.startsWith(".")) {
                         FileItem(name, file.uri, isDir, file.lastModified(), file.length())
                     } else null
-                }.sortedWith(compareByDescending<FileItem> { it.isDirectory }.thenBy { it.name.lowercase() })
+                }
+                    .sortedWith(compareByDescending<FileItem> { it.isDirectory }.thenBy { it.name.lowercase() })
             }
             fileItems.clear()
             fileItems.addAll(items)
@@ -230,12 +289,51 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
         scope.launch {
             val result = withContext(Dispatchers.IO) {
                 when (target) {
-                    ConvertTarget.JSON_TO_PLAIN_RTON -> RtonConverter.jsonToPlainRton(context, item.uri, dirUri, outputName)
-                    ConvertTarget.PLAIN_RTON_TO_JSON -> RtonConverter.plainRtonToJson(context, item.uri, dirUri, outputName)
-                    ConvertTarget.PLAIN_RTON_TO_ENCRYPTED -> RtonConverter.encryptRton(context, item.uri, dirUri, outputName, encryptionKey)
-                    ConvertTarget.ENCRYPTED_RTON_TO_PLAIN -> RtonConverter.decryptRtonToPlain(context, item.uri, dirUri, outputName, encryptionKey)
-                    ConvertTarget.HOTUPDATE_TO_JSON -> HotUpdateJSONConverter.convertToNormalJson(context, item.uri, dirUri, outputName, encryptionKey)
-                    ConvertTarget.JSON_TO_HOTUPDATE -> HotUpdateJSONConverter.convertToHotUpdateJson(context, item.uri, dirUri, outputName, encryptionKey)
+                    ConvertTarget.JSON_TO_PLAIN_RTON -> RtonConverter.jsonToPlainRton(
+                        context,
+                        item.uri,
+                        dirUri,
+                        outputName
+                    )
+
+                    ConvertTarget.PLAIN_RTON_TO_JSON -> RtonConverter.plainRtonToJson(
+                        context,
+                        item.uri,
+                        dirUri,
+                        outputName
+                    )
+
+                    ConvertTarget.PLAIN_RTON_TO_ENCRYPTED -> RtonConverter.encryptRton(
+                        context,
+                        item.uri,
+                        dirUri,
+                        outputName,
+                        encryptionKey
+                    )
+
+                    ConvertTarget.ENCRYPTED_RTON_TO_PLAIN -> RtonConverter.decryptRtonToPlain(
+                        context,
+                        item.uri,
+                        dirUri,
+                        outputName,
+                        encryptionKey
+                    )
+
+                    ConvertTarget.HOTUPDATE_TO_JSON -> HotUpdateJSONConverter.convertToNormalJson(
+                        context,
+                        item.uri,
+                        dirUri,
+                        outputName,
+                        encryptionKey
+                    )
+
+                    ConvertTarget.JSON_TO_HOTUPDATE -> HotUpdateJSONConverter.convertToHotUpdateJson(
+                        context,
+                        item.uri,
+                        dirUri,
+                        outputName,
+                        encryptionKey
+                    )
                 }
             }
             isProcessing = false
@@ -296,17 +394,30 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                             context.contentResolver.openInputStream(item.uri)?.use { stream ->
                                 val bytes = ByteArray(4096)
                                 val count = stream.read(bytes)
-                                if (count > 0) HotUpdateJSONConverter.isHotUpdateFormat(String(bytes, 0, count, Charsets.UTF_8))
+                                if (count > 0) HotUpdateJSONConverter.isHotUpdateFormat(
+                                    String(
+                                        bytes,
+                                        0,
+                                        count,
+                                        Charsets.UTF_8
+                                    )
+                                )
                                 else false
                             } ?: false
-                        } catch (_: Exception) { false }
+                        } catch (_: Exception) {
+                            false
+                        }
 
                         if (isHotUpdate) {
                             listOf(ConvertTarget.JSON_TO_HOTUPDATE)
                         } else {
-                            listOf(ConvertTarget.JSON_TO_PLAIN_RTON, ConvertTarget.JSON_TO_HOTUPDATE)
+                            listOf(
+                                ConvertTarget.JSON_TO_PLAIN_RTON,
+                                ConvertTarget.JSON_TO_HOTUPDATE
+                            )
                         }
                     }
+
                     "rton" -> {
                         val isPlain = try {
                             context.contentResolver.openInputStream(item.uri)?.use { stream ->
@@ -317,14 +428,20 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                                             bytes[2] == 'O'.code.toByte() && bytes[3] == 'N'.code.toByte()
                                 } else false
                             } ?: false
-                        } catch (e: Exception) { false }
+                        } catch (e: Exception) {
+                            false
+                        }
 
                         if (isPlain) {
-                            listOf(ConvertTarget.PLAIN_RTON_TO_JSON, ConvertTarget.PLAIN_RTON_TO_ENCRYPTED)
+                            listOf(
+                                ConvertTarget.PLAIN_RTON_TO_JSON,
+                                ConvertTarget.PLAIN_RTON_TO_ENCRYPTED
+                            )
                         } else {
                             listOf(ConvertTarget.ENCRYPTED_RTON_TO_PLAIN)
                         }
                     }
+
                     else -> emptyList()
                 }
             }
@@ -340,7 +457,14 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
         val currentUri = pathStack.lastOrNull()?.uri ?: return
         val finalName = renameInput.trim()
         if (finalName.isEmpty()) return
-        if (LevelRepository.renameItem(context, currentUri, target.name, finalName, target.isDirectory)) {
+        if (LevelRepository.renameItem(
+                context,
+                currentUri,
+                target.name,
+                finalName,
+                target.isDirectory
+            )
+        ) {
             Toast.makeText(context, "重命名成功", Toast.LENGTH_SHORT).show()
             itemToRename = null
             loadCurrentDirectory()
@@ -417,20 +541,43 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
             TopAppBar(
                 title = { Text("文件格式转换", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
                 navigationIcon = {
-                    IconButton(onClick = handleBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回", tint = MaterialTheme.colorScheme.onPrimary) }
+                    IconButton(onClick = handleBack) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            "返回",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
                 },
                 actions = {
                     IconButton(onClick = { loadCurrentDirectory() }) {
-                        Icon(Icons.Default.Refresh, "刷新", tint = MaterialTheme.colorScheme.onPrimary)
+                        Icon(
+                            Icons.Default.Refresh,
+                            "刷新",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                     IconButton(onClick = { keyInput = encryptionKey; showKeyDialog = true }) {
-                        Icon(Icons.Default.Key, "密钥", tint = if (encryptionKey.isNotBlank()) Color(0xFFFFD54F) else MaterialTheme.colorScheme.onPrimary.copy(alpha=0.7f))
+                        Icon(
+                            Icons.Default.Key,
+                            "密钥",
+                            tint = if (encryptionKey.isNotBlank()) Color(0xFFFFD54F) else MaterialTheme.colorScheme.onPrimary.copy(
+                                alpha = 0.7f
+                            )
+                        )
                     }
                     IconButton(onClick = { showHelpDialog = true }) {
-                        Icon(Icons.AutoMirrored.Filled.HelpOutline, "帮助", tint = MaterialTheme.colorScheme.onPrimary)
+                        Icon(
+                            Icons.AutoMirrored.Filled.HelpOutline,
+                            "帮助",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = themeColor, titleContentColor = MaterialTheme.colorScheme.onPrimary)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = themeColor,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                )
             )
         },
         floatingActionButton = {
@@ -472,21 +619,32 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
 
             // 面包屑导航
             LazyRow(
-                modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface).padding(vertical = 6.dp, horizontal = 18.dp),
-                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(vertical = 6.dp, horizontal = 18.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(pathStack.size) { index ->
                     val isLast = index == pathStack.size - 1
                     Surface(
                         color = if (isLast) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.surfaceVariant,
                         shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.clip(RoundedCornerShape(8.dp)).clickable(enabled = !isLast) {
-                            pathStack = pathStack.take(index + 1); loadCurrentDirectory()
-                        }
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable(enabled = !isLast) {
+                                pathStack = pathStack.take(index + 1); loadCurrentDirectory()
+                            }
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -509,7 +667,12 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                             )
                         }
                     }
-                    if (!isLast) Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f), modifier = Modifier.size(14.dp))
+                    if (!isLast) Icon(
+                        Icons.AutoMirrored.Filled.ArrowForward,
+                        null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.size(14.dp)
+                    )
                 }
             }
 
@@ -550,18 +713,41 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
 
             // 文件列表
             if (isLoading) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator(color = themeColor) }
+                Box(
+                    Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) { CircularProgressIndicator(color = themeColor) }
             } else {
-                LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     if (pathStack.size > 1) {
                         item {
-                            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                            Card(
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                                 elevation = CardDefaults.cardElevation(0.dp),
-                                modifier = Modifier.fillMaxWidth().clickable { pathStack = pathStack.dropLast(1); loadCurrentDirectory() }) {
-                                Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.Folder, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        pathStack = pathStack.dropLast(1); loadCurrentDirectory()
+                                    }) {
+                                Row(
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        Icons.Default.Folder,
+                                        null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                     Spacer(Modifier.width(16.dp))
-                                    Text("返回上级", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    Text(
+                                        "返回上级",
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 }
                             }
                         }
@@ -570,7 +756,9 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                     if (fileItems.isEmpty()) {
                         item {
                             Box(
-                                modifier = Modifier.fillMaxWidth().padding(top = 100.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 100.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -596,26 +784,62 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                             val actionsEnabled = !isMovingMode
 
                             if (item.isDirectory) {
-                                Card(modifier = Modifier.fillMaxWidth()
-                                    .alpha(if (isSelfMoving) 0.5f else 1f)
-                                    .clickable {
-                                        pathStack = pathStack + Breadcrumb(item.name, item.uri); loadCurrentDirectory()
-                                    },
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .alpha(if (isSelfMoving) 0.5f else 1f)
+                                        .clickable {
+                                            pathStack = pathStack + Breadcrumb(
+                                                item.name,
+                                                item.uri
+                                            ); loadCurrentDirectory()
+                                        },
                                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                                    elevation = CardDefaults.cardElevation(2.dp)) {
-                                    Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                                        Icon(Icons.Default.Folder, null, tint = Color(0xFFFFC107), modifier = Modifier.size(28.dp))
+                                    elevation = CardDefaults.cardElevation(2.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(
+                                            horizontal = 16.dp,
+                                            vertical = 12.dp
+                                        ), verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Folder,
+                                            null,
+                                            tint = Color(0xFFFFC107),
+                                            modifier = Modifier.size(28.dp)
+                                        )
                                         Spacer(Modifier.width(16.dp))
-                                        Text(item.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.weight(1f))
+                                        Text(
+                                            item.name,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 16.sp,
+                                            modifier = Modifier.weight(1f)
+                                        )
                                         if (actionsEnabled) {
                                             IconButton(onClick = {
                                                 renameInput = item.name
                                                 itemToRename = item
                                             }, modifier = Modifier.size(36.dp)) {
-                                                Icon(Icons.Default.Edit, "重命名", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                                                Icon(
+                                                    Icons.Default.Edit,
+                                                    "重命名",
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    modifier = Modifier.size(20.dp)
+                                                )
                                             }
-                                            IconButton(onClick = { itemToDelete = item }, modifier = Modifier.size(36.dp)) {
-                                                Icon(Icons.Default.Delete, "删除", tint = MaterialTheme.colorScheme.onError.copy(alpha = 0.8f), modifier = Modifier.size(20.dp))
+                                            IconButton(
+                                                onClick = { itemToDelete = item },
+                                                modifier = Modifier.size(36.dp)
+                                            ) {
+                                                Icon(
+                                                    Icons.Default.Delete,
+                                                    "删除",
+                                                    tint = MaterialTheme.colorScheme.onError.copy(
+                                                        alpha = 0.8f
+                                                    ),
+                                                    modifier = Modifier.size(20.dp)
+                                                )
                                             }
                                         }
                                     }
@@ -623,22 +847,59 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                             } else {
                                 val encrypted = remember(item.uri) { isEncryptedRton(item.uri) }
                                 val isHotUpdate = remember(item.uri) { isHotUpdateFile(item.uri) }
-                                Card(modifier = Modifier.fillMaxWidth()
-                                    .alpha(if (dimmed) 0.5f else 1f)
-                                    .clickable(enabled = !isMovingMode) { detectAndShowMenu(item) },
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .alpha(if (dimmed) 0.5f else 1f)
+                                        .clickable(enabled = !isMovingMode) { detectAndShowMenu(item) },
                                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                                    elevation = CardDefaults.cardElevation(2.dp)) {
-                                    Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    elevation = CardDefaults.cardElevation(2.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(
+                                            horizontal = 16.dp,
+                                            vertical = 12.dp
+                                        ), verticalAlignment = Alignment.CenterVertically
+                                    ) {
                                         val isRton = item.name.endsWith(".rton", true)
                                         val isSmf = item.name.endsWith(".smf", true)
                                         val isJson = item.name.endsWith(".json", true)
                                         val (fileIcon, iconTint, fileLabel) = when {
-                                            encrypted -> Triple(Icons.Default.Lock, Color(0xFFE91E63), "加密 RTON")
-                                            isHotUpdate -> Triple(Icons.Default.Security, Color(0xFF9C27B0), "热更新 JSON")
-                                            isRton -> Triple(Icons.Default.Description, Color(0xFFFF9800), "RTON 文件")
-                                            isSmf -> Triple(Icons.Default.Inventory2, Color(0xFF00BCD4), "数据包 (SMF)")
-                                            isJson -> Triple(Icons.Default.Code, themeColor, "JSON 文件")
-                                            else -> Triple(Icons.Default.InsertDriveFile, Color(0xFF9E9E9E), "文件")
+                                            encrypted -> Triple(
+                                                Icons.Default.Lock,
+                                                Color(0xFFE91E63),
+                                                "加密 RTON"
+                                            )
+
+                                            isHotUpdate -> Triple(
+                                                Icons.Default.Security,
+                                                Color(0xFF9C27B0),
+                                                "热更新 JSON"
+                                            )
+
+                                            isRton -> Triple(
+                                                Icons.Default.Description,
+                                                Color(0xFFFF9800),
+                                                "RTON 文件"
+                                            )
+
+                                            isSmf -> Triple(
+                                                Icons.Default.Inventory2,
+                                                Color(0xFF00BCD4),
+                                                "数据包 (SMF)"
+                                            )
+
+                                            isJson -> Triple(
+                                                Icons.Default.Code,
+                                                themeColor,
+                                                "JSON 文件"
+                                            )
+
+                                            else -> Triple(
+                                                Icons.Default.InsertDriveFile,
+                                                Color(0xFF9E9E9E),
+                                                "文件"
+                                            )
                                         }
                                         Icon(
                                             fileIcon, null,
@@ -646,8 +907,14 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                                         )
                                         Spacer(Modifier.width(16.dp))
                                         Column(modifier = Modifier.weight(1f)) {
-                                            Text(item.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
-                                            Text(fileLabel,
+                                            Text(
+                                                item.name,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 16.sp,
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                            Text(
+                                                fileLabel,
                                                 fontSize = 12.sp,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
@@ -655,26 +922,54 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                                         if (actionsEnabled) {
                                             IconButton(onClick = {
                                                 val dot = item.name.lastIndexOf('.')
-                                                copyInput = if (dot >= 0) item.name.substring(0, dot) + "_copy" + item.name.substring(dot)
+                                                copyInput = if (dot >= 0) item.name.substring(
+                                                    0,
+                                                    dot
+                                                ) + "_copy" + item.name.substring(dot)
                                                 else item.name + "_copy"
                                                 itemToCopy = item
                                             }, modifier = Modifier.size(36.dp)) {
-                                                Icon(Icons.Default.ContentCopy, "复制", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                                                Icon(
+                                                    Icons.Default.ContentCopy,
+                                                    "复制",
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    modifier = Modifier.size(20.dp)
+                                                )
                                             }
                                             IconButton(onClick = {
                                                 renameInput = item.name
                                                 itemToRename = item
                                             }, modifier = Modifier.size(36.dp)) {
-                                                Icon(Icons.Default.Edit, "重命名", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                                                Icon(
+                                                    Icons.Default.Edit,
+                                                    "重命名",
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    modifier = Modifier.size(20.dp)
+                                                )
                                             }
                                             IconButton(onClick = {
                                                 itemToMove = item
                                                 moveSourceUri = pathStack.lastOrNull()?.uri
                                             }, modifier = Modifier.size(36.dp)) {
-                                                Icon(Icons.AutoMirrored.Filled.DriveFileMove, "移动", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                                                Icon(
+                                                    Icons.AutoMirrored.Filled.DriveFileMove,
+                                                    "移动",
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    modifier = Modifier.size(20.dp)
+                                                )
                                             }
-                                            IconButton(onClick = { itemToDelete = item }, modifier = Modifier.size(36.dp)) {
-                                                Icon(Icons.Default.Delete, "删除", tint = MaterialTheme.colorScheme.onError.copy(alpha = 0.8f), modifier = Modifier.size(20.dp))
+                                            IconButton(
+                                                onClick = { itemToDelete = item },
+                                                modifier = Modifier.size(36.dp)
+                                            ) {
+                                                Icon(
+                                                    Icons.Default.Delete,
+                                                    "删除",
+                                                    tint = MaterialTheme.colorScheme.onError.copy(
+                                                        alpha = 0.8f
+                                                    ),
+                                                    modifier = Modifier.size(20.dp)
+                                                )
                                             }
                                         }
                                     }
@@ -715,11 +1010,21 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                     Spacer(Modifier.height(12.dp))
                     availableTargets.forEach { target ->
                         Card(
-                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                                .clickable { convertTargetItem = null; prepareConversion(item, target) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clickable {
+                                    convertTargetItem = null; prepareConversion(
+                                    item,
+                                    target
+                                )
+                                },
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                         ) {
-                            Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Icon(target.icon, null, tint = target.formatColor(themeColor))
                                 Spacer(Modifier.width(12.dp))
                                 Text(target.label, fontWeight = FontWeight.Medium)
@@ -729,7 +1034,14 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                 }
             },
             confirmButton = {},
-            dismissButton = { TextButton(onClick = { convertTargetItem = null }) { Text("取消", color = themeColor) } }
+            dismissButton = {
+                TextButton(onClick = { convertTargetItem = null }) {
+                    Text(
+                        "取消",
+                        color = themeColor
+                    )
+                }
+            }
         )
     }
 
@@ -743,11 +1055,23 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                 Button(
                     colors = ButtonDefaults.buttonColors(containerColor = themeColor),
                     onClick = {
-                    showOverwriteDialog = false
-                    executeConversion(pendingOverwriteItem!!, pendingOverwriteTarget!!, pathStack.last().uri, pendingOutputName)
-                }) { Text("覆盖") }
+                        showOverwriteDialog = false
+                        executeConversion(
+                            pendingOverwriteItem!!,
+                            pendingOverwriteTarget!!,
+                            pathStack.last().uri,
+                            pendingOutputName
+                        )
+                    }) { Text("覆盖") }
             },
-            dismissButton = { TextButton(onClick = { showOverwriteDialog = false }) { Text("取消", color = themeColor) } }
+            dismissButton = {
+                TextButton(onClick = { showOverwriteDialog = false }) {
+                    Text(
+                        "取消",
+                        color = themeColor
+                    )
+                }
+            }
         )
     }
 
@@ -772,12 +1096,19 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                 Button(
                     colors = ButtonDefaults.buttonColors(containerColor = themeColor),
                     onClick = {
-                    encryptionKey = keyInput.trim()
-                    prefs.edit { putString("encryption_key", encryptionKey) }
-                    showKeyDialog = false
-                }) { Text("保存") }
+                        encryptionKey = keyInput.trim()
+                        prefs.edit { putString("encryption_key", encryptionKey) }
+                        showKeyDialog = false
+                    }) { Text("保存") }
             },
-            dismissButton = { TextButton(onClick = { showKeyDialog = false }) { Text("取消", color = themeColor) } }
+            dismissButton = {
+                TextButton(onClick = { showKeyDialog = false }) {
+                    Text(
+                        "取消",
+                        color = themeColor
+                    )
+                }
+            }
         )
     }
 
@@ -790,9 +1121,19 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
             title = { Text("确认删除") },
             text = { Text("确定要删除「${itemToDelete!!.name}」吗？此操作不可恢复。") },
             confirmButton = {
-                Button(onClick = { handleDeleteConfirm() }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError)) { Text("删除") }
+                Button(
+                    onClick = { handleDeleteConfirm() },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onError)
+                ) { Text("删除") }
             },
-            dismissButton = { TextButton(onClick = { itemToDelete = null }) { Text("取消", color = themeColor) } }
+            dismissButton = {
+                TextButton(onClick = { itemToDelete = null }) {
+                    Text(
+                        "取消",
+                        color = themeColor
+                    )
+                }
+            }
         )
     }
 
@@ -818,7 +1159,14 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                     colors = ButtonDefaults.buttonColors(containerColor = themeColor),
                     onClick = { handleRenameConfirm() }) { Text("确认") }
             },
-            dismissButton = { TextButton(onClick = { itemToRename = null }) { Text("取消", color = themeColor) } }
+            dismissButton = {
+                TextButton(onClick = { itemToRename = null }) {
+                    Text(
+                        "取消",
+                        color = themeColor
+                    )
+                }
+            }
         )
     }
 
@@ -844,7 +1192,14 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                     colors = ButtonDefaults.buttonColors(containerColor = themeColor),
                     onClick = { handleCopyConfirm() }) { Text("确认") }
             },
-            dismissButton = { TextButton(onClick = { itemToCopy = null }) { Text("取消", color = themeColor) } }
+            dismissButton = {
+                TextButton(onClick = { itemToCopy = null }) {
+                    Text(
+                        "取消",
+                        color = themeColor
+                    )
+                }
+            }
         )
     }
 
@@ -873,14 +1228,24 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                     onClick = { handleNewFolder() }) { Text("确认") }
             },
             dismissButton = {
-                TextButton(onClick = { showNewFolderDialog = false }) { Text("取消", color = themeColor) }
+                TextButton(onClick = { showNewFolderDialog = false }) {
+                    Text(
+                        "取消",
+                        color = themeColor
+                    )
+                }
             }
         )
     }
 
     // 加载动画
     if (isProcessing) {
-        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.3f)).clickable(enabled = false){}, contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.3f))
+                .clickable(enabled = false) {}, contentAlignment = Alignment.Center
+        ) {
             CircularProgressIndicator(color = themeColor)
         }
     }
@@ -899,10 +1264,10 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
             HelpSection(
                 title = "格式识别",
                 body = "• JSON 文件（.json）— 蓝色图标，可直接查看和编辑\n" +
-                    "• RTON 文件（.rton）— 橙色图标，游戏使用的二进制格式\n" +
-                    "• 加密 RTON — 红色图标，需密钥才能解密查看\n" +
-                    "• 热更新 JSON — 紫色图标，Base64 编码的热更新格式\n" +
-                    "• SMF 数据包 — 青色图标，游戏资源容器文件"
+                        "• RTON 文件（.rton）— 橙色图标，游戏使用的二进制格式\n" +
+                        "• 加密 RTON — 红色图标，需密钥才能解密查看\n" +
+                        "• 热更新 JSON — 紫色图标，Base64 编码的热更新格式\n" +
+                        "• SMF 数据包 — 青色图标，游戏资源容器文件"
             )
             HelpSection(
                 title = "加密操作",

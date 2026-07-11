@@ -63,11 +63,13 @@ object RtonParser {
                 val hex = uid.reversedArray().joinToString("") { "%02x".format(it) }
                 "RTID($i1.$i2.$hex@$p1)"
             }
+
             0x03 -> {
                 val p1 = decodeUtf8Text(buf)  // first string
                 val p2 = decodeUtf8Text(buf)  // second string
                 "RTID($p2@$p1)"
             }
+
             else -> "RTID(unknown_$sub)"
         }
     }
@@ -193,6 +195,7 @@ object RtonParser {
                 val bytes = ByteArray(len).also { buf.get(it) }
                 decodeText(bytes)
             }
+
             0x82 -> decodeUtf8Text(buf)
 
             // RTID / Null
@@ -211,12 +214,14 @@ object RtonParser {
                 asciiCache.add(s)
                 s
             }
+
             0x91 -> asciiCache.getOrElse(buf.readVarint()) { "" }
             0x92 -> {
                 val s = decodeUtf8Text(buf)
                 utf8Cache.add(s)
                 s
             }
+
             0x93 -> utf8Cache.getOrElse(buf.readVarint()) { "" }
 
             else -> null

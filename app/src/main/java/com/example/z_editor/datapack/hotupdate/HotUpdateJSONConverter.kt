@@ -33,7 +33,13 @@ object HotUpdateJSONConverter {
             val decoded = decodeHotUpdateString(inputStr, key)
 
             // Write output (caller handles overwrite check)
-            writeFile(context, outputDirUri, outputName, decoded.toByteArray(Charsets.UTF_8), "application/json")
+            writeFile(
+                context,
+                outputDirUri,
+                outputName,
+                decoded.toByteArray(Charsets.UTF_8),
+                "application/json"
+            )
             Result.success(outputName)
         } catch (e: Exception) {
             Result.failure(e)
@@ -57,7 +63,13 @@ object HotUpdateJSONConverter {
             val encoded = encodeHotUpdateString(inputStr, key)
 
             // Write output (caller handles overwrite check)
-            writeFile(context, outputDirUri, outputName, encoded.toByteArray(Charsets.UTF_8), "application/json")
+            writeFile(
+                context,
+                outputDirUri,
+                outputName,
+                encoded.toByteArray(Charsets.UTF_8),
+                "application/json"
+            )
             Result.success(outputName)
         } catch (e: Exception) {
             Result.failure(e)
@@ -65,7 +77,13 @@ object HotUpdateJSONConverter {
     }
 
     // Shared SAF write helper
-    private fun writeFile(context: Context, dirUri: Uri, fileName: String, data: ByteArray, mimeType: String) {
+    private fun writeFile(
+        context: Context,
+        dirUri: Uri,
+        fileName: String,
+        data: ByteArray,
+        mimeType: String
+    ) {
         val dir = DocumentFile.fromTreeUri(context, dirUri)!!
         val existing = dir.findFile(fileName)
         if (existing != null) {
