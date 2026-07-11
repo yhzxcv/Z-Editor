@@ -901,7 +901,7 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                 body = "• JSON 文件（.json）— 蓝色图标，可直接查看和编辑\n" +
                     "• RTON 文件（.rton）— 橙色图标，游戏使用的二进制格式\n" +
                     "• 加密 RTON — 红色图标，需密钥才能解密查看\n" +
-                    "• 热更新JSON — 紫色图标，Base64 编码的热更新格式\n" +
+                    "• 热更新 JSON — 紫色图标，Base64 编码的热更新格式\n" +
                     "• SMF 数据包 — 青色图标，游戏资源容器文件"
             )
             HelpSection(
