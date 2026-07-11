@@ -98,7 +98,6 @@ fun BeachStageEventEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
-
         topBar = {
             CommonEditorTopAppBar(
                 title = "编辑 $currentAlias",
