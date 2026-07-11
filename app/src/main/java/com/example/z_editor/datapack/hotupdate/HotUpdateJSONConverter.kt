@@ -1,4 +1,4 @@
-package com.example.z_editor.datapack.hujson
+package com.example.z_editor.datapack.hotupdate
 
 import android.content.Context
 import android.net.Uri
@@ -14,7 +14,7 @@ import com.example.z_editor.datapack.crypto.Pvz2Crypto
  *
  * Ported from scripts/hujson/PvZ2_Level_Tool.py + packer.py
  */
-object HujsonConverter {
+object HotUpdateJSONConverter {
 
     fun convertToNormalJson(
         context: Context,

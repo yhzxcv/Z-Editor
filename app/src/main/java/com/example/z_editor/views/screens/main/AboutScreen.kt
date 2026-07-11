@@ -141,11 +141,6 @@ fun AboutScreen(
                     lineHeight = 24.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Text(
-                    "Evilhack28, CyberSteve777, and their fellows.",
-                    lineHeight = 24.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
             }
             Spacer(Modifier.height(20.dp))
 
