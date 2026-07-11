@@ -409,7 +409,7 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                         }
 
                         if (isHotUpdate) {
-                            listOf(ConvertTarget.JSON_TO_HOTUPDATE)
+                            listOf(ConvertTarget.HOTUPDATE_TO_JSON)
                         } else {
                             listOf(
                                 ConvertTarget.JSON_TO_PLAIN_RTON,
