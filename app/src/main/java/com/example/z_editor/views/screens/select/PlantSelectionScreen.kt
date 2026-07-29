@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
@@ -80,13 +81,22 @@ fun PlantSelectionScreen(
     isMultiSelect: Boolean = false,
     onMultiPlantSelected: (List<String>) -> Unit = {},
     onPlantSelected: (String) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    initialCategoryOrdinal: Int = 0,
+    initialSubTagOrdinal: Int = 0,
+    onCategoryOrdinalChanged: (Int) -> Unit = {},
+    onSubTagOrdinalChanged: (Int) -> Unit = {},
+    gridState: LazyGridState? = null,
 ) {
     val handleBack = rememberDebouncedClick { onBack() }
     BackHandler(onBack = handleBack)
     var searchQuery by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf(PlantCategory.Quality) }
-    var selectedTag by remember { mutableStateOf(PlantTag.All) }
+    var selectedCategory by remember {
+        mutableStateOf(PlantCategory.entries.getOrElse(initialCategoryOrdinal) { PlantCategory.Quality })
+    }
+    var selectedTag by remember {
+        mutableStateOf(PlantTag.entries.getOrElse(initialSubTagOrdinal) { PlantTag.All })
+    }
 
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
@@ -219,7 +229,10 @@ fun PlantSelectionScreen(
                             val isSelected = selectedCategory == category
                             Tab(
                                 selected = isSelected,
-                                onClick = { selectedCategory = category },
+                                onClick = {
+                                    selectedCategory = category
+                                    onCategoryOrdinalChanged(PlantCategory.entries.indexOf(category))
+                                },
                                 text = {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         if (category == PlantCategory.Collection) {
@@ -276,7 +289,10 @@ fun PlantSelectionScreen(
                                 val isTagSelected = selectedTag == tag
                                 Tab(
                                     selected = isTagSelected,
-                                    onClick = { selectedTag = tag },
+                                    onClick = {
+                                        selectedTag = tag
+                                        onSubTagOrdinalChanged(PlantTag.entries.indexOf(tag))
+                                    },
                                     modifier = Modifier.height(40.dp),
                                     text = {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -345,6 +361,7 @@ fun PlantSelectionScreen(
                 }
             } else {
                 LazyVerticalGrid(
+                    state = gridState ?: remember { LazyGridState() },
                     columns = GridCells.Adaptive(minSize = 56.dp),
                     contentPadding = PaddingValues(8.dp),
                     modifier = Modifier.fillMaxSize(),

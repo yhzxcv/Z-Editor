@@ -520,7 +520,7 @@ fun LevelListScreen(
                             )
                             HorizontalDivider()
                             DropdownMenuItem(
-                                text = { Text("实验性功能") },
+                                text = { Text(stringResource(R.string.level_list_screen_item_experimental)) },
                                 onClick = {
                                     showMenu = false
                                     onDataPackToolsClick()

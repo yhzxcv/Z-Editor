@@ -8,6 +8,39 @@
 		{
 			"objclass": "GridItemType",
 			"aliases": [
+				"soudache_resource_point"
+			],
+			"objdata": {
+				"TypeName": "soudache_resource_point",
+				"GridItemClass": "SoudacheResourcePoint",
+				"Properties": "RTID(SoudacheResourcePointDefault@PropertySheets)"
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"soudache_resource"
+			],
+			"objdata": {
+				"TypeName": "soudache_resource",
+				"GridItemClass": "SoudacheResource",
+				"Properties": "RTID(SoudacheResourceDefault@PropertySheets)"
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"soudache_gravestone"
+			],
+			"objdata": {
+				"TypeName": "soudache_gravestone",
+				"GridItemClass": "SouDaCheGravestone",
+				"Properties": "RTID(SouDaCheGravestoneDefault@PropertySheets)"
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
 				"gravestone"
 			],
 			"objdata": {
@@ -835,6 +868,30 @@
 				"TypeName": "gridFireWall",
 				"GridItemClass": "GridItemFireWall",
 				"Properties": "RTID(GridItemFireWallDefault@PropertySheets)",
+				"ResourceGroups": []
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"hotRodicusFireWallRed"
+			],
+			"objdata": {
+				"TypeName": "hotRodicusFireWallRed",
+				"GridItemClass": "GridItemHotRodicusFireWall",
+				"Properties": "RTID(GridItemHotRodicusFireWallRed@PropertySheets)",
+				"ResourceGroups": []
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"hotRodicusFireWallBlue"
+			],
+			"objdata": {
+				"TypeName": "hotRodicusFireWallBlue",
+				"GridItemClass": "GridItemHotRodicusFireWall",
+				"Properties": "RTID(GridItemHotRodicusFireWallBlue@PropertySheets)",
 				"ResourceGroups": []
 			}
 		},
@@ -3483,6 +3540,37 @@
 		{
 			"objclass": "GridItemType",
 			"aliases": [
+				"gingle_giant_hermit_crab"
+			],
+			"objdata": {
+				"TypeName": "gingle_giant_hermit_crab",
+				"GridItemClass": "PVZ2GingleGiantHermitCrabGridItem",
+				"Properties": "RTID(PVZ2GingleGiantHermitCrabGridItemDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieGiantHermitCrabGroup",
+					"ZombieAtlantisGroup",
+					"LevelCommon"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"gingle_atlantis_zombie"
+			],
+			"objdata": {
+				"TypeName": "gingle_atlantis_zombie",
+				"GridItemClass": "PVZ2GingleZombieGridItem",
+				"Properties": "RTID(PVZ2GingleZombieGridItemDefault@PropertySheets)",
+				"ResourceGroups": [
+					"ZombieGiantHermitCrabGroup",
+					"ZombieAtlantisGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
 				"zombieportal_dino"
 			],
 			"objdata": {
@@ -4020,6 +4108,14 @@
 				"TypeName": "sunseed",
 				"GridItemClass": "GridItemSunSeed",
 				"Properties": "RTID(SunSeedDefault@PropertySheets)"
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"objdata": {
+				"TypeName": "sunseed1",
+				"GridItemClass": "GridItemSunSeed",
+				"Properties": "RTID(SunSeed1Default@PropertySheets)"
 			}
 		},
 		{
@@ -6468,6 +6564,17 @@
 		{
 			"objclass": "GridItemType",
 			"aliases": [
+				"soudache_spore"
+			],
+			"objdata": {
+				"TypeName": "soudache_spore",
+				"GridItemClass": "SouDaCheSpore",
+				"Properties": "RTID(SouDaCheSporeDefault@PropertySheets)"
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
 				"sunflower_plushie"
 			],
 			"objdata": {
@@ -6518,6 +6625,20 @@
 				"Properties": "RTID(GridItemSportzballDefault@PropertySheets)",
 				"ResourceGroups": [
 					"ZombieSportzballImpGroup"
+				]
+			}
+		},
+		{
+			"objclass": "GridItemType",
+			"aliases": [
+				"electric_field"
+			],
+			"objdata": {
+				"TypeName": "electric_field",
+				"GridItemClass": "ElectricFieldGridItem",
+				"Properties": "RTID(ElectricFieldDefault@PropertySheets)",
+				"ResourceGroups": [
+					"UI_Soudache"
 				]
 			}
 		}

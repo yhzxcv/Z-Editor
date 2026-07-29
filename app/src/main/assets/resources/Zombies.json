@@ -27,6 +27,15 @@
         "icon": "zombie_mummy_armor2.webp"
     },
     {
+        "id": "mummy_armor4",
+        "name": "金字塔头僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_mummy_armor4.webp"
+    },
+    {
         "id": "mummy_flag",
         "name": "木乃伊旗帜僵尸",
         "tags": [
@@ -62,6 +71,15 @@
             "Basic"
         ],
         "icon": "zombie_explorer.webp"
+    },
+    {
+        "id": "explorer_veteran",
+        "name": "燃焰探险家僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_explorer_veteran.webp"
     },
     {
         "id": "ra",
@@ -134,7 +152,7 @@
             "Egypt_Pirate",
             "Basic"
         ],
-        "icon": "zombie_pirate._armor1.webp"
+        "icon": "zombie_pirate_armor1.webp"
     },
     {
         "id": "pirate_armor2",
@@ -143,7 +161,16 @@
             "Egypt_Pirate",
             "Basic"
         ],
-        "icon": "zombie_pirate._armor2.webp"
+        "icon": "zombie_pirate_armor2.webp"
+    },
+    {
+        "id": "pirate_armor4",
+        "name": "木桶头僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_pirate_armor4.webp"
     },
     {
         "id": "pirate_flag",
@@ -190,6 +217,15 @@
             "Basic"
         ],
         "icon": "zombie_seagull.webp"
+    },
+    {
+        "id": "pelican",
+        "name": "鹈鹕僵尸",
+        "tags": [
+            "Egypt_Pirate",
+            "Basic"
+        ],
+        "icon": "zombie_pelican.webp"
     },
     {
         "id": "barrelroller",
@@ -262,6 +298,15 @@
         "icon": "zombie_cowboy_armor2.webp"
     },
     {
+        "id": "cowboy_armor4",
+        "name": "矿车头僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_cowboy_armor4.webp"
+    },
+    {
         "id": "cowboy_flag",
         "name": "旗帜牛仔僵尸",
         "tags": [
@@ -287,6 +332,15 @@
             "Pet"
         ],
         "icon": "zombie_west_bull.webp"
+    },
+    {
+        "id": "west_bull_veteran",
+        "name": "传奇机器牛",
+        "tags": [
+            "West_Future",
+            "Pet"
+        ],
+        "icon": "zombie_west_bull_veteran.webp"
     },
     {
         "id": "west_bullrider",
@@ -403,6 +457,15 @@
         "icon": "zombie_kongfu_basic_armor3.webp"
     },
     {
+        "id": "kongfu_basic_armor4",
+        "name": "功夫香炉头僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_basic_armor4.webp"
+    },
+    {
         "id": "kongfu_flag",
         "name": "功夫旗帜僵尸",
         "tags": [
@@ -502,6 +565,15 @@
             "Basic"
         ],
         "icon": "zombie_kongfu_monk_bucket.webp"
+    },
+    {
+        "id": "kongfu_monk_armor4",
+        "name": "武僧香炉头僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_kongfu_monk_armor4.webp"
     },
     {
         "id": "kongfu_monk_flag",
@@ -616,6 +688,15 @@
             "Basic"
         ],
         "icon": "zombie_future_armor2.webp"
+    },
+    {
+        "id": "future_armor4",
+        "name": "全息头僵尸",
+        "tags": [
+            "West_Future",
+            "Basic"
+        ],
+        "icon": "zombie_future_armor4.webp"
     },
     {
         "id": "future_flag",
@@ -748,6 +829,15 @@
             "Basic"
         ],
         "icon": "zombie_dark_armor3.webp"
+    },
+    {
+        "id": "dark_armor4",
+        "name": "城堡头僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_dark_armor4.webp"
     },
     {
         "id": "dark_flag",
@@ -928,6 +1018,15 @@
         "icon": "zombie_beach_armor2.webp"
     },
     {
+        "id": "beach_armor4",
+        "name": "沙堡飞机头僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_beach_armor4.webp"
+    },
+    {
         "id": "beach_fem",
         "name": "比基尼僵尸",
         "tags": [
@@ -953,6 +1052,15 @@
             "Basic"
         ],
         "icon": "zombie_beach_fem_armor2.webp"
+    },
+    {
+        "id": "beach_fem_armor4",
+        "name": "沙堡比基尼僵尸",
+        "tags": [
+            "Dark_Beach",
+            "Basic"
+        ],
+        "icon": "zombie_beach_fem_armor4.webp"
     },
     {
         "id": "beach_flag",
@@ -1079,6 +1187,15 @@
         "icon": "zombie_iceage_armor3.webp"
     },
     {
+        "id": "iceage_armor4",
+        "name": "猛犸头僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_iceage_armor4.webp"
+    },
+    {
         "id": "iceage_flag",
         "name": "洞穴旗帜僵尸",
         "tags": [
@@ -1185,7 +1302,7 @@
     },
     {
         "id": "iceage_armor3_elite",
-        "name": "洞穴猛犸头僵尸",
+        "name": "秘境猛犸头僵尸",
         "tags": [
             "Iceage_Lostcity",
             "Basic"
@@ -1262,12 +1379,21 @@
     },
     {
         "id": "skycity_armor3",
-        "name": "强化铁桶飞行员",
+        "name": "强化铁桶飞行员僵尸",
         "tags": [
             "Kongfu_Skycity",
             "Basic"
         ],
         "icon": "zombie_skycity_armor2.webp"
+    },
+    {
+        "id": "skycity_armor4",
+        "name": "秃鹫头僵尸",
+        "tags": [
+            "Kongfu_Skycity",
+            "Basic"
+        ],
+        "icon": "zombie_skycity_armor4.webp"
     },
     {
         "id": "skycity_flag",
@@ -1386,6 +1512,15 @@
         "icon": "zombie_lostcity_armor2.webp"
     },
     {
+        "id": "lostcity_armor4",
+        "name": "祖玛头僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Basic"
+        ],
+        "icon": "zombie_lostcity_armor4.webp"
+    },
+    {
         "id": "lostcity_bug",
         "name": "昆虫僵尸",
         "tags": [
@@ -1407,6 +1542,15 @@
     {
         "id": "lostcity_bug_armor2",
         "name": "铁桶昆虫僵尸",
+        "tags": [
+            "Iceage_Lostcity",
+            "Pet"
+        ],
+        "icon": "zombie_lostcity_bug.webp"
+    },
+    {
+        "id": "lostcity_bug_armor4",
+        "name": "祖玛头昆虫僵尸",
         "tags": [
             "Iceage_Lostcity",
             "Pet"
@@ -1544,6 +1688,15 @@
         "icon": "zombie_eighties_armor2.webp"
     },
     {
+        "id": "eighties_armor4",
+        "name": "收音机头僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_armor4.webp"
+    },
+    {
         "id": "eighties_flag",
         "name": "旗帜摇滚僵尸",
         "tags": [
@@ -1637,6 +1790,15 @@
         "icon": "zombie_eighties_8bit.webp"
     },
     {
+        "id": "eighties_8bit_armor4",
+        "name": "8位砖块头僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_eighties_8bit.webp"
+    },
+    {
         "id": "eighties_breakdancer",
         "name": "霹雳舞僵尸",
         "tags": [
@@ -1702,6 +1864,15 @@
         "icon": "zombie_dino_armor3.webp"
     },
     {
+        "id": "dino_armor4",
+        "name": "琥珀头僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Basic"
+        ],
+        "icon": "zombie_dino_armor4.webp"
+    },
+    {
         "id": "dino_flag",
         "name": "旗帜侏罗纪僵尸",
         "tags": [
@@ -1737,6 +1908,15 @@
             "Strong"
         ],
         "icon": "zombie_dino_bully.webp"
+    },
+    {
+        "id": "dino_bully_veteran",
+        "name": "搏击野人僵尸",
+        "tags": [
+            "Eighties_Dino",
+            "Strong"
+        ],
+        "icon": "zombie_dino_bully_veteran.webp"
     },
     {
         "id": "dino_pushegg",
@@ -1866,6 +2046,15 @@
             "Basic"
         ],
         "icon": "zombie_tutorial_armor2.webp"
+    },
+    {
+        "id": "tutorial_armor4",
+        "name": "砖块头僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Basic"
+        ],
+        "icon": "zombie_tutorial_armor4.webp"
     },
     {
         "id": "tutorial_flag",
@@ -2120,6 +2309,26 @@
         "icon": "zombie_SwimmingRingBucket.webp"
     },
     {
+        "id": "duckytube_armor4",
+        "name": "砖头块鸭子救生圈",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_duckytube_armor4.webp"
+    },
+    {
+        "id": "dolphin_rider_zombie",
+        "name": "海豚骑士僵尸",
+        "tags": [
+            "Modern_Pvz1",
+            "Memory",
+            "Basic"
+        ],
+        "icon": "zombie_dolphin_rider_zombie.webp"
+    },
+    {
         "id": "treasureyeti",
         "name": "宝藏雪人",
         "tags": [
@@ -2270,6 +2479,15 @@
         "icon": "zombie_steam_armor2.webp"
     },
     {
+        "id": "steam_armor4",
+        "name": "钟表头僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_steam_armor4.webp"
+    },
+    {
         "id": "steam_flag",
         "name": "旗帜工人僵尸",
         "tags": [
@@ -2349,6 +2567,15 @@
             "Basic"
         ],
         "icon": "zombie_renai_armor2.webp"
+    },
+    {
+        "id": "renai_armor4",
+        "name": "雕塑头僵尸",
+        "tags": [
+            "Steam_Renai",
+            "Basic"
+        ],
+        "icon": "zombie_renai_armor4.webp"
     },
     {
         "id": "renai_flag",
@@ -2481,6 +2708,15 @@
         "icon": "zombie_heian_armor2.webp"
     },
     {
+        "id": "heian_armor4",
+        "name": "石灯笼头僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_heian_armor4.webp"
+    },
+    {
         "id": "heian_flag",
         "name": "旗帜武士僵尸",
         "tags": [
@@ -2590,6 +2826,15 @@
         "icon": "zombie_atlantis_armor2.webp"
     },
     {
+        "id": "atlantis_armor4",
+        "name": "海洋珊瑚头僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_atlantis_armor4.webp"
+    },
+    {
         "id": "atlantis_land_basic",
         "name": "遗迹普通僵尸",
         "tags": [
@@ -2615,6 +2860,15 @@
             "Basic"
         ],
         "icon": "zombie_atlantis_land_armor2.webp"
+    },
+    {
+        "id": "atlantis_land_armor4",
+        "name": "遗迹珊瑚头僵尸",
+        "tags": [
+            "Henai_Atlantis",
+            "Basic"
+        ],
+        "icon": "zombie_atlantis_land_armor4.webp"
     },
     {
         "id": "atlantis_land_flag",
@@ -2726,6 +2980,15 @@
             "Basic"
         ],
         "icon": "zombie_fairy_tale_armor2.webp"
+    },
+    {
+        "id": "fairy_tale_armor4",
+        "name": "南瓜头僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_fairy_tale_armor4.webp"
     },
     {
         "id": "fairy_tale_flag",
@@ -2861,6 +3124,15 @@
         "icon": "zombie_zcorp_armor2.webp"
     },
     {
+        "id": "zcorp_armor4",
+        "name": "新雇员电脑头僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_zcorp_armor4.webp"
+    },
+    {
         "id": "zcorp_flag",
         "name": "新雇员旗帜僵尸",
         "tags": [
@@ -2895,6 +3167,15 @@
             "Basic"
         ],
         "icon": "zombie_zcorp_fem_armor2.webp"
+    },
+    {
+        "id": "zcorp_fem_armor4",
+        "name": "合同工电脑头僵尸",
+        "tags": [
+            "Tale_ZCorp",
+            "Basic"
+        ],
+        "icon": "zombie_zcorp_fem_armor4.webp"
     },
     {
         "id": "zcorp_consultant",
@@ -3709,6 +3990,16 @@
             "Imp"
         ],
         "icon": "zombie_plushie_cart.webp"
+    },
+    {
+        "id": "bubble_machine_imp",
+        "name": "精英泡泡机僵尸",
+        "tags": [
+            "Festival1",
+            "Elite",
+            "Imp"
+        ],
+        "icon": "zombie_bubble_machine_imp.webp"
     },
     {
         "id": "bumpercar",
@@ -4527,6 +4818,15 @@
         "icon": "zombie_roman_medusa.webp"
     },
     {
+        "id": "gladiator_zombie",
+        "name": "角斗士僵尸",
+        "tags": [
+            "Roman",
+            "basic"
+        ],
+        "icon": "zombie_gladiator_zombie.webp"
+    },
+    {
         "id": "general_caesar_phase1",
         "name": "凯撒僵尸一形态",
         "tags": [
@@ -4713,6 +5013,15 @@
             "Basic"
         ],
         "icon": "zombie_mausoleum_armor2.webp"
+    },
+    {
+        "id": "mausoleum_armor4",
+        "name": "秦俑头僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_mausoleum_armor4.webp"
     },
     {
         "id": "mausoleum_flag",
@@ -4921,6 +5230,24 @@
             "Basic"
         ],
         "icon": "zombie_mausoleum_armor2_ghost.webp"
+    },
+    {
+        "id": "mausoleum_armor4_ghost",
+        "name": "幽冥秦俑头僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_mausoleum_armor4_ghost.webp"
+    },
+    {
+        "id": "mausoleum_armor4_ghost_spirit",
+        "name": "灵体冥秦俑头僵尸",
+        "tags": [
+            "Tothewest",
+            "Basic"
+        ],
+        "icon": "zombie_mausoleum_armor4_ghost.webp"
     },
     {
         "id": "mausoleum_gargantuar_ghost",

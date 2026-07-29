@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Code
@@ -112,6 +113,11 @@ fun EditorScreen(
 
         fun getLazyState(key: String) = lazyListStates.getOrPut(key) { LazyListState() }
         fun getScrollState(key: String) = scrollStates.getOrPut(key) { ScrollState(0) }
+
+        // 选择器状态保持（tab + 滚动位置在离开选择界面后恢复）
+        val selectorCategoryIndices = remember { mutableMapOf<String, Int>() }
+        val selectorSubTagIndices = remember { mutableMapOf<String, Int>() }
+        val selectorGridStates = remember { mutableMapOf<String, LazyGridState>() }
 
         // 选择器状态
         var previousSubScreen by remember { mutableStateOf<EditorSubScreen>(EditorSubScreen.None) }
@@ -1056,7 +1062,10 @@ fun EditorScreen(
                                 currentGridItemFilterMode = currentGridItemFilterMode,
                                 actions = actions,
                                 starChallengeEditingPair = starChallengeEditingPair,
-                                onStarChallengeEditingPairChange = { starChallengeEditingPair = it }
+                                onStarChallengeEditingPairChange = { starChallengeEditingPair = it },
+                                selectorCategoryIndices = selectorCategoryIndices,
+                                selectorSubTagIndices = selectorSubTagIndices,
+                                selectorGridStates = selectorGridStates,
                             )
                         }
                     }
@@ -1074,7 +1083,10 @@ fun EditorScreen(
                             currentGridItemFilterMode = currentGridItemFilterMode,
                             actions = actions,
                             starChallengeEditingPair = starChallengeEditingPair,
-                            onStarChallengeEditingPairChange = { starChallengeEditingPair = it }
+                            onStarChallengeEditingPairChange = { starChallengeEditingPair = it },
+                            selectorCategoryIndices = selectorCategoryIndices,
+                            selectorSubTagIndices = selectorSubTagIndices,
+                            selectorGridStates = selectorGridStates,
                         )
                     }
                 }

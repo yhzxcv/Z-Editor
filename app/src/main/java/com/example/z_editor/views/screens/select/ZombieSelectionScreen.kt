@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
@@ -80,13 +81,22 @@ fun ZombieSelectionScreen(
     isMultiSelect: Boolean = false,
     onZombieSelected: (String) -> Unit = {},
     onMultiZombieSelected: (List<String>) -> Unit = {},
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    initialCategoryOrdinal: Int = 0,
+    initialSubTagOrdinal: Int = 0,
+    onCategoryOrdinalChanged: (Int) -> Unit = {},
+    onSubTagOrdinalChanged: (Int) -> Unit = {},
+    gridState: LazyGridState? = null,
 ) {
     val handleBack = rememberDebouncedClick { onBack() }
     BackHandler(onBack = handleBack)
     var searchQuery by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf(ZombieCategory.Main) }
-    var selectedTag by remember { mutableStateOf(ZombieTag.All) }
+    var selectedCategory by remember {
+        mutableStateOf(ZombieCategory.entries.getOrElse(initialCategoryOrdinal) { ZombieCategory.Main })
+    }
+    var selectedTag by remember {
+        mutableStateOf(ZombieTag.entries.getOrElse(initialSubTagOrdinal) { ZombieTag.All })
+    }
 
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
@@ -199,7 +209,10 @@ fun ZombieSelectionScreen(
                             val isSelected = selectedCategory == category
                             Tab(
                                 selected = isSelected,
-                                onClick = { selectedCategory = category },
+                                onClick = {
+                                    selectedCategory = category
+                                    onCategoryOrdinalChanged(ZombieCategory.entries.indexOf(category))
+                                },
                                 text = {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         if (category == ZombieCategory.Collection) {
@@ -251,7 +264,10 @@ fun ZombieSelectionScreen(
                                 val isTagSelected = selectedTag == tag
                                 Tab(
                                     selected = isTagSelected,
-                                    onClick = { selectedTag = tag },
+                                    onClick = {
+                                        selectedTag = tag
+                                        onSubTagOrdinalChanged(ZombieTag.entries.indexOf(tag))
+                                    },
                                     modifier = Modifier.height(40.dp),
                                     text = {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -317,6 +333,7 @@ fun ZombieSelectionScreen(
                 }
             } else {
                 LazyVerticalGrid(
+                    state = gridState ?: remember { LazyGridState() },
                     columns = GridCells.Adaptive(minSize = 56.dp),
                     contentPadding = PaddingValues(8.dp),
                     modifier = Modifier.fillMaxSize(),

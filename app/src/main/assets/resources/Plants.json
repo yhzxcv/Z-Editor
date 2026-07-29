@@ -3093,6 +3093,16 @@
         "icon": "icon_solarsage.webp"
     },
     {
+        "id": "pineclone",
+        "name": "复制松果",
+        "tags": [
+            "Orange",
+            "Trapper",
+            "Electric"
+        ],
+        "icon": "icon_pineclone.gif"
+    },
+    {
         "id": "moton",
         "name": "魔藤",
         "tags": [
@@ -3358,9 +3368,51 @@
         "icon": "icon_moonflower.webp"
     },
     {
+        "id": "sea_puffshroom",
+        "name": "祭司小喷菇",
+        "tags": [],
+        "icon": "icon_puffshroom.webp"
+    },
+    {
         "id": "sunflowerzombie",
         "name": "僵尸向日葵",
         "tags": [],
         "icon": "icon_sunflowerzombie.webp"
+    },
+    {
+        "id": "bitpeashooter",
+        "name": "像素豌豆射手",
+        "tags": [],
+        "icon": null
+    },
+    {
+        "id": "frog",
+        "name": "青蛙",
+        "tags": [],
+        "icon": null
+    },
+    {
+        "id": "smallChestnut",
+        "name": "小板栗",
+        "tags": [],
+        "icon": null
+    },
+    {
+        "id": "smallcherry",
+        "name": "小樱桃",
+        "tags": [],
+        "icon": null
+    },
+    {
+        "id": "minishroom",
+        "name": "小守卫菇",
+        "tags": [],
+        "icon": null
+    },
+    {
+        "id": "dragonbabybruit",
+        "name": "小火龙果",
+        "tags": [],
+        "icon": null
     }
 ]
