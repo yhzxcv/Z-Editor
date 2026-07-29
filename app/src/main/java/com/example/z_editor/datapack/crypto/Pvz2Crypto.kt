@@ -85,9 +85,9 @@ object Pvz2Crypto {
         if (data.size < 8) return data
 
         val magic = (data[0].toInt() and 0xFF) or
-            ((data[1].toInt() and 0xFF) shl 8) or
-            ((data[2].toInt() and 0xFF) shl 16) or
-            ((data[3].toInt() and 0xFF) shl 24)
+                ((data[1].toInt() and 0xFF) shl 8) or
+                ((data[2].toInt() and 0xFF) shl 16) or
+                ((data[3].toInt() and 0xFF) shl 24)
 
         if (magic == POPCAP_ZLIB_MAGIC) {
             return try {

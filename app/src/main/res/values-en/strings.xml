@@ -8,6 +8,7 @@
     <string name="level_list_screen_item_size">UI Resize</string>
     <string name="level_list_screen_item_language">Language</string>
     <string name="level_list_screen_item_about">About</string>
+    <string name="level_list_screen_item_experimental">Experimental</string>
     <string name="level_list_screen_item_cache">Clear Cache</string>
     <string name="level_list_screen_item_cache_tips">Cleared %d cache files</string>
     <string name="level_list_screen_btn_more_info">More Info</string>

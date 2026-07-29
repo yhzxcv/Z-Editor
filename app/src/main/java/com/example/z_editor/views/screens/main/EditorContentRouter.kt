@@ -2,6 +2,7 @@ package com.example.z_editor.views.screens.main
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import com.example.z_editor.data.EditorSubScreen
@@ -108,7 +109,10 @@ fun EditorContentRouter(
     refreshTrigger: Int,
     actions: EditorActions,
     starChallengeEditingPair: Pair<Int, String>? = null,
-    onStarChallengeEditingPairChange: (Pair<Int, String>?) -> Unit = {}
+    onStarChallengeEditingPairChange: (Pair<Int, String>?) -> Unit = {},
+    selectorCategoryIndices: MutableMap<String, Int> = mutableMapOf(),
+    selectorSubTagIndices: MutableMap<String, Int> = mutableMapOf(),
+    selectorGridStates: MutableMap<String, LazyGridState> = mutableMapOf(),
 ) {
     if (parsedData == null || rootLevelFile == null) return
 
@@ -837,14 +841,24 @@ fun EditorContentRouter(
             isMultiSelect = targetState.isMultiSelect,
             onPlantSelected = { id -> actions.onSelectorResult(id) },
             onMultiPlantSelected = { ids -> actions.onSelectorResult(ids) },
-            onBack = actions.onSelectorCancel
+            onBack = actions.onSelectorCancel,
+            initialCategoryOrdinal = selectorCategoryIndices["plant"] ?: 0,
+            initialSubTagOrdinal = selectorSubTagIndices["plant"] ?: 0,
+            onCategoryOrdinalChanged = { selectorCategoryIndices["plant"] = it },
+            onSubTagOrdinalChanged = { selectorSubTagIndices["plant"] = it },
+            gridState = selectorGridStates.getOrPut("plant") { LazyGridState() },
         )
 
         is EditorSubScreen.ZombieSelection -> ZombieSelectionScreen(
             isMultiSelect = targetState.isMultiSelect,
             onZombieSelected = { id -> actions.onSelectorResult(id) },
             onMultiZombieSelected = { ids -> actions.onSelectorResult(ids) },
-            onBack = actions.onSelectorCancel
+            onBack = actions.onSelectorCancel,
+            initialCategoryOrdinal = selectorCategoryIndices["zombie"] ?: 0,
+            initialSubTagOrdinal = selectorSubTagIndices["zombie"] ?: 0,
+            onCategoryOrdinalChanged = { selectorCategoryIndices["zombie"] = it },
+            onSubTagOrdinalChanged = { selectorSubTagIndices["zombie"] = it },
+            gridState = selectorGridStates.getOrPut("zombie") { LazyGridState() },
         )
 
         EditorSubScreen.GridItemSelection -> GridItemSelectionScreen(

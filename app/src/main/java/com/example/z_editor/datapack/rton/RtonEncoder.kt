@@ -3,7 +3,6 @@ package com.example.z_editor.datapack.rton
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
 import java.io.ByteArrayOutputStream
 
 /**
@@ -39,8 +38,12 @@ object RtonEncoder {
     private fun ByteArrayOutputStream.writeInt(value: Long) {
         when {
             value == 0L -> write(0x21)  // !
-            value in 0..2097151 -> { write(0x24); writeVarint(value.toInt()) }  // $
-            value in -1048576..-1 -> { write(0x25); writeZigzag(value) }  // %
+            value in 0..2097151 -> {
+                write(0x24); writeVarint(value.toInt())
+            }  // $
+            value in -1048576..-1 -> {
+                write(0x25); writeZigzag(value)
+            }  // %
             value in Int.MIN_VALUE..Int.MAX_VALUE -> {  // space
                 write(0x20)
                 write((value.toInt() and 0xFF))
@@ -48,6 +51,7 @@ object RtonEncoder {
                 write(((value.toInt() ushr 16) and 0xFF))
                 write(((value.toInt() ushr 24) and 0xFF))
             }
+
             value in 0L..0xFFFFFFFFL -> {  // &
                 write(0x26)
                 write((value.toInt() and 0xFF))
@@ -55,17 +59,26 @@ object RtonEncoder {
                 write(((value.toInt() ushr 16) and 0xFF))
                 write(((value.toInt() ushr 24) and 0xFF))
             }
-            value in 0..562949953421311 -> { write(0x44); writeVarint(value.toInt()) }  // D
-            value in -281474976710656..-1 -> { write(0x45); writeZigzag(value) }  // E
+
+            value in 0..562949953421311 -> {
+                write(0x44); writeVarint(value.toInt())
+            }  // D
+            value in -281474976710656..-1 -> {
+                write(0x45); writeZigzag(value)
+            }  // E
             value in Long.MIN_VALUE..Long.MAX_VALUE -> {  // @
                 write(0x40)
                 writeLongLE(value)
             }
+
             value >= 0 -> {  // F
                 write(0x46)
                 writeLongLE(value)
             }
-            else -> { write(0x45); writeZigzag(value) }  // E fallback
+
+            else -> {
+                write(0x45); writeZigzag(value)
+            }  // E fallback
         }
     }
 
@@ -114,7 +127,12 @@ object RtonEncoder {
 
     // ---- Object & Array encoding (matching pyvz2's encode_object/encode_array) ----
 
-    private fun encodeObject(obj: JsonObject, cache: StringCache, out: ByteArrayOutputStream, includeTag: Boolean = true) {
+    private fun encodeObject(
+        obj: JsonObject,
+        cache: StringCache,
+        out: ByteArrayOutputStream,
+        includeTag: Boolean = true
+    ) {
         if (includeTag) out.write(0x85)
         for ((key, value) in obj.entrySet()) {
             cache.encode(key, out)
@@ -202,6 +220,7 @@ object RtonEncoder {
                             out.writeInt(num.toLong())
                         }
                     }
+
                     prim.isString -> {
                         val s = prim.asString
                         if (s.startsWith("RTID(")) {
@@ -212,6 +231,7 @@ object RtonEncoder {
                     }
                 }
             }
+
             value.isJsonObject -> encodeObject(value.asJsonObject, cache, out)
             value.isJsonArray -> encodeArray(value.asJsonArray, cache, out)
         }

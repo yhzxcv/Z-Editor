@@ -930,11 +930,260 @@
 		{
 			"objclass": "StageModuleProperties",
 			"aliases": [
-				"FestivalStageLevelFour"
+				"FestivalStageLevelEndless"
 			],
 			"objdata": {
 				"ResourceGroupNames": [
 					"DelayLoad_Background_FrontLawn",
+					"Egypt_Gravestone",
+					"Game_Tombstones_Dynamic",
+					"AudioEgypt"
+				],
+				"StagePrefix": "festival_level_endless",
+				"BackgroundImagePrefix": "IMAGE_BACKGROUNDS_FRONTLAWN",
+				"BackgroundImageLeft": "TEXTURE_LEFT",
+				"BackgroundImageMiddle": "TEXTURE",
+				"BackgroundImageRight": "TEXTURE_RIGHT",
+				"GravestoneImagePrefixes": [
+					"IMAGE_TOMBSTONES_TOMBSTONE_EGYPT_HIEROGLYPH"
+				],
+				"BasicZombieTypeName": "mummy",
+				"FlagZombieTypeName": "mummy_flag",
+				"Armor1ZombieTypeName": "mummy_armor1",
+				"Armor2ZombieTypeName": "mummy_armor2",
+				"MusicSuffix": "Egypt",
+				"AmbientAudioSuffix": "Egypt_Wind_BG",
+				"RailcartDefaultTypeName": "railcart_egypt",
+				"DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
+				"ZombieEventType": "sandstorm",
+				"DisabledStreetCells": [
+					{
+						"mX": 0,
+						"mY": 0
+					},
+					{
+						"mX": 0,
+						"mY": 1
+					},
+					{
+						"mX": 0,
+						"mY": 2
+					},
+					{
+						"mX": 0,
+						"mY": 3
+					},
+					{
+						"mX": 0,
+						"mY": 4
+					},
+					{
+						"mX": 0,
+						"mY": 5
+					},
+					{
+						"mX": 0,
+						"mY": 6
+					},
+					{
+						"mX": 0,
+						"mY": 7
+					},
+					{
+						"mX": 0,
+						"mY": 8
+					},
+					{
+						"mX": 0,
+						"mY": 9
+					},
+					{
+						"mX": 1,
+						"mY": 0
+					},
+					{
+						"mX": 1,
+						"mY": 1
+					},
+					{
+						"mX": 1,
+						"mY": 2
+					},
+					{
+						"mX": 1,
+						"mY": 3
+					},
+					{
+						"mX": 1,
+						"mY": 4
+					},
+					{
+						"mX": 1,
+						"mY": 5
+					},
+					{
+						"mX": 1,
+						"mY": 6
+					},
+					{
+						"mX": 1,
+						"mY": 7
+					},
+					{
+						"mX": 1,
+						"mY": 8
+					},
+					{
+						"mX": 1,
+						"mY": 9
+					},
+					{
+						"mX": 2,
+						"mY": 0
+					},
+					{
+						"mX": 2,
+						"mY": 1
+					},
+					{
+						"mX": 2,
+						"mY": 2
+					},
+					{
+						"mX": 2,
+						"mY": 3
+					},
+					{
+						"mX": 2,
+						"mY": 4
+					},
+					{
+						"mX": 2,
+						"mY": 5
+					},
+					{
+						"mX": 2,
+						"mY": 6
+					},
+					{
+						"mX": 2,
+						"mY": 7
+					},
+					{
+						"mX": 2,
+						"mY": 8
+					},
+					{
+						"mX": 2,
+						"mY": 9
+					},
+					{
+						"mX": 3,
+						"mY": 9
+					},
+					{
+						"mX": 3,
+						"mY": 8
+					},
+					{
+						"mX": 3,
+						"mY": 7
+					},
+					{
+						"mX": 4,
+						"mY": 9
+					},
+					{
+						"mX": 4,
+						"mY": 8
+					},
+					{
+						"mX": 5,
+						"mY": 9
+					},
+					{
+						"mX": 5,
+						"mY": 8
+					},
+					{
+						"mX": 5,
+						"mY": 7
+					},
+					{
+						"mX": 6,
+						"mY": 9
+					},
+					{
+						"mX": 6,
+						"mY": 8
+					},
+					{
+						"mX": 7,
+						"mY": 9
+					},
+					{
+						"mX": 7,
+						"mY": 8
+					},
+					{
+						"mX": 7,
+						"mY": 7
+					},
+					{
+						"mX": 7,
+						"mY": 6
+					},
+					{
+						"mX": 7,
+						"mY": 0
+					},
+					{
+						"mX": 7,
+						"mY": 1
+					},
+					{
+						"mX": 7,
+						"mY": 2
+					},
+					{
+						"mX": 8,
+						"mY": 9
+					},
+					{
+						"mX": 8,
+						"mY": 8
+					},
+					{
+						"mX": 8,
+						"mY": 7
+					},
+					{
+						"mX": 8,
+						"mY": 6
+					},
+					{
+						"mX": 8,
+						"mY": 2
+					},
+					{
+						"mX": 8,
+						"mY": 1
+					},
+					{
+						"mX": 8,
+						"mY": 0
+					}
+				]
+			}
+		},
+		{
+			"objclass": "StageModuleProperties",
+			"aliases": [
+				"ArenaStage"
+			],
+			"objdata": {
+				"ResourceGroupNames": [
+					"DelayLoad_Background_ArenaLawn",
 					"Egypt_Gravestone",
 					"Game_Tombstones_Dynamic",
 					"AudioEgypt"
@@ -4214,7 +4463,7 @@
 				"RailcartDefaultTypeName": "railcart_pirate",
 				"DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
 				"ZombieEventType": "raidingparty",
-				"BreakerInterval": 4.0,
+				"BreakerInterval": 4,
 				"PlantsWhichCannotBePlantedOnPlanks": {
 					"ListType": "whitelist",
 					"List": [
@@ -4463,7 +4712,7 @@
 				"RailcartDefaultTypeName": "railcart_beach",
 				"DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
 				"ZombieEventType": "raidingparty",
-				"BreakerInterval": 4.0,
+				"BreakerInterval": 4,
 				"MusicSuffix": "Twister"
 			}
 		},
@@ -4509,7 +4758,7 @@
 				"RailcartDefaultTypeName": "railcart_beach",
 				"DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
 				"ZombieEventType": "raidingparty",
-				"BreakerInterval": 4.0,
+				"BreakerInterval": 4,
 				"MusicSuffix": "Twister"
 			}
 		},
@@ -4546,7 +4795,7 @@
 				"RailcartDefaultTypeName": "railcart_pirate",
 				"DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
 				"ZombieEventType": "raidingparty",
-				"BreakerInterval": 4.0,
+				"BreakerInterval": 4,
 				"MusicSuffix": "Pirate",
 				"DisabledStreetCells": [
 					{
@@ -5943,15 +6192,6 @@
 					"Egypt_Gravestone",
 					"Game_Tombstones_Dynamic",
 					"DelayLoad_Background_Dark",
-					"Tombstone_Dark_Effects",
-					"Tombstone_Dark_Sun",
-					"Tombstone_Dark_Special",
-					"ZombieDarkBasicGroup"
-				],
-				"ResourceGroupNames": [
-					"Egypt_Gravestone",
-					"Game_Tombstones_Dynamic",
-					"DelayLoad_Background_Dark",
 					"AudioKongfu",
 					"Music_Boss_Kongfu",
 					"KONGFU_ARMRACK",
@@ -6240,11 +6480,11 @@
 				"RailcartDefaultTypeName": "railcart_future",
 				"DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
 				"FactoryArmDropTime": 2.5,
-				"FactoryArmGrabTime": 1.0,
+				"FactoryArmGrabTime": 1,
 				"FactoryArmRiseTime": 1.5,
 				"FactoryArmCoinDropCount": 5,
 				"FactoryArmCoinDropChance": 0.5,
-				"LinkedTilePropagationAlpha": 1.0,
+				"LinkedTilePropagationAlpha": 1,
 				"MusicSuffix": "Future"
 			}
 		},
@@ -6276,11 +6516,11 @@
 				"RailcartDefaultTypeName": "railcart_future",
 				"DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
 				"FactoryArmDropTime": 2.5,
-				"FactoryArmGrabTime": 1.0,
+				"FactoryArmGrabTime": 1,
 				"FactoryArmRiseTime": 1.5,
 				"FactoryArmCoinDropCount": 5,
 				"FactoryArmCoinDropChance": 0.5,
-				"LinkedTilePropagationAlpha": 1.0,
+				"LinkedTilePropagationAlpha": 1,
 				"MusicSuffix": "Future"
 			}
 		},
@@ -10051,7 +10291,7 @@
 				"InitSubmarineInfo": {
 					"Width": 4,
 					"Height": 6,
-					"Hitpoints": 32000.0,
+					"Hitpoints": 32000,
 					"InitialLocation": {
 						"mX": 5,
 						"mY": 3
@@ -10478,7 +10718,7 @@
 				"InitSubmarineInfo": {
 					"Width": 4,
 					"Height": 6,
-					"Hitpoints": 32000.0,
+					"Hitpoints": 32000,
 					"InitialLocation": {
 						"mX": 5,
 						"mY": 3
@@ -11631,29 +11871,29 @@
 					{
 						"AnimName": "POPANIM_ENV_ANIM_CANDLE1",
 						"AnimPos": {
-							"x": 869.0,
-							"y": 114.0
+							"x": 869,
+							"y": 114
 						}
 					},
 					{
 						"AnimName": "POPANIM_ENV_ANIM_CANDLE3",
 						"AnimPos": {
-							"x": -150.0,
-							"y": 173.0
+							"x": -150,
+							"y": 173
 						}
 					},
 					{
 						"AnimName": "POPANIM_ENV_ANIM_CANDLE4",
 						"AnimPos": {
-							"x": -2.0,
-							"y": 378.0
+							"x": -2,
+							"y": 378
 						}
 					},
 					{
 						"AnimName": "POPANIM_ENV_ANIM_CANDLE5",
 						"AnimPos": {
-							"x": -118.0,
-							"y": 431.0
+							"x": -118,
+							"y": 431
 						}
 					}
 				],
@@ -13338,7 +13578,7 @@
 			"objdata": {
 				"PanStartOffset": 78,
 				"PanEndOffset": 468,
-				"PanRightDuration": 2.0,
+				"PanRightDuration": 2,
 				"PanLeftDuration": 2.5,
 				"SkipShowingStreet": true
 			}
@@ -15867,10 +16107,9 @@
 				"Armor3ZombieTypeName": "dark_armor3",
 				"RailcartDefaultTypeName": "railcart_cowboy",
 				"GravestoneDefaultTypeName": "gravestone_dark",
-				"DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
+				"DirtSpawnEffectName": "POPANIM_EFFECTS_DIRT_SPAWN_GRASS",
 				"MusicSuffix": "DarkAges",
 				"AmbientAudioSuffix": "Amb_Tutorial_Garden_BG_LP",
-				"DirtSpawnEffectName": "POPANIM_EFFECTS_DIRT_SPAWN_GRASS",
 				"DrawMultiplierOverlay": true,
 				"DrawMultiplierLabels": false,
 				"DisabledStreetCells": [
@@ -16950,14 +17189,14 @@
 				"TimeEnergy"
 			],
 			"objdata": {
-				"TimeEnergyValueMax": 300.0,
+				"TimeEnergyValueMax": 300,
 				"TimeEnergyTriggers": [
 					{
 						"TriggerRange": {
 							"Min": 0.7,
 							"Max": 0.8
 						},
-						"Cooldown": 15.0,
+						"Cooldown": 15,
 						"TriggerType": "wormhole",
 						"WormHoleProperty": {}
 					},
@@ -16966,7 +17205,7 @@
 							"Min": 0.68,
 							"Max": 0.7
 						},
-						"Cooldown": 8.0,
+						"Cooldown": 8,
 						"TriggerType": "portal",
 						"PortalProperty": {
 							"PortalPos": [
@@ -16983,7 +17222,7 @@
 							"Min": 0.66,
 							"Max": 0.68
 						},
-						"Cooldown": 8.0,
+						"Cooldown": 8,
 						"TriggerType": "portal",
 						"PortalProperty": {
 							"PortalPos": [
@@ -17000,16 +17239,16 @@
 							"Min": 0.2,
 							"Max": 0.66
 						},
-						"Cooldown": 30.0,
+						"Cooldown": 30,
 						"TriggerType": "wormhole",
 						"WormHoleProperty": {}
 					},
 					{
 						"TriggerRange": {
-							"Min": 0.0,
+							"Min": 0,
 							"Max": 0.2
 						},
-						"Cooldown": 60.0,
+						"Cooldown": 60,
 						"TriggerType": "blackhole",
 						"BlackHoleProperty": {
 							"ColNumsPlantIsDrag": 1,
@@ -17025,14 +17264,14 @@
 				"TimeEnergy1"
 			],
 			"objdata": {
-				"TimeEnergyValueMax": 350.0,
+				"TimeEnergyValueMax": 350,
 				"TimeEnergyTriggers": [
 					{
 						"TriggerRange": {
 							"Min": 0.6,
 							"Max": 0.8
 						},
-						"Cooldown": 15.0,
+						"Cooldown": 15,
 						"TriggerType": "wormhole",
 						"WormHoleProperty": {}
 					},
@@ -17041,7 +17280,7 @@
 							"Min": 0.58,
 							"Max": 0.6
 						},
-						"Cooldown": 8.0,
+						"Cooldown": 8,
 						"TriggerType": "portal",
 						"PortalProperty": {
 							"PortalPos": [
@@ -17058,7 +17297,7 @@
 							"Min": 0.56,
 							"Max": 0.58
 						},
-						"Cooldown": 8.0,
+						"Cooldown": 8,
 						"TriggerType": "portal",
 						"PortalProperty": {
 							"PortalPos": [
@@ -17075,16 +17314,16 @@
 							"Min": 0.2,
 							"Max": 0.56
 						},
-						"Cooldown": 30.0,
+						"Cooldown": 30,
 						"TriggerType": "wormhole",
 						"WormHoleProperty": {}
 					},
 					{
 						"TriggerRange": {
-							"Min": 0.0,
+							"Min": 0,
 							"Max": 0.2
 						},
-						"Cooldown": 60.0,
+						"Cooldown": 60,
 						"TriggerType": "blackhole",
 						"BlackHoleProperty": {
 							"ColNumsPlantIsDrag": 1,
@@ -17100,14 +17339,14 @@
 				"TimeEnergy2"
 			],
 			"objdata": {
-				"TimeEnergyValueMax": 350.0,
+				"TimeEnergyValueMax": 350,
 				"TimeEnergyTriggers": [
 					{
 						"TriggerRange": {
-							"Min": 0.0,
+							"Min": 0,
 							"Max": 0.1
 						},
-						"Cooldown": 9999.0,
+						"Cooldown": 9999,
 						"TriggerType": "wormhole",
 						"WormHoleProperty": {}
 					}
@@ -17212,7 +17451,7 @@
 				"DefaultSunDropper"
 			],
 			"objdata": {
-				"InitialSunDropDelay": 2.0,
+				"InitialSunDropDelay": 2,
 				"SunCountdownBase": 4.25,
 				"SunCountdownRange": 2.75,
 				"SunCountdownIncreasePerSun": 0.1,
@@ -17435,7 +17674,7 @@
 				"ResourceGroupNames": [
 					"DarkRainGroup"
 				],
-				"InitialDarkDelay": 2.0,
+				"InitialDarkDelay": 2,
 				"DarkCountdownBase": 4.25,
 				"DarkCountdownRange": 2.75,
 				"DarkCountdownIncreasePerDark": 0.1,
@@ -17451,7 +17690,7 @@
 				"ResourceGroupNames": [
 					"DarkRainGroup"
 				],
-				"InitialDarkDelay": 2.0,
+				"InitialDarkDelay": 2,
 				"DarkCountdownBase": 4.25,
 				"DarkCountdownRange": 2.75,
 				"DarkCountdownIncreasePerDark": 0.1,
@@ -17468,7 +17707,7 @@
 				"ResourceGroupNames": [
 					"DarkRainGroup"
 				],
-				"InitialDarkDelay": 2.0,
+				"InitialDarkDelay": 2,
 				"DarkCountdownBase": 4.25,
 				"DarkCountdownRange": 2.75,
 				"DarkCountdownIncreasePerDark": 0.1,
@@ -18284,7 +18523,7 @@
 				"DefaultZombieWinCondition"
 			],
 			"objdata": {
-				"ZombieWinPositionX": -80.0
+				"ZombieWinPositionX": -80
 			}
 		},
 		{
@@ -18293,7 +18532,7 @@
 				"FinalStageTimeLimitedChallenge"
 			],
 			"objdata": {
-				"ZombossTimeLimit": 20.0
+				"ZombossTimeLimit": 20
 			}
 		},
 		{
@@ -18310,13 +18549,13 @@
 					},
 					{
 						"TimeCondition": 60,
-						"ZombieMoveSpeedUp": 1.0,
-						"PlantAttackSpeedUp": 1.0
+						"ZombieMoveSpeedUp": 1,
+						"PlantAttackSpeedUp": 1
 					},
 					{
 						"TimeCondition": 60,
-						"ZombieMoveSpeedUp": 1.0,
-						"PlantAttackSpeedUp": 1.0
+						"ZombieMoveSpeedUp": 1,
+						"PlantAttackSpeedUp": 1
 					}
 				]
 			}
@@ -18327,7 +18566,7 @@
 				"DefaultPlantWarsZombieWinCondition"
 			],
 			"objdata": {
-				"ZombieWinPositionX": -80.0
+				"ZombieWinPositionX": -80
 			}
 		},
 		{
@@ -18336,9 +18575,9 @@
 				"DefaultCardGameZombieWinCondition"
 			],
 			"objdata": {
-				"ZombieWinPositionX": -80.0,
-				"BaseMaxHitpoints": 1000.0,
-				"DeltaBiteHitpoints": 50.0
+				"ZombieWinPositionX": -80,
+				"BaseMaxHitpoints": 1000,
+				"DeltaBiteHitpoints": 50
 			}
 		},
 		{
@@ -18354,8 +18593,8 @@
 					"mBlue": 0,
 					"mAlpha": 255
 				},
-				"FadeDuration": 2.0,
-				"PostFadeDelay": 4.0
+				"FadeDuration": 2,
+				"PostFadeDelay": 4
 			}
 		},
 		{
@@ -18371,8 +18610,8 @@
 					"mBlue": 0,
 					"mAlpha": 255
 				},
-				"FadeDuration": 2.0,
-				"PostFadeDelay": 4.0
+				"FadeDuration": 2,
+				"PostFadeDelay": 4
 			}
 		},
 		{
@@ -18388,8 +18627,8 @@
 					"mBlue": 0,
 					"mAlpha": 255
 				},
-				"FadeDuration": 2.0,
-				"PostFadeDelay": 4.0
+				"FadeDuration": 2,
+				"PostFadeDelay": 4
 			}
 		},
 		{
@@ -18405,8 +18644,8 @@
 					"mBlue": 0,
 					"mAlpha": 255
 				},
-				"FadeDuration": 2.0,
-				"PostFadeDelay": 4.0
+				"FadeDuration": 2,
+				"PostFadeDelay": 4
 			}
 		},
 		{
@@ -18422,7 +18661,7 @@
 				"VictoryOutro"
 			],
 			"objdata": {
-				"FlagSpawnTime": 1.0,
+				"FlagSpawnTime": 1,
 				"HugeCoinSpawnTime": 0.5,
 				"CoinsPerMower": 1,
 				"CoinShowerStartTime": 1,
@@ -18432,7 +18671,7 @@
 				"CoinRiseHeight": 100,
 				"CoinRiseTime": 0.4,
 				"CoinCollectTime": 0.3,
-				"AdditionalEndingDelay": 2.0,
+				"AdditionalEndingDelay": 2,
 				"HugeCoinInitialScale": 0.5,
 				"HugeCoinFullScale": 1.2,
 				"HugeCoinCollectAdditionalBumpScale": 0.05,
@@ -18445,7 +18684,7 @@
 				"RenaiVictoryOutro"
 			],
 			"objdata": {
-				"FlagSpawnTime": 1.0,
+				"FlagSpawnTime": 1,
 				"HugeCoinSpawnTime": 0.5,
 				"CoinsPerMower": 1,
 				"CoinShowerStartTime": 1,
@@ -18455,7 +18694,7 @@
 				"CoinRiseHeight": 100,
 				"CoinRiseTime": 0.4,
 				"CoinCollectTime": 0.3,
-				"AdditionalEndingDelay": 2.0,
+				"AdditionalEndingDelay": 2,
 				"HugeCoinInitialScale": 0.5,
 				"HugeCoinFullScale": 1.2,
 				"HugeCoinCollectAdditionalBumpScale": 0.05,
@@ -18468,7 +18707,7 @@
 				"ZombossVictoryOutro"
 			],
 			"objdata": {
-				"FlagSpawnTime": 1.0,
+				"FlagSpawnTime": 1,
 				"HugeCoinSpawnTime": 0.5,
 				"CoinsPerMower": 1,
 				"CoinShowerStartTime": 1,
@@ -18478,7 +18717,7 @@
 				"CoinRiseHeight": 100,
 				"CoinRiseTime": 0.4,
 				"CoinCollectTime": 0.3,
-				"AdditionalEndingDelay": 2.0,
+				"AdditionalEndingDelay": 2,
 				"HugeCoinInitialScale": 0.5,
 				"HugeCoinFullScale": 1.2,
 				"HugeCoinCollectAdditionalBumpScale": 0.05,
@@ -18491,7 +18730,7 @@
 				"VaseBreakerVictoryOutro"
 			],
 			"objdata": {
-				"FlagSpawnTime": 1.0,
+				"FlagSpawnTime": 1,
 				"HugeCoinSpawnTime": 0.5,
 				"CoinsPerMower": 1,
 				"CoinShowerStartTime": 1,
@@ -18501,7 +18740,7 @@
 				"CoinRiseHeight": 100,
 				"CoinRiseTime": 0.4,
 				"CoinCollectTime": 0.3,
-				"AdditionalEndingDelay": 2.0,
+				"AdditionalEndingDelay": 2,
 				"HugeCoinInitialScale": 0.5,
 				"HugeCoinFullScale": 1.2,
 				"HugeCoinCollectAdditionalBumpScale": 0.05,
@@ -18514,7 +18753,7 @@
 				"IntroPVZ1ModeVictoryOutro"
 			],
 			"objdata": {
-				"FlagSpawnTime": 1.0,
+				"FlagSpawnTime": 1,
 				"HugeCoinSpawnTime": 0.5,
 				"CoinsPerMower": 1,
 				"CoinShowerStartTime": 1,
@@ -18524,7 +18763,7 @@
 				"CoinRiseHeight": 100,
 				"CoinRiseTime": 0.4,
 				"CoinCollectTime": 0.3,
-				"AdditionalEndingDelay": 2.0,
+				"AdditionalEndingDelay": 2,
 				"HugeCoinInitialScale": 0.5,
 				"HugeCoinFullScale": 1.2,
 				"HugeCoinCollectAdditionalBumpScale": 0.05,
@@ -18587,8 +18826,8 @@
 			"objdata": {
 				"PlantBombExplosionRadius": 25,
 				"ZombieBombExplosionRadius": 80,
-				"PlantDamage": 1000.0,
-				"ZombieDamage": 500.0
+				"PlantDamage": 1000,
+				"ZombieDamage": 500
 			}
 		},
 		{
@@ -19359,6 +19598,190 @@
 				"Armor1ZombieTypeName": "tutorial_armor1",
 				"Armor2ZombieTypeName": "tutorial_armor2",
 				"MusicSuffix": "Modern",
+				"AmbientAudioSuffix": "Amb_Tutorial_Garden_BG_LP",
+				"RailcartDefaultTypeName": "railcart_tutotial",
+				"GravestoneDefaultTypeName": "gravestone_tutorial",
+				"DisabledStreetCells": [
+					{
+						"mX": 0,
+						"mY": 0
+					},
+					{
+						"mX": 0,
+						"mY": 1
+					},
+					{
+						"mX": 0,
+						"mY": 2
+					},
+					{
+						"mX": 0,
+						"mY": 3
+					},
+					{
+						"mX": 0,
+						"mY": 4
+					},
+					{
+						"mX": 0,
+						"mY": 5
+					},
+					{
+						"mX": 0,
+						"mY": 6
+					},
+					{
+						"mX": 0,
+						"mY": 7
+					},
+					{
+						"mX": 0,
+						"mY": 8
+					},
+					{
+						"mX": 0,
+						"mY": 9
+					},
+					{
+						"mX": 1,
+						"mY": 0
+					},
+					{
+						"mX": 1,
+						"mY": 1
+					},
+					{
+						"mX": 1,
+						"mY": 2
+					},
+					{
+						"mX": 1,
+						"mY": 3
+					},
+					{
+						"mX": 1,
+						"mY": 4
+					},
+					{
+						"mX": 1,
+						"mY": 5
+					},
+					{
+						"mX": 1,
+						"mY": 6
+					},
+					{
+						"mX": 1,
+						"mY": 7
+					},
+					{
+						"mX": 1,
+						"mY": 8
+					},
+					{
+						"mX": 1,
+						"mY": 9
+					},
+					{
+						"mX": 2,
+						"mY": 0
+					},
+					{
+						"mX": 2,
+						"mY": 1
+					},
+					{
+						"mX": 2,
+						"mY": 2
+					},
+					{
+						"mX": 2,
+						"mY": 3
+					},
+					{
+						"mX": 2,
+						"mY": 4
+					},
+					{
+						"mX": 2,
+						"mY": 5
+					},
+					{
+						"mX": 2,
+						"mY": 6
+					},
+					{
+						"mX": 2,
+						"mY": 7
+					},
+					{
+						"mX": 2,
+						"mY": 8
+					},
+					{
+						"mX": 2,
+						"mY": 9
+					},
+					{
+						"mX": 3,
+						"mY": 9
+					},
+					{
+						"mX": 5,
+						"mY": 9
+					},
+					{
+						"mX": 7,
+						"mY": 9
+					},
+					{
+						"mX": 7,
+						"mY": 8
+					},
+					{
+						"mX": 7,
+						"mY": 7
+					},
+					{
+						"mX": 8,
+						"mY": 9
+					},
+					{
+						"mX": 8,
+						"mY": 8
+					},
+					{
+						"mX": 8,
+						"mY": 7
+					}
+				]
+			}
+		},
+		{
+			"objclass": "StageModuleProperties",
+			"aliases": [
+				"SouDaCheStage"
+			],
+			"objdata": {
+				"ResourceGroupNames": [
+					"Egypt_Gravestone",
+					"Game_Tombstones_Dynamic",
+					"Tombstone_Dark_Effects",
+					"DelayLoad_Background_SouDaChe",
+					"AudioTutorial"
+				],
+				"GroupsToUnloadForAds": [
+					"DelayLoad_Background_SouDaChe"
+				],
+				"StagePrefix": "newyear_night",
+				"BackgroundResourceGroup": "DelayLoad_Background_SouDaChe",
+				"BackgroundImagePrefix": "IMAGE_BACKGROUNDS_SOUDACHE",
+				"LevelPowerupSet": "LevelPowerupsDefault",
+				"BasicZombieTypeName": "tutorial",
+				"FlagZombieTypeName": "tutorial_flag",
+				"Armor1ZombieTypeName": "tutorial_armor1",
+				"Armor2ZombieTypeName": "tutorial_armor2",
+				"MusicSuffix": "Gnomiverse",
 				"AmbientAudioSuffix": "Amb_Tutorial_Garden_BG_LP",
 				"RailcartDefaultTypeName": "railcart_tutotial",
 				"GravestoneDefaultTypeName": "gravestone_tutorial",
@@ -21380,8 +21803,7 @@
 				"FlagZombieTypeName": "tutorial_flag",
 				"Armor1ZombieTypeName": "tutorial_armor1",
 				"Armor2ZombieTypeName": "tutorial_armor2",
-				"MusicSuffix": "Egypt",
-				"AmbientAudioSuffix": "Egypt_Wind_BG",
+				"MusicSuffix": "Sportz",
 				"RailcartDefaultTypeName": "railcart_tutotial",
 				"GravestoneDefaultTypeName": "gravestone_tutorial",
 				"DirtSpawnEffectName": "POPANIM_EFFECTS_TOMB_DIRT",
@@ -22136,7 +22558,7 @@
 				"PlantWarsModule"
 			],
 			"objdata": {
-				"TimeCountDown": 180.0
+				"TimeCountDown": 180
 			}
 		},
 		{
@@ -22145,7 +22567,7 @@
 				"ZombieRushModule"
 			],
 			"objdata": {
-				"TimeCountDown": 180.0
+				"TimeCountDown": 180
 			}
 		},
 		{
@@ -22171,7 +22593,7 @@
 				"DeathHoleModule"
 			],
 			"objdata": {
-				"LifeTime": 5.0
+				"LifeTime": 5
 			}
 		},
 		{
@@ -22180,7 +22602,7 @@
 				"ShovelPlantSpawnGraveStoneModule"
 			],
 			"objdata": {
-				"GraveStoneDuration": 5.0
+				"GraveStoneDuration": 5
 			}
 		},
 		{
@@ -22198,9 +22620,9 @@
 				"SpermWhaleModule"
 			],
 			"objdata": {
-				"SwallowInterval": 1.0,
-				"PoisonSwallowInterval": 3.0,
-				"SwallowDuration": 20.0,
+				"SwallowInterval": 1,
+				"PoisonSwallowInterval": 3,
+				"SwallowDuration": 20,
 				"PoisonTriggerCount": 2
 			}
 		},
@@ -22210,7 +22632,2696 @@
 				"WitchModule"
 			],
 			"objdata": {
-				"WitchSpawnInterval": 20.0
+				"WitchSpawnInterval": 20
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheOutro"
+			],
+			"objclass": "SouDaCheOutroModuleProperties",
+			"objdata": {}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD1_1_1"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage",
+							"iceage_armor1",
+							"iceage_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage_armor1",
+							"iceage_armor2",
+							"iceage_weasel"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage_armor4",
+							"iceage_dodo",
+							"iceage_hunter",
+							"iceage_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage_armor4",
+							"iceage_hunter",
+							"iceage_walrus",
+							"iceage_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD1_1_2"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy",
+							"cowboy_armor1",
+							"poncho"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy_armor1",
+							"cowboy_armor2",
+							"poncho"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy_armor4",
+							"chicken_farmer",
+							"piano",
+							"cowboy_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy_armor4",
+							"piano",
+							"west_bullrider",
+							"cowboy_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD1_1_3"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity",
+							"lostcity_armor1",
+							"lostcity_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity_armor1",
+							"lostcity_armor2",
+							"lostcity_guide"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity_armor4",
+							"lostcity_relichunter",
+							"lostcity_doctor",
+							"lostcity_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity_armor4",
+							"lostcity_crystalskull",
+							"lostcity_doctor",
+							"lostcity_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD1_2_1"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark",
+							"dark_armor1",
+							"dark_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark_armor1",
+							"dark_armor2",
+							"dark_juggler"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark_armor4",
+							"dark_juggler",
+							"dark_cavalry",
+							"dark_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark_armor4",
+							"dark_wizard",
+							"dark_cavalry",
+							"dark_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD1_2_2"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp",
+							"zcorp_armor1",
+							"zcorp_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp_armor1",
+							"zcorp_armor2",
+							"zcorp_helpdesk"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp_armor4",
+							"zcorp_helpdesk",
+							"zcorp_consultant",
+							"zcorp_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp_armor4",
+							"zcorp_consultant",
+							"zcorp_racer",
+							"zcorp_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD1_2_3"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic",
+							"kongfu_basic_armor1",
+							"kongfu_drink"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor2",
+							"kongfu_torch"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic_armor4",
+							"kongfu_gong",
+							"kongfu_monk_drink",
+							"kongfu_strong_bronze"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic_armor4",
+							"kongfu_hammer",
+							"kongfu_selfexplode",
+							"kongfu_strong_bronze"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD1_3_1"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial",
+							"tutorial_armor1",
+							"modern_superfanimp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial_armor1",
+							"tutorial_armor2",
+							"modern_newspaper"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial_armor4",
+							"modern_balloon",
+							"explosion_proof",
+							"tutorial_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial_armor4",
+							"modern_allstar",
+							"newspaper_veteran",
+							"tutorial_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD1_3_2"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future",
+							"future_armor1",
+							"future_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future_armor1",
+							"future_armor2",
+							"future_jetpack"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future_armor4",
+							"future_protector",
+							"future_jetpack_disco",
+							"future_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future_armor4",
+							"future_protector",
+							"football_mech",
+							"future_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD1_3_3"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino",
+							"dino_armor1",
+							"dino_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino_armor1",
+							"dino_armor2",
+							"dino_bully"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino_armor4",
+							"dino_bully",
+							"dino_pushegg",
+							"dino_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino_armor4",
+							"dino_pushbronto",
+							"dino_pushtyranno",
+							"dino_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD2_1_1"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_imp",
+							"iceage_imp",
+							"iceage_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor2",
+							"iceage_armor2",
+							"iceage_weasel"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage_armor4",
+							"iceage_dodo",
+							"iceage_hunter",
+							"iceage_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage_armor4",
+							"iceage_hunter",
+							"iceage_walrus",
+							"iceage_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD2_1_2"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy",
+							"cowboy",
+							"cowboy_armor1",
+							"cowboy_armor1",
+							"poncho",
+							"poncho",
+							"poncho"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy_armor1",
+							"cowboy_armor2",
+							"poncho",
+							"poncho",
+							"poncho"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"chicken_farmer",
+							"piano",
+							"cowboy_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"piano",
+							"west_bullrider",
+							"cowboy_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD2_1_3"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity",
+							"lostcity_armor1",
+							"lostcity_armor1",
+							"lostcity_armor1",
+							"lostcity_imp",
+							"lostcity_imp",
+							"lostcity_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity_armor1",
+							"lostcity_armor2",
+							"lostcity_armor2",
+							"lostcity_armor2",
+							"lostcity_guide",
+							"lostcity_guide",
+							"lostcity_guide"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity_armor4",
+							"lostcity_relichunter",
+							"lostcity_doctor",
+							"lostcity_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity_armor4",
+							"lostcity_crystalskull",
+							"lostcity_doctor",
+							"lostcity_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD2_2_1"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark",
+							"dark_armor1",
+							"dark_armor1",
+							"dark_armor1",
+							"dark_imp",
+							"dark_imp",
+							"dark_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark_armor1",
+							"dark_armor2",
+							"dark_juggler",
+							"dark_juggler",
+							"dark_juggler",
+							"dark_juggler"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark_armor4",
+							"dark_juggler",
+							"dark_cavalry",
+							"dark_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark_armor4",
+							"dark_wizard",
+							"dark_cavalry",
+							"dark_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD2_2_2"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp",
+							"zcorp",
+							"zcorp_armor1",
+							"zcorp_armor1",
+							"zcorp_armor1",
+							"zcorp_imp",
+							"zcorp_imp",
+							"zcorp_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp_armor1",
+							"zcorp_armor2",
+							"zcorp_armor2",
+							"zcorp_armor2",
+							"zcorp_armor2",
+							"zcorp_armor2",
+							"zcorp_helpdesk"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp_armor4",
+							"zcorp_helpdesk",
+							"zcorp_consultant",
+							"zcorp_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp_armor4",
+							"zcorp_consultant",
+							"zcorp_racer",
+							"zcorp_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD2_2_3"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic",
+							"kongfu_basic_armor1",
+							"kongfu_drink",
+							"kongfu_drink",
+							"kongfu_drink",
+							"kongfu_drink"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor2",
+							"kongfu_basic_armor2",
+							"kongfu_basic_armor2",
+							"kongfu_torch",
+							"kongfu_torch",
+							"kongfu_torch"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic_armor4",
+							"kongfu_gong",
+							"kongfu_monk_drink",
+							"kongfu_strong_bronze"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic_armor4",
+							"kongfu_hammer",
+							"kongfu_selfexplode",
+							"kongfu_strong_bronze"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD2_3_1"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial",
+							"tutorial_armor1",
+							"tutorial_armor1",
+							"modern_superfanimp",
+							"modern_superfanimp",
+							"modern_superfanimp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial_armor1",
+							"tutorial_armor2",
+							"tutorial_armor2",
+							"tutorial_armor2",
+							"modern_newspaper",
+							"modern_newspaper"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial_armor4",
+							"modern_balloon",
+							"explosion_proof",
+							"tutorial_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial_armor4",
+							"modern_allstar",
+							"newspaper_veteran",
+							"tutorial_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD2_3_2"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future",
+							"future_armor1",
+							"future_armor1",
+							"future_armor1",
+							"future_imp",
+							"future_imp",
+							"future_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future_armor1",
+							"future_armor2",
+							"future_armor2",
+							"future_armor2",
+							"future_jetpack",
+							"future_jetpack",
+							"future_jetpack"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future_armor4",
+							"future_protector",
+							"future_jetpack_disco",
+							"future_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future_armor4",
+							"future_protector",
+							"football_mech",
+							"future_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD2_3_3"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino",
+							"dino_armor1",
+							"dino_armor1",
+							"dino_armor1",
+							"dino_imp",
+							"dino_imp",
+							"dino_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino_armor1",
+							"dino_armor2",
+							"dino_bully",
+							"dino_bully",
+							"dino_bully"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino_armor4",
+							"dino_bully",
+							"dino_pushegg",
+							"dino_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino_armor4",
+							"dino_pushbronto",
+							"dino_pushtyranno",
+							"dino_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD3_1_1"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_imp",
+							"iceage_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor2",
+							"iceage_armor2",
+							"iceage_armor2",
+							"iceage_weasel"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage_armor4",
+							"iceage_dodo",
+							"iceage_hunter",
+							"iceage_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage_armor4",
+							"iceage_hunter",
+							"iceage_walrus",
+							"iceage_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD3_1_2"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy",
+							"cowboy_armor1",
+							"cowboy_armor1",
+							"poncho",
+							"poncho",
+							"poncho"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy_armor1",
+							"cowboy_armor2",
+							"poncho",
+							"poncho",
+							"poncho",
+							"poncho",
+							"poncho",
+							"poncho"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"chicken_farmer",
+							"piano",
+							"cowboy_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"piano",
+							"west_bullrider",
+							"cowboy_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD3_1_3"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity",
+							"lostcity_armor1",
+							"lostcity_armor1",
+							"lostcity_armor1",
+							"lostcity_armor1",
+							"lostcity_imp",
+							"lostcity_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity_armor1",
+							"lostcity_armor2",
+							"lostcity_armor2",
+							"lostcity_armor2",
+							"lostcity_armor2",
+							"lostcity_armor2",
+							"lostcity_armor2",
+							"lostcity_guide"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity_armor4",
+							"lostcity_relichunter",
+							"lostcity_doctor",
+							"lostcity_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity_armor4",
+							"lostcity_crystalskull",
+							"lostcity_doctor",
+							"lostcity_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD3_2_1"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark",
+							"dark_armor1",
+							"dark_armor1",
+							"dark_armor1",
+							"dark_armor1",
+							"dark_imp",
+							"dark_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark_armor1",
+							"dark_armor2",
+							"dark_armor2",
+							"dark_armor2",
+							"dark_armor2",
+							"dark_armor2",
+							"dark_armor2",
+							"dark_juggler"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark_armor4",
+							"dark_juggler",
+							"dark_cavalry",
+							"dark_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark_armor4",
+							"dark_wizard",
+							"dark_cavalry",
+							"dark_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD3_2_2"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp",
+							"zcorp_armor1",
+							"zcorp_armor1",
+							"zcorp_imp",
+							"zcorp_imp",
+							"zcorp_imp",
+							"zcorp_imp",
+							"zcorp_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp_armor1",
+							"zcorp_armor2",
+							"zcorp_armor2",
+							"zcorp_armor2",
+							"zcorp_armor2",
+							"zcorp_armor2",
+							"zcorp_helpdesk"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp_armor4",
+							"zcorp_helpdesk",
+							"zcorp_consultant",
+							"zcorp_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp_armor4",
+							"zcorp_consultant",
+							"zcorp_racer",
+							"zcorp_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD3_2_3"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic",
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor1",
+							"kongfu_drink"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor2",
+							"kongfu_basic_armor2",
+							"kongfu_basic_armor2",
+							"kongfu_basic_armor2",
+							"kongfu_basic_armor2",
+							"kongfu_torch"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic_armor4",
+							"kongfu_gong",
+							"kongfu_monk_drink",
+							"kongfu_strong_bronze"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic_armor4",
+							"kongfu_hammer",
+							"kongfu_selfexplode",
+							"kongfu_strong_bronze"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD3_3_1"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial",
+							"tutorial_armor1",
+							"modern_superfanimp",
+							"modern_superfanimp",
+							"modern_superfanimp",
+							"modern_superfanimp",
+							"modern_superfanimp",
+							"modern_superfanimp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial_armor1",
+							"tutorial_armor1",
+							"tutorial_armor2",
+							"modern_newspaper",
+							"modern_newspaper",
+							"modern_newspaper",
+							"modern_newspaper",
+							"modern_newspaper"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial_armor4",
+							"tutorial_armor4",
+							"tutorial_armor4",
+							"tutorial_armor4",
+							"tutorial_armor4",
+							"modern_balloon",
+							"explosion_proof",
+							"tutorial_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial_armor4",
+							"modern_allstar",
+							"newspaper_veteran",
+							"tutorial_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD3_3_2"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future",
+							"future_armor1",
+							"future_armor1",
+							"future_armor1",
+							"future_armor1",
+							"future_imp",
+							"future_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future_armor1",
+							"future_armor1",
+							"future_armor2",
+							"future_armor2",
+							"future_armor2",
+							"future_armor2",
+							"future_armor2",
+							"future_jetpack"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future_armor4",
+							"future_protector",
+							"future_jetpack_disco",
+							"future_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future_armor4",
+							"future_protector",
+							"football_mech",
+							"future_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD3_3_3"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino",
+							"dino_armor1",
+							"dino_armor1",
+							"dino_armor1",
+							"dino_armor1",
+							"dino_imp",
+							"dino_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino_armor1",
+							"dino_armor2",
+							"dino_bully",
+							"dino_bully",
+							"dino_bully",
+							"dino_bully",
+							"dino_bully",
+							"dino_bully"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino_armor4",
+							"dino_bully",
+							"dino_pushegg",
+							"dino_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino_armor4",
+							"dino_pushbronto",
+							"dino_pushtyranno",
+							"dino_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD4_1_1"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor1",
+							"iceage_armor2",
+							"iceage_armor2",
+							"iceage_armor2",
+							"iceage_armor2",
+							"iceage_weasel"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage_armor4",
+							"iceage_dodo",
+							"iceage_hunter",
+							"iceage_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"iceage_armor4",
+							"iceage_hunter",
+							"iceage_walrus",
+							"iceage_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD4_1_2"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy",
+							"cowboy_armor1",
+							"cowboy_armor1",
+							"poncho",
+							"poncho",
+							"poncho",
+							"poncho",
+							"poncho"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy_armor1",
+							"cowboy_armor2",
+							"poncho",
+							"poncho",
+							"poncho",
+							"poncho",
+							"poncho",
+							"poncho"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"chicken_farmer",
+							"piano",
+							"cowboy_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"cowboy_armor4",
+							"piano",
+							"west_bullrider",
+							"cowboy_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD4_1_3"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity",
+							"lostcity_armor1",
+							"lostcity_armor1",
+							"lostcity_armor1",
+							"lostcity_armor1",
+							"lostcity_armor1",
+							"lostcity_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity_armor1",
+							"lostcity_armor2",
+							"lostcity_armor2",
+							"lostcity_armor2",
+							"lostcity_armor2",
+							"lostcity_armor2",
+							"lostcity_armor2",
+							"lostcity_guide"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity_armor4",
+							"lostcity_relichunter",
+							"lostcity_doctor",
+							"lostcity_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 1,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"lostcity_armor4",
+							"lostcity_crystalskull",
+							"lostcity_doctor",
+							"lostcity_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD4_2_1"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark",
+							"dark_armor1",
+							"dark_armor1",
+							"dark_armor1",
+							"dark_armor1",
+							"dark_armor1",
+							"dark_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark_armor1",
+							"dark_armor2",
+							"dark_armor2",
+							"dark_armor2",
+							"dark_armor2",
+							"dark_armor2",
+							"dark_armor2",
+							"dark_juggler"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark_armor4",
+							"dark_juggler",
+							"dark_cavalry",
+							"dark_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dark_armor4",
+							"dark_wizard",
+							"dark_cavalry",
+							"dark_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD4_2_2"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp",
+							"zcorp_armor1",
+							"zcorp_imp",
+							"zcorp_imp",
+							"zcorp_imp",
+							"zcorp_imp",
+							"zcorp_imp",
+							"zcorp_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp_armor1",
+							"zcorp_armor2",
+							"zcorp_armor2",
+							"zcorp_armor2",
+							"zcorp_armor2",
+							"zcorp_armor2",
+							"zcorp_armor2",
+							"zcorp_helpdesk"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp_armor4",
+							"zcorp_helpdesk",
+							"zcorp_consultant",
+							"zcorp_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"zcorp_armor4",
+							"zcorp_consultant",
+							"zcorp_racer",
+							"zcorp_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD4_2_3"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic",
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor1",
+							"kongfu_drink"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic_armor1",
+							"kongfu_basic_armor2",
+							"kongfu_basic_armor2",
+							"kongfu_basic_armor2",
+							"kongfu_basic_armor2",
+							"kongfu_basic_armor2",
+							"kongfu_basic_armor2",
+							"kongfu_torch"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic_armor4",
+							"kongfu_gong",
+							"kongfu_monk_drink",
+							"kongfu_strong_bronze"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"kongfu_basic_armor4",
+							"kongfu_hammer",
+							"kongfu_selfexplode",
+							"kongfu_strong_bronze"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD4_3_1"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial",
+							"tutorial_armor1",
+							"modern_superfanimp",
+							"modern_superfanimp",
+							"modern_superfanimp",
+							"modern_superfanimp",
+							"modern_superfanimp",
+							"modern_superfanimp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial_armor1",
+							"tutorial_armor2",
+							"modern_newspaper",
+							"modern_newspaper",
+							"modern_newspaper",
+							"modern_newspaper",
+							"modern_newspaper",
+							"modern_newspaper"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial_armor4",
+							"tutorial_armor4",
+							"tutorial_armor4",
+							"tutorial_armor4",
+							"tutorial_armor4",
+							"modern_balloon",
+							"explosion_proof",
+							"tutorial_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"tutorial_armor4",
+							"modern_allstar",
+							"newspaper_veteran",
+							"tutorial_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD4_3_2"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future",
+							"future_armor1",
+							"future_armor1",
+							"future_armor1",
+							"future_armor1",
+							"future_armor1",
+							"future_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future_armor1",
+							"future_armor2",
+							"future_armor2",
+							"future_armor2",
+							"future_armor2",
+							"future_armor2",
+							"future_armor2",
+							"future_jetpack"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future_armor4",
+							"future_protector",
+							"future_jetpack_disco",
+							"future_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"future_armor4",
+							"future_protector",
+							"football_mech",
+							"future_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheGravestoneModuleD4_3_3"
+			],
+			"objclass": "SouDaCheGravestoneModuleProperties",
+			"objdata": {
+				"GravestoneTypeName": "soudache_gravestone",
+				"RarityConfigs": [
+					{
+						"Rare": 0,
+						"GravestoneCount": 2,
+						"ZombieCount": 1,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino",
+							"dino_armor1",
+							"dino_armor1",
+							"dino_armor1",
+							"dino_armor1",
+							"dino_armor1",
+							"dino_imp"
+						]
+					},
+					{
+						"Rare": 1,
+						"GravestoneCount": 2,
+						"ZombieCount": 2,
+						"ZombieLevel": 2,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino_armor1",
+							"dino_armor2",
+							"dino_bully",
+							"dino_bully",
+							"dino_bully",
+							"dino_bully",
+							"dino_bully",
+							"dino_bully"
+						]
+					},
+					{
+						"Rare": 2,
+						"GravestoneCount": 3,
+						"ZombieCount": 2,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino_armor4",
+							"dino_bully",
+							"dino_pushegg",
+							"dino_gargantuar"
+						]
+					},
+					{
+						"Rare": 3,
+						"GravestoneCount": 4,
+						"ZombieCount": 3,
+						"ZombieLevel": 3,
+						"WarningSeconds": 1,
+						"ZombiePool": [
+							"dino_armor4",
+							"dino_pushbronto",
+							"dino_pushtyranno",
+							"dino_gargantuar"
+						]
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SouDaCheLevelModule"
+			],
+			"objclass": "SouDaCheLevelModuleProperties",
+			"objdata": {
+				"m_soudacheEnergyRecoverAmount": 1,
+				"m_soudacheEnergyRecoverInterval": 0.45
+			}
+		},
+		{
+			"aliases": [
+				"BondBufferModule"
+			],
+			"objclass": "SoudacheBondBufferModuleProperties",
+			"objdata": {
+				"IceBond": {
+					"IntervalSeconds": 7,
+					"Damage": 500,
+					"BuffValue": 1,
+					"BuffDuration": 3
+				},
+				"EnergySpawnCount": [
+					1,
+					2
+				],
+				"DragonBond": {
+					"FireDragonChance": 0.4,
+					"FireDragonDamage": 3600,
+					"IceDragonChance": 0.2,
+					"IceDragonDamage": 3000,
+					"IceDragonFreezeDuration": 2,
+					"ThunderDragonChance": 0.3,
+					"ThunderDragonDamage": 3200,
+					"ThunderDragonStunDuration": 1,
+					"GreedyDragonDuration": 8,
+					"GreedyDragonFireballDamage": 800
+				},
+				"ShroomBond": {
+					"SporeChance": 0.2,
+					"MaxSporesPerBattle": 2,
+					"SporeGridItemType": "soudache_spore",
+					"SpecialShroom1": "glaciershroom",
+					"SpecialShroom2": "doomshroom"
+				},
+				"ElectricBond": {
+					"IntervalSeconds": 3,
+					"Damage": 300,
+					"StunChance": 0.15,
+					"StunDuration": 1,
+					"FieldDuration": 5,
+					"FieldChance": 0.25
+				},
+				"FireBond": {
+					"BurnChance": 0.25,
+					"BurnDamagePerSec": 120,
+					"BurnDuration": 5,
+					"FireDamageBoost": 0.25,
+					"ExplosionDamage": 500,
+					"ExplosionRadius": 3
+				},
+				"PhysicalBond": {
+					"AttackBonusPerPlant": 0.05,
+					"GlobalAttackBonus": 0.1,
+					"GlobalAttackBonus2": 0.15,
+					"AttackSpeedBonus": 0.05
+				},
+				"ResilientBond": {
+					"HPBonus": 0.25,
+					"GlobalHPBonus": 0.3,
+					"ReviveHPPercent": 0.5
+				},
+				"AbyssBond": {
+					"FragmentValue": [
+						5,
+						10,
+						15
+					],
+					"FragmentTotal": [
+						40,
+						60,
+						120
+					],
+					"AttackDuration": 4,
+					"CooldownDuration": 6,
+					"DamagePerLevel": 5,
+					"TierDamages": [
+						200,
+						300,
+						500,
+						800
+					],
+					"TierSweepDamages": [
+						0,
+						0,
+						500,
+						600
+					],
+					"TierThresholds": [
+						0,
+						75,
+						200,
+						400
+					]
+				},
+				"PoisonBond": {
+					"Probability": 0.15,
+					"Duration": 6,
+					"DpsPercentage": 0.05,
+					"SpeedReduction": 0.5
+				},
+				"MagicBond": {
+					"Probability": 0.15,
+					"Duration": 3,
+					"DamageBonus": 0.3
+				}
+			}
+		},
+		{
+			"aliases": [
+				"SoudacheModule"
+			],
+			"objclass": "SoudacheModuleProperties",
+			"objdata": {
+				"PlantStarMergeCount": 3,
+				"PlantStarUpgrades": [
+					{
+						"Star": 2,
+						"HealthBonus": 2,
+						"AttackBonus": 2
+					},
+					{
+						"Star": 3,
+						"HealthBonus": 9,
+						"AttackBonus": 9
+					}
+				],
+				"RareAttributeScale": [
+					1.0,
+					1.5,
+					2.0,
+					2.5,
+					3.0
+				],
+				"StarUpgradeBlacklist": [
+					"minishroom"
+				],
+				"ShopLevelRare": [
+					[
+						100,
+						0,
+						0,
+						0,
+						0
+					],
+					[
+						100,
+						0,
+						0,
+						0,
+						0
+					],
+					[
+						80,
+						15,
+						5,
+						0,
+						0
+					],
+					[
+						65,
+						25,
+						10,
+						0,
+						0
+					],
+					[
+						45,
+						33,
+						20,
+						2,
+						0
+					],
+					[
+						30,
+						40,
+						25,
+						5,
+						0
+					],
+					[
+						19,
+						30,
+						40,
+						10,
+						1
+					],
+					[
+						18,
+						25,
+						32,
+						22,
+						3
+					],
+					[
+						15,
+						20,
+						25,
+						30,
+						10
+					],
+					[
+						5,
+						10,
+						20,
+						40,
+						25
+					]
+				]
 			}
 		},
 		{
@@ -22252,7 +25363,7 @@
 				"TimeEnergy3"
 			],
 			"objdata": {
-				"TimeEnergyValueMax": 480.0,
+				"TimeEnergyValueMax": 480,
 				"TimeEnergyTriggers": []
 			}
 		},
@@ -22262,14 +25373,14 @@
 				"TimeEnergy4"
 			],
 			"objdata": {
-				"TimeEnergyValueMax": 300.0,
+				"TimeEnergyValueMax": 300,
 				"TimeEnergyTriggers": [
 					{
 						"TriggerRange": {
 							"Min": 0.7,
 							"Max": 0.8
 						},
-						"Cooldown": 15.0,
+						"Cooldown": 15,
 						"TriggerType": "wormhole",
 						"WormHoleProperty": {}
 					},
@@ -22278,7 +25389,7 @@
 							"Min": 0.68,
 							"Max": 0.7
 						},
-						"Cooldown": 8.0,
+						"Cooldown": 8,
 						"TriggerType": "portal",
 						"PortalProperty": {
 							"PortalPos": [
@@ -22295,7 +25406,7 @@
 							"Min": 0.66,
 							"Max": 0.68
 						},
-						"Cooldown": 8.0,
+						"Cooldown": 8,
 						"TriggerType": "portal",
 						"PortalProperty": {
 							"PortalPos": [
@@ -22312,16 +25423,16 @@
 							"Min": 0.2,
 							"Max": 0.66
 						},
-						"Cooldown": 30.0,
+						"Cooldown": 30,
 						"TriggerType": "wormhole",
 						"WormHoleProperty": {}
 					},
 					{
 						"TriggerRange": {
-							"Min": 0.0,
+							"Min": 0,
 							"Max": 0.2
 						},
-						"Cooldown": 60.0,
+						"Cooldown": 60,
 						"TriggerType": "blackhole",
 						"BlackHoleProperty": {
 							"ColNumsPlantIsDrag": 1,
@@ -22337,14 +25448,14 @@
 				"TimeEnergy5"
 			],
 			"objdata": {
-				"TimeEnergyValueMax": 300.0,
+				"TimeEnergyValueMax": 300,
 				"TimeEnergyTriggers": [
 					{
 						"TriggerRange": {
 							"Min": 0.7,
 							"Max": 0.8
 						},
-						"Cooldown": 15.0,
+						"Cooldown": 15,
 						"TriggerType": "wormhole",
 						"WormHoleProperty": {}
 					},
@@ -22353,7 +25464,7 @@
 							"Min": 0.68,
 							"Max": 0.7
 						},
-						"Cooldown": 8.0,
+						"Cooldown": 8,
 						"TriggerType": "portal",
 						"PortalProperty": {
 							"PortalPos": [
@@ -22370,7 +25481,7 @@
 							"Min": 0.66,
 							"Max": 0.68
 						},
-						"Cooldown": 8.0,
+						"Cooldown": 8,
 						"TriggerType": "portal",
 						"PortalProperty": {
 							"PortalPos": [
@@ -22387,16 +25498,16 @@
 							"Min": 0.2,
 							"Max": 0.66
 						},
-						"Cooldown": 30.0,
+						"Cooldown": 30,
 						"TriggerType": "wormhole",
 						"WormHoleProperty": {}
 					},
 					{
 						"TriggerRange": {
-							"Min": 0.0,
+							"Min": 0,
 							"Max": 0.2
 						},
-						"Cooldown": 60.0,
+						"Cooldown": 60,
 						"TriggerType": "blackhole",
 						"BlackHoleProperty": {
 							"ColNumsPlantIsDrag": 1,
@@ -22415,8 +25526,8 @@
 				"Phases": [
 					{
 						"ZombieType": "general_zmech_phase1",
-						"SpawnDelay": 15.0,
-						"ZombieLifetime": 45.0,
+						"SpawnDelay": 15,
+						"ZombieLifetime": 45,
 						"ZombieLevelOverride": 1,
 						"ZombieLevelAddLeagueBase": "true",
 						"LaneToSpawnMin": 1,
@@ -22424,8 +25535,8 @@
 					},
 					{
 						"ZombieType": "general_zmech_phase2",
-						"SpawnDelay": 15.0,
-						"ZombieLifetime": 40.0,
+						"SpawnDelay": 15,
+						"ZombieLifetime": 40,
 						"ZombieLevelOverride": 1,
 						"ZombieLevelAddLeagueBase": "true",
 						"LaneToSpawnMin": 1,
@@ -22433,8 +25544,8 @@
 					},
 					{
 						"ZombieType": "general_zmech_phase3",
-						"SpawnDelay": 15.0,
-						"ZombieLifetime": 35.0,
+						"SpawnDelay": 15,
+						"ZombieLifetime": 35,
 						"ZombieLevelOverride": 1,
 						"ZombieLevelAddLeagueBase": "true",
 						"LaneToSpawnMin": 1,
@@ -24088,6 +27199,321 @@
 				"Roads": [
 					{
 						"GridX": 8,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 7,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_2"
+					},
+					{
+						"GridX": 7,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_3"
+					},
+					{
+						"GridX": 6,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_2"
+					},
+					{
+						"GridX": 6,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_2"
+					},
+					{
+						"GridX": 5,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_2"
+					},
+					{
+						"GridX": 5,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_3"
+					},
+					{
+						"GridX": 4,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_2"
+					},
+					{
+						"GridX": 4,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_2"
+					},
+					{
+						"GridX": 3,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_2"
+					},
+					{
+						"GridX": 3,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_3"
+					},
+					{
+						"GridX": 2,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_2"
+					},
+					{
+						"GridX": 2,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_2"
+					},
+					{
+						"GridX": 1,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_2"
+					},
+					{
+						"GridX": 1,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_3"
+					},
+					{
+						"GridX": 0,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"TunnelDefendHard3"
+			],
+			"objclass": "TunnelDefendModuleProperties",
+			"objdata": {
+				"Roads": [
+					{
+						"GridX": 8,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 7,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 6,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 5,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 4,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_LEFT"
+					},
+					{
+						"GridX": 3,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 2,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_2"
+					},
+					{
+						"GridX": 2,
+						"GridY": 1,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN"
+					},
+					{
+						"GridX": 2,
+						"GridY": 2,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_LEFT_2"
+					},
+					{
+						"GridX": 2,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_3"
+					},
+					{
+						"GridX": 1,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 0,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 4,
+						"GridY": 1,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN"
+					},
+					{
+						"GridX": 4,
+						"GridY": 2,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_3"
+					},
+					{
+						"GridX": 3,
+						"GridY": 2,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 1,
+						"GridY": 2,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 0,
+						"GridY": 2,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"TunnelDefendHard4"
+			],
+			"objclass": "TunnelDefendModuleProperties",
+			"objdata": {
+				"Roads": [
+					{
+						"GridX": 8,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 7,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 6,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 5,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN_2"
+					},
+					{
+						"GridX": 5,
+						"GridY": 1,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN"
+					},
+					{
+						"GridX": 5,
+						"GridY": 2,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_DOWN"
+					},
+					{
+						"GridX": 5,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_3"
+					},
+					{
+						"GridX": 4,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 3,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_LEFT"
+					},
+					{
+						"GridX": 2,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 1,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 0,
+						"GridY": 3,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 8,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 7,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 6,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 5,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 4,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 3,
+						"GridY": 4,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_2"
+					},
+					{
+						"GridX": 3,
+						"GridY": 2,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_UP"
+					},
+					{
+						"GridX": 3,
+						"GridY": 1,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_UP"
+					},
+					{
+						"GridX": 3,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT_2"
+					},
+					{
+						"GridX": 2,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 1,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					},
+					{
+						"GridX": 0,
+						"GridY": 0,
+						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"TunnelDefendHard5"
+			],
+			"objclass": "TunnelDefendModuleProperties",
+			"objdata": {
+				"Roads": [
+					{
+						"GridX": 8,
 						"GridY": 0,
 						"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
 					},
@@ -24713,6 +28139,552 @@
 							"Img": "IMAGE_UI_MAUSOLEUM_TUNNEL_LEFT"
 						}
 					]
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SoudacheTunnelDefendStage1"
+			],
+			"objclass": "TunnelDefendModuleProperties",
+			"objdata": {
+				"BrickMapIndex": 3,
+				"reportError": false,
+				"Roads": [
+					{
+						"GridX": 0,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 1,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 5,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 0,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 1,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 5,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 4,
+						"Img": ""
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SoudacheTunnelDefendStage2"
+			],
+			"objclass": "TunnelDefendModuleProperties",
+			"objdata": {
+				"reportError": false,
+				"BrickMapIndex": 3,
+				"Roads": [
+					{
+						"GridX": 1,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 5,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 1,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 5,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 4,
+						"Img": ""
+					}
+				]
+			}
+		},
+		{
+			"aliases": [
+				"SoudacheTunnelDefendStage3"
+			],
+			"objclass": "TunnelDefendModuleProperties",
+			"objdata": {
+				"reportError": false,
+				"BrickMapIndex": 3,
+				"Roads": [
+					{
+						"GridX": 2,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 5,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 0,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 1,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 2,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 3,
+						"Img": ""
+					},
+					{
+						"GridX": 2,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 3,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 4,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 5,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 6,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 7,
+						"GridY": 4,
+						"Img": ""
+					},
+					{
+						"GridX": 8,
+						"GridY": 4,
+						"Img": ""
+					}
 				]
 			}
 		},

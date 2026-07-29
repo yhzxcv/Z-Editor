@@ -6,6 +6,7 @@
     <string name="level_list_screen_item_about">关于软件</string>
     <string name="level_list_screen_item_cache">释放缓存</string>
     <string name="level_list_screen_item_cache_tips">已清理 %d 个缓存文件</string>
+    <string name="level_list_screen_item_experimental">实验性功能</string>
     <string name="level_list_screen_btn_refresh">刷新</string>
     <string name="level_list_screen_btn_theme">切换主题</string>
     <string name="level_list_screen_btn_more_info">更多选项</string>

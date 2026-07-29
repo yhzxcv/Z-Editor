@@ -169,8 +169,8 @@
 			],
 			"objdata": {
 				"Weight": 99,
-				"RepeatMin": 3,
-				"RepeatMax": 5,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
 				"Phase": "Attacking",
 				"PhaseAfter": "Cooldown",
 				"TargetType": "FriendlyZombies",
@@ -199,6 +199,7 @@
 				"Phase": "Cooldown",
 				"PhaseAfter": "Attacking",
 				"AnimationToPlay": "idle",
+				"AnimationLoops": 999,
 				"MinDuration": 8.0,
 				"MaxDuration": 12.0
 			}
@@ -210,8 +211,8 @@
 			],
 			"objdata": {
 				"Weight": 99,
-				"RepeatMin": 5,
-				"RepeatMax": 8,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
 				"Phase": "Attacking",
 				"PhaseAfter": "Cooldown",
 				"TargetType": "FriendlyZombies",
@@ -240,6 +241,7 @@
 				"Phase": "Cooldown",
 				"PhaseAfter": "Attacking",
 				"AnimationToPlay": "idle",
+				"AnimationLoops": 999,
 				"MinDuration": 5.0,
 				"MaxDuration": 8.0
 			}
@@ -251,8 +253,8 @@
 			],
 			"objdata": {
 				"Weight": 99,
-				"RepeatMin": 8,
-				"RepeatMax": 12,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
 				"Phase": "Attacking",
 				"PhaseAfter": "Cooldown",
 				"TargetType": "FriendlyZombies",
@@ -281,6 +283,7 @@
 				"Phase": "Cooldown",
 				"PhaseAfter": "Attacking",
 				"AnimationToPlay": "idle",
+				"AnimationLoops": 999,
 				"MinDuration": 3.5,
 				"MaxDuration": 5.0
 			}
@@ -1185,6 +1188,261 @@
 					"mWidth": 65,
 					"mHeight": 95
 				}
+			}
+		},
+		{
+			"//": "Zomboss Hot Rodicus Actions =============================================="
+		},
+		{
+			"objclass": "ZombossHotRodicusJumpActionDefinition",
+			"aliases": [
+				"ZombossHotRodicusJump"
+			],
+			"objdata": {
+				"Weight": 20,
+				"RepeatMin": 1,
+				"RepeatMax": 1,
+				"JumpHeight": 150,
+				"JumpDuration": 0.6,
+				"JumpAnimRateModifier": 2
+			}
+		},
+		{
+			"objclass": "ZombossHotRodicusHorseHammerActionDefinition",
+			"aliases": [
+				"ZombossHotRodicusHorseHammer"
+			],
+			"objdata": {
+				"Weight": 40,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"DamageStage1": 500,
+				"DamageStage2": 1500,
+				"DamageStage3": 2000,
+				"HitTime": 1,
+				"ActionDuration": 2
+			}
+		},
+		{
+			"objclass": "ZombossHotRodicusSummonActionDefinition",
+			"aliases": [
+				"ZombossHotRodicusRomanSquad1"
+			],
+			"objdata": {
+				"Weight": 60,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"SpawnZombieWavePointRange": {
+					"Min": 1200,
+					"Max": 1600
+				},
+				"SpawnZombieTypes": [
+					"roman",
+					"roman_armor1",
+					"roman_armor2"
+				],
+				"SpawnStartTime": 0.5,
+				"SpawnEndTime": 1,
+				"SpawnWavesBetweenPlantFood": {
+					"Min": 3,
+					"Max": 3
+				},
+				"SpawnDistanceVariance": 25
+			}
+		},
+		{
+			"objclass": "ZombossHotRodicusSummonActionDefinition",
+			"aliases": [
+				"ZombossHotRodicusRomanSquad2"
+			],
+			"objdata": {
+				"Weight": 50,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"SpawnZombieWavePointRange": {
+					"Min": 1600,
+					"Max": 2200
+				},
+				"SpawnZombieTypes": [
+					"roman_flag",
+					"roman_shield_pair",
+					"roman_healer",
+					"roman_gargantuar"
+				],
+				"SpawnStartTime": 0.5,
+				"SpawnEndTime": 1,
+				"SpawnWavesBetweenPlantFood": {
+					"Min": 4,
+					"Max": 4
+				},
+				"SpawnDistanceVariance": 25
+			}
+		},
+		{
+			"objclass": "ZombossHotRodicusSummonActionDefinition",
+			"aliases": [
+				"ZombossHotRodicusRomanSquad3"
+			],
+			"objdata": {
+				"Weight": 50,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"SpawnZombieWavePointRange": {
+					"Min": 2200,
+					"Max": 2800
+				},
+				"SpawnZombieTypes": [
+					"roman_flag",
+					"roman_shield_triad",
+					"roman_healer",
+					"roman_gargantuar"
+				],
+				"SpawnStartTime": 0.5,
+				"SpawnEndTime": 1,
+				"SpawnWavesBetweenPlantFood": {
+					"Min": 6,
+					"Max": 6
+				},
+				"SpawnDistanceVariance": 25
+			}
+		},
+		{
+			"objclass": "ZombossHotRodicusSummonActionDefinition",
+			"aliases": [
+				"ZombossHotRodicusRomanLegion1"
+			],
+			"objdata": {
+				"Weight": 30,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"SpawnZombieWavePointRange": {
+					"Min": 900,
+					"Max": 1200
+				},
+				"SpawnZombieTypes": [
+					"roman_shield_pair",
+					"roman_shield_triad"
+				],
+				"SpawnStartTime": 0.5,
+				"SpawnEndTime": 1,
+				"SpawnWavesBetweenPlantFood": {
+					"Min": 3,
+					"Max": 3
+				},
+				"SpawnDistanceVariance": 25
+			}
+		},
+		{
+			"objclass": "ZombossHotRodicusSummonActionDefinition",
+			"aliases": [
+				"ZombossHotRodicusRomanLegion2"
+			],
+			"objdata": {
+				"Weight": 30,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"SpawnZombieWavePointRange": {
+					"Min": 1800,
+					"Max": 2400
+				},
+				"SpawnZombieTypes": [
+					"gladiator_zombie"
+				],
+				"SpawnStartTime": 0.5,
+				"SpawnEndTime": 1,
+				"SpawnWavesBetweenPlantFood": {
+					"Min": 5,
+					"Max": 5
+				},
+				"SpawnDistanceVariance": 25
+			}
+		},
+		{
+			"objclass": "ZombossHotRodicusSummonActionDefinition",
+			"aliases": [
+				"ZombossHotRodicusRomanLegion3"
+			],
+			"objdata": {
+				"Weight": 50,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"SpawnZombieWavePointRange": {
+					"Min": 2400,
+					"Max": 3000
+				},
+				"SpawnZombieTypes": [
+					"gladiator_zombie"
+				],
+				"SpawnStartTime": 0.5,
+				"SpawnEndTime": 1,
+				"SpawnWavesBetweenPlantFood": {
+					"Min": 6,
+					"Max": 6
+				},
+				"SpawnDistanceVariance": 25
+			}
+		},
+		{
+			"objclass": "ZombossHotRodicusRushActionDefinition",
+			"aliases": [
+				"ZombossHotRodicusRush1"
+			],
+			"objdata": {
+				"Weight": 20,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"RushTime": 6,
+				"RushDamageToInterrupt": 1000000,
+				"RushLeadupTime": 2.5,
+				"RushLeadupStartRate": 1,
+				"RushLeadupEndRate": 1,
+				"RushLeadupBackup": 0,
+				"RushStartRate": 1,
+				"RushEndRate": 1,
+				"RushOvershoot": 80,
+				"RushSound": "Play_Zomb_Egypt_Zomboss_Attack_Rush"
+			}
+		},
+		{
+			"objclass": "ZombossHotRodicusRushActionDefinition",
+			"aliases": [
+				"ZombossHotRodicusRush2"
+			],
+			"objdata": {
+				"Weight": 30,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"RushTime": 6,
+				"RushDamageToInterrupt": 1000000,
+				"RushLeadupTime": 2.5,
+				"RushLeadupStartRate": 1,
+				"RushLeadupEndRate": 1,
+				"RushLeadupBackup": 0,
+				"RushStartRate": 1,
+				"RushEndRate": 1,
+				"RushOvershoot": 80,
+				"RushSound": "Play_Zomb_Egypt_Zomboss_Attack_Rush"
+			}
+		},
+		{
+			"objclass": "ZombossHotRodicusRushActionDefinition",
+			"aliases": [
+				"ZombossHotRodicusRush3"
+			],
+			"objdata": {
+				"Weight": 20,
+				"RepeatMin": 0,
+				"RepeatMax": 0,
+				"RushTime": 6,
+				"RushDamageToInterrupt": 1000000,
+				"RushLeadupTime": 2.5,
+				"RushLeadupStartRate": 1,
+				"RushLeadupEndRate": 1,
+				"RushLeadupBackup": 0,
+				"RushStartRate": 1,
+				"RushEndRate": 1,
+				"RushOvershoot": 80,
+				"RushSound": "Play_Zomb_Egypt_Zomboss_Attack_Rush"
 			}
 		},
 		{
@@ -12745,6 +13003,35 @@
 				"LoopingAnimation": "summon_disco_loop",
 				"RampDownAnimation": "summon_disco_end",
 				"EffectTypeToShow": ""
+			}
+		},
+		{
+			"objclass": "ZombieProjectileEliteActionDefinition",
+			"aliases": [
+				"ZombieSoudacheD1N6HunterEliteAction"
+			],
+			"objdata": {
+				"TimeBeforeFirst": {
+					"Min": 10,
+					"Max": 12
+				},
+				"TimeBetween": {
+					"Min": 0.6,
+					"Max": 0.6
+				},
+				"TimeBetweenBarrages": {
+					"Min": 18,
+					"Max": 20
+				},
+				"Projectile": "RTID(SoudacheD1N6HunterSnowball@ProjectileTypes)",
+				"ProjectileSound": "Play_Zomb_Egypt_Zomboss_Attack_Rush",
+				"SpawnOffset": {
+					"x": -20,
+					"y": 0,
+					"z": 45
+				},
+				"ApexHeight": 100,
+				"TimeUntilHit": 0.75
 			}
 		},
 		{

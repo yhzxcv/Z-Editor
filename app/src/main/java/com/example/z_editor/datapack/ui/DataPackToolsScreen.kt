@@ -13,6 +13,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,8 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
@@ -52,12 +51,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
-
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.z_editor.ui.theme.PvzBluePrimary
 import com.example.z_editor.views.components.rememberDebouncedClick
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
@@ -120,11 +119,13 @@ fun DataPackToolsScreen(
                     onToolClick = { currentTool = it }
                 )
             }
+
             DataPackToolScreen.FileManager -> {
                 DataPackFileManagerScreen(
                     onBack = { currentTool = DataPackToolScreen.Main }
                 )
             }
+
             DataPackToolScreen.Smf -> {
                 SmfPackerScreen(
                     onBack = { currentTool = DataPackToolScreen.Main }
@@ -143,8 +144,12 @@ private fun DataPackToolsMainContent(
     val themeColor = MaterialTheme.colorScheme.secondary
     var showHelpDialog by remember { mutableStateOf(false) }
     var showDisclaimerDialog by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
 
     Scaffold(
+        modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures(onTap = { focusManager.clearFocus() })
+        },
         topBar = {
             TopAppBar(
                 title = {
@@ -253,25 +258,25 @@ private fun DataPackToolsMainContent(
                 )
                 HelpSection(
                     title = "文件格式转换",
-                    body = "支持 JSON、RTON、加密 RTON、Hujson（热更新）等格式之间的相互转换。\n" +
-                        "• JSON ↔ RTON：关卡文件编辑的核心流程\n" +
-                        "• RTON ↔ 加密 RTON：游戏使用的加密格式\n" +
-                        "• JSON ↔ Hujson：热更新补丁的编解码"
+                    body = "支持 JSON、RTON、加密 RTON、热更新 JSON 等格式之间的相互转换。\n" +
+                            "• JSON ↔ RTON：关卡文件编辑的核心流程\n" +
+                            "• RTON ↔ 加密 RTON：游戏使用的加密格式\n" +
+                            "• JSON ↔ 热更新JSON：热更新补丁的编解码"
                 )
                 HelpSection(
                     title = "数据包补丁",
                     body = "用于向 SMF/RSB 容器文件中注入修改后的文件，目前只支持 RSB 模式。\n" +
-                        "使用步骤：\n" +
-                        "1. 将原始数据包放入 packer/original/\n" +
-                        "2. 将补丁文件放入 packer/patches/\n" +
-                        "3. 选择模板，开始打包"
+                            "使用步骤：\n" +
+                            "1. 将原始数据包放入 packer/original/\n" +
+                            "2. 将补丁文件放入 packer/patches/\n" +
+                            "3. 选择模板，开始打包"
                 )
                 HelpSection(
                     title = "注意事项",
                     body = "• 所有文件操作基于 SAF，首次使用需授权目录\n" +
-                        "• 加密操作需要正确的 PvZ2 密钥\n" +
-                        "• 补丁文件名需与数据包内文件名一致\n" +
-                        "• 本功能处于实验阶段，请谨慎操作"
+                            "• 加密操作需要正确的 PvZ2 密钥\n" +
+                            "• 补丁文件名需与数据包内文件名一致\n" +
+                            "• 本功能处于实验阶段，请谨慎操作"
                 )
             }
         }
@@ -308,9 +313,9 @@ private fun DisclaimerDialog(onDismiss: () -> Unit) {
                 )
                 Text(
                     text = "• 使用本工具修改游戏数据可能违反游戏服务条款\n" +
-                        "• 可能导致游戏账号被临时或永久封禁\n" +
-                        "• 可能导致游戏存档损坏或数据丢失\n" +
-                        "• 所有操作均为用户自行选择，风险自负",
+                            "• 可能导致游戏账号被临时或永久封禁\n" +
+                            "• 可能导致游戏存档损坏或数据丢失\n" +
+                            "• 所有操作均为用户自行选择，风险自负",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 22.sp
                 )
@@ -322,11 +327,11 @@ private fun DisclaimerDialog(onDismiss: () -> Unit) {
                 )
                 Text(
                     text = "开发者在此明确声明：\n" +
-                        "1. 本工具仅供学习研究使用，不鼓励任何形式的游戏作弊行为。\n" +
-                        "2. 用户使用本工具所产生的一切后果，包括但不限于账号封禁、数据丢失、" +
-                        "游戏体验受损等，均由用户自行承担，开发者不承担任何直接或间接责任。\n" +
-                        "3. 用户在使用本工具前应充分了解相关风险，并自行决定是否承担这些风险。\n" +
-                        "4. 继续使用即表示您已阅读、理解并同意本免责声明的全部条款。",
+                            "1. 本工具仅供学习研究使用，不鼓励任何形式的游戏作弊行为。\n" +
+                            "2. 用户使用本工具所产生的一切后果，包括但不限于账号封禁、数据丢失、" +
+                            "游戏体验受损等，均由用户自行承担，开发者不承担任何直接或间接责任。\n" +
+                            "3. 用户在使用本工具前应充分了解相关风险，并自行决定是否承担这些风险。\n" +
+                            "4. 继续使用即表示您已阅读、理解并同意本免责声明的全部条款。",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 22.sp,
                     fontSize = 13.sp
