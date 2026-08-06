@@ -12,7 +12,7 @@
     <string name="about_screen_feature_text4">智能校验：自动检测模块依赖缺失、引用失效等问题，有效预防关卡闪退。</string>
     <string name="about_screen_feature_text5">资源预览：内置植物、僵尸、障碍物图标，优化编辑体验，所见即所得。</string>
     <string name="about_screen_usage_title">使用说明</string>
-    <string name="about_screen_usage_text1">1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。\n</string>
+    <string name="about_screen_usage_text1">1. 目录设置：首次进入请点击右上角文件夹图标，选择存放 JSON 关卡文件的目录。</string>
     <string name="about_screen_usage_text2">"2. 导入/新建：可以直接点击列表项编辑现有关卡，或使用右下角按钮基于模板新建。 "</string>
     <string name="about_screen_usage_text3">"3. 模块管理：在编辑器中，可以通过“添加新模块”来扩展关卡功能。 "</string>
     <string name="about_screen_usage_text4">"4. 保存关卡：编辑完成后点击右上角保存按钮，文件将自动回写到原 JSON 文件。 "</string>

@@ -126,6 +126,14 @@
     <string name="editor_screen_btn_view_code">View Code</string>
     <string name="editor_screen_btn_toggle_theme">Toggle Theme</string>
     <string name="editor_screen_btn_save">Save</string>
+    <string name="editor_screen_btn_cleanup">Clean up dead modules</string>
+    <string name="editor_screen_cleanup_title">Clean up dead modules</string>
+    <string name="editor_screen_cleanup_msg">This will remove %1$d unreferenced objects (no RTID chain points to them):</string>
+    <string name="editor_screen_cleanup_none">No unreferenced dead modules found.</string>
+    <string name="editor_screen_cleanup_confirm">Remove</string>
+    <string name="editor_screen_cleanup_cancel">Cancel</string>
+    <string name="editor_screen_msg_no_orphans">No dead modules to clean up</string>
+    <string name="editor_screen_msg_cleanup_done">Removed %1$d dead modules</string>
     <string name="editor_screen_msg_save_success">Saved successfully</string>
     <string name="editor_screen_msg_auto_saved_exit">Auto-saved and exited</string>
     <string name="editor_screen_error_save_failed">Error saving: %1$s</string>
@@ -156,6 +164,8 @@
     <string name="level_settings_add_module">Add New Module</string>
     <string name="level_settings_missing_essentials_title">Missing Essential Modules</string>
     <string name="level_settings_missing_essentials_desc">The level may not function correctly. Recommended to add:</string>
+    <string name="level_settings_invalid_module_title">Invalid Module References</string>
+    <string name="level_settings_invalid_module_desc">These modules point to @CurrentLevel but have no matching object in the level file. The RTID statement is invalid:</string>
     <string name="level_settings_delete">Delete</string>
 
     <!-- Wave Timeline -->
@@ -357,6 +367,8 @@
     <string name="module_lawn_mower_desc">Set mower styles (may not work in custom lawns)</string>
     <string name="module_scoring_title">Scoring Module</string>
     <string name="module_scoring_desc">Enable scoring system based on zombie kills</string>
+    <string name="module_soudache_title">Damage Display</string>
+    <string name="module_soudache_desc">Display damage taken by zombies</string>
     <string name="module_bowling_beach_title">Beach Bowling</string>
     <string name="module_bowling_beach_desc">Set no-planting lines and disable shovel</string>
     <string name="module_bowling_nut_title">Nut Bowling</string>

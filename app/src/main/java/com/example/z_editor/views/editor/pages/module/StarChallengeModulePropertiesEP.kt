@@ -760,6 +760,7 @@ fun ZombieDistanceEditDialog(
                 )
                 Spacer(Modifier.height(16.dp))
                 NumberInputDouble(
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = distance,
                     onValueChange = { distance = it },
                     label = "花坛距离 (TargetDistance)",
@@ -1577,7 +1578,8 @@ fun ApplyZombieConditionsEditDialog(
         "contagiouspoison" to "Contagious Poison",
         "sapped" to "Sapped",
         "slowdown" to "Slowdown",
-        "tossed" to "Tossed"
+        "tossed" to "Tossed",
+        "onfire" to "On Fire"
     )
 
     fun currentData() = initialData.copy(

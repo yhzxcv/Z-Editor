@@ -22,14 +22,18 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
@@ -102,6 +106,12 @@ fun EditorScreen(
         var refreshTrigger by remember { mutableIntStateOf(0) }
 
         var missingModules by remember { mutableStateOf<List<ModuleMetadata>>(emptyList()) }
+
+        // 失效模块引用：LevelDefinition.Modules 里指向 @CurrentLevel 但没有对应对象的悬空 RTID
+        var invalidLevelModuleRefs by remember { mutableStateOf<List<String>>(emptyList()) }
+
+        // 清理失效模块：确认弹窗开关（清除所有未被任何 RTID 链引用的孤立 object）
+        var showCleanupDialog by remember { mutableStateOf(false) }
 
         // 挑战编辑弹窗状态（提升到此级别以在导航切换时存活）
         // 只有 index+rtid 需要存活；编辑数据通过 PvzObject 自身持久化
@@ -212,6 +222,8 @@ fun EditorScreen(
                 val unknownLabel = context.getString(R.string.editor_screen_label_unknown_module)
                 if (context.getString(meta.titleRes) == unknownLabel && objClass != "Unknown") null else meta
             }
+
+            invalidLevelModuleRefs = LevelParser.findInvalidLevelModuleReferences(rootLevelFile!!)
         }
 
         fun injectCustomZombie(originalAlias: String): String? {
@@ -326,6 +338,31 @@ fun EditorScreen(
             }
         }
 
+        /** 清理失效模块：清除所有未被任何 RTID 链引用的孤立 object，并重算关卡状态。 */
+        fun cleanupOrphanedObjects() {
+            val level = rootLevelFile ?: return
+            val orphans = LevelParser.findOrphanedObjects(level)
+            if (orphans.isEmpty()) {
+                showCleanupDialog = false
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.editor_screen_msg_no_orphans),
+                    Toast.LENGTH_SHORT
+                ).show()
+                return
+            }
+            // 按引用移除，避免结构相等的对象被误删
+            level.objects.removeAll { o -> orphans.any { it === o } }
+            parsedData = LevelParser.parseLevel(level)
+            refreshTrigger++
+            showCleanupDialog = false
+            Toast.makeText(
+                context,
+                context.getString(R.string.editor_screen_msg_cleanup_done, orphans.size),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
         fun handleExit() {
             performSave(isExit = true)
             val cacheName = "cache_${fileUri.hashCode()}.json"
@@ -337,28 +374,12 @@ fun EditorScreen(
         }
 
         fun navigateBackToMain() {
-            if (rootLevelFile != null && parsedData != null) {
-                val newObjectMap =
-                    rootLevelFile!!.objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
-                val waveModObj =
-                    rootLevelFile!!.objects.find { it.objClass == "WaveManagerModuleProperties" }
-                val waveMgrObj =
-                    rootLevelFile!!.objects.find { it.objClass == "WaveManagerProperties" }
-                parsedData = parsedData!!.copy(
-                    objectMap = newObjectMap,
-                    waveModule = waveModObj?.let {
-                        gson.fromJson(
-                            it.objData,
-                            WaveManagerModuleData::class.java
-                        )
-                    },
-                    waveManager = waveMgrObj?.let {
-                        gson.fromJson(
-                            it.objData,
-                            WaveManagerData::class.java
-                        )
-                    }
-                )
+            // 全量重解析：JSON 视图可改任意对象（含 LevelDefinition / 模块列表 / 波次等），
+            // 仅选择性刷新 objectMap/waveModule/waveManager 会漏掉 levelDef，
+            // 返回主编辑器时派生状态（模块列表、冲突检测、Tabs）就会与文件不一致。
+            // refreshTrigger++ 触发 recalculateLevelState() 刷新 availableTabs/missingModules。
+            if (rootLevelFile != null) {
+                parsedData = LevelParser.parseLevel(rootLevelFile!!)
                 refreshTrigger++
             }
             currentSubScreen = EditorSubScreen.None
@@ -908,7 +929,8 @@ fun EditorScreen(
                 onInjectZombie = { alias -> injectCustomZombie(alias) },
                 onEditCustomZombie = { rtid ->
                     currentSubScreen = EditorSubScreen.CustomZombieProperties(rtid)
-                }
+                },
+                onPersistLevel = { performSave(isExit = false) }
             )
         }
 
@@ -996,6 +1018,13 @@ fun EditorScreen(
                                             tint = MaterialTheme.colorScheme.onPrimary
                                         )
                                     }
+                                    IconButton(onClick = { showCleanupDialog = true }) {
+                                        Icon(
+                                            Icons.Default.CleaningServices,
+                                            contentDescription = stringResource(R.string.editor_screen_btn_cleanup),
+                                            tint = MaterialTheme.colorScheme.background
+                                        )
+                                    }
                                     IconButton(onClick = { performSave(isExit = false) }) {
                                         Icon(
                                             Icons.Default.Save,
@@ -1055,6 +1084,7 @@ fun EditorScreen(
                                 rootLevelFile = rootLevelFile,
                                 parsedData = parsedData,
                                 missingModules = missingModules,
+                                invalidLevelModuleRefs = invalidLevelModuleRefs,
                                 currentTab = availableTabs.getOrElse(selectedTabIndex) { EditorTabType.Settings },
                                 getLazyState = ::getLazyState,
                                 getScrollState = ::getScrollState,
@@ -1067,6 +1097,46 @@ fun EditorScreen(
                                 selectorSubTagIndices = selectorSubTagIndices,
                                 selectorGridStates = selectorGridStates,
                             )
+
+                            // 清理失效模块：确认弹窗（列出将清除的失效模块，确认后删除）
+                            if (showCleanupDialog) {
+                                val orphans = remember(rootLevelFile, refreshTrigger) {
+                                    rootLevelFile?.let { LevelParser.findOrphanedObjects(it) }
+                                        ?: emptyList()
+                                }
+                                AlertDialog(
+                                    onDismissRequest = { showCleanupDialog = false },
+                                    title = { Text(stringResource(R.string.editor_screen_cleanup_title)) },
+                                    text = {
+                                        if (orphans.isEmpty()) {
+                                            Text(stringResource(R.string.editor_screen_cleanup_none))
+                                        } else {
+                                            val preview = orphans.take(10).joinToString("、") {
+                                                it.aliases?.firstOrNull() ?: it.objClass
+                                            }
+                                            Text(
+                                                stringResource(
+                                                    R.string.editor_screen_cleanup_msg,
+                                                    orphans.size
+                                                ) + "\n\n" + preview + if (orphans.size > 10) " …" else ""
+                                            )
+                                        }
+                                    },
+                                    confirmButton = {
+                                        TextButton(
+                                            onClick = { cleanupOrphanedObjects() },
+                                            enabled = orphans.isNotEmpty()
+                                        ) {
+                                            Text(stringResource(R.string.editor_screen_cleanup_confirm))
+                                        }
+                                    },
+                                    dismissButton = {
+                                        TextButton(onClick = { showCleanupDialog = false }) {
+                                            Text(stringResource(R.string.editor_screen_cleanup_cancel))
+                                        }
+                                    }
+                                )
+                            }
                         }
                     }
                 } else {
@@ -1076,6 +1146,7 @@ fun EditorScreen(
                             rootLevelFile = rootLevelFile,
                             parsedData = parsedData,
                             missingModules = missingModules,
+                            invalidLevelModuleRefs = invalidLevelModuleRefs,
                             currentTab = availableTabs.getOrElse(selectedTabIndex) { EditorTabType.Settings },
                             getLazyState = ::getLazyState,
                             getScrollState = ::getScrollState,

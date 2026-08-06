@@ -1052,6 +1052,7 @@
 					"atlantis_flag",
 					"atlantis_armor1",
 					"atlantis_armor2",
+					"atlantis_armor4",
 					"atlantis_gargantuar",
 					"atlantis_imp",
 					"priest",
@@ -1060,6 +1061,7 @@
 					"atlantis_land_flag",
 					"atlantis_land_armor1",
 					"atlantis_land_armor2",
+					"atlantis_land_armor4",
 					"caketank",
 					"dancer_king",
 					"dancer",
@@ -1103,6 +1105,7 @@
 					"mausoleum_flag",
 					"mausoleum_armor1",
 					"mausoleum_armor2",
+					"mausoleum_armor4",
 					"mausoleum_gargantuar",
 					"mausoleum_imp",
 					"mausoleum_archer",
@@ -1121,6 +1124,7 @@
 					"mausoleum_basic_ghost_spirit",
 					"mausoleum_armor1_ghost_spirit",
 					"mausoleum_armor2_ghost_spirit",
+					"mausoleum_armor4_ghost_spirit",
 					"mausoleum_gargantuar_ghost_sp",
 					"mausoleum_drunkard_ghost_spirit",
 					"mausoleum_drunkard_spirit",
@@ -84669,6 +84673,7 @@
 			"objclass": "ZombieBullVeteranProps",
 			"objdata": {
 				"ArmDropFraction": -1,
+				"HeadDropFraction": -1,
 				"ArtCenter": {
 					"x": 106,
 					"y": 130
@@ -174850,10 +174855,6 @@
 							{
 								"Count": 4,
 								"TierDescription": "[PLANT_BOND_PRO_RESILIENT_1]"
-							},
-							{
-								"Count": 6,
-								"TierDescription": "[PLANT_BOND_PRO_RESILIENT_2]"
 							}
 						]
 					},
@@ -196290,7 +196291,7 @@
 				"EliteScale": 1.2,
 				"EnableEliteScale": true,
 				"Speed": 0.2,
-				"Hitpoints": 30000,
+				"Hitpoints": 7500,
 				"EatDPS": 300,
 				"CanSpawnPlantFood": false,
 				"ChillInsteadOfFreeze": true,
@@ -196382,7 +196383,7 @@
 				"EnableEliteScale": true,
 				"SpawnWeaselInterval": 18,
 				"Speed": 0.12,
-				"Hitpoints": 45000,
+				"Hitpoints": 11250,
 				"EatDPS": 350,
 				"CanSpawnPlantFood": false,
 				"ChillInsteadOfFreeze": true,
@@ -196476,7 +196477,7 @@
 				"SpecialSkillDuration": 20,
 				"SkillCooldownTime": 12,
 				"Speed": 0.16,
-				"Hitpoints": 112500,
+				"Hitpoints": 28125,
 				"EatDPS": 400,
 				"CanSpawnPlantFood": false,
 				"ChillInsteadOfFreeze": true,
@@ -196487,7 +196488,7 @@
 				"AttactShipPrepareAnim": true,
 				"Actions": [
 					"RTID(ZombieElectricProjectileAction@ZombieActions)",
-					"RTID(ZombieEliteElectricProjectileAction@ZombieActions)"
+					"RTID(ZombieSoudacheEliteElectricProjectileAction@ZombieActions)"
 				],
 				"HitRect": {
 					"mX": 0,
@@ -196571,7 +196572,7 @@
 				"EnableEliteScale": true,
 				"SpawnWeaselInterval": 15,
 				"Speed": 0.12,
-				"Hitpoints": 35000,
+				"Hitpoints": 17500,
 				"EatDPS": 350,
 				"CanSpawnPlantFood": false,
 				"ChillInsteadOfFreeze": true,
@@ -196662,10 +196663,10 @@
 					"escaperoot"
 				],
 				"HurtDamageLimit": 0,
-				"SpecialSkillDuration": 30,
-				"SkillCooldownTime": 10,
+				"SpecialSkillDuration": 20,
+				"SkillCooldownTime": 12,
 				"Speed": 0.16,
-				"Hitpoints": 52500,
+				"Hitpoints": 26250,
 				"EatDPS": 400,
 				"CanSpawnPlantFood": false,
 				"ChillInsteadOfFreeze": true,
@@ -196676,7 +196677,7 @@
 				"AttactShipPrepareAnim": true,
 				"Actions": [
 					"RTID(ZombieElectricProjectileAction@ZombieActions)",
-					"RTID(ZombieEliteElectricProjectileAction@ZombieActions)"
+					"RTID(ZombieSoudacheEliteElectricProjectileAction@ZombieActions)"
 				],
 				"HitRect": {
 					"mX": 0,
@@ -196759,7 +196760,7 @@
 				"EliteScale": 1.2,
 				"EnableEliteScale": true,
 				"Speed": 0.12,
-				"Hitpoints": 131250,
+				"Hitpoints": 65625,
 				"EatDPS": 450,
 				"CanSpawnPlantFood": false,
 				"ChillInsteadOfFreeze": true,
@@ -196844,10 +196845,10 @@
 					"escaperoot"
 				],
 				"HurtDamageLimit": 0,
-				"SpecialSkillDuration": 38,
-				"SkillCooldownTime": 9,
+				"SpecialSkillDuration": 20,
+				"SkillCooldownTime": 12,
 				"Speed": 0.16,
-				"Hitpoints": 40000,
+				"Hitpoints": 20000,
 				"EatDPS": 400,
 				"CanSpawnPlantFood": false,
 				"ChillInsteadOfFreeze": true,
@@ -196858,7 +196859,7 @@
 				"AttactShipPrepareAnim": true,
 				"Actions": [
 					"RTID(ZombieElectricProjectileAction@ZombieActions)",
-					"RTID(ZombieEliteElectricProjectileAction@ZombieActions)"
+					"RTID(ZombieSoudacheEliteElectricProjectileAction@ZombieActions)"
 				],
 				"HitRect": {
 					"mX": 0,
@@ -196978,7 +196979,7 @@
 					"mX": 10,
 					"mY": 10
 				},
-				"Hitpoints": 60000,
+				"Hitpoints": 30000,
 				"ScaledProps": [
 					{
 						"Arg1": 1.3,
@@ -197064,7 +197065,7 @@
 				"EliteScale": 1.2,
 				"EnableEliteScale": true,
 				"Speed": 0.12,
-				"Hitpoints": 150000,
+				"Hitpoints": 75000,
 				"EatDPS": 500,
 				"CanSpawnPlantFood": false,
 				"SizeType": "mid",
@@ -197181,7 +197182,7 @@
 				"EliteScale": 1.2,
 				"EnableEliteScale": true,
 				"Speed": 0.12,
-				"Hitpoints": 45000,
+				"Hitpoints": 22500,
 				"EatDPS": 450,
 				"CanSpawnPlantFood": false,
 				"ChillInsteadOfFreeze": true,
@@ -197266,7 +197267,7 @@
 				"EliteScale": 1.2,
 				"EnableEliteScale": true,
 				"Speed": 0.12,
-				"Hitpoints": 67500,
+				"Hitpoints": 33750,
 				"EatDPS": 550,
 				"CanSpawnPlantFood": false,
 				"SizeType": "mid",
@@ -197433,7 +197434,7 @@
 					"mX": -20,
 					"mY": 10
 				},
-				"Hitpoints": 168750,
+				"Hitpoints": 84375,
 				"InitialShotCooldown": 10,
 				"IsValidPinchTarget": false,
 				"ScaledProps": [

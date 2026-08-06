@@ -772,6 +772,17 @@ object ModuleRegistry {
             initialDataFactory = { LevelScoringData() },
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
+        "SouDaCheDamageTextModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_soudache_title,
+            descriptionRes = R.string.module_soudache_desc,
+            icon = Icons.Default.Layers,
+            isCore = false,
+            category = ModuleCategory.Base,
+            defaultAlias = "SouDaCheDamageTextModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { SouDaCheDamageTextModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
+        ),
 
         "BowlingMinigameProperties" to ModuleMetadata(
             titleRes = R.string.module_bowling_beach_title,

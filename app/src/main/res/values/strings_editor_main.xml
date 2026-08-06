@@ -3,6 +3,14 @@
     <string name="editor_screen_btn_view_code">查看代码</string>
     <string name="editor_screen_btn_toggle_theme">切换主题</string>
     <string name="editor_screen_btn_save">保存</string>
+    <string name="editor_screen_btn_cleanup">清理失效模块</string>
+    <string name="editor_screen_cleanup_title">清理失效模块</string>
+    <string name="editor_screen_cleanup_msg">将清除 %1$d 个未被任何 RTID 链引用的失效模块：</string>
+    <string name="editor_screen_cleanup_none">当前没有未引用的失效模块。</string>
+    <string name="editor_screen_cleanup_confirm">清除</string>
+    <string name="editor_screen_cleanup_cancel">取消</string>
+    <string name="editor_screen_msg_no_orphans">没有需要清理的失效模块</string>
+    <string name="editor_screen_msg_cleanup_done">已清除 %1$d 个失效模块</string>
     <string name="editor_screen_msg_save_success">保存成功</string>
     <string name="editor_screen_msg_auto_saved_exit">已自动保存并退出</string>
     <string name="editor_screen_error_save_failed">保存出错: %1$s</string>
@@ -32,6 +40,8 @@
     <string name="level_settings_add_module">添加新模块</string>
     <string name="level_settings_missing_essentials_title">缺少必要模块</string>
     <string name="level_settings_missing_essentials_desc">关卡可能无法正常运行。建议添加以下模块：</string>
+    <string name="level_settings_invalid_module_title">失效模块引用</string>
+    <string name="level_settings_invalid_module_desc">以下模块指向 @CurrentLevel，但关卡文件中不存在对应对象，该 RTID 语句无效：</string>
     <string name="level_settings_delete">删除</string>
 
     <string name="wave_timeline_container_not_found">未找到波次容器</string>

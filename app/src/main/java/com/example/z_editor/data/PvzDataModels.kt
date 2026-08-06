@@ -64,7 +64,7 @@ data class WaveManagerData(
     @SerializedName("MaxNextWaveHealthPercentage") var maxNextWaveHealthPercentage: Double = 0.85,
     @SerializedName("MinNextWaveHealthPercentage") var minNextWaveHealthPercentage: Double = 0.70,
     @SerializedName("Waves") val waves: MutableList<MutableList<String>> = mutableListOf()
-    // 注意：Waves 是二维数组 [ ["RTID(Wave1)"], ["RTID(Wave8)", "RTID(Portal)"] ]
+    // 注意：Waves 是二维数组 [ ["RTID(Wave1@CurrentLevel)"], ["RTID(Wave8@CurrentLevel)", "RTID(Portal@CurrentLevel)"] ]
 )
 
 // === 坚不可摧模块 ===
@@ -379,7 +379,10 @@ data class ZombieRushModuleData(
 
 // === 地宫隧道模块 ===
 data class TunnelDefendModuleData(
-    @SerializedName("Roads") var roads: MutableList<TunnelRoadData> = mutableListOf()
+    @SerializedName("Roads") var roads: MutableList<TunnelRoadData> = mutableListOf(),
+    @SerializedName("reportError") var reportError: Boolean? = null,
+    @SerializedName("BrickMapIndex") var BrickMapIndex: Int? = null,
+    @SerializedName("TunnelSequenceInterval") var TunnelSequenceInterval: Double? = null
 )
 
 data class TunnelRoadData(
@@ -408,6 +411,9 @@ data class LevelMutatorStartingPlantfoodPropsData(
 data class BowlingMinigamePropertiesData(
     @SerializedName("BowlingFoulLine") var bowlingFoulLine: Int = 2
 )
+
+// === 沙滩保龄球配置 ===
+class SouDaCheDamageTextModuleData
 
 // === 坚果保龄球配置 ===
 class NewBowlingMinigamePropertiesData

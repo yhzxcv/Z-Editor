@@ -102,6 +102,7 @@ fun EditorContentRouter(
     rootLevelFile: PvzLevelFile?,
     parsedData: ParsedLevelData?,
     missingModules: List<ModuleMetadata>,
+    invalidLevelModuleRefs: List<String>,
     currentTab: EditorTabType,
     getLazyState: (String) -> LazyListState,
     getScrollState: (String) -> ScrollState,
@@ -138,6 +139,7 @@ fun EditorContentRouter(
                                 actions.navigateTo(metadata.navigationFactory(rtid))
                             },
                             missingModules = missingModules,
+                            invalidLevelModuleRefs = invalidLevelModuleRefs,
                             onRemoveModule = actions.onRemoveModule,
                             onNavigateToAddModule = { actions.navigateTo(EditorSubScreen.ModuleSelection) },
                         )
@@ -828,7 +830,8 @@ fun EditorContentRouter(
         is EditorSubScreen.JsonView -> JsonCodeViewerScreen(
             fileName = targetState.fileName,
             levelFile = rootLevelFile,
-            onBack = actions.navigateBack
+            onBack = actions.navigateBack,
+            onPersistLevel = actions.onPersistLevel
         )
 
         is EditorSubScreen.EventSelection -> EventSelectionScreen(

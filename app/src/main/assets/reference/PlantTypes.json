@@ -2934,10 +2934,6 @@
 				"holonut"
 			],
 			"objdata": {
-				"BondTags": [
-					"lightning",
-					"resilient"
-				],
 				"DisplayFamilyId": 50003,
 				"Profession": "protector",
 				"Attribute": {
@@ -12302,9 +12298,6 @@
 				"perfumeshroom"
 			],
 			"objdata": {
-				"BondTags": [
-					"shroom"
-				],
 				"Profession": "specialist",
 				"Attribute": {
 					"Attributes": [

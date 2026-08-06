@@ -4,18 +4,19 @@ object ObjectOrderRegistry {
     private val ORDER_LIST = listOf(
         "LevelDefinition",
 
-
         "SeedBankProperties",
         "ConveyorSeedBankProperties",
+        "SeedRainProperties",
         "PennyClassroomModuleProperties",
         "RiftThemeDemoModuleProperties",
+        "TimeEnergyModuleProperties",
 
         "SunDropperProperties",
         "SunBombChallengeProperties",
         "LastStandMinigameProperties",
         "BowlingMinigameProperties",
         "NewBowlingMinigameProperties",
-        "SeedRainProperties",
+        "SouDaCheDamageTextModuleProperties",
 
         "MoldColonyChallengeProps",
         "BoardGridMapProps",

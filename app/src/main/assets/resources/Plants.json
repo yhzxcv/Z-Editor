@@ -3380,6 +3380,24 @@
         "icon": "icon_sunflowerzombie.webp"
     },
     {
+        "id": "soudacheMegagatling",
+        "name": "远征超级机枪射手",
+        "tags": [],
+        "icon": null
+    },
+    {
+        "id": "soudacheMegagatling_Fire",
+        "name": "远征火焰超级机枪射手",
+        "tags": [],
+        "icon": null
+    },
+    {
+        "id": "soudacheMegagatling_Electric",
+        "name": "远征雷电超级机枪射手",
+        "tags": [],
+        "icon": null
+    },
+    {
         "id": "bitpeashooter",
         "name": "像素豌豆射手",
         "tags": [],

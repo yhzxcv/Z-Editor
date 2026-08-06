@@ -64,5 +64,6 @@ data class EditorActions(
 
     val onToggleSunDropperMode: (Boolean, SunDropperPropertiesData) -> Unit = { _, _ -> },
     val onToggleTunnelDefend: (Boolean, TunnelDefendModuleData) -> Unit = { _, _ -> },
-    val onChallengeSelected: (ChallengeTypeInfo) -> Unit
+    val onChallengeSelected: (ChallengeTypeInfo) -> Unit,
+    val onPersistLevel: () -> Unit = {}
 )

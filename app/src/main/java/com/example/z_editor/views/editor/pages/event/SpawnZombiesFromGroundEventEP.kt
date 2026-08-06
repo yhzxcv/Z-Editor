@@ -389,7 +389,12 @@ fun SpawnZombiesFromGroundEventEP(
                         }
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            "场地左边界为0列，右边界为9列，起始列要小于结束列。",
+                            "场地左边界为0列，右边界为9列，起始列需小于结束列",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            "若需要在第 n 到 m 列刷新，起始列填 n-1 终止列填 m",
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

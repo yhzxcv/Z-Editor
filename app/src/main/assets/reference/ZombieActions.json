@@ -323,6 +323,23 @@
 			}
 		},
 		{
+			"objclass": "ZombieEliteElectricProjectileActionDefinition",
+			"aliases": [
+				"ZombieSoudacheEliteElectricProjectileAction"
+			],
+			"objdata": {
+				"TimeUntilHit": 2.5,
+				"ProjectileExtra": "RTID(SoudacheElectricNegative@ProjectileTypes)",
+				"Projectile": "RTID(SoudacheElectricPositive@ProjectileTypes)",
+				"ProjectileSound": "Play_Zomb_Egypt_Zomboss_Attack_Rush",
+				"SpawnOffset": {
+					"x": -100,
+					"y": 0,
+					"z": 50
+				}
+			}
+		},
+		{
 			"objclass": "ZombieProjectileLaunchActionDefinition",
 			"aliases": [
 				"ZombieOctopusProjectileAction"

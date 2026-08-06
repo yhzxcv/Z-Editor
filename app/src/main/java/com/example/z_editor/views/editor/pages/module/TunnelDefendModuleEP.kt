@@ -65,6 +65,7 @@ import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
+import com.example.z_editor.views.editor.pages.others.NumberInputDouble
 import com.google.gson.Gson
 
 private val gson = Gson()
@@ -134,7 +135,8 @@ fun TunnelDefendModuleEP(
         "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_DOWN",
         "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_DOWN_2",
         "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_DOWN_LEFT",
-        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_DOWN_LEFT_2"
+        "IMAGE_UI_MAUSOLEUM_TUNNEL_UP_DOWN_LEFT_2",
+        ""  // 无贴图坑道
     )
     var selectedImg by remember { mutableStateOf(availableAssets[0]) }
 
@@ -152,7 +154,20 @@ fun TunnelDefendModuleEP(
         val newData = moduleDataState.value.copy(roads = newRoads)
         moduleDataState.value = newData
         rootLevelFile.objects.find { it.aliases?.contains(currentAlias) == true }?.let {
-            it.objData = gson.toJsonTree(newData)
+            val jsonTree = gson.toJsonTree(newData)
+            // reportError: 默认true，仅为false时写入
+            if (newData.reportError != false) {
+                jsonTree.asJsonObject.remove("reportError")
+            }
+            // BrickMapIndex: 默认null，仅在2或3时写入
+            if (newData.BrickMapIndex == null) {
+                jsonTree.asJsonObject.remove("BrickMapIndex")
+            }
+            // TunnelSequenceInterval: 仅在BrickMapIndex为2时写入
+            if (newData.BrickMapIndex != 2 || newData.TunnelSequenceInterval == null) {
+                jsonTree.asJsonObject.remove("TunnelSequenceInterval")
+            }
+            it.objData = jsonTree
         }
     }
 
@@ -224,12 +239,26 @@ fun TunnelDefendModuleEP(
                                         .clickable { handleGridClick(x, y) },
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    if (imgName != null) {
-                                        AssetImage(
-                                            path = "images/tunnels/$imgName.webp",
-                                            contentDescription = imgName,
-                                            modifier = Modifier.fillMaxSize()
-                                        )
+                                    when {
+                                        imgName == "" -> {
+                                            // 无贴图坑道：显示空心标识
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxSize(0.4f)
+                                                    .border(
+                                                        2.dp,
+                                                        themeColor.copy(alpha = 0.6f),
+                                                        RoundedCornerShape(2.dp)
+                                                    )
+                                            )
+                                        }
+                                        imgName != null -> {
+                                            AssetImage(
+                                                path = "images/tunnels/$imgName.webp",
+                                                contentDescription = imgName,
+                                                modifier = Modifier.fillMaxSize()
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -260,6 +289,7 @@ fun TunnelDefendModuleEP(
                         ) {
                             items(availableAssets) { asset ->
                                 val isSelected = selectedImg == asset
+                                val isEmptyTunnel = asset == ""
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     modifier = Modifier
@@ -274,17 +304,38 @@ fun TunnelDefendModuleEP(
                                         .clickable { selectedImg = asset }
                                         .padding(vertical = 12.dp, horizontal = 4.dp)
                                 ) {
-                                    AssetImage(
-                                        path = "images/tunnels/$asset.webp",
-                                        contentDescription = asset,
-                                        modifier = Modifier
-                                            .size(48.dp)
-                                            .border(
-                                                0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant
+                                    if (isEmptyTunnel) {
+                                        // 无贴图坑道选项
+                                        Box(
+                                            modifier = Modifier
+                                                .size(48.dp)
+                                                .border(
+                                                    2.dp,
+                                                    themeColor.copy(alpha = 0.5f),
+                                                    RoundedCornerShape(4.dp)
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = "无",
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = themeColor.copy(alpha = 0.6f)
                                             )
-                                    )
+                                        }
+                                    } else {
+                                        AssetImage(
+                                            path = "images/tunnels/$asset.webp",
+                                            contentDescription = asset,
+                                            modifier = Modifier
+                                                .size(48.dp)
+                                                .border(
+                                                    0.5.dp, MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                        )
+                                    }
                                     Text(
-                                        text = asset.replace("IMAGE_UI_MAUSOLEUM_TUNNEL_", ""),
+                                        text = if (isEmptyTunnel) "无贴图" else asset.replace("IMAGE_UI_MAUSOLEUM_TUNNEL_", ""),
                                         fontSize = 10.sp,
                                         maxLines = 1,
                                         color = if (isSelected) themeColor else MaterialTheme.colorScheme.onSurface
@@ -292,6 +343,135 @@ fun TunnelDefendModuleEP(
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            // === reportError 开关 ===
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(2.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            "种植草垛提示",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            "种植植物是否提示需要草垛，默认开启",
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = moduleDataState.value.reportError != false,
+                        onCheckedChange = { checked ->
+                            val newReportError = if (checked) null else false
+                            moduleDataState.value = moduleDataState.value.copy(reportError = newReportError)
+                            sync()
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                            checkedTrackColor = themeColor,
+                            checkedBorderColor = Color.Transparent,
+                            uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            uncheckedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    )
+                }
+            }
+
+            // === BrickMapIndex 选择器 ===
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(2.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                ) {
+                    Text(
+                        "地图索引",
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 15.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "选择坑道对应的游戏模式",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        val options = listOf(
+                            null to "默认",
+                            2 to "僵王战",
+                            3 to "搜打撤"
+                        )
+                        options.forEach { (value, label) ->
+                            val isSelected = moduleDataState.value.BrickMapIndex == value
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(
+                                        if (isSelected) themeColor.copy(alpha = 0.15f)
+                                        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                                    )
+                                    .border(
+                                        1.5.dp,
+                                        if (isSelected) themeColor else Color.Transparent,
+                                        RoundedCornerShape(8.dp)
+                                    )
+                                    .clickable {
+                                        val newIndex = if (moduleDataState.value.BrickMapIndex == value) null else value
+                                        val newInterval = if (newIndex == 2) (moduleDataState.value.TunnelSequenceInterval ?: 0.4) else null
+                                        moduleDataState.value = moduleDataState.value.copy(
+                                            BrickMapIndex = newIndex,
+                                            TunnelSequenceInterval = newInterval
+                                        )
+                                        sync()
+                                    }
+                                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = label,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                    color = if (isSelected) themeColor else MaterialTheme.colorScheme.onSurface,
+                                    fontSize = 14.sp
+                                )
+                            }
+                        }
+                    }
+
+                    // 仅在僵王战(index=2)时显示间隔输入
+                    if (moduleDataState.value.BrickMapIndex == 2) {
+                        Spacer(Modifier.height(12.dp))
+                        NumberInputDouble(
+                            value = moduleDataState.value.TunnelSequenceInterval ?: 0.4,
+                            onValueChange = { newVal ->
+                                moduleDataState.value = moduleDataState.value.copy(TunnelSequenceInterval = newVal)
+                                sync()
+                            },
+                            label = "隧道序列间隔",
+                            color = themeColor
+                        )
                     }
                 }
             }

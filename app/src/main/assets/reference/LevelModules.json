@@ -19782,7 +19782,6 @@
 				"Armor1ZombieTypeName": "tutorial_armor1",
 				"Armor2ZombieTypeName": "tutorial_armor2",
 				"MusicSuffix": "Gnomiverse",
-				"AmbientAudioSuffix": "Amb_Tutorial_Garden_BG_LP",
 				"RailcartDefaultTypeName": "railcart_tutotial",
 				"GravestoneDefaultTypeName": "gravestone_tutorial",
 				"DisabledStreetCells": [
@@ -22684,7 +22683,7 @@
 							"iceage_armor4",
 							"iceage_dodo",
 							"iceage_hunter",
-							"iceage_gargantuar"
+							"iceage_armor2"
 						]
 					},
 					{
@@ -22745,7 +22744,7 @@
 							"cowboy_armor4",
 							"chicken_farmer",
 							"piano",
-							"cowboy_gargantuar"
+							"cowboy_armor2"
 						]
 					},
 					{
@@ -22806,7 +22805,7 @@
 							"lostcity_armor4",
 							"lostcity_relichunter",
 							"lostcity_doctor",
-							"lostcity_gargantuar"
+							"lostcity_armor2"
 						]
 					},
 					{
@@ -22867,7 +22866,7 @@
 							"dark_armor4",
 							"dark_juggler",
 							"dark_cavalry",
-							"dark_gargantuar"
+							"dark_armor2"
 						]
 					},
 					{
@@ -22928,7 +22927,7 @@
 							"zcorp_armor4",
 							"zcorp_helpdesk",
 							"zcorp_consultant",
-							"zcorp_gargantuar"
+							"zcorp_armor2"
 						]
 					},
 					{
@@ -23050,7 +23049,7 @@
 							"tutorial_armor4",
 							"modern_balloon",
 							"explosion_proof",
-							"tutorial_gargantuar"
+							"tutorial_armor2"
 						]
 					},
 					{
@@ -23111,7 +23110,7 @@
 							"future_armor4",
 							"future_protector",
 							"future_jetpack_disco",
-							"future_gargantuar"
+							"future_armor2"
 						]
 					},
 					{
@@ -23172,7 +23171,7 @@
 							"dino_armor4",
 							"dino_bully",
 							"dino_pushegg",
-							"dino_gargantuar"
+							"dino_armor2"
 						]
 					},
 					{
@@ -23242,7 +23241,7 @@
 							"iceage_armor4",
 							"iceage_dodo",
 							"iceage_hunter",
-							"iceage_gargantuar"
+							"iceage_armor2"
 						]
 					},
 					{
@@ -23313,7 +23312,7 @@
 							"cowboy_armor4",
 							"chicken_farmer",
 							"piano",
-							"cowboy_gargantuar"
+							"cowboy_armor2"
 						]
 					},
 					{
@@ -23386,7 +23385,7 @@
 							"lostcity_armor4",
 							"lostcity_relichunter",
 							"lostcity_doctor",
-							"lostcity_gargantuar"
+							"lostcity_armor2"
 						]
 					},
 					{
@@ -23454,7 +23453,7 @@
 							"dark_armor4",
 							"dark_juggler",
 							"dark_cavalry",
-							"dark_gargantuar"
+							"dark_armor2"
 						]
 					},
 					{
@@ -23524,7 +23523,7 @@
 							"zcorp_armor4",
 							"zcorp_helpdesk",
 							"zcorp_consultant",
-							"zcorp_gargantuar"
+							"zcorp_armor2"
 						]
 					},
 					{
@@ -23659,7 +23658,7 @@
 							"tutorial_armor4",
 							"modern_balloon",
 							"explosion_proof",
-							"tutorial_gargantuar"
+							"tutorial_armor2"
 						]
 					},
 					{
@@ -23728,7 +23727,7 @@
 							"future_armor4",
 							"future_protector",
 							"future_jetpack_disco",
-							"future_gargantuar"
+							"future_armor2"
 						]
 					},
 					{
@@ -23795,7 +23794,7 @@
 							"dino_armor4",
 							"dino_bully",
 							"dino_pushegg",
-							"dino_gargantuar"
+							"dino_armor2"
 						]
 					},
 					{
@@ -23865,7 +23864,7 @@
 							"iceage_armor4",
 							"iceage_dodo",
 							"iceage_hunter",
-							"iceage_gargantuar"
+							"iceage_armor2"
 						]
 					},
 					{
@@ -23938,7 +23937,7 @@
 							"cowboy_armor4",
 							"chicken_farmer",
 							"piano",
-							"cowboy_gargantuar"
+							"cowboy_armor2"
 						]
 					},
 					{
@@ -24012,7 +24011,7 @@
 							"lostcity_armor4",
 							"lostcity_relichunter",
 							"lostcity_doctor",
-							"lostcity_gargantuar"
+							"lostcity_armor2"
 						]
 					},
 					{
@@ -24082,7 +24081,7 @@
 							"dark_armor4",
 							"dark_juggler",
 							"dark_cavalry",
-							"dark_gargantuar"
+							"dark_armor2"
 						]
 					},
 					{
@@ -24152,7 +24151,7 @@
 							"zcorp_armor4",
 							"zcorp_helpdesk",
 							"zcorp_consultant",
-							"zcorp_gargantuar"
+							"zcorp_armor2"
 						]
 					},
 					{
@@ -24298,7 +24297,7 @@
 							"tutorial_armor4",
 							"modern_balloon",
 							"explosion_proof",
-							"tutorial_gargantuar"
+							"tutorial_armor2"
 						]
 					},
 					{
@@ -24368,7 +24367,7 @@
 							"future_armor4",
 							"future_protector",
 							"future_jetpack_disco",
-							"future_gargantuar"
+							"future_armor2"
 						]
 					},
 					{
@@ -24438,7 +24437,7 @@
 							"dino_armor4",
 							"dino_bully",
 							"dino_pushegg",
-							"dino_gargantuar"
+							"dino_armor2"
 						]
 					},
 					{
@@ -24508,7 +24507,7 @@
 							"iceage_armor4",
 							"iceage_dodo",
 							"iceage_hunter",
-							"iceage_gargantuar"
+							"iceage_armor2"
 						]
 					},
 					{
@@ -24583,7 +24582,7 @@
 							"cowboy_armor4",
 							"chicken_farmer",
 							"piano",
-							"cowboy_gargantuar"
+							"cowboy_armor2"
 						]
 					},
 					{
@@ -24657,7 +24656,7 @@
 							"lostcity_armor4",
 							"lostcity_relichunter",
 							"lostcity_doctor",
-							"lostcity_gargantuar"
+							"lostcity_armor2"
 						]
 					},
 					{
@@ -24727,7 +24726,7 @@
 							"dark_armor4",
 							"dark_juggler",
 							"dark_cavalry",
-							"dark_gargantuar"
+							"dark_armor2"
 						]
 					},
 					{
@@ -24798,7 +24797,7 @@
 							"zcorp_armor4",
 							"zcorp_helpdesk",
 							"zcorp_consultant",
-							"zcorp_gargantuar"
+							"zcorp_armor2"
 						]
 					},
 					{
@@ -24944,7 +24943,7 @@
 							"tutorial_armor4",
 							"modern_balloon",
 							"explosion_proof",
-							"tutorial_gargantuar"
+							"tutorial_armor2"
 						]
 					},
 					{
@@ -25014,7 +25013,7 @@
 							"future_armor4",
 							"future_protector",
 							"future_jetpack_disco",
-							"future_gargantuar"
+							"future_armor2"
 						]
 					},
 					{
@@ -25084,7 +25083,7 @@
 							"dino_armor4",
 							"dino_bully",
 							"dino_pushegg",
-							"dino_gargantuar"
+							"dino_armor2"
 						]
 					},
 					{
@@ -25120,8 +25119,8 @@
 			"objclass": "SoudacheBondBufferModuleProperties",
 			"objdata": {
 				"IceBond": {
-					"IntervalSeconds": 7,
-					"Damage": 500,
+					"IntervalSeconds": 4,
+					"Damage": 2000,
 					"BuffValue": 1,
 					"BuffDuration": 3
 				},
@@ -25142,37 +25141,37 @@
 					"GreedyDragonFireballDamage": 800
 				},
 				"ShroomBond": {
-					"SporeChance": 0.2,
+					"SporeChance": 0.6,
 					"MaxSporesPerBattle": 2,
 					"SporeGridItemType": "soudache_spore",
 					"SpecialShroom1": "glaciershroom",
 					"SpecialShroom2": "doomshroom"
 				},
 				"ElectricBond": {
-					"IntervalSeconds": 3,
-					"Damage": 300,
-					"StunChance": 0.15,
+					"IntervalSeconds": 1,
+					"Damage": 1800,
+					"StunChance": 0.5,
 					"StunDuration": 1,
 					"FieldDuration": 5,
 					"FieldChance": 0.25
 				},
 				"FireBond": {
 					"BurnChance": 0.25,
-					"BurnDamagePerSec": 120,
+					"BurnDamagePerSec": 200,
 					"BurnDuration": 5,
 					"FireDamageBoost": 0.25,
 					"ExplosionDamage": 500,
 					"ExplosionRadius": 3
 				},
 				"PhysicalBond": {
-					"AttackBonusPerPlant": 0.05,
-					"GlobalAttackBonus": 0.1,
-					"GlobalAttackBonus2": 0.15,
+					"AttackBonusPerPlant": 0.3,
+					"GlobalAttackBonus": 0.35,
+					"GlobalAttackBonus2": 0.4,
 					"AttackSpeedBonus": 0.05
 				},
 				"ResilientBond": {
-					"HPBonus": 0.25,
-					"GlobalHPBonus": 0.3,
+					"HPBonus": 1.0,
+					"GlobalHPBonus": 3.0,
 					"ReviveHPPercent": 0.5
 				},
 				"AbyssBond": {
@@ -25215,7 +25214,7 @@
 					"SpeedReduction": 0.5
 				},
 				"MagicBond": {
-					"Probability": 0.15,
+					"Probability": 0.5,
 					"Duration": 3,
 					"DamageBonus": 0.3
 				}
@@ -25231,13 +25230,13 @@
 				"PlantStarUpgrades": [
 					{
 						"Star": 2,
-						"HealthBonus": 2,
-						"AttackBonus": 2
+						"HealthBonus": 5,
+						"AttackBonus": 5
 					},
 					{
 						"Star": 3,
-						"HealthBonus": 9,
-						"AttackBonus": 9
+						"HealthBonus": 17,
+						"AttackBonus": 17
 					}
 				],
 				"RareAttributeScale": [

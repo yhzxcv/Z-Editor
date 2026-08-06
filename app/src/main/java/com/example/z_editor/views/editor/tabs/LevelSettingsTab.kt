@@ -67,6 +67,7 @@ fun LevelSettingsTab(
     levelDef: LevelDefinitionData?,
     objectMap: Map<String, PvzObject>,
     missingModules: List<ModuleMetadata>,
+    invalidLevelModuleRefs: List<String>,
     scrollState: LazyListState,
     onEditBasicInfo: () -> Unit,
     onEditModule: (String) -> Unit,
@@ -333,6 +334,50 @@ fun LevelSettingsTab(
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onTertiary,
+                                modifier = Modifier.padding(start = 8.dp, top = 2.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // --- “失效模块引用”警告（Modules 指向 @CurrentLevel 但文件里没有对应对象）---
+        if (invalidLevelModuleRefs.isNotEmpty()) {
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error), // 红色
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, MaterialTheme.colorScheme.onError, RoundedCornerShape(12.dp))
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Default.Warning,
+                                null,
+                                tint = MaterialTheme.colorScheme.onError
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = stringResource(id = R.string.level_settings_invalid_module_title),
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onError
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(id = R.string.level_settings_invalid_module_desc),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onError,
+                            lineHeight = 18.sp
+                        )
+                        invalidLevelModuleRefs.forEach { rtid ->
+                            Text(
+                                text = "• $rtid",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onError,
                                 modifier = Modifier.padding(start = 8.dp, top = 2.dp)
                             )
                         }
