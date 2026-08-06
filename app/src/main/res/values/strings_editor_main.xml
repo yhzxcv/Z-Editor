@@ -21,7 +21,7 @@
     <string name="editor_screen_label_unknown_module">未知模块</string>
     <string name="editor_screen_msg_zombie_injected">已注入自定义僵尸: %1$s</string>
     <string name="editor_screen_error_template_not_found">无法获取 %1$s 的原始数据模板</string>
-    <string name="editor_screen_msg_removed_challenges">移除了 %1$d 个关联挑战</string>
+    <string name="editor_screen_msg_cascade_removed">已删除 %1$d 个关联对象</string>
     <string name="editor_screen_msg_wave_container_init">已初始化波次容器 (%1$s)</string>
     <string name="editor_screen_msg_wave_container_deleted">已删除波次容器</string>
 

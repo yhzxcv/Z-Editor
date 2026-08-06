@@ -728,7 +728,8 @@ private fun SearchBar(
                 value = query,
                 onValueChange = onQueryChange,
                 placeholder = { Text("搜索 JSON…") },
-                singleLine = true,
+                // 多行搜索：最多 2 行，内容超出时框内上下拖动滚动；回车插入换行（不再直接收起键盘）
+                maxLines = 2,
                 shape = RoundedCornerShape(16.dp),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.surface,
@@ -762,7 +763,8 @@ private fun SearchBar(
                     value = replaceQuery,
                     onValueChange = onReplaceQueryChange,
                     placeholder = { Text("替换为…") },
-                    singleLine = true,
+                    // 与搜索框一致：最多 2 行，超出时框内上下拖动滚动；回车插入换行
+                    maxLines = 2,
                     shape = RoundedCornerShape(16.dp),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,

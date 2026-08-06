@@ -398,6 +398,11 @@ fun EditorScreen(
                     val objClass = parsedData!!.objectMap[alias]?.objClass
                         ?: ReferenceRepository.getObjClass(alias)
 
+                    // 移除前记录可达集合与模块对象本身，用于之后"顺藤摸瓜"级联删除内联子对象
+                    val reachableBefore = rootLevelFile?.let { LevelParser.computeReachableObjects(it) }
+                        ?: emptySet()
+                    val moduleObj = rootLevelFile?.objects?.find { it.aliases?.contains(alias) == true }
+
                     val removed = parsedData!!.levelDef!!.modules.remove(rtid)
 
                     if (removed) {
@@ -413,45 +418,32 @@ fun EditorScreen(
                             levelDefObj.objData = gson.toJsonTree(parsedData!!.levelDef!!)
                         }
 
-                        if (objClass == "StarChallengeModuleProperties") {
-                            val moduleObj =
-                                rootLevelFile!!.objects.find { it.aliases?.contains(alias) == true }
-                            if (moduleObj != null) {
-                                try {
-                                    val challengeData = gson.fromJson(
-                                        moduleObj.objData,
-                                        StarChallengeModuleData::class.java
-                                    )
-                                    val allChallengeRtids = challengeData.challenges.flatten()
-                                    var deletedCount = 0
-                                    allChallengeRtids.forEach { challengeRtid ->
-                                        val cInfo = RtidParser.parse(challengeRtid)
-                                        if (cInfo?.source == "CurrentLevel") {
-                                            if (rootLevelFile!!.objects.removeAll {
-                                                    it.aliases?.contains(
-                                                        cInfo.alias
-                                                    ) == true
-                                                }) {
-                                                deletedCount++
-                                            }
-                                        }
-                                    }
-                                    if (deletedCount > 0) Toast.makeText(
-                                        context,
-                                        context.getString(
-                                            R.string.editor_screen_msg_removed_challenges,
-                                            deletedCount
-                                        ),
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                }
+                        // 顺藤摸瓜：删除因本模块移除而失去所有引用的内联子对象
+                        // （挑战任务实体、波次容器/波次事件等）。仍被其它对象引用的子对象保持可达，不会被误删。
+                        val reachableAfter = LevelParser.computeReachableObjects(rootLevelFile!!)
+                        val cascadeVictims = reachableBefore.filter {
+                            it !in reachableAfter && it !== moduleObj
+                        }
+                        if (cascadeVictims.isNotEmpty()) {
+                            rootLevelFile!!.objects.removeAll { o ->
+                                cascadeVictims.any { it === o }
                             }
+                            Toast.makeText(
+                                context,
+                                context.getString(
+                                    R.string.editor_screen_msg_cascade_removed,
+                                    cascadeVictims.size
+                                ),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
 
                         if (objClass == "WaveManagerModuleProperties") {
                             parsedData = parsedData!!.copy(waveModule = null)
+                            // 波次容器/事件被级联删除时，同步清空内存态避免残留
+                            if (cascadeVictims.any { it.objClass == "WaveManagerProperties" }) {
+                                parsedData = parsedData!!.copy(waveManager = null)
+                            }
                         }
                         if (objClass == "LastStandMinigameProperties") {
                             updateWaveManagerManualStartup(false)
@@ -1011,18 +1003,18 @@ fun EditorScreen(
                                             tint = MaterialTheme.colorScheme.background
                                         )
                                     }
-                                    IconButton(onClick = onToggleTheme) {
-                                        Icon(
-                                            imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
-                                            contentDescription = stringResource(R.string.editor_screen_btn_toggle_theme),
-                                            tint = MaterialTheme.colorScheme.onPrimary
-                                        )
-                                    }
                                     IconButton(onClick = { showCleanupDialog = true }) {
                                         Icon(
                                             Icons.Default.CleaningServices,
                                             contentDescription = stringResource(R.string.editor_screen_btn_cleanup),
                                             tint = MaterialTheme.colorScheme.background
+                                        )
+                                    }
+                                    IconButton(onClick = onToggleTheme) {
+                                        Icon(
+                                            imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                                            contentDescription = stringResource(R.string.editor_screen_btn_toggle_theme),
+                                            tint = MaterialTheme.colorScheme.onPrimary
                                         )
                                     }
                                     IconButton(onClick = { performSave(isExit = false) }) {

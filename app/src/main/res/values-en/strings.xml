@@ -144,7 +144,7 @@
     <string name="editor_screen_label_unknown_module">Unknown Module</string>
     <string name="editor_screen_msg_zombie_injected">Custom zombie injected: %1$s</string>
     <string name="editor_screen_error_template_not_found">Unable to get original data template for %1$s</string>
-    <string name="editor_screen_msg_removed_challenges">Removed %1$d associated challenges</string>
+    <string name="editor_screen_msg_cascade_removed">Removed %1$d linked objects</string>
     <string name="editor_screen_msg_wave_container_init">Wave container initialized (%1$s)</string>
     <string name="editor_screen_msg_wave_container_deleted">Wave container deleted</string>
 

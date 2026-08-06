@@ -48,30 +48,45 @@ object LevelParser {
      * （实际文件不应出现，防御性保留以防误删）。
      */
     fun findOrphanedObjects(levelFile: PvzLevelFile): List<PvzObject> {
+        if (levelFile.objects.none { it.objClass == "LevelDefinition" }) return emptyList()
+        val reachable = computeReachableObjects(levelFile)
+        return levelFile.objects.filter { it !in reachable }
+    }
+
+    /**
+     * 返回从 LevelDefinition（根）经 RTID 链可达的所有 object。
+     * 成员判定按**引用同一性**（IdentityHashMap 语义）：结构相等但实例不同的对象不算同一个，
+     * 避免 data class 结构相等导致的误判。无根时返回空集。
+     *
+     * 供"顺藤摸瓜"级联删除使用：删除某个模块前后各算一次可达集合，差集即为
+     * 因该次删除而失去所有引用的内联子对象（挑战任务实体、波次容器/事件等）。
+     */
+    fun computeReachableObjects(levelFile: PvzLevelFile): Set<PvzObject> {
         val objects = levelFile.objects
         val rootIndex = objects.indexOfFirst { it.objClass == "LevelDefinition" }
-        if (rootIndex < 0) return emptyList()
+        if (rootIndex < 0) return emptySet()
         // 别名 → 对象索引；同一别名多个对象时后者覆盖（与编辑器 objectMap 语义一致）
         val aliasToIndex = HashMap<String, Int>()
         objects.forEachIndexed { i, o ->
             for (a in o.aliases ?: emptyList()) aliasToIndex[a] = i
         }
-        val reachable = BooleanArray(objects.size)
-        reachable[rootIndex] = true
+        val reachable = java.util.IdentityHashMap<PvzObject, Boolean>()
         val queue = ArrayDeque<Int>()
+        reachable[objects[rootIndex]] = true
         queue.add(rootIndex)
         val rtidRegex = Regex("""RTID\(([^()]+)\)""")
         while (queue.isNotEmpty()) {
             val i = queue.removeFirst()
             for (alias in collectRtidAliases(objects[i].objData, rtidRegex)) {
                 val ti = aliasToIndex[alias] ?: continue
-                if (!reachable[ti]) {
-                    reachable[ti] = true
+                val target = objects[ti]
+                if (reachable[target] == null) {
+                    reachable[target] = true
                     queue.add(ti)
                 }
             }
         }
-        return objects.filterIndexed { i, _ -> !reachable[i] }
+        return reachable.keys
     }
 
     /**
