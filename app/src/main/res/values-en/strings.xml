@@ -439,4 +439,6 @@
     <string name="module_rift_sun_desc">Configure sun amount to drop defeat zombies</string>
     <string name="module_rift_theme_demo_title">Rift Theme</string>
     <string name="module_rift_theme_demo_desc">Select active rift themes for Penny\'s Pursuit</string>
+    <string name="module_mold_colony_title">mold area</string>
+    <string name="module_mold_colony_desc">Set areas that cannot plant on</string>
 </resources>
