@@ -14,7 +14,7 @@
     <string name="module_zombies_ate_desc">僵尸进屋判负的位置</string>
     <string name="module_zombies_dead_title">死亡结算</string>
     <string name="module_zombies_dead_desc">在僵尸死亡后进行结算</string>
-    <string name="module_penny_classroom_title">阶级定义</string>
+    <string name="module_penny_classroom_title">植物阶级</string>
     <string name="module_penny_classroom_desc">全局定义植物阶级，能覆盖其他模块</string>
     <string name="module_seed_bank_title">种子库</string>
     <string name="module_seed_bank_desc">预设卡槽植物与选卡方式</string>
@@ -32,7 +32,7 @@
     <string name="module_lawn_mower_desc">设置小推车样式，注意在庭院中不生效</string>
     <string name="module_scoring_title">积分模块</string>
     <string name="module_scoring_desc">启用积分模块，杀死僵尸获得分数</string>
-    <string name="module_soudache_title">伤害显示模块</string>
+    <string name="module_soudache_title">伤害显示</string>
     <string name="module_soudache_desc">启用搜打撤模式的伤害显示</string>
     <string name="module_bowling_beach_title">沙滩保龄球</string>
     <string name="module_bowling_beach_desc">设置禁种线以及禁用铲子</string>

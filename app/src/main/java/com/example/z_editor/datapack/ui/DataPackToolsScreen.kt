@@ -29,8 +29,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
+import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.FolderZip
 import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -67,7 +69,9 @@ import com.example.z_editor.views.editor.pages.others.HelpSection
 private enum class DataPackToolScreen {
     Main,
     FileManager,
-    Smf
+    Smf,
+    SmfUnpack,
+    BatchConvert
 }
 
 /**
@@ -128,6 +132,18 @@ fun DataPackToolsScreen(
 
             DataPackToolScreen.Smf -> {
                 SmfPackerScreen(
+                    onBack = { currentTool = DataPackToolScreen.Main }
+                )
+            }
+
+            DataPackToolScreen.SmfUnpack -> {
+                SmfUnpackerScreen(
+                    onBack = { currentTool = DataPackToolScreen.Main }
+                )
+            }
+
+            DataPackToolScreen.BatchConvert -> {
+                BatchConvertScreen(
                     onBack = { currentTool = DataPackToolScreen.Main }
                 )
             }
@@ -222,6 +238,24 @@ private fun DataPackToolsMainContent(
                 }
                 item {
                     ToolCard(
+                        icon = Icons.Default.Autorenew,
+                        title = "批量文件格式转换",
+                        subtitle = "单文件或整个文件夹批量转换格式",
+                        themeColor = themeColor,
+                        onClick = { onToolClick(DataPackToolScreen.BatchConvert) }
+                    )
+                }
+                item {
+                    ToolCard(
+                        icon = Icons.Default.Unarchive,
+                        title = "SMF 解包",
+                        subtitle = "解包 RSB/RSGP 数据包到公共目录",
+                        themeColor = themeColor,
+                        onClick = { onToolClick(DataPackToolScreen.SmfUnpack) }
+                    )
+                }
+                item {
+                    ToolCard(
                         icon = Icons.Default.FolderZip,
                         title = "数据包补丁",
                         subtitle = "制作 RSB 模式的数据包补丁",
@@ -270,6 +304,18 @@ private fun DataPackToolsMainContent(
                             "1. 将原始数据包放入 packer/original/\n" +
                             "2. 将补丁文件放入 packer/patches/\n" +
                             "3. 选择模板，开始打包"
+                )
+                HelpSection(
+                    title = "SMF 解包",
+                    body = "将 RSB/RSGP 数据包解包为独立文件，结果写入公共目录 /storage/emulated/0/Z_editor/<模板名>/。\n" +
+                            "需要「所有文件访问」权限（Android 11+），在系统设置中开启后即可使用。"
+                )
+                HelpSection(
+                    title = "批量文件格式转换",
+                    body = "批量转换 json / 普通 RTON / 加密 RTON / 热更新 JSON 格式。\n" +
+                            "• 单文件模式：产物原位写到源文件同目录\n" +
+                            "• 文件夹模式：产物写入 <文件夹名>~ 目录，原目录不动\n" +
+                            "• 需要「所有文件访问」权限（Android 11+）"
                 )
                 HelpSection(
                     title = "注意事项",

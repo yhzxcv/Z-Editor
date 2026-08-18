@@ -15,6 +15,7 @@
         "tags": [
             "White",
             "Remote",
+            "Physics",
             "Original"
         ],
         "icon": "icon_peashooter.webp"
@@ -3101,6 +3102,51 @@
             "Electric"
         ],
         "icon": "icon_pineclone.gif"
+    },
+    {
+        "id": "cosmoss",
+        "name": "宇宙苔藓",
+        "tags": [
+            "White",
+            "Assist"
+        ],
+        "icon": "icon_cosmoss.webp"
+    },
+    {
+        "id": "cosmicpea",
+        "name": "宇宙豌豆",
+        "tags": [
+            "Purple",
+            "Ranger"
+        ],
+        "icon": "icon_cosmicpea.webp"
+    },
+    {
+        "id": "cosmicmushroom",
+        "name": "宇宙蘑菇",
+        "tags": [
+            "Blue",
+            "Vanguard"
+        ],
+        "icon": "icon_cosmicmushroom.webp"
+    },
+    {
+        "id": "cosmicnut",
+        "name": "宇宙坚果",
+        "tags": [
+            "Green",
+            "Defence"
+        ],
+        "icon": "icon_cosmicnut.webp"
+    },
+    {
+        "id": "gravitree",
+        "name": "重力树",
+        "tags": [
+            "Green",
+            "Defence"
+        ],
+        "icon": "icon_gravitree.webp"
     },
     {
         "id": "moton",

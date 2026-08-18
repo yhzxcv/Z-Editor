@@ -29,10 +29,7 @@ object RtonConverter {
             val inputStr = context.contentResolver.openInputStream(inputUri)!!.use {
                 it.readBytes().toString(Charsets.UTF_8)
             }
-            val jsonElement = JsonParser.parseString(inputStr)
-            val rtonBinary = RtonEncoder.encode(jsonElement.asJsonObject)
-
-            writeFile(context, outputDirUri, outputName, rtonBinary, "application/octet-stream")
+            writeFile(context, outputDirUri, outputName, jsonTextToRtonBytes(inputStr), "application/octet-stream")
             Result.success(outputName)
         } catch (e: Exception) {
             Result.failure(e)
@@ -51,14 +48,11 @@ object RtonConverter {
         return try {
             val inputBytes =
                 context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
-            val map = RtonParser.parse(inputBytes)
-            val jsonStr = gson.toJson(map)
-
             writeFile(
                 context,
                 outputDirUri,
                 outputName,
-                jsonStr.toByteArray(Charsets.UTF_8),
+                rtonBytesToJsonText(inputBytes).toByteArray(Charsets.UTF_8),
                 "application/json"
             )
             Result.success(outputName)
@@ -80,12 +74,7 @@ object RtonConverter {
         return try {
             val inputBytes =
                 context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
-            val keyBytes = Pvz2Crypto.prepareKey(key)
-            val cipher = RijndaelCbc(keyBytes, RijndaelCbc.BLOCK_SIZE)
-            val encrypted = cipher.encrypt(inputBytes)
-            val withHeader = Pvz2Crypto.ENCRYPTION_HEADER + encrypted
-
-            writeFile(context, outputDirUri, outputName, withHeader, "application/octet-stream")
+            writeFile(context, outputDirUri, outputName, encryptRtonBytes(inputBytes, key), "application/octet-stream")
             Result.success(outputName)
         } catch (e: Exception) {
             Result.failure(e)
@@ -103,24 +92,46 @@ object RtonConverter {
         key: String
     ): Result<String> {
         return try {
-            var inputBytes =
+            val inputBytes =
                 context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
-            // Strip 0x1000 header
-            if (inputBytes.size >= 2 &&
-                inputBytes[0] == Pvz2Crypto.ENCRYPTION_HEADER[0] &&
-                inputBytes[1] == Pvz2Crypto.ENCRYPTION_HEADER[1]
-            ) {
-                inputBytes = inputBytes.copyOfRange(2, inputBytes.size)
-            }
-            val keyBytes = Pvz2Crypto.prepareKey(key)
-            val cipher = RijndaelCbc(keyBytes, RijndaelCbc.BLOCK_SIZE)
-            val decrypted = cipher.decrypt(inputBytes)
-
-            writeFile(context, outputDirUri, outputName, decrypted, "application/octet-stream")
+            writeFile(context, outputDirUri, outputName, decryptRtonBytes(inputBytes, key), "application/octet-stream")
             Result.success(outputName)
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    // ---- Byte-level APIs (pure JVM; shared by the SAF methods above and batch conversion) ----
+
+    /** JSON text → plain RTON binary (root must be a JSON object). */
+    fun jsonTextToRtonBytes(jsonText: String): ByteArray {
+        val jsonElement = JsonParser.parseString(jsonText)
+        return RtonEncoder.encode(jsonElement.asJsonObject)
+    }
+
+    /** Plain RTON binary → pretty-printed JSON text. */
+    fun rtonBytesToJsonText(rtonBytes: ByteArray): String {
+        return gson.toJson(RtonParser.parse(rtonBytes))
+    }
+
+    /** 0x1000 header + Rijndael-CBC encrypt of plain RTON bytes. NO zlib. */
+    fun encryptRtonBytes(plainBytes: ByteArray, key: String): ByteArray {
+        val keyBytes = Pvz2Crypto.prepareKey(key)
+        val cipher = RijndaelCbc(keyBytes, RijndaelCbc.BLOCK_SIZE)
+        return Pvz2Crypto.ENCRYPTION_HEADER + cipher.encrypt(plainBytes)
+    }
+
+    /** Strip 0x1000 (if present) + Rijndael-CBC decrypt. NO zlib. */
+    fun decryptRtonBytes(encryptedBytes: ByteArray, key: String): ByteArray {
+        var data = encryptedBytes
+        if (data.size >= 2 &&
+            data[0] == Pvz2Crypto.ENCRYPTION_HEADER[0] &&
+            data[1] == Pvz2Crypto.ENCRYPTION_HEADER[1]
+        ) {
+            data = data.copyOfRange(2, data.size)
+        }
+        val keyBytes = Pvz2Crypto.prepareKey(key)
+        return RijndaelCbc(keyBytes, RijndaelCbc.BLOCK_SIZE).decrypt(data)
     }
 
     // ---- Internal ----

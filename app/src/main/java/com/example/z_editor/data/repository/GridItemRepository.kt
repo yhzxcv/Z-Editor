@@ -52,6 +52,7 @@ object GridItemRepository {
         GridItemInfo("score_3x_tile", "联赛3倍分数砖", GridItemCategory.Scene, null),
         GridItemInfo("score_5x_tile", "联赛5倍分数砖", GridItemCategory.Scene, null),
 
+        GridItemInfo("lunar_mine_ore", "月球矿脉", GridItemCategory.Scene, null),
         GridItemInfo("terracottaArmy", "秦俑将军残骸", GridItemCategory.Scene, null),
         GridItemInfo("enchantment_summon", "召唤法阵", GridItemCategory.Scene, null),
         GridItemInfo("enchantment_defence", "防御法阵", GridItemCategory.Scene, null),
@@ -81,6 +82,7 @@ object GridItemRepository {
 
         GridItemInfo("lilypad", "莲叶", GridItemCategory.Plants, null),
         GridItemInfo("flowerpot", "花盆", GridItemCategory.Plants, null),
+        GridItemInfo("cosmoss", "宇宙苔藓", GridItemCategory.Plants, null),
         GridItemInfo("FrozenIcebloom", "寒冰蓓蕾", GridItemCategory.Plants, null, GridItemTag.Special),
         GridItemInfo("FrozenChillyPepper", "寒冰辣椒", GridItemCategory.Plants, null, GridItemTag.Special),
 

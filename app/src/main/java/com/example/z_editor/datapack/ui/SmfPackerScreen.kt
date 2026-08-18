@@ -4,11 +4,9 @@ import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -89,7 +87,9 @@ import kotlinx.coroutines.withContext
  *
  * Directory structure (auto-created under SAF root):
  *   packer/original/  — user places template .rsb/.smf files here
- *   packer/patches/   — user places modified patch files here (flat, basename match)
+ *   packer/patches/   — user places modified patch files here, mirroring the
+ *                       package's internal structure (structured path match
+ *                       first, flat basename fallback)
  *   packer/output/    — packed output files land here
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -129,11 +129,9 @@ fun SmfPackerScreen(onBack: () -> Unit) {
     var outputName by remember { mutableStateOf("") }
 
     // State
-    var isLoading by remember { mutableStateOf(true) }
     var isPacking by remember { mutableStateOf(false) }
     var packResult by remember { mutableStateOf<SmfPacker.PackResult?>(null) }
     var packError by remember { mutableStateOf<String?>(null) }
-    var conflictErrors by remember { mutableStateOf<List<SmfPacker.ConflictError>>(emptyList()) }
 
     // Key dialog
     var encryptionKey by remember { mutableStateOf(prefs.getString("encryption_key", "") ?: "") }
@@ -164,7 +162,6 @@ fun SmfPackerScreen(onBack: () -> Unit) {
 
     fun scanTemplates() {
         val dirUri = originalDirUri ?: return
-        isLoading = true
         scope.launch {
             val files = withContext(Dispatchers.IO) {
                 val dir = DocumentFile.fromTreeUri(context, dirUri)
@@ -184,7 +181,6 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                 // Output same name as template
                 outputName = files.first().name
             }
-            isLoading = false
         }
     }
 
@@ -194,13 +190,23 @@ fun SmfPackerScreen(onBack: () -> Unit) {
             val files = withContext(Dispatchers.IO) {
                 val dir = DocumentFile.fromTreeUri(context, dirUri)
                     ?: return@withContext emptyList<DisplayFile>()
-                dir.listFiles()
-                    .filter { it.isFile }
-                    .mapNotNull { f ->
-                        val name = f.name ?: return@mapNotNull null
-                        DisplayFile(name, f.uri, f.length())
+                val out = mutableListOf<DisplayFile>()
+                // Recursive scan — display each patch by its relative path so the
+                // user can verify structure-based placement at a glance.
+                fun walk(d: DocumentFile, prefix: String) {
+                    for (f in d.listFiles()) {
+                        if (f.isDirectory) {
+                            val dirName = f.name ?: continue
+                            walk(f, if (prefix.isEmpty()) dirName else "$prefix/$dirName")
+                        } else {
+                            val n = f.name ?: continue
+                            val rel = if (prefix.isEmpty()) n else "$prefix/$n"
+                            out.add(DisplayFile(rel, f.uri, f.length()))
+                        }
                     }
-                    .sortedBy { it.name.lowercase() }
+                }
+                walk(dir, "")
+                out.sortedBy { it.name.lowercase() }
             }
             patchFiles = files
             patchCount = files.size
@@ -221,7 +227,6 @@ fun SmfPackerScreen(onBack: () -> Unit) {
         isPacking = true
         packResult = null
         packError = null
-        conflictErrors = emptyList()
 
         scope.launch {
             val result = withContext(Dispatchers.IO) {
@@ -239,14 +244,19 @@ fun SmfPackerScreen(onBack: () -> Unit) {
             result.fold(
                 onSuccess = { r ->
                     packResult = r
-                    if (r.patchesApplied == 0 && r.subgroupsModified == 0) {
-                        Toast.makeText(
+                    val skipped = r.ambiguousPatches.size + r.unmatchedPatches.size
+                    when {
+                        skipped > 0 -> Toast.makeText(
+                            context,
+                            "打包完成，但有 $skipped 个补丁文件无法匹配（已跳过，详见结果卡）",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        r.patchesApplied == 0 -> Toast.makeText(
                             context,
                             "未检测到匹配的补丁文件，已保存原文件",
                             Toast.LENGTH_LONG
                         ).show()
-                    } else {
-                        Toast.makeText(
+                        else -> Toast.makeText(
                             context,
                             "打包完成！${r.subgroupsModified} 个子组, ${r.patchesApplied} 个文件补丁已注入",
                             Toast.LENGTH_LONG
@@ -394,7 +404,7 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                 }
                 item {
                     Text(
-                        "$patchCount 个补丁文件就绪，按文件名自动匹配",
+                        "$patchCount 个补丁文件就绪，默认按目录结构匹配，未找到再回退文件名",
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.Medium,
@@ -428,33 +438,48 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                 )
             }
 
-            // ---- Conflict warnings ----
-            if (conflictErrors.isNotEmpty()) {
-                item {
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiary),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    Icons.Default.Warning,
-                                    null,
-                                    tint = MaterialTheme.colorScheme.onTertiary,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Spacer(Modifier.width(8.dp))
+            // ---- Patch issue report (ambiguous / unmatched) ----
+            packResult?.let { result ->
+                if (result.ambiguousPatches.isNotEmpty() || result.unmatchedPatches.isNotEmpty()) {
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        Icons.Default.Warning,
+                                        null,
+                                        tint = MaterialTheme.colorScheme.onTertiary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(Modifier.width(8.dp))
+                                    Text(
+                                        "补丁匹配问题", fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onTertiary
+                                    )
+                                }
+                                Spacer(Modifier.height(8.dp))
+                                result.ambiguousPatches.forEach { a ->
+                                    Text(
+                                        "· '${a.patch}' 匹配到多个同名文件，已跳过：${a.matches.joinToString(", ")}",
+                                        fontSize = 13.sp,
+                                        color = MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.8f)
+                                    )
+                                }
+                                result.unmatchedPatches.forEach { u ->
+                                    Text(
+                                        "· '${u}' 在包内找不到对应路径，已跳过",
+                                        fontSize = 13.sp,
+                                        color = MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.8f)
+                                    )
+                                }
+                                Spacer(Modifier.height(4.dp))
                                 Text(
-                                    "文件名冲突", fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onTertiary
-                                )
-                            }
-                            Spacer(Modifier.height(8.dp))
-                            conflictErrors.forEach { c ->
-                                Text(
-                                    "· '${c.basename}' 同时存在于: ${c.subgroups.joinToString(", ")}",
-                                    fontSize = 13.sp,
-                                    color = MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.8f)
+                                    "未处理的补丁会被跳过，其它补丁正常打包。",
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.6f)
                                 )
                             }
                         }
@@ -479,7 +504,12 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                                 )
                                 Spacer(Modifier.width(12.dp))
                                 Text(
-                                    "打包成功",
+                                    when {
+                                        result.patchesApplied > 0 -> "打包成功"
+                                        result.ambiguousPatches.isNotEmpty()
+                                                || result.unmatchedPatches.isNotEmpty() -> "打包完成（有补丁被跳过）"
+                                        else -> "未注入任何补丁"
+                                    },
                                     fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                                     fontSize = 16.sp
@@ -489,6 +519,9 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                             ResultRow("输出文件", result.outputName)
                             ResultRow("补丁注入", "${result.patchesApplied} 个文件")
                             ResultRow("子组修改", "${result.subgroupsModified} 个")
+                            if (result.flatFallbackCount > 0) {
+                                ResultRow("文件名回退", "${result.flatFallbackCount} 个")
+                            }
                             ResultRow("输出大小", formatSize(result.outputSize))
                         }
                     }
@@ -554,8 +587,9 @@ fun SmfPackerScreen(onBack: () -> Unit) {
             item {
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = "补丁文件按文件名 (basename) 自动匹配数据包内文件。\n" +
-                            "请确保补丁文件名与数据包内文件同名。\n" +
+                    text = "补丁默认按数据包内部目录结构匹配：在 packer/patches/ 下按包内路径" +
+                            "建子目录放置文件（patches 根目录 = 包根目录）。\n若按结构找不到对应路径，则回退到按文件名匹配；" +
+                            "若存在多个同名文件无法确定，该补丁会被跳过并在结果中提示。\n" +
                             "输出文件将保存到 packer/output/ 目录。",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
@@ -565,18 +599,6 @@ fun SmfPackerScreen(onBack: () -> Unit) {
             }
 
             item { Spacer(Modifier.height(32.dp)) }
-        }
-
-        if (isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f))
-                    .clickable(enabled = false) {},
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = themeColor, strokeWidth = 4.dp)
-            }
         }
     }
 
@@ -595,20 +617,23 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                 title = "使用步骤",
                 body = "1. 将原始数据包文件（.smf 或 .rsb）放入 packer/original/ 目录\n" +
                         "2. 将修改后的补丁文件放入 packer/patches/ 目录\n" +
-                        "3. 补丁文件名需与数据包内文件同名（按 basename 自动匹配）\n" +
-                        "4. 选择数据包模板，确认输出文件名，点击「开始打包」"
+                        "3. 优先按数据包内部目录结构放置（在 patches 下按包内路径建子目录）\n" +
+                        "4. 若按结构找不到对应路径，会回退到按文件名匹配\n" +
+                        "5. 选择数据包模板，确认输出文件名，点击「开始打包」"
             )
             HelpSection(
                 title = "目录结构",
                 body = "packer/original/ — 存放原始数据包模板\n" +
-                        "packer/patches/ — 存放修改后的补丁文件\n" +
+                        "packer/patches/ — 存放修改后的补丁文件（按包内路径建子目录）\n" +
                         "packer/output/ — 打包输出目录"
             )
             HelpSection(
                 title = "注意事项",
-                body = "• 补丁按文件名自动匹配，不区分大小写\n" +
+                body = "• 匹配不区分大小写\n" +
+                        "• 默认按结构匹配：补丁相对路径 = 包内路径，放在子目录后只匹配该完整路径，不会误匹配其它重名文件\n" +
+                        "• 结构未命中时回退按文件名匹配；若包内存在多个同名文件无法确定目标，该补丁会被跳过并在结果中提示\n" +
+                        "• 完全匹配不到任何文件的补丁也会被报告\n" +
                         "• 输出文件默认与模板同名，可手动修改\n" +
-                        "• 如多个子组中存在同名文件，将报告冲突\n" +
                         "• 操作前建议备份原始文件"
             )
         }

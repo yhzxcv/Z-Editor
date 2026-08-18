@@ -129,6 +129,29 @@ private fun ConvertTarget.formatColor(themeColor: Color): Color = when (this) {
     ConvertTarget.JSON_TO_HOTUPDATE -> Color(0xFF9C27B0)        // 热更新 JSON 紫色
 }
 
+/**
+ * 与批量文件格式转换一致的产物命名：基名 + 目标扩展名（如 foo.rton → foo.json）；
+ * 目标已存在（冲突，如加密 RTON 仍是 .rton、JSON→热更新仍是 .json）时在文件名
+ * 末尾追加 `~` 直到不冲突（如 foo.rton → foo.rton~）。放弃 _enc/_plain/_decoded/_encoded 后缀。
+ */
+private fun resolveUniqueOutputName(docDir: DocumentFile?, baseName: String, target: ConvertTarget): String {
+    var name = "${baseName}.${target.extension}"
+    while (docDir?.findFile(name) != null) {
+        name += "~"
+    }
+    return name
+}
+
+/**
+ * 产物去重标识 `~` 会出现在扩展名之后（如 foo.rton~、foo.json~~），格式识别时先剥掉
+ * 末尾任意数量的 `~`，让 rton~ / json~ 仍按原格式处理。仅用于识别，显示名不变。
+ */
+private fun stripTildeSuffix(name: String): String {
+    var n = name
+    while (n.endsWith("~")) n = n.dropLast(1)
+    return n
+}
+
 // ---- SAF Launcher ----
 private class OpenDocumentTreeFixed : ActivityResultContract<Uri?, Uri?>() {
     override fun createIntent(context: Context, input: Uri?): Intent {
@@ -181,7 +204,8 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
     // 热更新 JSON 检测（纯内容检测，像 RTON 一样通过读取文件内容判断格式）
     fun isHotUpdateFile(uri: Uri): Boolean {
         val segment = uri.lastPathSegment ?: return false
-        if (!segment.endsWith(".json", true)) return false
+        // 剥掉去重标识 `~`（foo.json~）后再判扩展名，否则内容检测被门禁挡住
+        if (!stripTildeSuffix(segment).endsWith(".json", true)) return false
         return try {
             context.contentResolver.openInputStream(uri)?.use { stream ->
                 val bytes = ByteArray(4096)
@@ -197,7 +221,8 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
     // 加密 RTON 检测（前 2 字节 = 0x1000）
     fun isEncryptedRton(uri: Uri): Boolean {
         val segment = uri.lastPathSegment ?: return false
-        if (!segment.endsWith(".rton", true)) return false
+        // 剥掉去重标识 `~`（foo.rton~）后再判扩展名，否则内容检测被门禁挡住
+        if (!stripTildeSuffix(segment).endsWith(".rton", true)) return false
         return try {
             context.contentResolver.openInputStream(uri)?.use { stream ->
                 val header = ByteArray(2)
@@ -212,12 +237,6 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
     var convertTargetItem by remember { mutableStateOf<FileItem?>(null) }
     var availableTargets by remember { mutableStateOf<List<ConvertTarget>>(emptyList()) }
     var isProcessing by remember { mutableStateOf(false) }
-
-    // 覆盖确认状态
-    var showOverwriteDialog by remember { mutableStateOf(false) }
-    var pendingOverwriteTarget by remember { mutableStateOf<ConvertTarget?>(null) }
-    var pendingOverwriteItem by remember { mutableStateOf<FileItem?>(null) }
-    var pendingOutputName by remember { mutableStateOf("") }
 
     // 文件操作状态（复制、删除、重命名、移动）
     var itemToDelete by remember { mutableStateOf<FileItem?>(null) }
@@ -358,32 +377,16 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
             return
         }
 
-        val baseName = item.name.substringBeforeLast(".")
-
-        // 为了防止覆盖测试时混淆，对加密解密产物加上后缀区分
-        val outputName = when (target) {
-            ConvertTarget.JSON_TO_PLAIN_RTON -> "$baseName.rton"
-            ConvertTarget.PLAIN_RTON_TO_JSON -> "$baseName.json"
-            ConvertTarget.PLAIN_RTON_TO_ENCRYPTED -> "${baseName}_enc.rton"
-            ConvertTarget.ENCRYPTED_RTON_TO_PLAIN -> "${baseName}_plain.rton"
-            ConvertTarget.HOTUPDATE_TO_JSON -> "${baseName}_decoded.json"
-            ConvertTarget.JSON_TO_HOTUPDATE -> "${baseName}_encoded.json"
-        }
-
         val currentDir = pathStack.lastOrNull()?.uri ?: return
         val docDir = DocumentFile.fromTreeUri(context, currentDir)
-        if (docDir?.findFile(outputName) != null) {
-            pendingOverwriteTarget = target
-            pendingOverwriteItem = item
-            pendingOutputName = outputName
-            showOverwriteDialog = true
-        } else {
-            executeConversion(item, target, currentDir, outputName)
-        }
+        // 与批量转换一致的产物命名：基名 + 目标扩展名，冲突时追加 ~ 去重（不再弹覆盖确认）
+        val outputName = resolveUniqueOutputName(docDir, item.name.substringBeforeLast("."), target)
+        executeConversion(item, target, currentDir, outputName)
     }
 
     fun detectAndShowMenu(item: FileItem) {
-        val ext = item.name.substringAfterLast('.', "").lowercase()
+        // `~` 是产物去重标识（如 foo.rton~），识别时先剥离，rton~ / json~ 仍按原格式处理
+        val ext = stripTildeSuffix(item.name).substringAfterLast('.', "").lowercase()
         scope.launch {
             isProcessing = true
             val targets = withContext(Dispatchers.IO) {
@@ -861,9 +864,10 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
                                             vertical = 12.dp
                                         ), verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        val isRton = item.name.endsWith(".rton", true)
-                                        val isSmf = item.name.endsWith(".smf", true)
-                                        val isJson = item.name.endsWith(".json", true)
+                                        val base = stripTildeSuffix(item.name)
+                                        val isRton = base.endsWith(".rton", true)
+                                        val isSmf = base.endsWith(".smf", true)
+                                        val isJson = base.endsWith(".json", true)
                                         val (fileIcon, iconTint, fileLabel) = when {
                                             encrypted -> Triple(
                                                 Icons.Default.Lock,
@@ -1036,36 +1040,6 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
             confirmButton = {},
             dismissButton = {
                 TextButton(onClick = { convertTargetItem = null }) {
-                    Text(
-                        "取消",
-                        color = themeColor
-                    )
-                }
-            }
-        )
-    }
-
-    // 覆盖提示弹窗
-    if (showOverwriteDialog) {
-        AlertDialog(
-            onDismissRequest = { showOverwriteDialog = false },
-            title = { Text("覆盖确认") },
-            text = { Text("目标文件 [$pendingOutputName] 已存在，是否覆盖？") },
-            confirmButton = {
-                Button(
-                    colors = ButtonDefaults.buttonColors(containerColor = themeColor),
-                    onClick = {
-                        showOverwriteDialog = false
-                        executeConversion(
-                            pendingOverwriteItem!!,
-                            pendingOverwriteTarget!!,
-                            pathStack.last().uri,
-                            pendingOutputName
-                        )
-                    }) { Text("覆盖") }
-            },
-            dismissButton = {
-                TextButton(onClick = { showOverwriteDialog = false }) {
                     Text(
                         "取消",
                         color = themeColor

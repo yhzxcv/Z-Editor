@@ -31,6 +31,7 @@ enum class ZombieTag(val label: String, val iconName: String?, val category: Zom
     Tale_ZCorp("童话/Z公司", null, ZombieCategory.Main),
     Parkour_Speed("跑酷/飞车", null, ZombieCategory.Main),
     Tothewest("西游/地宫", null, ZombieCategory.Main),
+    Moon("月球基地", null, ZombieCategory.Main),
     Memory("回忆之旅", null, ZombieCategory.Main),
     Universe("平行宇宙", null, ZombieCategory.Main),
     Festival1("节日串烧1", null, ZombieCategory.Main),

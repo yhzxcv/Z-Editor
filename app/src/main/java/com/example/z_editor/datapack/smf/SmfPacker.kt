@@ -20,17 +20,26 @@ import java.util.zip.Inflater
  * Usage:
  *   SmfPacker.packSmf(context, templateUri, patchDirUri, outputUri, outputName)
  *
- * Patch matching: files in [patchDir] are matched by basename against
- * entries inside the RSB subgroups. Only modified files need to be placed.
+ * Patch matching (structure-first, resolved per patch file):
+ *   1. Structured: the patch's relative path under [patchDir] is treated as the
+ *      package's internal path (patches root = package root). If a file with that
+ *      exact internal path exists, the patch is injected there — and only there,
+ *      never into another file that happens to share its basename.
+ *   2. Flat fallback (only if no structured path matched): the patch is applied
+ *      iff exactly ONE file in the package has that basename.
+ *   3. A fallback that would match two or more same-named files is ambiguous — the
+ *      patch is skipped and reported. A patch that matches nothing is reported.
+ * This lets duplicate-named files be targeted unambiguously by directory.
+ * Only modified files need to be placed.
  */
 object SmfPacker {
 
     private const val TAG = "SmfPacker"
     private const val POPCAP_ZLIB_MAGIC = 0xDEADFED4.toInt()
 
-    private val RSB_MAGIC =
+    internal val RSB_MAGIC =
         byteArrayOf('1'.code.toByte(), 'b'.code.toByte(), 's'.code.toByte(), 'r'.code.toByte())
-    private val RSGP_MAGIC =
+    internal val RSGP_MAGIC =
         byteArrayOf('p'.code.toByte(), 'g'.code.toByte(), 's'.code.toByte(), 'r'.code.toByte())
 
     // ---- Public data classes ----
@@ -39,12 +48,19 @@ object SmfPacker {
         val outputName: String,
         val patchesApplied: Int,
         val subgroupsModified: Int,
-        val outputSize: Long
+        val outputSize: Long,
+        /** Patches skipped because they would match more than one package file. */
+        val ambiguousPatches: List<AmbiguousPatch> = emptyList(),
+        /** Patches that matched no package file at all (reported, not injected). */
+        val unmatchedPatches: List<String> = emptyList(),
+        /** Count of patches applied via flat basename fallback (vs structured path). */
+        val flatFallbackCount: Int = 0
     )
 
-    data class ConflictError(
-        val basename: String,
-        val subgroups: List<String>
+    /** A patch file that was skipped because it would match more than one file. */
+    data class AmbiguousPatch(
+        val patch: String,          // patch file's relative path under the patches dir
+        val matches: List<String>   // package entry paths it matched ambiguously
     )
 
     // ---- Internal data classes ----
@@ -57,7 +73,7 @@ object SmfPacker {
      *   Equivalent to Python's `entry_pos = file.tell()` after reading fsize.
      *   Used by the legacy patcher for `subdata[file_info - 4:file_info]` etc.
      */
-    private data class RsgpFileEntry(
+    internal data class RsgpFileEntry(
         val name: String,
         val isImage: Boolean,
         val offset: Int,
@@ -76,33 +92,45 @@ object SmfPacker {
     )
 
     // =========================================================================
-    // PatchIndex — pre-indexed patch files for O(1) basename lookup
+    // PatchFiles — pre-indexed patch files for O(1) path lookup
     // =========================================================================
 
     /**
-     * Pre-indexed patch files for O(1) basename lookup.
+     * Pre-indexed patch files for O(1) lookup.
      *
      * Replaces repeated [DocumentFile.findFile] calls (SAF IPC + directory scan)
-     * with a single upfront scan and in-memory [HashMap] lookups.
+     * with a single upfront recursive scan and in-memory [HashMap] lookups.
+     *
+     * Each patch file is indexed by its **relative path** under the patches
+     * directory, using '/' separators (e.g. "RTID/levels/1234.json"). A file
+     * placed flat at the patches root gets a bare basename key ("1234.json").
      *
      * Lookup is **case-insensitive** because PvZ2 RSGP internal paths may differ
      * in case from the actual filesystem names (e.g. "PLANT.rton" vs "plant.rton"),
      * and SAF [DocumentFile.findFile] delegates to the filesystem which is often
      * case-insensitive (FAT32/exFAT).
      */
-    private class PatchIndex(
+    private class PatchFiles(
         private val bytesMap: Map<String, ByteArray>,
         private val lowerMap: Map<String, String>,
         val fileCount: Int
     ) {
-        fun contains(basename: String): Boolean {
-            if (bytesMap.containsKey(basename)) return true
-            return lowerMap.containsKey(basename.lowercase())
+        /** All canonical patch keys (relative paths). */
+        val keys: Set<String> get() = bytesMap.keys
+
+        /**
+         * Case-insensitive lookup; returns the canonical stored key if present,
+         * or null if the patch does not exist.
+         */
+        fun canonicalKey(key: String): String? {
+            if (bytesMap.containsKey(key)) return key
+            return lowerMap[key.lowercase()]
         }
 
-        fun getBytes(basename: String): ByteArray? {
-            bytesMap[basename]?.let { return it }
-            val lowerKey = lowerMap[basename.lowercase()] ?: return null
+        /** Bytes for a key (case-insensitive), or null. */
+        fun get(key: String): ByteArray? {
+            bytesMap[key]?.let { return it }
+            val lowerKey = lowerMap[key.lowercase()] ?: return null
             return bytesMap[lowerKey]
         }
     }
@@ -130,10 +158,10 @@ object SmfPacker {
     ): Result<PackResult> {
         return try {
             // Build patch index — O(N) scan once, O(1) lookups thereafter
-            val patchIndex = buildPatchIndex(context, patchDirUri)
+            val patchFiles = buildPatchFiles(context, patchDirUri)
                 ?: return Result.failure(Exception("无法访问补丁目录"))
 
-            Log.d(TAG, "Pack: ${patchIndex.fileCount} patches indexed")
+            Log.d(TAG, "Pack: ${patchFiles.fileCount} patches indexed")
 
             // Read template
             val rawBytes =
@@ -163,34 +191,34 @@ object SmfPacker {
             var anyModified: Boolean
             var subgroupsModified = 0
             var patchesApplied = 0
+            var ambiguous = emptyList<AmbiguousPatch>()
+            var unmatched = emptyList<String>()
+            var flatFallbackCount = 0
             when {
                 magic.contentEquals(RSB_MAGIC) -> {
                     Log.d(TAG, "Detected RSB container")
-                    val rsbResult = patchRsbLegacy(rawData, patchIndex)
-
-                    // Check for basename conflicts
-                    if (rsbResult.conflicts.isNotEmpty()) {
-                        val msg = rsbResult.conflicts.joinToString("\n") { c ->
-                            "'${c.basename}' 存在于: ${c.subgroups.joinToString(", ")}"
-                        }
-                        return Result.failure(Exception("文件名冲突 — 以下补丁在多个子组中重名:\n$msg"))
-                    }
-
+                    val rsbResult = patchRsbLegacy(rawData, patchFiles)
                     rawData = rsbResult.data
                     anyModified = rsbResult.anyModified
                     subgroupsModified = rsbResult.subgroupsModified
                     patchesApplied = rsbResult.patchesApplied
+                    ambiguous = rsbResult.ambiguous
+                    unmatched = rsbResult.unmatched
+                    flatFallbackCount = rsbResult.flatFallbackCount
                 }
 
                 magic.contentEquals(RSGP_MAGIC) -> {
                     Log.d(TAG, "Detected standalone RSGP container")
-                    val (patched, wasModified) = patchRsgpLegacy(rawData, patchIndex)
-                    rawData = patched
-                    anyModified = wasModified
-                    if (wasModified) {
-                        subgroupsModified = 1
-                        patchesApplied = patchIndex.fileCount
-                    }
+                    val entries = getRsgpFileNames(rawData).map { "" to it }
+                    val resolution = resolvePatches(patchFiles, entries, emptyList())
+                    val rsgpResult = patchRsgpLegacy(rawData, resolution.patchByEntry)
+                    rawData = rsgpResult.data
+                    anyModified = rsgpResult.modified
+                    patchesApplied = rsgpResult.applied
+                    if (rsgpResult.modified) subgroupsModified = 1
+                    ambiguous = resolution.ambiguous
+                    unmatched = resolution.unmatched
+                    flatFallbackCount = resolution.flatFallbackCount
                 }
 
                 else -> {
@@ -208,7 +236,12 @@ object SmfPacker {
                     ?: return Result.failure(Exception("无法创建输出文件"))
                 context.contentResolver.openOutputStream(outFile.uri)?.use { it.write(rawBytes) }
                 Log.d(TAG, "No modifications — copied original as-is")
-                return Result.success(PackResult(outputName, 0, 0, rawBytes.size.toLong()))
+                return Result.success(
+                    PackResult(
+                        outputName, 0, 0, rawBytes.size.toLong(),
+                        ambiguous, unmatched, flatFallbackCount
+                    )
+                )
             }
 
             // ---- Step 3: Re-apply outer compression ----
@@ -237,7 +270,10 @@ object SmfPacker {
                     outputName,
                     patchesApplied,
                     subgroupsModified,
-                    finalData.size.toLong()
+                    finalData.size.toLong(),
+                    ambiguous,
+                    unmatched,
+                    flatFallbackCount
                 )
             )
         } catch (e: Exception) {
@@ -251,37 +287,171 @@ object SmfPacker {
     // =========================================================================
 
     /**
-     * Scan [patchDirUri] once and cache all patch file bytes in memory.
+     * Recursively scan [patchDirUri] once and cache all patch file bytes in
+     * memory, keyed by their relative path under the patches directory.
+     *
+     * A nested file (e.g. `RTID/levels/1234.json`) is keyed by its full
+     * relative path; a file at the patches root is keyed by its basename only.
+     * This is what lets the packer match by package structure first.
      */
-    private fun buildPatchIndex(context: Context, patchDirUri: Uri): PatchIndex? {
+    private fun buildPatchFiles(context: Context, patchDirUri: Uri): PatchFiles? {
         val patchDir = DocumentFile.fromTreeUri(context, patchDirUri) ?: return null
-        val files = patchDir.listFiles()
         val map = mutableMapOf<String, ByteArray>()
         val lowerMap = mutableMapOf<String, String>()
+        var filesSeen = 0
 
-        for (file in files) {
-            if (file.isDirectory) continue
-            val rawName = file.name
-            if (rawName.isNullOrEmpty()) continue
-            val basename = rawName.substringAfterLast('/').substringAfterLast('\\')
-            if (basename.isEmpty()) continue
-            try {
-                val bytes =
-                    context.contentResolver.openInputStream(file.uri)?.use { it.readBytes() }
-                if (bytes != null) {
-                    map[basename] = bytes
-                    lowerMap[basename.lowercase()] = basename
+        fun scan(dir: DocumentFile, prefix: String) {
+            for (file in dir.listFiles()) {
+                if (file.isDirectory) {
+                    val dirName = file.name ?: continue
+                    scan(file, if (prefix.isEmpty()) dirName else "$prefix/$dirName")
+                    continue
                 }
-            } catch (_: Exception) {
-                // Skip unreadable files
+                val rawName = file.name ?: continue
+                if (rawName.isEmpty()) continue
+                // Relative path always uses '/' regardless of platform separator
+                val relPath = if (prefix.isEmpty()) rawName else "$prefix/$rawName"
+                val key = relPath.replace('\\', '/')
+                if (key.isEmpty()) continue
+                filesSeen++
+                try {
+                    val bytes =
+                        context.contentResolver.openInputStream(file.uri)?.use { it.readBytes() }
+                    if (bytes != null) {
+                        map[key] = bytes
+                        lowerMap[key.lowercase()] = key
+                    }
+                } catch (_: Exception) {
+                    // Skip unreadable files
+                }
+            }
+        }
+        scan(patchDir, "")
+
+        Log.d(TAG, "PatchFiles: ${map.size} files cached")
+        if (map.isEmpty() && filesSeen > 0) {
+            Log.w(TAG, "All $filesSeen files were filtered out — check permissions")
+        }
+        return PatchFiles(map, lowerMap, map.size)
+    }
+
+    // =========================================================================
+    // Patch resolution — structure-first, flat fallback, ambiguity reporting
+    // =========================================================================
+
+    /**
+     * Outcome of resolving every patch file against the package's entries.
+     *
+     * @param patchByEntry entry internal path → patch bytes to inject into it
+     * @param subgroupOverrideBy subgroup name → full replacement bytes (".rsg" override)
+     * @param ambiguous patches skipped because they matched multiple files
+     * @param unmatched patches that matched no file at all
+     * @param flatFallbackCount how many patches were injected via basename fallback
+     */
+    private data class PatchResolution(
+        val patchByEntry: Map<String, ByteArray>,
+        val subgroupOverrideBy: Map<String, ByteArray>,
+        val ambiguous: List<AmbiguousPatch>,
+        val unmatched: List<String>,
+        val flatFallbackCount: Int
+    )
+
+    /**
+     * Resolve every patch file to at most one target package file.
+     *
+     * Rules, per patch file (keyed by its relative path under the patches dir):
+     *  0. Whole-subgroup override: a patch named "<subgroup>.rsg" replaces the
+     *     entire subgroup. Resolved first so it is never re-treated as a file.
+     *  1. Structured (default): the patch's relative path is treated as the
+     *     package's internal path (patches root = package root). If a file with
+     *     that exact internal path exists it is the target — and only it. If the
+     *     same path exists in more than one subgroup the patch is ambiguous.
+     *  2. Flat fallback (only if step 1 did not match): applied iff exactly ONE
+     *     file in the package has that basename. Two or more same-named files →
+     *     ambiguous (reported, skipped). Zero → unmatched (reported).
+     *
+     * Matching is case-insensitive on both sides (PvZ2 internal paths vs
+     * filesystem names may differ in case).
+     *
+     * @param patchFiles indexed patch files
+     * @param entries (subgroupName, entryInternalPath) pairs across all subgroups
+     * @param subgroupNames subgroup names for whole-subgroup ".rsg" overrides
+     */
+    private fun resolvePatches(
+        patchFiles: PatchFiles,
+        entries: List<Pair<String, String>>,
+        subgroupNames: List<String>
+    ): PatchResolution {
+        // Case-insensitive indexes over every entry in the package
+        val sgByPathLower = mutableMapOf<String, MutableSet<String>>()      // lower(entry path) -> subgroups
+        val actualPathByLower = mutableMapOf<String, String>()              // lower(entry path) -> entry path
+        val sgByBasenameLower = mutableMapOf<String, MutableSet<Pair<String, String>>>() // lower(basename) -> (sg, entry path)
+        for ((sg, name) in entries) {
+            if (name.isEmpty()) continue
+            sgByPathLower.getOrPut(name.lowercase()) { mutableSetOf() }.add(sg)
+            actualPathByLower.putIfAbsent(name.lowercase(), name)
+            sgByBasenameLower.getOrPut(basenameOf(name).lowercase()) { mutableSetOf() }.add(sg to name)
+        }
+
+        val patchByEntry = mutableMapOf<String, ByteArray>()
+        val subgroupOverrideBy = mutableMapOf<String, ByteArray>()
+        val claimedBy = mutableMapOf<String, String>()   // entry path -> patch key that claimed it
+        val ambiguous = mutableListOf<AmbiguousPatch>()
+        val unmatched = mutableListOf<String>()
+        var flatFallbackCount = 0
+        val used = mutableSetOf<String>()                // canonical patch keys already resolved
+
+        // 0. Whole-subgroup overrides: a patch named "<subgroup>.rsg" replaces the subgroup.
+        for (sg in subgroupNames) {
+            val canon = patchFiles.canonicalKey(sg + ".rsg") ?: continue
+            subgroupOverrideBy[sg] = patchFiles.get(canon)!!
+            used += canon
+        }
+
+        // 1. Structured: exact internal path (case-insensitive).
+        for (key in patchFiles.keys) {
+            if (key in used) continue
+            val bytes = patchFiles.get(key) ?: continue
+            val subgroups = sgByPathLower[key.lowercase()]
+            if (subgroups != null) {
+                val actual = actualPathByLower[key.lowercase()]!!
+                if (subgroups.size > 1) {
+                    // Same internal path exists in several subgroups → cannot choose.
+                    ambiguous.add(AmbiguousPatch(key, listOf(actual)))
+                } else {
+                    patchByEntry[actual] = bytes
+                    claimedBy[actual] = key
+                }
+                used += key
             }
         }
 
-        Log.d(TAG, "PatchIndex: ${map.size} files cached")
-        if (map.isEmpty() && files.isNotEmpty()) {
-            Log.w(TAG, "All ${files.size} entries were filtered out — check permissions")
+        // 2. Flat fallback: basename, only when exactly one file has that name.
+        for (key in patchFiles.keys) {
+            if (key in used) continue
+            val bytes = patchFiles.get(key) ?: continue
+            val candidates = sgByBasenameLower[basenameOf(key).lowercase()]
+            when {
+                candidates == null || candidates.isEmpty() -> unmatched.add(key)
+                candidates.size > 1 -> ambiguous.add(
+                    AmbiguousPatch(key, candidates.map { it.second }.distinct().sorted())
+                )
+                else -> {
+                    val target = candidates.first().second
+                    if (target in claimedBy) {
+                        // Another patch already targets this file (e.g. a structured one).
+                        ambiguous.add(AmbiguousPatch(key, listOf(target)))
+                    } else {
+                        patchByEntry[target] = bytes
+                        claimedBy[target] = key
+                        flatFallbackCount++
+                    }
+                }
+            }
+            used += key
         }
-        return PatchIndex(map, lowerMap, map.size)
+
+        return PatchResolution(patchByEntry, subgroupOverrideBy, ambiguous, unmatched, flatFallbackCount)
     }
 
     // =========================================================================
@@ -302,7 +472,7 @@ object SmfPacker {
      * - Prefix selection: iterate in insertion order (LinkedHashMap), last
      *   non-expired key wins (longest active prefix in a linear chain).
      */
-    private fun parseRsgpFileList(
+    internal fun parseRsgpFileList(
         subdata: ByteArray,
         infoOffset: Int,
         infoSize: Int
@@ -390,7 +560,7 @@ object SmfPacker {
     }
 
     /**
-     * Extract all file names from an RSGP subgroup for duplicate-basename pre-scan.
+     * Extract all file names from an RSGP subgroup.
      * 1:1 _get_rsgp_file_names (lines 92-99).
      */
     private fun getRsgpFileNames(subdata: ByteArray): List<String> {
@@ -405,6 +575,14 @@ object SmfPacker {
     // _patch_rsgp_legacy — 1:1 port (lines 514-703)
     // =========================================================================
 
+    /** Result of [patchRsgpLegacy]: patched data, modified flag, and how many
+     *  entries were actually replaced. */
+    private data class RsgpPatchResult(
+        val data: ByteArray,
+        val modified: Boolean,
+        val applied: Int
+    )
+
     /**
      * Full-featured RSGP patching with zlib compression support.
      *
@@ -418,17 +596,17 @@ object SmfPacker {
      * 5. Final subdata padded to 4096 alignment
      *
      * @param subdata The RSGP subgroup byte array (modified in-place style)
-     * @param patchIndex Pre-indexed patch files
+     * @param patchMap resolved entry path → patch bytes (from [resolvePatches]);
+     *   only exact entry paths appear as keys, so lookups are direct.
      * @param overrideDataComp Override data compression flag (-1 = use original)
      * @param overrideImageComp Override image compression flag (-1 = use original)
-     * @return Pair of (patched_subdata, was_modified)
      */
     private fun patchRsgpLegacy(
         subdata: ByteArray,
-        patchIndex: PatchIndex,
+        patchMap: Map<String, ByteArray>,
         overrideDataComp: Int = -1,
         overrideImageComp: Int = -1
-    ): Pair<ByteArray, Boolean> {
+    ): RsgpPatchResult {
         // ---- Parse RSGP header (80 bytes) ----
         // Layout (offsets from start):
         //   [0:4]pgsr [4:8]ver [8:16]pad [16:20]comp_flags [20:24]header_len
@@ -463,22 +641,22 @@ object SmfPacker {
             }
         }
 
-        // ---- Early return: no patches (basename-only lookup) ----
+        // ---- Early return: no patches apply to this container ----
         var hasAnyPatch = false
         for ((name, _) in dataDict) {
-            if (name.isNotEmpty() && patchIndex.contains(basenameOf(name))) {
+            if (name.isNotEmpty() && name in patchMap) {
                 hasAnyPatch = true; break
             }
         }
         if (!hasAnyPatch) {
             for ((name, _) in imageDict) {
-                if (name.isNotEmpty() && patchIndex.contains(basenameOf(name))) {
+                if (name.isNotEmpty() && name in patchMap) {
                     hasAnyPatch = true; break
                 }
             }
         }
         if (!hasAnyPatch) {
-            return Pair(subdata, false)
+            return RsgpPatchResult(subdata, false, 0)
         }
 
         // ---- Decompress data section ----
@@ -521,7 +699,7 @@ object SmfPacker {
 
             if (decodedName.isNotEmpty()) {
                 val fileInfo = dataDict[decodedName]!!.fileInfo
-                val patchBytes = patchIndex.getBytes(basenameOf(decodedName))
+                val patchBytes = patchMap[decodedName]
 
                 if (patchBytes != null) {
                     // Grow data if needed
@@ -557,7 +735,7 @@ object SmfPacker {
 
             if (decodedName.isNotEmpty()) {
                 val fileInfo = imageDict[decodedName]!!.fileInfo
-                val patchBytes = patchIndex.getBytes(basenameOf(decodedName))
+                val patchBytes = patchMap[decodedName]
 
                 if (patchBytes != null && patchBytes.isNotEmpty()) {
                     val needed = fileOffset + patchBytes.size
@@ -579,7 +757,7 @@ object SmfPacker {
 
         val patchCount = dataPatchCount + imagePatchCount
         if (patchCount == 0) {
-            return Pair(subdata, false)
+            return RsgpPatchResult(subdata, false, 0)
         }
 
         // ---- Working copy of subdata (Python modifies in-place; we build new) ----
@@ -649,19 +827,23 @@ object SmfPacker {
         // result += extend_to_4096(len(result))  (Python line 702)
         result = result + extendTo4096(result.size)
 
-        return Pair(result, true)
+        return RsgpPatchResult(result, true, patchCount)
     }
 
     /**
      * Result from [patchRsbLegacy].
-     * @param conflicts non-empty if duplicate-basename conflicts were detected
+     * @param ambiguous patches skipped because they matched multiple files
+     * @param unmatched patches that matched no file at all
+     * @param flatFallbackCount patches applied via basename fallback
      */
     private data class RsbLegacyResult(
         val data: ByteArray,
         val anyModified: Boolean,
-        val conflicts: List<ConflictError>,
         val subgroupsModified: Int,
-        val patchesApplied: Int
+        val patchesApplied: Int,
+        val ambiguous: List<AmbiguousPatch>,
+        val unmatched: List<String>,
+        val flatFallbackCount: Int
     )
 
     // =========================================================================
@@ -675,19 +857,20 @@ object SmfPacker {
      *
      * Key behaviors:
      * 1. Parse RSB header + subgroup info table
-     * 2. Pre-scan: detect duplicate basenames across subgroups (flat conflict)
+     * 2. Resolve every patch file to at most one entry via [resolvePatches]
+     *    (structure-first, flat fallback, ambiguity/未匹配 reported — never aborts)
      * 3. Sort subgroups by offset for correct shift cascading
      * 4. For each subgroup: reconstruct RSGP header from authoritative info table
      * 5. Call _patch_rsgp_legacy; replace subgroup in-place with slice assignment
      * 6. Cascade offset shifts automatically through the subgroup offset field
      *
      * @param rawData Full decompressed RSB container
-     * @param patchIndex Pre-indexed patch files
+     * @param patchFiles Pre-indexed patch files
      * @param subgroupFilter Optional subgroup name prefix filter
      */
     private fun patchRsbLegacy(
         rawData: ByteArray,
-        patchIndex: PatchIndex,
+        patchFiles: PatchFiles,
         subgroupFilter: String? = null
     ): RsbLegacyResult {
         var data = rawData
@@ -735,42 +918,27 @@ object SmfPacker {
             pos += sgInfoEntrySize
         }
 
-        // ---- Pre-scan: detect duplicate basenames across subgroups ----
-        val fnameToSgs = mutableMapOf<String, MutableList<String>>()
+        // ---- Resolve every patch file against all subgroup entries ----
+        val entries = mutableListOf<Pair<String, String>>()
         for ((sgName, info) in subgroupList) {
-            val sgOffset = info.rsgOffset
-            val sgSize = info.rsgSize
-            // Extract subgroup data to parse file names
-            val subdata = data.copyOfRange(sgOffset, sgOffset + sgSize)
+            val subdata = data.copyOfRange(info.rsgOffset, info.rsgOffset + info.rsgSize)
             for (fname in getRsgpFileNames(subdata)) {
-                val basename = basenameOf(fname)
-                if (basename.isEmpty()) continue
-                fnameToSgs.getOrPut(basename) { mutableListOf() }
-                if (sgName !in fnameToSgs[basename]!!) {
-                    fnameToSgs[basename]!!.add(sgName)
-                }
+                if (fname.isNotEmpty()) entries.add(sgName to fname)
             }
         }
-
-        val conflicts = mutableListOf<ConflictError>()
-        for ((basename, sgNames) in fnameToSgs) {
-            if (sgNames.size > 1 && patchIndex.contains(basename)) {
-                conflicts.add(ConflictError(basename, sgNames.toList()))
-            }
+        val resolution = resolvePatches(patchFiles, entries, subgroupList.keys.toList())
+        for (a in resolution.ambiguous) {
+            Log.w(TAG, "  AMBIGUOUS '${a.patch}' matches: ${a.matches.joinToString(", ")}")
         }
-
-        if (conflicts.isNotEmpty()) {
-            Log.w(TAG, "Conflicts detected: ${conflicts.size}")
-            for (c in conflicts) {
-                Log.w(TAG, "  '${c.basename}' in: ${c.subgroups.joinToString(", ")}")
-            }
-            return RsbLegacyResult(rawData, false, conflicts, 0, 0)
+        for (u in resolution.unmatched) {
+            Log.w(TAG, "  UNMATCHED '$u'")
         }
 
         // ---- Patch subgroups (sorted by offset for correct cascade) ----
         var rsgShift = 0
         var anyModified = false
         var subgroupsModified = 0
+        var patchesApplied = 0
 
         val sortedSgs = subgroupList.values.sortedBy { it.rsgOffset }
 
@@ -809,21 +977,25 @@ object SmfPacker {
             data.copyInto(subdata, 16, infoStart + 140, infoStart + 160)
             data.copyInto(subdata, 40, infoStart + 164, infoStart + 176)
 
-            // Check for full .rsg override file
+            // Check for full .rsg override file (resolved in step 0 of resolvePatches)
             var modified: Boolean
-            val rsgOverrideName = name + ".rsg"
-            if (patchIndex.contains(rsgOverrideName)) {
-                subdata = patchIndex.getBytes(rsgOverrideName)!!
+            var applied = 0
+            val override = resolution.subgroupOverrideBy[name]
+            if (override != null) {
+                subdata = override
                 modified = true
+                applied = 1
             } else {
-                val (patched, wasModified) = patchRsgpLegacy(subdata, patchIndex)
-                subdata = patched
-                modified = wasModified
+                val rsgpResult = patchRsgpLegacy(subdata, resolution.patchByEntry)
+                subdata = rsgpResult.data
+                modified = rsgpResult.modified
+                applied = rsgpResult.applied
             }
 
             if (modified) {
                 anyModified = true
                 subgroupsModified++
+                patchesApplied += applied
                 // subdata[:4] = b'pgsr'  (Python line 796)
                 RSGP_MAGIC.copyInto(subdata, 0)
                 // subdata += extend_to_4096(len(subdata))  (Python line 797)
@@ -863,9 +1035,11 @@ object SmfPacker {
         return RsbLegacyResult(
             data,
             anyModified,
-            emptyList(),
             subgroupsModified,
-            patchIndex.fileCount
+            patchesApplied,
+            resolution.ambiguous,
+            resolution.unmatched,
+            resolution.flatFallbackCount
         )
     }
 
@@ -925,7 +1099,7 @@ object SmfPacker {
 
     // ---- ByteArray little-endian read/write helpers ----
 
-    private fun ByteArray.readU32LE(offset: Int): Int {
+    internal fun ByteArray.readU32LE(offset: Int): Int {
         return (this[offset].toInt() and 0xFF) or
                 ((this[offset + 1].toInt() and 0xFF) shl 8) or
                 ((this[offset + 2].toInt() and 0xFF) shl 16) or
@@ -947,7 +1121,7 @@ object SmfPacker {
 
     // ---- Zlib helpers ----
 
-    private fun zlibDecompress(data: ByteArray): ByteArray {
+    internal fun zlibDecompress(data: ByteArray): ByteArray {
         return try {
             val inflater = Inflater()
             val result = ByteArrayOutputStream()
@@ -988,7 +1162,7 @@ object SmfPacker {
      * Decompress PopCap Zlib format (0xDEADFED4 header + zlib stream).
      * 1:1 match of the decompression in pack_smf line 438.
      */
-    private fun popcapZlibDecompress(data: ByteArray): ByteArray {
+    internal fun popcapZlibDecompress(data: ByteArray): ByteArray {
         val decompSize = data.readU32LE(4)
         if (decompSize <= 0 || decompSize >= 512_000_000) return data
 

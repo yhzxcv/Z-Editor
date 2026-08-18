@@ -86,6 +86,7 @@ fun LawnMowerPropertiesEP(
         MowerOption("ZCorpMowers", "Z公司小推车 (ZCorpMowers)"),
         MowerOption("RunningSubwayMowers", "跑酷小推车 (RunningSubwayMowers)"),
         MowerOption("MausoleumMowers", "地宫小推车 (MausoleumMowers)"),
+        MowerOption("MoonMowers", "月球小推车 (MoonMowers)"),
     )
 
     val targetAliases = remember { options.map { it.alias }.toSet() }

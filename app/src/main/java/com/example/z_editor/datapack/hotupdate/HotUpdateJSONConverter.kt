@@ -33,12 +33,14 @@ object HotUpdateJSONConverter {
             val decoded = decodeHotUpdateString(inputStr, key)
 
             // Write output (caller handles overwrite check)
+            // 用 octet-stream 而非 application/json：DocumentsProvider 会按 MIME 给不带
+            // .json 后缀的名字补扩展名，导致 foo.json~ 被写成 foo.json~.json
             writeFile(
                 context,
                 outputDirUri,
                 outputName,
                 decoded.toByteArray(Charsets.UTF_8),
-                "application/json"
+                "application/octet-stream"
             )
             Result.success(outputName)
         } catch (e: Exception) {
@@ -63,12 +65,14 @@ object HotUpdateJSONConverter {
             val encoded = encodeHotUpdateString(inputStr, key)
 
             // Write output (caller handles overwrite check)
+            // 用 octet-stream 而非 application/json：DocumentsProvider 会按 MIME 给不带
+            // .json 后缀的名字补扩展名，导致 foo.json~ 被写成 foo.json~.json
             writeFile(
                 context,
                 outputDirUri,
                 outputName,
                 encoded.toByteArray(Charsets.UTF_8),
-                "application/json"
+                "application/octet-stream"
             )
             Result.success(outputName)
         } catch (e: Exception) {

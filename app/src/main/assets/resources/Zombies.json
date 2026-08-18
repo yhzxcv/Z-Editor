@@ -3397,11 +3397,145 @@
         "icon": "zombie_zombie_van.webp"
     },
     {
+        "id": "moon",
+        "name": "宇航员僵尸",
+        "tags": [
+            "Moon",
+            "Basic"
+        ],
+        "icon": "zombie_moon.webp"
+    },
+    {
+        "id": "moon_armor1",
+        "name": "宇航员路障僵尸",
+        "tags": [
+            "Moon",
+            "Basic"
+        ],
+        "icon": "zombie_moon_armor1.webp"
+    },
+    {
+        "id": "moon_armor2",
+        "name": "宇航员铁桶僵尸",
+        "tags": [
+            "Moon",
+            "Basic"
+        ],
+        "icon": "zombie_moon_armor2.webp"
+    },
+    {
+        "id": "moon_armor3",
+        "name": "陨石头僵尸",
+        "tags": [
+            "Moon",
+            "Basic"
+        ],
+        "icon": "zombie_moon_armor3.webp"
+    },
+    {
+        "id": "moon_flag",
+        "name": "宇航员旗帜僵尸",
+        "tags": [
+            "Moon",
+            "Basic"
+        ],
+        "icon": "zombie_moon_flag.webp"
+    },
+    {
+        "id": "moon_gargantuar",
+        "name": "宇航员巨人僵尸",
+        "tags": [
+            "Moon",
+            "Gargantuar"
+        ],
+        "icon": "zombie_moon_gargantuar.webp"
+    },
+    {
+        "id": "moon_gargantuar_beacon",
+        "name": "信标宇航员巨人僵尸",
+        "tags": [
+            "Moon",
+            "Gargantuar"
+        ],
+        "icon": "zombie_moon_gargantuar.webp"
+    },
+    {
+        "id": "moon_walker",
+        "name": "月行者僵尸",
+        "tags": [
+            "Moon",
+            "Basic"
+        ],
+        "icon": "zombie_moon_walker.webp"
+    },
+    {
+        "id": "moon_walker_beacon",
+        "name": "信标月行者僵尸",
+        "tags": [
+            "Moon",
+            "Basic"
+        ],
+        "icon": "zombie_moon_walker.webp"
+    },
+    {
+        "id": "teleport_left",
+        "name": "正向传送僵尸",
+        "tags": [
+            "Moon",
+            "Basic"
+        ],
+        "icon": "zombie_teleport_left.webp"
+    },
+    {
+        "id": "teleport_left_beacon",
+        "name": "信标正向传送僵尸",
+        "tags": [
+            "Moon",
+            "Basic"
+        ],
+        "icon": "zombie_teleport_left.webp"
+    },
+    {
+        "id": "teleport_right",
+        "name": "反向传送僵尸",
+        "tags": [
+            "Moon",
+            "Basic"
+        ],
+        "icon": "zombie_teleport_right.webp"
+    },
+    {
+        "id": "teleport_right_beacon",
+        "name": "信标反向传送僵尸",
+        "tags": [
+            "Moon",
+            "Basic"
+        ],
+        "icon": "zombie_teleport_right.webp"
+    },
+    {
+        "id": "zombie_cosmic_imp",
+        "name": "宇宙小鬼僵尸",
+        "tags": [
+            "Moon",
+            "Imp"
+        ],
+        "icon": "zombie_zombie_cosmic_imp.webp"
+    },
+    {
+        "id": "moon_ship5000",
+        "name": "巡洋舰5000型",
+        "tags": [
+            "Moon",
+            "Imp"
+        ],
+        "icon": "zombie_moon_ship5000.webp"
+    },
+    {
         "id": "universe_uncharted_mini_gargantuar",
         "name": "迷你巨人僵尸",
         "tags": [
             "Universe",
-            "Imp",
             "Gargantuar"
         ],
         "icon": "zombie_universe_uncharted_mini_gargantuar.webp"

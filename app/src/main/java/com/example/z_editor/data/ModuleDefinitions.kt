@@ -676,17 +676,6 @@ object ModuleRegistry {
             defaultSource = "LevelModules",
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
-        "PennyClassroomModuleProperties" to ModuleMetadata(
-            titleRes = R.string.module_penny_classroom_title,
-            descriptionRes = R.string.module_penny_classroom_desc,
-            icon = Icons.Default.Layers,
-            isCore = true,
-            category = ModuleCategory.Base,
-            defaultAlias = "PennyClassroom",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { PennyClassroomModuleData() },
-            navigationFactory = { rtid -> EditorSubScreen.PennyClassroomModule(rtid) }
-        ),
         "SeedBankProperties" to ModuleMetadata(
             titleRes = R.string.module_seed_bank_title,
             descriptionRes = R.string.module_seed_bank_desc,
@@ -717,6 +706,17 @@ object ModuleRegistry {
             defaultAlias = "DefaultSunDropper",
             defaultSource = "LevelModules",
             navigationFactory = { rtid -> EditorSubScreen.SunDropper(rtid) }
+        ),
+        "PennyClassroomModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_penny_classroom_title,
+            descriptionRes = R.string.module_penny_classroom_desc,
+            icon = Icons.Default.Layers,
+            isCore = true,
+            category = ModuleCategory.Base,
+            defaultAlias = "PennyClassroom",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { PennyClassroomModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.PennyClassroomModule(rtid) }
         ),
         "LevelMutatorMaxSunProps" to ModuleMetadata(
             titleRes = R.string.module_max_sun_title,

@@ -329,8 +329,13 @@ fun JsonCodeViewerScreen(
      * 错误描述优先用可读的出错位置（"第 N 行 第 M 列"），提取不到才退回完整消息。
      */
     fun validateJson(): String? = try {
-        gson.fromJson(editingValue.text, PvzLevelFile::class.java)
-        null
+        // Gson 对空串/纯空白/字面量 "null" 不抛异常而直接返回 null；这样的内容不是合法关卡，
+        // 单独拦截，否则 handleSave 会对 null 结果取 .objects 闪退。
+        if (gson.fromJson(editingValue.text, PvzLevelFile::class.java) == null) {
+            "JSON 内容为空，无法保存"
+        } else {
+            null
+        }
     } catch (e: com.google.gson.JsonSyntaxException) {
         discardErrorPosition = extractErrorPosition(e.localizedMessage)
         "JSON 格式错误：${discardErrorPosition ?: e.localizedMessage?.substringAfterLast("Caused by: ")}"
@@ -346,9 +351,16 @@ fun JsonCodeViewerScreen(
             Toast.makeText(context, "保存失败", Toast.LENGTH_SHORT).show()
             return
         }
-        val newLevelData = gson.fromJson(editingValue.text, PvzLevelFile::class.java)
+        // 兜底：Gson 反序列化还可能产出 objects 为 null 的实例（如文本为 {}），
+        // 安全取列表，为 null 时不落盘直接报错，避免对 null 取 .objects 闪退。
+        val newObjects = gson.fromJson(editingValue.text, PvzLevelFile::class.java)?.objects
+        if (newObjects == null) {
+            syntaxError = "JSON 内容为空或缺少 objects 字段，无法保存"
+            Toast.makeText(context, "保存失败", Toast.LENGTH_SHORT).show()
+            return
+        }
         levelFile.objects.clear()
-        levelFile.objects.addAll(newLevelData.objects)
+        levelFile.objects.addAll(newObjects)
 
         onPersistLevel()
         refreshTrigger++
@@ -1069,7 +1081,11 @@ private fun ScrollStateDragScrubber(
  * layout 为空（首帧/无布局）时降级为逻辑行编号。
  */
 private fun buildLineNumberGutter(layout: TextLayoutResult?, text: String): String {
-    if (layout == null) {
+    // onTextLayout 在下一布局帧才刷新 layout：文本刚变化（剪切/粘贴/撤销）的这次重组里，
+    // layoutResultState 仍是上一段文本的布局，其行起点可能超出当前 text 长度（如剪切后 text 为空、
+    // 旧布局行起点>0），直接按它索引 text 会抛 StringIndexOutOfBoundsException。
+    // 检测到布局来源文本 ≠ 当前文本时降级为逻辑行编号，下一帧布局刷新后自动恢复可视行编号。
+    if (layout == null || layout.layoutInput.text.text != text) {
         val count = text.count { it == '\n' } + 1
         return (1..count).joinToString("\n")
     }
