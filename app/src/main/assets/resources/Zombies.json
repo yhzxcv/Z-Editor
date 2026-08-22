@@ -3460,6 +3460,24 @@
         "icon": "zombie_moon_gargantuar.webp"
     },
     {
+        "id": "zombie_supernova_gargantuar",
+        "name": "超新星巨人僵尸",
+        "tags": [
+            "Moon",
+            "Gargantuar"
+        ],
+        "icon": "zombie_zombie_supernova_gargantuar.webp"
+    },
+    {
+        "id": "zombie_supernova_gargantuar_beacon",
+        "name": "信标超新星巨人僵尸",
+        "tags": [
+            "Moon",
+            "Gargantuar"
+        ],
+        "icon": "zombie_zombie_supernova_gargantuar.webp"
+    },
+    {
         "id": "moon_walker",
         "name": "月行者僵尸",
         "tags": [

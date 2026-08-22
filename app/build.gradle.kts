@@ -15,8 +15,8 @@ android {
         applicationId = "com.example.pvz2leveleditor"
         minSdk = 24
         targetSdk = 36
-        versionCode = 31
-        versionName = "1.3.1"
+        versionCode = 32
+        versionName = "1.3.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.androidx.documentfile)
     implementation(libs.androidx.remote.creation.core)
     implementation(libs.gson)
+    implementation(libs.xz)
     implementation("androidx.appcompat:appcompat:1.6.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

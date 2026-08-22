@@ -1,6 +1,7 @@
 package com.example.z_editor.views.editor.pages.module
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,15 +10,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CleaningServices
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -31,6 +31,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +42,7 @@ import com.example.z_editor.data.RtidParser
 import com.example.z_editor.ui.theme.LocalDarkTheme
 import com.example.z_editor.ui.theme.PvzLightGreenDark
 import com.example.z_editor.ui.theme.PvzLightGreenLight
+import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
@@ -73,10 +77,8 @@ fun LawnMowerPropertiesEP(
         MowerOption("DarkMowers", "黑暗小推车 (DarkMowers)"),
         MowerOption("BeachMowers", "沙滩小推车 (BeachMowers)"),
         MowerOption("IceageMowers", "冰河小推车 (IceageMowers)"),
-        MowerOption("IceageZombossMowers", "冰河僵王小推车 (IceageZombossMowers)"),
         MowerOption("LostCityMowers", "失落小推车 (LostCityMowers)"),
         MowerOption("EightiesMowers", "摇滚小推车 (EightiesMowers)"),
-        MowerOption("EightiesZombossMowers", "摇滚僵王小推车 (EightiesZombossMowers)"),
         MowerOption("DinoMowers", "恐龙小推车 (DinoMowers)"),
         MowerOption("ModernMowers", "摩登小推车 (ModernMowers)"),
         MowerOption("SteamMowers", "蒸汽小推车 (SteamMowers)"),
@@ -86,6 +88,7 @@ fun LawnMowerPropertiesEP(
         MowerOption("ZCorpMowers", "Z公司小推车 (ZCorpMowers)"),
         MowerOption("RunningSubwayMowers", "跑酷小推车 (RunningSubwayMowers)"),
         MowerOption("MausoleumMowers", "地宫小推车 (MausoleumMowers)"),
+        MowerOption("QinGhostMowers", "幽冥小推车 (QinGhostMowers)"),
         MowerOption("MoonMowers", "月球小推车 (MoonMowers)"),
     )
 
@@ -191,22 +194,24 @@ fun LawnMowerPropertiesEP(
                                 onClick = { selectOption(option.alias) },
                                 colors = RadioButtonDefaults.colors(selectedColor = themeColor)
                             )
-                            Spacer(Modifier.width(8.dp))
-                            Column {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        Icons.Default.CleaningServices,
-                                        null,
-                                        tint = if (isSelected) themeColor else MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.width(20.dp)
-                                    )
-                                    Spacer(Modifier.width(8.dp))
-                                    Text(
-                                        option.label,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                        fontSize = 16.sp
-                                    )
-                                }
+                            Spacer(Modifier.width(4.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                AssetImage(
+                                    path = "images/mowers/${option.alias}.webp",
+                                    contentDescription = option.alias,
+                                    filterQuality = FilterQuality.High,
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.surface)
+                                        .border(1.dp, Color.Gray, CircleShape)
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    option.label,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                    fontSize = 16.sp
+                                )
                             }
                         }
                     }

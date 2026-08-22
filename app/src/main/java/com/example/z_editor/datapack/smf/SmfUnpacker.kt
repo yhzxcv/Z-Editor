@@ -71,8 +71,19 @@ object SmfUnpacker {
                 return Result.failure(Exception("无法创建输出目录（可能缺少存储权限）"))
             }
 
-            val rawBytes = context.contentResolver.openInputStream(inputUri)?.use { it.readBytes() }
+            var rawBytes = context.contentResolver.openInputStream(inputUri)?.use { it.readBytes() }
                 ?: return Result.failure(Exception("无法读取输入文件"))
+
+            // ---- RSLB outer compression (new format) ----
+            if (RslbDecompressor.isRslb(rawBytes)) {
+                Log.i(TAG, "Detected RSLB outer compression")
+                rawBytes = try {
+                    RslbDecompressor.decompress(rawBytes)
+                } catch (e: Exception) {
+                    return Result.failure(Exception("RSLB 外层压缩解压失败: ${e.message}", e))
+                }
+                Log.i(TAG, "RSLB decompressed: ${rawBytes.size} bytes")
+            }
 
             // ---- Outer PopCap Zlib compression (0xDEADFED4) ----
             val rawData: ByteArray

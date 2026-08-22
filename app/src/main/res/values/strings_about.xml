@@ -19,7 +19,9 @@
     <string name="about_screen_usage_text5">如果有使用上的疑问或反馈建议，欢迎加入交流 QQ 群 960722092 进行交流。</string>
     <string name="about_screen_credits_title">致谢名单</string>
     <string name="about_screen_credits_author">软件作者：</string>
-    <string name="about_screen_credits_thanks">特别鸣谢：</string>
+    <string name="about_screen_credits_initial_collaborators">感谢以下人员为软件面世提供帮助：</string>
+    <string name="about_screen_credits_initial_collaborators_list">星寻、metal海枣、超越自我3333、桃酱、凉沈、小小师、顾小言、PhiLia093、咖啡、不留名</string>
+    <string name="about_screen_credits_technical_support">感谢嘻嘻哈哈嘿嘿对RSLB解压算法的帮助</string>
     <string name="about_screen_ending">穿越时空 创造无穷可能</string>
 
 </resources>

@@ -3149,6 +3149,24 @@
         "icon": "icon_gravitree.webp"
     },
     {
+        "id": "darkmatter_dragonfruit",
+        "name": "暗物质火龙果",
+        "tags": [
+            "Orange",
+            "Ranger"
+        ],
+        "icon": "icon_darkmatter_dragonfruit.webp"
+    },
+    {
+        "id": "phoenixfloat",
+        "name": "凤凰木花车",
+        "tags": [
+            "Orange",
+            "Ranger"
+        ],
+        "icon": "icon_phoenixfloat.webp"
+    },
+    {
         "id": "moton",
         "name": "魔藤",
         "tags": [

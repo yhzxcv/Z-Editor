@@ -135,12 +135,13 @@ fun AboutScreen(
                     lineHeight = 24.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                BulletPoint(stringResource(R.string.about_screen_credits_thanks))
+                BulletPoint(stringResource(R.string.about_screen_credits_initial_collaborators))
                 Text(
-                    "星寻、metal海枣、超越自我3333、桃酱、凉沈、小小师、顾小言、PhiLia093、咖啡、不留名",
+                    stringResource(R.string.about_screen_credits_initial_collaborators_list),
                     lineHeight = 24.sp,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+                BulletPoint(stringResource(R.string.about_screen_credits_technical_support))
             }
             Spacer(Modifier.height(20.dp))
 
@@ -155,7 +156,7 @@ fun AboutScreen(
             Spacer(Modifier.height(20.dp))
 
             Text(
-                text = "Version 1.3.1",
+                text = "Version 1.3.2",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

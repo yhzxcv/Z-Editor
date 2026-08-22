@@ -164,9 +164,21 @@ object SmfPacker {
             Log.d(TAG, "Pack: ${patchFiles.fileCount} patches indexed")
 
             // Read template
-            val rawBytes =
+            var rawBytes =
                 context.contentResolver.openInputStream(templateUri)?.use { it.readBytes() }
                     ?: return Result.failure(Exception("无法读取模板文件"))
+
+            // ---- Step 0: RSLB outer compression (new format) ----
+            // Decompress only — the output is never re-wrapped in RSLB.
+            if (RslbDecompressor.isRslb(rawBytes)) {
+                Log.d(TAG, "Detected RSLB outer compression")
+                rawBytes = try {
+                    RslbDecompressor.decompress(rawBytes)
+                } catch (e: Exception) {
+                    return Result.failure(Exception("RSLB 外层压缩解压失败: ${e.message}", e))
+                }
+                Log.d(TAG, "RSLB decompressed: ${rawBytes.size} bytes")
+            }
 
             // ---- Step 1: Handle outer PopCap Zlib compression (0xDEADFED4) ----
             val outerCompressed = rawBytes.size >= 4 &&

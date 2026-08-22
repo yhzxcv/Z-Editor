@@ -118,7 +118,9 @@
     <string name="about_screen_usage_text5">QQ group: 960722092</string>
     <string name="about_screen_credits_title">Credits</string>
     <string name="about_screen_credits_author">Author:</string>
-    <string name="about_screen_credits_thanks">Thanks:</string>
+    <string name="about_screen_credits_initial_collaborators">Thanks to the following who helped bring this software to life:</string>
+    <string name="about_screen_credits_initial_collaborators_list">星寻、metal海枣、超越自我3333、桃酱、凉沈、小小师、顾小言、PhiLia093、咖啡、不留名</string>
+    <string name="about_screen_credits_technical_support">Thanks to 嘻嘻哈哈嘿嘿 for help with RSLB decompression</string>
     <string name="about_screen_ending">Create infinite possibilities</string>
 
     <!-- Editor Screen -->
