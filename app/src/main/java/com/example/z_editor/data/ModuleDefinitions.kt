@@ -719,6 +719,7 @@ object EventRegistry {
  */
 enum class ModuleCategory(@StringRes val titleRes: Int) {
     Base(R.string.module_category_base),
+    Additional(R.string.module_category_additional),
     Mode(R.string.module_category_mode),
     Scene(R.string.module_category_scene),
     Special(R.string.module_category_special),
@@ -852,50 +853,6 @@ object ModuleRegistry {
             defaultSource = "LevelModules",
             navigationFactory = { rtid -> EditorSubScreen.SunDropper(rtid) }
         ),
-        "PennyClassroomModuleProperties" to ModuleMetadata(
-            titleRes = R.string.module_penny_classroom_title,
-            descriptionRes = R.string.module_penny_classroom_desc,
-            icon = Icons.Default.Layers,
-            isCore = true,
-            category = ModuleCategory.Base,
-            defaultAlias = "PennyClassroom",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { PennyClassroomModuleData() },
-            navigationFactory = { rtid -> EditorSubScreen.PennyClassroomModule(rtid) }
-        ),
-        "LevelMutatorMaxSunProps" to ModuleMetadata(
-            titleRes = R.string.module_max_sun_title,
-            descriptionRes = R.string.module_max_sun_desc,
-            icon = Icons.Default.BrightnessHigh,
-            isCore = true,
-            category = ModuleCategory.Base,
-            defaultAlias = "OverrideMaxSun",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { LevelMutatorMaxSunPropsData() },
-            navigationFactory = { rtid -> EditorSubScreen.MaxSunModule(rtid) }
-        ),
-        "LevelMutatorStartingPlantfoodProps" to ModuleMetadata(
-            titleRes = R.string.module_starting_plantfood_title,
-            descriptionRes = R.string.module_starting_plantfood_desc,
-            icon = Icons.Default.Eco,
-            isCore = true,
-            category = ModuleCategory.Base,
-            defaultAlias = "OverrideStartingPlantFood",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { LevelMutatorStartingPlantfoodPropsData() },
-            navigationFactory = { rtid -> EditorSubScreen.StartingPlantfoodModule(rtid) }
-        ),
-        "StarChallengeModuleProperties" to ModuleMetadata(
-            titleRes = R.string.module_star_challenge_title,
-            descriptionRes = R.string.module_star_challenge_desc,
-            icon = Icons.AutoMirrored.Filled.FactCheck,
-            isCore = true,
-            category = ModuleCategory.Base,
-            defaultAlias = "ChallengeModule",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { StarChallengeModuleData() },
-            navigationFactory = { rtid -> EditorSubScreen.StarChallenge(rtid) }
-        ),
         "LawnMowerProperties" to ModuleMetadata(
             titleRes = R.string.module_lawn_mower_title,
             descriptionRes = R.string.module_lawn_mower_desc,
@@ -906,12 +863,57 @@ object ModuleRegistry {
             defaultSource = "LevelModules",
             navigationFactory = { rtid -> EditorSubScreen.LawnMowerDetail(rtid) }
         ),
+
+        "PennyClassroomModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_penny_classroom_title,
+            descriptionRes = R.string.module_penny_classroom_desc,
+            icon = Icons.Default.Layers,
+            isCore = true,
+            category = ModuleCategory.Additional,
+            defaultAlias = "PennyClassroom",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { PennyClassroomModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.PennyClassroomModule(rtid) }
+        ),
+        "LevelMutatorMaxSunProps" to ModuleMetadata(
+            titleRes = R.string.module_max_sun_title,
+            descriptionRes = R.string.module_max_sun_desc,
+            icon = Icons.Default.BrightnessHigh,
+            isCore = true,
+            category = ModuleCategory.Additional,
+            defaultAlias = "OverrideMaxSun",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { LevelMutatorMaxSunPropsData() },
+            navigationFactory = { rtid -> EditorSubScreen.MaxSunModule(rtid) }
+        ),
+        "LevelMutatorStartingPlantfoodProps" to ModuleMetadata(
+            titleRes = R.string.module_starting_plantfood_title,
+            descriptionRes = R.string.module_starting_plantfood_desc,
+            icon = Icons.Default.Eco,
+            isCore = true,
+            category = ModuleCategory.Additional,
+            defaultAlias = "OverrideStartingPlantFood",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { LevelMutatorStartingPlantfoodPropsData() },
+            navigationFactory = { rtid -> EditorSubScreen.StartingPlantfoodModule(rtid) }
+        ),
+        "StarChallengeModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_star_challenge_title,
+            descriptionRes = R.string.module_star_challenge_desc,
+            icon = Icons.AutoMirrored.Filled.FactCheck,
+            isCore = true,
+            category = ModuleCategory.Additional,
+            defaultAlias = "ChallengeModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { StarChallengeModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.StarChallenge(rtid) }
+        ),
         "LevelScoringModuleProperties" to ModuleMetadata(
             titleRes = R.string.module_scoring_title,
             descriptionRes = R.string.module_scoring_desc,
             icon = Icons.Default.Scoreboard,
             isCore = false,
-            category = ModuleCategory.Base,
+            category = ModuleCategory.Additional,
             defaultAlias = "LevelScoring",
             defaultSource = "CurrentLevel",
             initialDataFactory = { LevelScoringData() },
@@ -922,11 +924,78 @@ object ModuleRegistry {
             descriptionRes = R.string.module_soudache_desc,
             icon = Icons.Default.Layers,
             isCore = false,
-            category = ModuleCategory.Base,
+            category = ModuleCategory.Additional,
             defaultAlias = "SouDaCheDamageTextModule",
             defaultSource = "CurrentLevel",
             initialDataFactory = { SouDaCheDamageTextModuleData() },
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
+        ),
+        "IncreasedCostModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_increased_cost_title,
+            descriptionRes = R.string.module_increased_cost_desc,
+            icon = Icons.AutoMirrored.Filled.TrendingUp,
+            isCore = true,
+            category = ModuleCategory.Additional,
+            defaultAlias = "IncreasedCostModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { IncreasedCostModulePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.IncreasedCostModule(rtid) }
+        ),
+        "DeathHoleModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_death_hole_title,
+            descriptionRes = R.string.module_death_hole_desc,
+            icon = Icons.Default.TripOrigin,
+            isCore = true,
+            category = ModuleCategory.Additional,
+            defaultAlias = "DeathHoleModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { DeathHoleModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.DeathHoleModule(rtid) }
+        ),
+        "ZombieMoveFastModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_zombie_fast_title,
+            descriptionRes = R.string.module_zombie_fast_desc,
+            icon = Icons.Default.FastForward,
+            isCore = true,
+            category = ModuleCategory.Additional,
+            defaultAlias = "FastSpeed",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { ZombieMoveFastModulePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.ZombieMoveFastModule(rtid) }
+        ),
+        "PickupCollectableTutorialProperties" to ModuleMetadata(
+            titleRes = R.string.module_pick_coin_title,
+            descriptionRes = R.string.module_pick_coin_desc,
+            icon = Icons.AutoMirrored.Filled.Message,
+            isCore = true,
+            category = ModuleCategory.Additional,
+            defaultAlias = "FirstCoinTutorial",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { PickupCollectableTutorialData() },
+            navigationFactory = { rtid -> EditorSubScreen.PickupCollectableTutorial(rtid) }
+        ),
+        "LevelMutatorRiftTimedSunProps" to ModuleMetadata(
+            titleRes = R.string.module_rift_sun_title,
+            descriptionRes = R.string.module_rift_sun_desc,
+            icon = Icons.Default.WbSunny,
+            isCore = true,
+            category = ModuleCategory.Additional,
+            defaultAlias = "OverrideRiftTimedSun",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { RiftTimedSunModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.RiftTimedSunModule(rtid) }
+        ),
+        "RiftThemeDemoModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_rift_theme_demo_title,
+            descriptionRes = R.string.module_rift_theme_demo_desc,
+            icon = Icons.Default.Bolt,
+            isCore = true,
+            category = ModuleCategory.Additional,
+            defaultAlias = "RiftThemeDemo",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { RiftThemeDemoModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.RiftThemeDemo(rtid) },
+            showInSelector = false
         ),
 
         "BowlingMinigameProperties" to ModuleMetadata(
@@ -1072,39 +1141,6 @@ object ModuleRegistry {
             initialDataFactory = { SunBombChallengeData() },
             navigationFactory = { rtid -> EditorSubScreen.SunBombChallenge(rtid) }
         ),
-        "IncreasedCostModuleProperties" to ModuleMetadata(
-            titleRes = R.string.module_increased_cost_title,
-            descriptionRes = R.string.module_increased_cost_desc,
-            icon = Icons.AutoMirrored.Filled.TrendingUp,
-            isCore = true,
-            category = ModuleCategory.Mode,
-            defaultAlias = "IncreasedCostModule",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { IncreasedCostModulePropertiesData() },
-            navigationFactory = { rtid -> EditorSubScreen.IncreasedCostModule(rtid) }
-        ),
-        "DeathHoleModuleProperties" to ModuleMetadata(
-            titleRes = R.string.module_death_hole_title,
-            descriptionRes = R.string.module_death_hole_desc,
-            icon = Icons.Default.TripOrigin,
-            isCore = true,
-            category = ModuleCategory.Mode,
-            defaultAlias = "DeathHoleModule",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { DeathHoleModuleData() },
-            navigationFactory = { rtid -> EditorSubScreen.DeathHoleModule(rtid) }
-        ),
-        "ZombieMoveFastModuleProperties" to ModuleMetadata(
-            titleRes = R.string.module_zombie_fast_title,
-            descriptionRes = R.string.module_zombie_fast_desc,
-            icon = Icons.Default.FastForward,
-            isCore = true,
-            category = ModuleCategory.Mode,
-            defaultAlias = "FastSpeed",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { ZombieMoveFastModulePropertiesData() },
-            navigationFactory = { rtid -> EditorSubScreen.ZombieMoveFastModule(rtid) }
-        ),
         "ZombieRushModuleProperties" to ModuleMetadata(
             titleRes = R.string.module_zombie_rush_title,
             descriptionRes = R.string.module_zombie_rush_desc,
@@ -1115,40 +1151,6 @@ object ModuleRegistry {
             defaultSource = "CurrentLevel",
             initialDataFactory = { ZombieRushModuleData() },
             navigationFactory = { rtid -> EditorSubScreen.ZombieRushModule(rtid) }
-        ),
-        "PickupCollectableTutorialProperties" to ModuleMetadata(
-            titleRes = R.string.module_pick_coin_title,
-            descriptionRes = R.string.module_pick_coin_desc,
-            icon = Icons.AutoMirrored.Filled.Message,
-            isCore = true,
-            category = ModuleCategory.Mode,
-            defaultAlias = "FirstCoinTutorial",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { PickupCollectableTutorialData() },
-            navigationFactory = { rtid -> EditorSubScreen.PickupCollectableTutorial(rtid) }
-        ),
-        "LevelMutatorRiftTimedSunProps" to ModuleMetadata(
-            titleRes = R.string.module_rift_sun_title,
-            descriptionRes = R.string.module_rift_sun_desc,
-            icon = Icons.Default.WbSunny,
-            isCore = true,
-            category = ModuleCategory.Mode,
-            defaultAlias = "OverrideRiftTimedSun",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { RiftTimedSunModuleData() },
-            navigationFactory = { rtid -> EditorSubScreen.RiftTimedSunModule(rtid) }
-        ),
-        "RiftThemeDemoModuleProperties" to ModuleMetadata(
-            titleRes = R.string.module_rift_theme_demo_title,
-            descriptionRes = R.string.module_rift_theme_demo_desc,
-            icon = Icons.Default.Bolt,
-            isCore = true,
-            category = ModuleCategory.Mode,
-            defaultAlias = "RiftThemeDemo",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { RiftThemeDemoModuleData() },
-            navigationFactory = { rtid -> EditorSubScreen.RiftThemeDemo(rtid) },
-            showInSelector = false
         ),
 
         "InitialPlantProperties" to ModuleMetadata(

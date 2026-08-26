@@ -373,6 +373,7 @@
 
     <!-- Modules -->
     <string name="module_category_base">Basic</string>
+    <string name="module_category_additional">Additional</string>
     <string name="module_category_mode">Special Modes</string>
     <string name="module_category_scene">Scene Config</string>
     <string name="module_category_special">Special Settings</string>
