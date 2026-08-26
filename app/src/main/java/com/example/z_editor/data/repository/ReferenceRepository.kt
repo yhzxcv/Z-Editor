@@ -55,6 +55,14 @@ object ReferenceRepository {
         return moduleCache?.get(alias)?.objClass
     }
 
+    /**
+     * 返回参考文件 LevelModules.json 中定义的所有模块别名（首别名 key 集合）。
+     * 参考文件尚未加载时返回 null，调用方应视为"无法校验"（不判失效，避免误报）。
+     */
+    fun getLevelModuleAliases(): Set<String>? {
+        return moduleCache?.keys
+    }
+
     fun getObject(alias: String): PvzObject? {
         return moduleCache?.get(alias)
     }

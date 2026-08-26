@@ -171,7 +171,7 @@ fun PiratePlankPropertiesEP(
                             Text(
                                 text = "当前地图类型并非海盗地图，此模块在游戏中可能无法生效，甚至导致闪退",
                                 color = MaterialTheme.colorScheme.onError,
-                                fontSize = 14.sp,
+                                fontSize = 12.sp,
                                 lineHeight = 18.sp
                             )
                         }

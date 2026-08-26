@@ -41,8 +41,17 @@
     <string name="level_settings_missing_essentials_title">缺少必要模块</string>
     <string name="level_settings_missing_essentials_desc">关卡可能无法正常运行。建议添加以下模块：</string>
     <string name="level_settings_invalid_module_title">失效模块引用</string>
-    <string name="level_settings_invalid_module_desc">以下模块指向 @CurrentLevel，但关卡文件中不存在对应对象，该 RTID 语句无效：</string>
+    <string name="level_settings_invalid_module_desc">以下模块引用无法解析到有效定义：</string>
     <string name="level_settings_delete">删除</string>
+    <string name="level_settings_rename">重命名</string>
+    <string name="level_settings_dialog_rename_title">重命名模块</string>
+    <string name="level_settings_dialog_rename_label">新代号</string>
+    <string name="level_settings_dialog_rename_confirm">确认重命名</string>
+    <string name="level_settings_dialog_rename_cancel">取消</string>
+    <string name="level_settings_dialog_rename_duplicate">该代号已被占用，请换一个</string>
+    <string name="level_settings_dialog_rename_levelmodules_hint">此模块指向游戏内置定义(@LevelModules)，出于正确性考虑不允许重命名。</string>
+    <string name="level_settings_dialog_rename_invalid_hint">此模块指向 @CurrentLevel 但关卡文件中没有对应对象，无法重命名。</string>
+    <string name="editor_screen_msg_module_renamed">已重命名为 %1$s</string>
 
     <string name="wave_timeline_container_not_found">未找到波次容器</string>
     <string name="wave_timeline_container_missing_desc">当前关卡启用了波次管理模块，但缺少存储波次数据的实体对象 (WaveManagerProperties)。</string>

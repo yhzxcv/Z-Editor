@@ -28,6 +28,13 @@
     <string name="event_conveyor_mod_desc">动态添加或移除传送带上的卡片</string>
     <string name="event_dino_summon_title">恐龙召唤</string>
     <string name="event_dino_summon_desc">在指定行召唤一只恐龙协助僵尸</string>
+    <string name="event_dino_tread_title">雷龙踩踏</string>
+    <string name="event_dino_tread_desc">雷龙踩踏的落点警告事件</string>
+    <string name="event_dino_run_title">龙潮</string>
+    <string name="event_dino_run_desc">恐龙沿指定行奔跑冲击的警告事件</string>
+    <string name="event_thunder_title">雷暴</string>
+    <string name="event_thunder_desc">在场地中随机生成雷暴闪电</string>
+    <string name="event_format_thunders">%1$d 道闪电</string>
     <string name="event_portal_title">时空裂缝</string>
     <string name="event_portal_desc">在指定位置召唤时空裂缝</string>
     <string name="event_storm_raid_title">风暴突袭</string>
@@ -38,6 +45,11 @@
     <string name="event_potion_drop_desc">在场地固定位置强行生成障碍物</string>
     <string name="event_obstacle_gen_title">障碍物生成</string>
     <string name="event_obstacle_gen_desc">在场地的空位处生成障碍物</string>
+    <string name="event_rocket_landing_title">火箭降落</string>
+    <string name="event_rocket_landing_desc">配置月球基地的火箭降落</string>
+    <string name="event_format_positions">%1$d 个位置</string>
+    <string name="event_hamster_ball_title">僵尸仓鼠球</string>
+    <string name="event_hamster_ball_desc">滚动仓鼠球将僵尸带入场地</string>
     <string name="event_obstacle_spawner_title">障碍物出怪</string>
     <string name="event_obstacle_spawner_desc">从指定的障碍物种类生成僵尸</string>
     <string name="event_fairy_fog_title">童话迷雾</string>

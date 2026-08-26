@@ -2,6 +2,17 @@
     <string name="module_category_base">基础功能</string>
     <string name="module_category_mode">特殊模式</string>
     <string name="module_category_scene">场地配置</string>
+    <string name="module_category_special">特殊设置</string>
+    <string name="module_rocket_zombie_flick_title">火箭筒手势响应</string>
+    <string name="module_rocket_zombie_flick_desc">让火箭筒小鬼僵尸响应手指划走的动作</string>
+    <string name="module_lunar_terminal_title">月球基地采集器</string>
+    <string name="module_lunar_terminal_desc">配置月球基地采集器冷却时间</string>
+    <string name="module_moon_life_support_title">月球电力维持系统</string>
+    <string name="module_moon_life_support_desc">配置月球电力体系参数与免疫植物名单</string>
+    <string name="module_lunar_mine_vein_title">月球矿脉</string>
+    <string name="module_lunar_mine_vein_desc">在月球基地地图上放置矿脉并设置出现波次</string>
+    <string name="module_radiation_meteor_title">放射性陨石</string>
+    <string name="module_radiation_meteor_desc">配置从天而降的放射性陨石及其降落参数</string>
     <string name="module_unknown_title">未知模块</string>
     <string name="module_unknown_desc">通用参数编辑器</string>
     <string name="module_wave_manager_title">波次管理器</string>
@@ -106,4 +117,6 @@
     <string name="module_rift_theme_demo_desc">在关卡中配置回忆或追击的主题</string>
     <string name="module_mold_colony_title">霉菌区域</string>
     <string name="module_mold_colony_desc">设置关卡中禁止种植的霉菌覆盖区域</string>
+    <string name="module_single_handed_title">单枪匹马</string>
+    <string name="module_single_handed_desc">配置单枪匹马小游戏基础属性</string>
 </resources>

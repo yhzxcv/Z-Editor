@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -107,6 +108,7 @@ import androidx.documentfile.provider.DocumentFile
 import com.example.z_editor.R
 import com.example.z_editor.data.repository.FileItem
 import com.example.z_editor.data.repository.LevelRepository
+import com.example.z_editor.data.repository.TemplateEntry
 import com.example.z_editor.views.components.LocaleUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -193,8 +195,11 @@ fun LevelListScreen(
     var copyInput by remember { mutableStateOf("") }
     var newLevelNameInput by remember { mutableStateOf("") }
 
-    var templates by remember { mutableStateOf<List<String>>(emptyList()) }
-    var selectedTemplate by remember { mutableStateOf("") }
+    var templates by remember { mutableStateOf<List<TemplateEntry>>(emptyList()) }
+    var selectedTemplate by remember { mutableStateOf<TemplateEntry?>(null) }
+    var templateToRename by remember { mutableStateOf<TemplateEntry?>(null) }
+    var templateRenameInput by remember { mutableStateOf("") }
+    var templateToDelete by remember { mutableStateOf<TemplateEntry?>(null) }
 
     var showUiScaleDialog by remember { mutableStateOf(false) }
 
@@ -236,6 +241,31 @@ fun LevelListScreen(
 
             showNoFolderDialog = false
             loadCurrentDirectory()
+        }
+    }
+
+    val templateImportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            val importedName = LevelRepository.importUserTemplate(context, uri)
+            if (importedName != null) {
+                Toast.makeText(
+                    context,
+                    context.getString(
+                        R.string.level_list_screen_toast_template_import_success,
+                        importedName.substringBeforeLast(".")
+                    ),
+                    Toast.LENGTH_SHORT
+                ).show()
+                templates = LevelRepository.getTemplateList(context)
+            } else {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.level_list_screen_toast_template_import_fail),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
@@ -406,10 +436,11 @@ fun LevelListScreen(
 
     fun handleCreateLevelConfirm() {
         val currentUri = pathStack.lastOrNull()?.uri ?: return
+        val template = selectedTemplate ?: return
         var name = newLevelNameInput
         if (!name.endsWith(".json", true)) name += ".json"
 
-        if (LevelRepository.createLevelFromTemplate(context, currentUri, selectedTemplate, name)) {
+        if (LevelRepository.createLevelFromTemplate(context, currentUri, template, name)) {
             Toast.makeText(
                 context,
                 context.getString(R.string.level_list_screen_toast_create_success),
@@ -423,6 +454,35 @@ fun LevelListScreen(
                 context.getString(R.string.level_list_screen_toast_create_fail), Toast.LENGTH_SHORT
             ).show()
         }
+    }
+
+    fun handleTemplateRenameConfirm() {
+        val target = templateToRename ?: return
+        if (LevelRepository.renameUserTemplate(context, target.name, templateRenameInput.trim())) {
+            Toast.makeText(
+                context,
+                context.getString(R.string.level_list_screen_toast_rename_success),
+                Toast.LENGTH_SHORT
+            ).show()
+            templateToRename = null
+            templates = LevelRepository.getTemplateList(context)
+        } else {
+            Toast.makeText(
+                context,
+                context.getString(R.string.level_list_screen_toast_rename_fail), Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    fun handleTemplateDeleteConfirm() {
+        val target = templateToDelete ?: return
+        LevelRepository.deleteUserTemplate(context, target.name)
+        Toast.makeText(
+            context,
+            context.getString(R.string.level_list_screen_toast_delete), Toast.LENGTH_SHORT
+        ).show()
+        templateToDelete = null
+        templates = LevelRepository.getTemplateList(context)
     }
 
     // ======================== 3. UI 渲染 ========================
@@ -950,49 +1010,150 @@ fun LevelListScreen(
     }
 
     if (showTemplateDialog) {
+        val userTemplates = templates.filter { !it.isBuiltIn }
+        val builtInTemplates = templates.filter { it.isBuiltIn }
         AlertDialog(
             onDismissRequest = { showTemplateDialog = false },
             title = { Text(stringResource(R.string.level_list_screen_create_title)) },
             text = {
                 LazyColumn(
-                    modifier = Modifier.heightIn(max = 300.dp),
+                    modifier = Modifier.heightIn(max = 420.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(templates) { template ->
-                        Card(
+                    item {
+                        Button(
+                            onClick = { templateImportLauncher.launch(arrayOf("application/json")) },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            )
+                        ) {
+                            Icon(Icons.Default.ContentCopy, null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text(stringResource(R.string.level_list_screen_template_import))
+                        }
+                    }
+                    if (userTemplates.isEmpty()) {
+                        item {
+                            Text(
+                                stringResource(R.string.level_list_screen_template_empty_user),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 12.sp,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                            )
+                        }
+                    } else {
+                        item {
+                            Text(
+                                stringResource(R.string.level_list_screen_template_section_user),
+                                color = MaterialTheme.colorScheme.primary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(top = 8.dp, start = 4.dp)
+                            )
+                        }
+                        items(userTemplates) { template ->
+                            TemplateRow(
+                                template = template,
+                                onClick = {
+                                    selectedTemplate = template
+                                    newLevelNameInput = template.name.substringBeforeLast(".")
+                                    showTemplateDialog = false
+                                    showCreateNameDialog = true
+                                },
+                                onRename = {
+                                    showTemplateDialog = false
+                                    templateToRename = template
+                                    templateRenameInput = template.name.substringBeforeLast(".")
+                                },
+                                onDelete = {
+                                    showTemplateDialog = false
+                                    templateToDelete = template
+                                }
+                            )
+                        }
+                    }
+                    item {
+                        Text(
+                            stringResource(R.string.level_list_screen_template_section_builtin),
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 8.dp, start = 4.dp)
+                        )
+                    }
+                    items(builtInTemplates) { template ->
+                        TemplateRow(
+                            template = template,
                             onClick = {
                                 selectedTemplate = template
-                                newLevelNameInput = template.substringBeforeLast(".")
+                                newLevelNameInput = template.name.substringBeforeLast(".")
                                 showTemplateDialog = false
                                 showCreateNameDialog = true
                             },
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    Icons.Default.Description,
-                                    null,
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                                Spacer(Modifier.width(16.dp))
-                                Text(
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    text = template.substringBeforeLast("."),
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                        }
+                            onRename = null,
+                            onDelete = null
+                        )
                     }
                 }
             },
             confirmButton = {
                 TextButton(onClick = {
                     showTemplateDialog = false
+                }) { Text(stringResource(R.string.level_list_screen_cancel)) }
+            }
+        )
+    }
+
+    if (templateToRename != null) {
+        AlertDialog(
+            onDismissRequest = { templateToRename = null },
+            title = { Text(stringResource(R.string.level_list_screen_template_rename_title)) },
+            text = {
+                OutlinedTextField(
+                    colors = OutlinedTextFieldDefaults.colors(
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
+                    ),
+                    value = templateRenameInput,
+                    onValueChange = { templateRenameInput = it },
+                    label = { Text(stringResource(R.string.level_list_screen_rename_label)) },
+                    singleLine = true
+                )
+            },
+            confirmButton = { Button(onClick = { handleTemplateRenameConfirm() }) { Text(stringResource(R.string.level_list_screen_confirm)) } },
+            dismissButton = {
+                TextButton(onClick = {
+                    templateToRename = null
+                }) { Text(stringResource(R.string.level_list_screen_cancel)) }
+            }
+        )
+    }
+
+    if (templateToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { templateToDelete = null },
+            title = { Text(stringResource(R.string.level_list_screen_template_delete_title)) },
+            text = {
+                Text(
+                    stringResource(
+                        R.string.level_list_screen_template_delete_tips,
+                        templateToDelete!!.name.substringBeforeLast(".")
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = { handleTemplateDeleteConfirm() },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onError)
+                ) { Text(stringResource(R.string.level_list_screen_confirm_delete)) }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    templateToDelete = null
                 }) { Text(stringResource(R.string.level_list_screen_cancel)) }
             }
         )
@@ -1092,6 +1253,59 @@ fun LevelListScreen(
 }
 
 // === 自定义组件 ===
+
+@Composable
+private fun TemplateRow(
+    template: TemplateEntry,
+    onClick: () -> Unit,
+    onRename: (() -> Unit)?,
+    onDelete: (() -> Unit)?
+) {
+    Card(
+        onClick = onClick,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Default.Description,
+                null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(Modifier.width(16.dp))
+            Text(
+                color = MaterialTheme.colorScheme.onSurface,
+                text = template.name.substringBeforeLast("."),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.weight(1f)
+            )
+            if (onRename != null) {
+                IconButton(onClick = onRename, modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = stringResource(R.string.level_list_screen_template_rename_title),
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+            if (onDelete != null) {
+                IconButton(onClick = onDelete, modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.level_list_screen_template_delete_title),
+                        tint = MaterialTheme.colorScheme.onError.copy(alpha = 0.7f),
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun BreadcrumbBar(

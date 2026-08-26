@@ -94,9 +94,14 @@ object LevelParser {
      * 指向 `@CurrentLevel`（模块对象应存在于本文件）却在本文件里找不到对应 object 的 RTID 语句
      * （悬空引用）。这类模块引用不到任何实际内容，游戏加载时该模块不会生效，属于失效模块。
      * 返回失效的 RTID 字符串列表（保持 Modules 中的顺序，已去重）；无 LevelDefinition 或
-     * Modules 数组缺失/损坏时返回空。`@LevelModules` 来源（内置于游戏的定义）不参与判断。
+     * Modules 数组缺失/损坏时返回空。`@CurrentLevel` 引用关卡文件中不存在对应对象的别名，
+     * 或 `@LevelModules` 引用参考文件 LevelModules.json 中不存在的别名，均判定为失效。
+     * `levelModuleAliases` 传 null（参考文件未加载）时 `@LevelModules` 不参与判断，避免误报。
      */
-    fun findInvalidLevelModuleReferences(levelFile: PvzLevelFile): List<String> {
+    fun findInvalidLevelModuleReferences(
+        levelFile: PvzLevelFile,
+        levelModuleAliases: Set<String>? = null
+    ): List<String> {
         val levelDefObj = levelFile.objects.find { it.objClass == "LevelDefinition" }
             ?: return emptyList()
         val modules = try {
@@ -113,8 +118,13 @@ object LevelParser {
         if (modules.isEmpty()) return emptyList()
         val fileAliases = levelFile.objects.flatMap { it.aliases ?: emptyList() }.toHashSet()
         return modules.filter { rtid ->
-            val info = RtidParser.parse(rtid)
-            info != null && info.source == "CurrentLevel" && info.alias !in fileAliases
+            val info = RtidParser.parse(rtid) ?: return@filter false
+            when (info.source) {
+                "CurrentLevel" -> info.alias !in fileAliases
+                // 参考文件未加载（null）时视为有效，无法校验不误报
+                "LevelModules" -> levelModuleAliases != null && info.alias !in levelModuleAliases
+                else -> false
+            }
         }.distinct()
     }
 

@@ -1,7 +1,13 @@
 <resources>
     <string name="challenge_selection_screen_title">搜索挑战名称或代码</string>
     <string name="challenge_selection_screen_notfound">未找到相关挑战</string>
-    <string name="event_selection_screen_title">为第 %1$s 波添加事件</string>
+    <string name="event_selection_screen_search">搜索事件名称或描述</string>
+    <string name="event_selection_screen_notfound">未找到相关事件</string>
+    <string name="event_selection_screen_empty">该分类下暂无事件</string>
+    <string name="event_category_spawn">出怪事件</string>
+    <string name="event_category_environment">障碍生成</string>
+    <string name="event_category_event">波次事件</string>
+    <string name="event_category_mechanic">特殊机制</string>
     <string name="griditem_selection_screen_search">搜索物品名称或代码</string>
     <string name="griditem_selection_screen_notfound">未找到相关物品</string>
     <string name="module_selection_screen_search">搜索模块名称或描述</string>

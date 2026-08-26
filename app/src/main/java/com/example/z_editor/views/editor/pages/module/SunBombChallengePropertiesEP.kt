@@ -126,12 +126,6 @@ fun SunBombChallengePropertiesEP(
                         )
                     }
 
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 16.dp),
-                        thickness = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
                     // 第一组：爆炸半径
                     Text(
                         "爆炸半径 (ExplosionRadius)",

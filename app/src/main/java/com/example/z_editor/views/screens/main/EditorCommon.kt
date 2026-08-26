@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.Dangerous
 import androidx.compose.material.icons.filled.EmojiPeople
 import androidx.compose.material.icons.filled.Grid4x4
 import androidx.compose.material.icons.filled.Inbox
+import androidx.compose.material.icons.filled.Rocket
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.z_editor.data.EditorSubScreen
@@ -24,6 +25,7 @@ enum class EditorTabType(val title: String, val icon: ImageVector) {
     IZombie("我是僵尸", Icons.Default.EmojiPeople),
     VaseBreaker("罐子布局", Icons.Default.Grid4x4),
     BossFight("僵王属性", Icons.Default.Dangerous),
+    SingleHanded("单枪匹马", Icons.Default.Rocket),
 }
 
 /**
@@ -35,6 +37,7 @@ data class EditorActions(
     val navigateBack: () -> Unit,
 
     val onRemoveModule: (String) -> Unit,
+    val onRenameModule: (String, String) -> Unit = { _, _ -> },
     val onAddModule: (ModuleMetadata) -> Unit,
     val onAddEvent: (EventMetadata, Int) -> Unit,
     val onWavesChanged: () -> Unit,

@@ -61,5 +61,14 @@
     <string name="level_list_screen_toast_rename_success">重命名成功</string>
     <string name="level_list_screen_toast_root_folder">根目录</string>
     <string name="level_list_screen_language_select">选择语言（功能待完善）</string>
+    <string name="level_list_screen_template_import">导入自建关卡</string>
+    <string name="level_list_screen_toast_template_import_success">已导入模板 %1$s</string>
+    <string name="level_list_screen_toast_template_import_fail">导入模板失败</string>
+    <string name="level_list_screen_template_section_user">我的模板</string>
+    <string name="level_list_screen_template_section_builtin">内置参考</string>
+    <string name="level_list_screen_template_empty_user">暂无自建模板，点击上方导入</string>
+    <string name="level_list_screen_template_rename_title">重命名模板</string>
+    <string name="level_list_screen_template_delete_title">删除模板</string>
+    <string name="level_list_screen_template_delete_tips">确定要删除模板 \"%1$s\" 吗？</string>
 
 </resources>

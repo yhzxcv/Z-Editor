@@ -19,15 +19,20 @@ import com.example.z_editor.views.editor.pages.event.BassRainEventEP
 import com.example.z_editor.views.editor.pages.event.BeachStageEventEP
 import com.example.z_editor.views.editor.pages.event.BlackHoleEventEP
 import com.example.z_editor.views.editor.pages.event.DinoEventEP
+import com.example.z_editor.views.editor.pages.event.DinoRunEventEP
+import com.example.z_editor.views.editor.pages.event.DinoTreadActionPropsEP
+import com.example.z_editor.views.editor.pages.event.ThunderEventEP
 import com.example.z_editor.views.editor.pages.event.FairyTaleFogWaveActionPropsEP
 import com.example.z_editor.views.editor.pages.event.FairyTaleWindWaveActionPropsEP
 import com.example.z_editor.views.editor.pages.event.FrostWindEventEP
+import com.example.z_editor.views.editor.pages.event.HamsterBallEventEP
 import com.example.z_editor.views.editor.pages.event.InvalidEventEP
 import com.example.z_editor.views.editor.pages.event.MagicMirrorEventEP
 import com.example.z_editor.views.editor.pages.event.ModifyConveyorEventEP
 import com.example.z_editor.views.editor.pages.event.ParachuteRainEventEP
 import com.example.z_editor.views.editor.pages.event.RaidingPartyEventEP
 import com.example.z_editor.views.editor.pages.event.SpawnGraveStonesEventEP
+import com.example.z_editor.views.editor.pages.event.SpawnRocketLandingEventEP
 import com.example.z_editor.views.editor.pages.event.SpawnModernPortalsWaveActionPropsEP
 import com.example.z_editor.views.editor.pages.event.SpawnZombiesFromGridItemSpawnerEventEP
 import com.example.z_editor.views.editor.pages.event.SpawnZombiesFromGroundEventEP
@@ -40,6 +45,10 @@ import com.example.z_editor.views.editor.pages.module.BowlingMinigamePropertiesE
 import com.example.z_editor.views.editor.pages.module.BungeeWaveActionEP
 import com.example.z_editor.views.editor.pages.module.ConveyorSeedBankPropertiesEP
 import com.example.z_editor.views.editor.pages.module.DeathHoleModuleEP
+import com.example.z_editor.views.editor.pages.module.LunarMineVeinModulePropertiesEP
+import com.example.z_editor.views.editor.pages.module.LunarTerminalModuleEP
+import com.example.z_editor.views.editor.pages.module.MoonLifeSupportSystemEP
+import com.example.z_editor.views.editor.pages.module.RadiationMeteorModuleEP
 import com.example.z_editor.views.editor.pages.module.IncreasedCostModulePropertiesEP
 import com.example.z_editor.views.editor.pages.module.InitialGridItemEntryEP
 import com.example.z_editor.views.editor.pages.module.InitialPlantEntryEP
@@ -80,6 +89,7 @@ import com.example.z_editor.views.editor.pages.others.UnknownEP
 import com.example.z_editor.views.editor.pages.others.WaveManagerPropertiesEP
 import com.example.z_editor.views.editor.tabs.IZombieTab
 import com.example.z_editor.views.editor.tabs.LevelSettingsTab
+import com.example.z_editor.views.editor.tabs.SingleHandedTab
 import com.example.z_editor.views.editor.tabs.VaseBreakerTab
 import com.example.z_editor.views.editor.tabs.WaveTimelineTab
 import com.example.z_editor.views.editor.tabs.ZombossBattleTab
@@ -141,6 +151,7 @@ fun EditorContentRouter(
                             missingModules = missingModules,
                             invalidLevelModuleRefs = invalidLevelModuleRefs,
                             onRemoveModule = actions.onRemoveModule,
+                            onRenameModule = actions.onRenameModule,
                             onNavigateToAddModule = { actions.navigateTo(EditorSubScreen.ModuleSelection) },
                         )
                     }
@@ -183,6 +194,11 @@ fun EditorContentRouter(
                                     )
 
                                     "StormZombieSpawnerProps" -> EditorSubScreen.StormDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
+
+                                    "HamsterZombieSpawnerProps" -> EditorSubScreen.HamsterBallDetail(
                                         rtid,
                                         waveIdx
                                     )
@@ -232,12 +248,32 @@ fun EditorContentRouter(
                                         waveIdx
                                     )
 
+                                    "DinoTreadActionProps" -> EditorSubScreen.DinoTreadDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
+
+                                    "DinoRunActionProps" -> EditorSubScreen.DinoRunDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
+
+                                    "ThunderWaveActionProps" -> EditorSubScreen.ThunderDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
+
                                     "SpawnGravestonesWaveActionProps" -> EditorSubScreen.SpawnGravestonesDetail(
                                         rtid,
                                         waveIdx
                                     )
 
                                     "SpawnZombiesFromGridItemSpawnerProps" -> EditorSubScreen.GridItemSpawnerDetail(
+                                        rtid,
+                                        waveIdx
+                                    )
+
+                                    "SpawnRocketLandingWaveActionProps" -> EditorSubScreen.SpawnRocketLandingDetail(
                                         rtid,
                                         waveIdx
                                     )
@@ -309,6 +345,13 @@ fun EditorContentRouter(
                     ZombossBattleTab(
                         rootLevelFile = rootLevelFile,
                         onLaunchZombossSelector = actions.onLaunchZombossSelector
+                    )
+                }
+
+                EditorTabType.SingleHanded -> {
+                    SingleHandedTab(
+                        rootLevelFile = rootLevelFile,
+                        onRequestPlantSelection = { cb -> actions.onLaunchPlantSelector(cb) }
                     )
                 }
             }
@@ -537,6 +580,35 @@ fun EditorContentRouter(
             scrollState = getScrollState("DeathHoleModule")
         )
 
+        is EditorSubScreen.LunarTerminalModule -> LunarTerminalModuleEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            levelDef = parsedData.levelDef!!,
+            scrollState = getScrollState("LunarTerminalModule")
+        )
+
+        is EditorSubScreen.MoonLifeSupportSystem -> MoonLifeSupportSystemEP(
+            rtid = targetState.rtid,
+            rootLevelFile = rootLevelFile,
+            onBack = actions.navigateBack,
+            levelDef = parsedData.levelDef!!,
+            onRequestPlantSelection = actions.onLaunchMultiPlantSelector,
+            scrollState = getScrollState("MoonLifeSupportSystem")
+        )
+
+        is EditorSubScreen.LunarMineVeins -> LunarMineVeinModulePropertiesEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile
+        )
+
+        is EditorSubScreen.RadiationMeteorModule -> RadiationMeteorModuleEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile
+        )
+
         is EditorSubScreen.ZombieMoveFastModule -> ZombieMoveFastModulePropertiesEP(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
@@ -684,6 +756,16 @@ fun EditorContentRouter(
             onEditCustomZombie = actions.onEditCustomZombie
         )
 
+        is EditorSubScreen.HamsterBallDetail -> HamsterBallEventEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            onRequestZombieSelection = actions.onLaunchZombieSelector,
+            scrollState = getLazyState(targetState.rtid),
+            onInjectZombie = actions.onInjectZombie,
+            onEditCustomZombie = actions.onEditCustomZombie
+        )
+
         is EditorSubScreen.RaidingDetail -> RaidingPartyEventEP(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
@@ -748,6 +830,27 @@ fun EditorContentRouter(
             scrollState = getScrollState("DinoEventDetail")
         )
 
+        is EditorSubScreen.DinoTreadDetail -> DinoTreadActionPropsEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getLazyState(targetState.rtid)
+        )
+
+        is EditorSubScreen.DinoRunDetail -> DinoRunEventEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getLazyState(targetState.rtid)
+        )
+
+        is EditorSubScreen.ThunderDetail -> ThunderEventEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            scrollState = getLazyState(targetState.rtid)
+        )
+
         is EditorSubScreen.SpawnGravestonesDetail -> SpawnGraveStonesEventEP(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
@@ -755,6 +858,13 @@ fun EditorContentRouter(
             onRequestGridItemSelection = { callback ->
                 actions.onLaunchGridItemSelector(GridItemFilterMode.Restricted, callback)
             },
+            scrollState = getLazyState(targetState.rtid)
+        )
+
+        is EditorSubScreen.SpawnRocketLandingDetail -> SpawnRocketLandingEventEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
             scrollState = getLazyState(targetState.rtid)
         )
 
@@ -835,7 +945,6 @@ fun EditorContentRouter(
         )
 
         is EditorSubScreen.EventSelection -> EventSelectionScreen(
-            waveIndex = targetState.waveIndex,
             onEventSelected = { meta -> actions.onAddEvent(meta, targetState.waveIndex) },
             onBack = actions.navigateBack
         )

@@ -65,10 +65,25 @@
     <string name="level_list_screen_toast_rename_success">Rename success</string>
     <string name="level_list_screen_toast_root_folder">Root folder</string>
     <string name="level_list_screen_language_select">Select Language (under construction)</string>
+    <string name="level_list_screen_template_import">Import Level</string>
+    <string name="level_list_screen_toast_template_import_success">Template imported: %1$s</string>
+    <string name="level_list_screen_toast_template_import_fail">Failed to import template</string>
+    <string name="level_list_screen_template_section_user">My Templates</string>
+    <string name="level_list_screen_template_section_builtin">Built-in References</string>
+    <string name="level_list_screen_template_empty_user">No custom templates yet. Tap above to import.</string>
+    <string name="level_list_screen_template_rename_title">Rename Template</string>
+    <string name="level_list_screen_template_delete_title">Delete Template</string>
+    <string name="level_list_screen_template_delete_tips">Delete template \"%1$s\"?</string>
 
     <!-- Selection Screens -->
     <string name="challenge_selection_screen_title">Search</string>
-    <string name="event_selection_screen_title">"Add event for wave %1$s "</string>
+    <string name="event_selection_screen_search">Search event name or description</string>
+    <string name="event_selection_screen_notfound">No matching events</string>
+    <string name="event_selection_screen_empty">No events in this category</string>
+    <string name="event_category_spawn">Spawn</string>
+    <string name="event_category_environment">Environment</string>
+    <string name="event_category_event">Event</string>
+    <string name="event_category_mechanic">Mechanic</string>
     <string name="griditem_selection_screen_search">Search</string>
     <string name="griditem_selection_screen_notfound">No results</string>
     <string name="module_selection_screen_search">Search</string>
@@ -167,8 +182,17 @@
     <string name="level_settings_missing_essentials_title">Missing Essential Modules</string>
     <string name="level_settings_missing_essentials_desc">The level may not function correctly. Recommended to add:</string>
     <string name="level_settings_invalid_module_title">Invalid Module References</string>
-    <string name="level_settings_invalid_module_desc">These modules point to @CurrentLevel but have no matching object in the level file. The RTID statement is invalid:</string>
+    <string name="level_settings_invalid_module_desc">These module references cannot resolve to a valid definition:</string>
     <string name="level_settings_delete">Delete</string>
+    <string name="level_settings_rename">Rename</string>
+    <string name="level_settings_dialog_rename_title">Rename Module</string>
+    <string name="level_settings_dialog_rename_label">New Name</string>
+    <string name="level_settings_dialog_rename_confirm">Rename</string>
+    <string name="level_settings_dialog_rename_cancel">Cancel</string>
+    <string name="level_settings_dialog_rename_duplicate">This name is already taken, please choose another.</string>
+    <string name="level_settings_dialog_rename_levelmodules_hint">This module references a game-built-in definition (@LevelModules). Renaming is not allowed for correctness.</string>
+    <string name="level_settings_dialog_rename_invalid_hint">This module points to @CurrentLevel but has no matching object in the level file, so it cannot be renamed.</string>
+    <string name="editor_screen_msg_module_renamed">Renamed to %1$s</string>
 
     <!-- Wave Timeline -->
     <string name="wave_timeline_container_not_found">Wave Container Not Found</string>
@@ -306,6 +330,13 @@
     <string name="event_conveyor_mod_desc">Dynamically add or remove conveyor cards</string>
     <string name="event_dino_summon_title">Dino Summon</string>
     <string name="event_dino_summon_desc">Summon a dinosaur to assist zombies</string>
+    <string name="event_dino_tread_title">Dino Tread</string>
+    <string name="event_dino_tread_desc">Landing-point warning for the dino stomp</string>
+    <string name="event_dino_run_title">Dino Run</string>
+    <string name="event_dino_run_desc">Warning event for a dino charging down a row</string>
+    <string name="event_thunder_title">Thunderstorm</string>
+    <string name="event_thunder_desc">Random lightning strikes across the lawn</string>
+    <string name="event_format_thunders">%1$d strikes</string>
     <string name="event_portal_title">Portal</string>
     <string name="event_portal_desc">Summon time portals at specific locations</string>
     <string name="event_storm_raid_title">Storm Raid</string>
@@ -316,6 +347,11 @@
     <string name="event_potion_drop_desc">Force spawn obstacles at fixed positions</string>
     <string name="event_obstacle_gen_title">Obstacle Gen</string>
     <string name="event_obstacle_gen_desc">Generate obstacles in empty slots</string>
+    <string name="event_rocket_landing_title">Rocket Landing</string>
+    <string name="event_rocket_landing_desc">Zombies arrive via falling rockets</string>
+    <string name="event_format_positions">%1$d positions</string>
+    <string name="event_hamster_ball_title">Hamster Ball</string>
+    <string name="event_hamster_ball_desc">Zombies arrive rolling inside hamster balls</string>
     <string name="event_obstacle_spawner_title">Obstacle Spawner</string>
     <string name="event_obstacle_spawner_desc">Spawn zombies from specific obstacles</string>
     <string name="event_fairy_fog_title">Fairy Fog</string>
@@ -339,6 +375,17 @@
     <string name="module_category_base">Basic</string>
     <string name="module_category_mode">Special Modes</string>
     <string name="module_category_scene">Scene Config</string>
+    <string name="module_category_special">Special Settings</string>
+    <string name="module_rocket_zombie_flick_title">Rocket Zombie Flick</string>
+    <string name="module_rocket_zombie_flick_desc">Rocket Zombie responds to finger-flick-away actions</string>
+    <string name="module_lunar_terminal_title">Lunar Terminal</string>
+    <string name="module_lunar_terminal_desc">Configures collector cooldown</string>
+    <string name="module_moon_life_support_title">Moon Life Support</string>
+    <string name="module_moon_life_support_desc">Configures lunar power system parameters and immune plant list</string>
+    <string name="module_lunar_mine_vein_title">Lunar Mine Vein</string>
+    <string name="module_lunar_mine_vein_desc">Places mine vein resources on the moon base map and sets emergence waves</string>
+    <string name="module_radiation_meteor_title">Radiation Meteor</string>
+    <string name="module_radiation_meteor_desc">Configures radioactive meteors falling from the sky and their spawn parameters</string>
     <string name="module_unknown_title">Unknown Module</string>
     <string name="module_unknown_desc">General Parameter Editor</string>
     <string name="module_wave_manager_title">Wave Manager</string>
@@ -387,6 +434,8 @@
     <string name="module_zomboss_battle_desc">Configure Zomboss parameters and types</string>
     <string name="module_zomboss_intro_title">Zomboss Intro</string>
     <string name="module_zomboss_intro_desc">Controls boss cutscenes and health bar display</string>
+    <string name="module_single_handed_title">Single Handed</string>
+    <string name="module_single_handed_desc">Single-handed minigame</string>
     <string name="module_seed_rain_title">Seed Rain</string>
     <string name="module_seed_rain_desc">Controls plants, zombies, or food falling from sky</string>
     <string name="module_last_stand_title">Last Stand</string>

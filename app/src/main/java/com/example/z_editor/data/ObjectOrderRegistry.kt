@@ -49,6 +49,7 @@ object ObjectOrderRegistry {
         "ZombossBattleModuleProperties",
         "VaseBreakerPresetProperties",
         "EvilDaveProperties",
+        "SingleHandedProperties",
 
         "StarChallengeModuleProperties",
 
@@ -82,6 +83,7 @@ object ObjectOrderRegistry {
         "BeachStageEventZombieSpawnerProps",
 
         "StormZombieSpawnerProps",
+        "HamsterZombieSpawnerProps",
         "RaidingPartyZombieSpawnerProps",
 
         "SpiderRainZombieSpawnerProps",
@@ -91,12 +93,16 @@ object ObjectOrderRegistry {
         "SpawnModernPortalsWaveActionProps",
         "FrostWindWaveActionProps",
         "DinoWaveActionProps",
+        "DinoTreadActionProps",
+        "DinoRunActionProps",
+        "ThunderWaveActionProps",
 
         "TidalChangeWaveActionProps",
         "BlackHoleWaveActionProps",
 
         "ZombiePotionActionProps",
         "SpawnGravestonesWaveActionProps",
+        "SpawnRocketLandingWaveActionProps",
 
         "ModifyConveyorWaveActionProps",
 

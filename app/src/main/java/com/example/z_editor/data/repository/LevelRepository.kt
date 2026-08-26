@@ -2,6 +2,7 @@ package com.example.z_editor.data.repository
 
 import android.content.Context
 import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.documentfile.provider.DocumentFile
 import com.example.z_editor.data.ObjectOrderRegistry
 import com.example.z_editor.data.PvzLevelFile
@@ -16,6 +17,12 @@ data class FileItem(
     val isDirectory: Boolean,
     val lastModified: Long,
     val size: Long
+)
+
+// 模板条目：name 含扩展名；isBuiltIn=true 表示 assets/reference/template/ 里的只读模板，false 表示用户自建模板
+data class TemplateEntry(
+    val name: String,
+    val isBuiltIn: Boolean
 )
 
 object LevelRepository {
@@ -211,7 +218,7 @@ object LevelRepository {
     fun createLevelFromTemplate(
         context: Context,
         currentDirUri: Uri,
-        templateName: String,
+        template: TemplateEntry,
         newFileName: String
     ): Boolean {
         try {
@@ -220,12 +227,10 @@ object LevelRepository {
             if (folder.findFile(newFileName) != null) {
                 return false
             }
-            val assetContent = context.assets.open("reference/template/$templateName").bufferedReader().use {
-                it.readText()
-            }
+            val content = readTemplateContent(context, template) ?: return false
             val newFile = folder.createFile("application/json", newFileName) ?: return false
             context.contentResolver.openOutputStream(newFile.uri)?.use { output ->
-                output.write(assetContent.toByteArray())
+                output.write(content.toByteArray())
             }
             return true
         } catch (e: Exception) {
@@ -244,12 +249,138 @@ object LevelRepository {
         }
     }
 
-    fun getTemplateList(context: Context): List<String> {
-        return try {
-            context.assets.list("reference/template")?.toList() ?: emptyList()
+    fun getTemplateList(context: Context): List<TemplateEntry> {
+        val userTemplates = getUserTemplateList(context).map { TemplateEntry(it, isBuiltIn = false) }
+        val builtInTemplates = try {
+            context.assets.list("reference/template")
+                ?.sortedWith(naturalOrderComparator)
+                ?.map { TemplateEntry(it, isBuiltIn = true) }
+                ?: emptyList()
         } catch (e: Exception) {
             e.printStackTrace()
             emptyList()
+        }
+        return userTemplates + builtInTemplates
+    }
+
+    // ==================== 用户自建模板（应用内部存储 filesDir/templates/） ====================
+
+    private fun getUserTemplateDir(context: Context): File {
+        val dir = File(context.filesDir, "templates")
+        if (!dir.exists()) dir.mkdirs()
+        return dir
+    }
+
+    fun getUserTemplateList(context: Context): List<String> {
+        return getUserTemplateDir(context).listFiles()
+            ?.filter { it.isFile && it.name.endsWith(".json", ignoreCase = true) }
+            ?.map { it.name }
+            ?.sortedWith(naturalOrderComparator)
+            ?: emptyList()
+    }
+
+    fun readTemplateContent(context: Context, template: TemplateEntry): String? {
+        return try {
+            if (template.isBuiltIn) {
+                context.assets.open("reference/template/${template.name}").bufferedReader().use {
+                    it.readText()
+                }
+            } else {
+                val file = File(getUserTemplateDir(context), template.name)
+                if (file.exists()) file.readText() else null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    /**
+     * 为模板名去重：已存在同名时按 `foo.json → foo~.json → foo~~.json` 递增后缀。
+     * 纯函数，便于单元测试。
+     */
+    fun resolveUniqueTemplateName(existing: List<String>, desired: String): String {
+        if (desired !in existing) return desired
+        val dotIndex = desired.lastIndexOf('.')
+        val base = if (dotIndex > 0) desired.substring(0, dotIndex) else desired
+        val ext = if (dotIndex > 0) desired.substring(dotIndex) else ""
+        var name = "$base~"
+        while ("$name$ext" in existing) {
+            name += "~"
+        }
+        return "$name$ext"
+    }
+
+    /**
+     * 从 SAF Uri 读取显示名；失败回退到 uri.lastPathSegment。
+     */
+    private fun getDisplayNameFromUri(context: Context, uri: Uri): String? {
+        return try {
+            context.contentResolver.query(
+                uri,
+                arrayOf(OpenableColumns.DISPLAY_NAME),
+                null,
+                null,
+                null
+            )?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (index != -1) cursor.getString(index) else null
+                } else {
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            uri.lastPathSegment
+        }
+    }
+
+    /**
+     * 导入自建关卡为模板：拷入 filesDir/templates/，重名自动去重。返回最终文件名，失败返回 null。
+     */
+    fun importUserTemplate(context: Context, sourceUri: Uri): String? {
+        return try {
+            var fileName = getDisplayNameFromUri(context, sourceUri) ?: return null
+            if (!fileName.endsWith(".json", ignoreCase = true)) fileName += ".json"
+
+            val finalName = resolveUniqueTemplateName(getUserTemplateList(context), fileName)
+            val target = File(getUserTemplateDir(context), finalName)
+            context.contentResolver.openInputStream(sourceUri)?.use { input ->
+                target.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            finalName
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun deleteUserTemplate(context: Context, name: String): Boolean {
+        val file = File(getUserTemplateDir(context), name)
+        return if (file.exists()) {
+            file.delete()
+        } else {
+            false
+        }
+    }
+
+    fun renameUserTemplate(context: Context, oldName: String, newName: String): Boolean {
+        var finalName = newName.trim()
+        if (!finalName.endsWith(".json", ignoreCase = true)) finalName += ".json"
+        if (finalName == oldName) return true
+        if (getUserTemplateList(context).any { it == finalName }) return false
+
+        val dir = getUserTemplateDir(context)
+        val oldFile = File(dir, oldName)
+        if (!oldFile.exists()) return false
+        return try {
+            oldFile.renameTo(File(dir, finalName))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 

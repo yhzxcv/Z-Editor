@@ -1,5 +1,6 @@
 package com.example.z_editor.views.editor.pages.others
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -55,6 +56,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,8 +68,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -93,6 +97,17 @@ fun CommonEditorTopAppBar(
     onHelpClick: (() -> Unit)? = null,
     actions: @Composable (RowScope.() -> Unit) = {}
 ) {
+    // 让系统状态栏颜色跟随当前页面的 topbar 颜色；离开时恢复进入前的颜色
+    val view = LocalView.current
+    DisposableEffect(themeColor, view) {
+        val window = (view.context as? Activity)?.window
+        val previous = window?.statusBarColor
+        window?.setStatusBarColor(themeColor.toArgb())
+        onDispose {
+            previous?.let { window?.setStatusBarColor(it) }
+        }
+    }
+
     TopAppBar(
         title = {
             if (subtitle == null) {

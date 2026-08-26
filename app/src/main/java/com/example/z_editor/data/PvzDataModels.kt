@@ -365,6 +365,93 @@ data class DeathHoleModuleData(
     @SerializedName("LifeTime") var lifeTime: Int = 10
 )
 
+// === 月亮基地终端模块 ===
+data class LunarTerminalModuleData(
+    @SerializedName("CollectorCooldown") var collectorCooldown: Int = 20
+)
+
+// === 植物名单引用 (List + ListType) ===
+data class PlantListReference(
+    @SerializedName("List") var list: MutableList<String> = mutableListOf(),
+    @SerializedName("ListType") var listType: String = "blacklist"
+)
+
+// === 月球生命维持系统模块 ===
+data class MoonLifeSupportSystemPropertiesData(
+    @SerializedName("InitialCapacity") var initialCapacity: Int = 10,
+    @SerializedName("BufferOverloadRatio") var bufferOverloadRatio: Double = 2.0,
+    @SerializedName("PenaltyCountdown") var penaltyCountdown: Double = 5.0,
+    @SerializedName("PlantImmunityList") var plantImmunityList: PlantListReference = PlantListReference(
+        list = mutableListOf(
+            "lilypad", "blover", "buduhboom", "cherry_bomb", "coffeebean", "cosmoss",
+            "doublesamara", "empea", "flowerpot", "gloombara", "goldleaf", "grapeshot",
+            "gravebuster", "heathseeker", "hotpotato", "hurrikale", "imitater", "jalapeno",
+            "olive", "perfumeshroom", "powerplant", "seaderris", "thymewarp", "doomshroom"
+        )
+    ),
+    @SerializedName("ResourceGroupNames") var resourceGroupNames: MutableList<String> = mutableListOf(
+        "ZombieArchmageGroup", "LunarLifeSupport"
+    )
+)
+
+// === 月球矿脉模块 ===
+data class LunarMineVeinModulePropertiesData(
+    @SerializedName("VeinPlacements") var veinPlacements: MutableList<LunarMineVeinPlacementData> = mutableListOf()
+)
+
+data class LunarMineVeinPlacementData(
+    @SerializedName("GridX") var gridX: Int = 0,
+    @SerializedName("GridY") var gridY: Int = 0,
+    @SerializedName("EmergenceWave") var emergenceWave: Int = 1
+)
+
+// === 放射性陨石模块 ===
+data class RadiationMeteorModulePropertiesData(
+    @SerializedName("ResourceGroupNames") var resourceGroupNames: MutableList<String> = mutableListOf(
+        "Radiation_meteorite_group"
+    ),
+    @SerializedName("WarningDuration") var warningDuration: Int = 5,
+    @SerializedName("PollutionInterval") var pollutionInterval: Int = 5,
+    @SerializedName("MiningDurationRequired") var miningDurationRequired: Int = 5,
+    @SerializedName("PowerRewardOnDestroy") var powerRewardOnDestroy: Int = 4,
+    @SerializedName("SpawnSchedule") var spawnSchedule: MutableList<RadiationMeteorSpawnData> = mutableListOf()
+)
+
+data class RadiationMeteorSpawnData(
+    @SerializedName("Wave") var wave: Int = 1,
+    @SerializedName("GridX") var gridX: Int = 0,
+    @SerializedName("GridY") var gridY: Int = 0
+)
+
+// === 单枪匹马模块 ===
+data class SingleHandedPropertiesData(
+    @SerializedName("ResourceGroupNames") var resourceGroupNames: MutableList<String> = mutableListOf("SingleHandedGroup"),
+    @SerializedName("InitWeapon") var initWeapon: String = "peashooter",
+    @SerializedName("InitWeaponLaunchTimePercent") var initWeaponLaunchTimePercent: Double = 1.0,
+    @SerializedName("MissileCount") var missileCount: Int = 1,
+    @SerializedName("MissileInterval") var missileInterval: Int = 30,
+    @SerializedName("RocketHitTime") var rocketHitTime: Int = 6,
+    @SerializedName("RocketSpeed") var rocketSpeed: Int = 500,
+    @SerializedName("TimeSpeed") var timeSpeed: Double = 1.5,
+    @SerializedName("ZombiesWalkSpeed") var zombiesWalkSpeed: Double = 1.0,
+    @SerializedName("ZombiesHitpointsPercent") var zombiesHitpointsPercent: Double = 0.1,
+    @SerializedName("DropWeaponDatas") var dropWeaponDatas: MutableList<DropWeaponData> = mutableListOf(),
+    @SerializedName("SpecialWaveDatas") var specialWaveDatas: MutableList<SpecialWaveData> = mutableListOf()
+)
+
+data class DropWeaponData(
+    @SerializedName("weaponname") var weaponname: String = "",
+    @SerializedName("killnum") var killnum: Int = 0,
+    @SerializedName("launchtimepercent") var launchtimepercent: Double = 1.0
+)
+
+data class SpecialWaveData(
+    @SerializedName("wave") var wave: Int = 1,
+    @SerializedName("ZombiesWalkSpeed") var zombiesWalkSpeed: Double = 1.0,
+    @SerializedName("ZombiesHitpointsPercent") var zombiesHitpointsPercent: Double = 1.0,
+    @SerializedName("ShowHealthBar") var showHealthBar: Boolean = true
+)
+
 // === 加速进场模块 ===
 data class ZombieMoveFastModulePropertiesData(
     @SerializedName("StopColumn") var stopColumn: Int = 6,
@@ -414,6 +501,9 @@ data class BowlingMinigamePropertiesData(
 
 // === 沙滩保龄球配置 ===
 class SouDaCheDamageTextModuleData
+
+// === 火箭筒手势响应模块 ===
+class RocketZombieFlickModuleData
 
 // === 坚果保龄球配置 ===
 class NewBowlingMinigamePropertiesData
@@ -640,6 +730,26 @@ data class StormZombieData(
     @SerializedName("Type") var type: String = ""
 )
 
+// === 僵尸仓鼠球事件 ===
+data class HamsterZombieSpawnerData(
+    // 起始/结束列不影响内容，静默固定写入 0 和 8
+    @SerializedName("ColumnStart") var columnStart: Int = 0,
+    @SerializedName("ColumnEnd") var columnEnd: Int = 8,
+    @SerializedName("GroupSize") var groupSize: Int = 1,
+    @SerializedName("TimeBetweenGroups") var timeBetweenGroups: Int = 2,
+    @SerializedName("TimeBeforeFullSpawn") var timeBeforeFullSpawn: Int = 5,
+    @SerializedName("Zombies") var zombies: MutableList<HamsterZombieItem> = mutableListOf()
+)
+
+data class HamsterZombieItem(
+    @SerializedName("Level") var level: Int = 1,
+    @SerializedName("Behavior") var behavior: Int = 1,
+    @SerializedName("HasPlantfood") var hasPlantfood: Boolean = false,
+    @SerializedName("SpeedBeforeImpact") var speedBeforeImpact: Double = 0.3,
+    @SerializedName("Type") var type: String = "RTID(hamster_ball@ZombieTypes)",
+    @SerializedName("ZombieInsideBallType") var zombieInsideBallType: String = ""
+)
+
 // === 海盗登船事件 ===
 data class RaidingPartyEventData(
     @SerializedName("GroupSize") var groupSize: Int = 5,
@@ -724,6 +834,31 @@ data class DinoWaveActionPropsData(
     @SerializedName("DinoWaveDuration") var dinoWaveDuration: Int = 2
 )
 
+// === 雷龙踩踏事件 ===
+data class DinoTreadActionPropsData(
+    @SerializedName("GridY") var gridY: Int = 2,
+    @SerializedName("GridXMin") var gridXMin: Int = 5,
+    @SerializedName("GridXMax") var gridXMax: Int = 5,
+    @SerializedName("TimeInterval") var timeInterval: Int = 3,
+    @SerializedName("WaveStartMessage") var waveStartMessage: String = "[WARNING_DINO_TREAD]"
+)
+
+// === 龙潮事件 ===
+data class DinoRunActionPropsData(
+    @SerializedName("DinoRow") var dinoRow: Int = 0,
+    @SerializedName("TimeInterval") var timeInterval: Int = 2,
+    @SerializedName("WaveStartMessage") var waveStartMessage: String = "[WARNING_DINO_RUN]"
+)
+
+// === 雷暴事件 ===
+data class ThunderWaveActionPropsData(
+    @SerializedName("Thunders") var thunders: MutableList<ThunderItem> = mutableListOf()
+)
+
+data class ThunderItem(
+    @SerializedName("Type") var type: String = "positive"
+)
+
 // === 障碍物生成事件 ===
 data class SpawnGraveStonesData(
     @SerializedName("GravestonePool") var gravestonePool: MutableList<GravestonePoolItem> = mutableListOf(),
@@ -731,6 +866,23 @@ data class SpawnGraveStonesData(
 )
 
 data class GravestonePoolItem(
+    @SerializedName("Count") var count: Int = 1,
+    @SerializedName("Type") var type: String = ""
+)
+
+// === 火箭降落事件 ===
+data class SpawnRocketLandingData(
+    @SerializedName("RocketPool") var rocketPool: MutableList<RocketPoolItem> = mutableListOf(
+        RocketPoolItem(count = 0, type = "RTID(rocket_landing@GridItemTypes)")
+    ),
+    @SerializedName("SpawnPositionsPool") var spawnPositionsPool: MutableList<LocationData> = mutableListOf(),
+    @SerializedName("SpawnCount") var spawnCount: Int = 0,
+    @SerializedName("SpawnInterval") var spawnInterval: Int = 3,
+    @SerializedName("DisplacePlants") var displacePlants: Boolean = false,
+    @SerializedName("IgnoreGraveStone") var ignoreGraveStone: Boolean = true
+)
+
+data class RocketPoolItem(
     @SerializedName("Count") var count: Int = 1,
     @SerializedName("Type") var type: String = ""
 )

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -35,10 +36,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -173,28 +174,29 @@ fun ModuleSelectionScreen(
                         )
                     }
 
-                    TabRow(
+                    ScrollableTabRow(
                         selectedTabIndex = ModuleCategory.entries.indexOf(selectedCategory),
                         containerColor = Color.Transparent,
                         contentColor = MaterialTheme.colorScheme.surface,
-                        divider = {},
+                        edgePadding = 16.dp,
                         indicator = { tabPositions ->
-                            TabRowDefaults.SecondaryIndicator(
-                                Modifier.tabIndicatorOffset(
-                                    tabPositions[ModuleCategory.entries.indexOf(
-                                        selectedCategory
-                                    )]
-                                ),
-                                color = MaterialTheme.colorScheme.surface,
-                                height = 3.dp
-                            )
+                            val index = ModuleCategory.entries.indexOf(selectedCategory)
+                            if (index < tabPositions.size) {
+                                SecondaryIndicator(
+                                    Modifier.tabIndicatorOffset(tabPositions[index]),
+                                    color = MaterialTheme.colorScheme.surface,
+                                    height = 3.dp
+                                )
+                            }
                         },
+                        divider = {}
                     ) {
                         ModuleCategory.entries.forEach { category ->
                             val isSelected = selectedCategory == category
                             Tab(
                                 selected = isSelected,
                                 onClick = { selectedCategory = category },
+                                modifier = Modifier.widthIn(min = 120.dp),
                                 text = {
                                     Text(
                                         text = stringResource(category.titleRes),

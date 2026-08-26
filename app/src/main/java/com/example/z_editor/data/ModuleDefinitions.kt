@@ -11,6 +11,7 @@ import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.AirplanemodeActive
+import androidx.compose.material.icons.filled.BatteryChargingFull
 import androidx.compose.material.icons.filled.BlurCircular
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.BrightnessHigh
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.filled.Grid4x4
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.HourglassEmpty
+import androidx.compose.material.icons.filled.Landscape
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.LinearScale
 import androidx.compose.material.icons.filled.LocalFlorist
@@ -34,13 +36,16 @@ import androidx.compose.material.icons.filled.MovieFilter
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.PinDrop
 import androidx.compose.material.icons.filled.Redeem
+import androidx.compose.material.icons.filled.Rocket
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Scoreboard
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Speaker
 import androidx.compose.material.icons.filled.SportsEsports
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Storm
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.filled.Thunderstorm
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.Timer
@@ -107,6 +112,10 @@ sealed class EditorSubScreen {
     data class ZombiePotionModuleProperties(val rtid: String) : EditorSubScreen()
     data class IncreasedCostModule(val rtid: String) : EditorSubScreen()
     data class DeathHoleModule(val rtid: String) : EditorSubScreen()
+    data class LunarTerminalModule(val rtid: String) : EditorSubScreen()
+    data class MoonLifeSupportSystem(val rtid: String) : EditorSubScreen()
+    data class LunarMineVeins(val rtid: String) : EditorSubScreen()
+    data class RadiationMeteorModule(val rtid: String) : EditorSubScreen()
     data class ZombieMoveFastModule(val rtid: String) : EditorSubScreen()
     data class ZombieRushModule(val rtid: String) : EditorSubScreen()
     data class MaxSunModule(val rtid: String) : EditorSubScreen()
@@ -137,8 +146,13 @@ sealed class EditorSubScreen {
     data class BlackHoleDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class FrostWindDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class DinoEventDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class DinoTreadDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class DinoRunDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class ThunderDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class SpawnGravestonesDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class GridItemSpawnerDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class SpawnRocketLandingDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
+    data class HamsterBallDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class ZombiePotionActionDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class MagicMirrorDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
     data class FairyTaleFogDetail(val rtid: String, val waveIndex: Int) : EditorSubScreen()
@@ -147,6 +161,19 @@ sealed class EditorSubScreen {
     data class InvalidEvent(val rtid: String, val waveIndex: Int) : EditorSubScreen()
 }
 
+/**
+ * ==========================================
+ * 1.5 事件分类
+ * ==========================================
+ * 定义事件在「添加事件」选择页的 tab 分类。
+ * 每个事件须显式指定分类（EventMetadata.category），新增事件忘记指定会编译报错。
+ */
+enum class EventCategory(@StringRes val titleRes: Int) {
+    Spawn(R.string.event_category_spawn),
+    Environment(R.string.event_category_environment),
+    Event(R.string.event_category_event),
+    Mechanic(R.string.event_category_mechanic),
+}
 
 data class EventMetadata(
     val title: Int,
@@ -154,6 +181,7 @@ data class EventMetadata(
     val icon: ImageVector,
     val color: Color,
     val darkColor: Color,
+    val category: EventCategory,
     val defaultAlias: String,
     val defaultObjClass: String,
     val initialDataFactory: () -> Any,
@@ -168,6 +196,7 @@ object EventRegistry {
             icon = Icons.Default.Groups,
             color = Color(0xFF936457),
             darkColor = Color(0xFFC2A197),
+            category = EventCategory.Spawn,
             defaultAlias = "GroundSpawner",
             defaultObjClass = "SpawnZombiesFromGroundSpawnerProps",
             initialDataFactory = { WaveActionData() },
@@ -186,6 +215,7 @@ object EventRegistry {
             icon = Icons.Default.Groups,
             color = Color(0xFF2196F3),
             darkColor = Color(0xFF90CAF9),
+            category = EventCategory.Spawn,
             defaultAlias = "Jittered",
             defaultObjClass = "SpawnZombiesJitteredWaveActionProps",
             initialDataFactory = { WaveActionData() },
@@ -204,6 +234,7 @@ object EventRegistry {
             icon = Icons.Default.AcUnit,
             color = Color(0xFF0288D1),
             darkColor = Color(0xFF90CAF9),
+            category = EventCategory.Spawn,
             defaultAlias = "FrostWindEvent",
             defaultObjClass = "FrostWindWaveActionProps",
             initialDataFactory = { FrostWindWaveActionPropsData() },
@@ -223,6 +254,7 @@ object EventRegistry {
             icon = Icons.Default.Water,
             color = Color(0xFF00ACC1),
             darkColor = Color(0xFF81D4FA),
+            category = EventCategory.Spawn,
             defaultAlias = "LowTideEvent",
             defaultObjClass = "BeachStageEventZombieSpawnerProps",
             initialDataFactory = { BeachStageEventData() },
@@ -241,6 +273,7 @@ object EventRegistry {
             icon = Icons.Default.WaterDrop,
             color = Color(0xFF00ACC1),
             darkColor = Color(0xFF81D4FA),
+            category = EventCategory.Event,
             defaultAlias = "TidalChangeEvent",
             defaultObjClass = "TidalChangeWaveActionProps",
             initialDataFactory = { TidalChangeWaveActionData() },
@@ -262,6 +295,7 @@ object EventRegistry {
             icon = Icons.Default.Transform,
             color = Color(0xFF4AC380),
             darkColor = Color(0xFF7CBD99),
+            category = EventCategory.Event,
             defaultAlias = "ModConveyorEvent",
             defaultObjClass = "ModifyConveyorWaveActionProps",
             initialDataFactory = { ModifyConveyorWaveActionData() },
@@ -285,6 +319,7 @@ object EventRegistry {
             icon = Icons.Default.Pets,
             color = Color(0xFF91B900),
             darkColor = Color(0xFFA2B659),
+            category = EventCategory.Event,
             defaultAlias = "DinoTimeEvent",
             defaultObjClass = "DinoWaveActionProps",
             initialDataFactory = { DinoWaveActionPropsData() },
@@ -304,12 +339,70 @@ object EventRegistry {
                 }
             }
         ),
+        "DinoTreadActionProps" to EventMetadata(
+            title = R.string.event_dino_tread_title,
+            description = R.string.event_dino_tread_desc,
+            icon = Icons.Default.Pets,
+            color = Color(0xFF91B900),
+            darkColor = Color(0xFFA2B659),
+            category = EventCategory.Event,
+            defaultAlias = "DinoTreadEvent",
+            defaultObjClass = "DinoTreadActionProps",
+            initialDataFactory = { DinoTreadActionPropsData() },
+            summaryProvider = { context, obj ->
+                try {
+                    val data = Gson().fromJson(obj.objData, DinoTreadActionPropsData::class.java)
+                    "行${data.gridY + 1} 列${data.gridXMin + 1}-${data.gridXMax + 1}"
+                } catch (_: Exception) {
+                    context.getString(R.string.event_error_parse)
+                }
+            }
+        ),
+        "DinoRunActionProps" to EventMetadata(
+            title = R.string.event_dino_run_title,
+            description = R.string.event_dino_run_desc,
+            icon = Icons.Default.Pets,
+            color = Color(0xFF91B900),
+            darkColor = Color(0xFFA2B659),
+            category = EventCategory.Event,
+            defaultAlias = "DinoRunEvent",
+            defaultObjClass = "DinoRunActionProps",
+            initialDataFactory = { DinoRunActionPropsData() },
+            summaryProvider = { context, obj ->
+                try {
+                    val data = Gson().fromJson(obj.objData, DinoRunActionPropsData::class.java)
+                    "行${data.dinoRow + 1}"
+                } catch (_: Exception) {
+                    context.getString(R.string.event_error_parse)
+                }
+            }
+        ),
+        "ThunderWaveActionProps" to EventMetadata(
+            title = R.string.event_thunder_title,
+            description = R.string.event_thunder_desc,
+            icon = Icons.Default.Bolt,
+            color = Color(0xFFE6A21A),
+            darkColor = Color(0xFFF2C14E),
+            category = EventCategory.Event,
+            defaultAlias = "ThunderEvent",
+            defaultObjClass = "ThunderWaveActionProps",
+            initialDataFactory = { ThunderWaveActionPropsData() },
+            summaryProvider = { context, obj ->
+                try {
+                    val data = Gson().fromJson(obj.objData, ThunderWaveActionPropsData::class.java)
+                    context.getString(R.string.event_format_thunders, data.thunders.size)
+                } catch (_: Exception) {
+                    context.getString(R.string.event_error_parse)
+                }
+            }
+        ),
         "BungeeWaveActionProps" to EventMetadata(
             title = R.string.event_bungee_title,
             description = R.string.event_bungee_desc,
             icon = Icons.Default.PinDrop,
             color = Color(0xFFFF9800),
             darkColor = Color(0xFFFFCC80),
+            category = EventCategory.Spawn,
             defaultAlias = "BungeeActionEvent",
             defaultObjClass = "BungeeWaveActionProps",
             initialDataFactory = { BungeeWaveActionData() },
@@ -328,6 +421,7 @@ object EventRegistry {
             icon = Icons.Default.HourglassEmpty,
             color = Color(0xFFFF9800),
             darkColor = Color(0xFFFFCC80),
+            category = EventCategory.Event,
             defaultAlias = "PortalEvent",
             defaultObjClass = "SpawnModernPortalsWaveActionProps",
             initialDataFactory = { PortalEventData() },
@@ -346,6 +440,7 @@ object EventRegistry {
             icon = Icons.Default.Storm,
             color = Color(0xFFFF9800),
             darkColor = Color(0xFFFFCC80),
+            category = EventCategory.Spawn,
             defaultAlias = "StormEvent",
             defaultObjClass = "StormZombieSpawnerProps",
             initialDataFactory = { StormZombieSpawnerPropsData() },
@@ -364,6 +459,7 @@ object EventRegistry {
             icon = Icons.Default.Tsunami,
             color = Color(0xFFFF9800),
             darkColor = Color(0xFFFFCC80),
+            category = EventCategory.Spawn,
             defaultAlias = "RaidingPartyEvent",
             defaultObjClass = "RaidingPartyZombieSpawnerProps",
             initialDataFactory = { RaidingPartyEventData() },
@@ -376,12 +472,51 @@ object EventRegistry {
                 }
             }
         ),
+        "SpawnRocketLandingWaveActionProps" to EventMetadata(
+            title = R.string.event_rocket_landing_title,
+            description = R.string.event_rocket_landing_desc,
+            icon = Icons.Filled.Rocket,
+            color = Color(0xFFB0655F),
+            darkColor = Color(0xFFD0A29E),
+            category = EventCategory.Environment,
+            defaultAlias = "RocketLandingEvent",
+            defaultObjClass = "SpawnRocketLandingWaveActionProps",
+            initialDataFactory = { SpawnRocketLandingData() },
+            summaryProvider = { context, obj ->
+                try {
+                    val data = Gson().fromJson(obj.objData, SpawnRocketLandingData::class.java)
+                    context.getString(R.string.event_format_positions, data.spawnPositionsPool.size)
+                } catch (_: Exception) {
+                    context.getString(R.string.event_error_parse)
+                }
+            }
+        ),
+        "HamsterZombieSpawnerProps" to EventMetadata(
+            title = R.string.event_hamster_ball_title,
+            description = R.string.event_hamster_ball_desc,
+            icon = Icons.Default.Pets,
+            color = Color(0xFF607D8B),
+            darkColor = Color(0xFFB0BEC5),
+            category = EventCategory.Spawn,
+            defaultAlias = "HamsterBallEvent",
+            defaultObjClass = "HamsterZombieSpawnerProps",
+            initialDataFactory = { HamsterZombieSpawnerData() },
+            summaryProvider = { context, obj ->
+                try {
+                    val data = Gson().fromJson(obj.objData, HamsterZombieSpawnerData::class.java)
+                    context.getString(R.string.event_format_zombies, data.zombies.size)
+                } catch (_: Exception) {
+                    context.getString(R.string.event_error_parse)
+                }
+            }
+        ),
         "ZombiePotionActionProps" to EventMetadata(
             title = R.string.event_potion_drop_title,
             description = R.string.event_potion_drop_desc,
             icon = Icons.Default.Science,
             color = Color(0xFF607D8B),
             darkColor = Color(0xFFB0BEC5),
+            category = EventCategory.Environment,
             defaultAlias = "PotionEvent",
             defaultObjClass = "ZombiePotionActionProps",
             initialDataFactory = { ZombiePotionActionPropsData() },
@@ -400,6 +535,7 @@ object EventRegistry {
             icon = Icons.Filled.Unarchive,
             color = Color(0xFF607D8B),
             darkColor = Color(0xFFB0BEC5),
+            category = EventCategory.Environment,
             defaultAlias = "GravestonesEvent",
             defaultObjClass = "SpawnGravestonesWaveActionProps",
             initialDataFactory = { SpawnGraveStonesData() },
@@ -418,6 +554,7 @@ object EventRegistry {
             icon = Icons.Default.Groups,
             color = Color(0xFF607D8B),
             darkColor = Color(0xFFB0BEC5),
+            category = EventCategory.Spawn,
             defaultAlias = "GraveSpawner",
             defaultObjClass = "SpawnZombiesFromGridItemSpawnerProps",
             initialDataFactory = { SpawnZombiesFromGridItemData() },
@@ -437,6 +574,7 @@ object EventRegistry {
             icon = Icons.Default.Cloud,
             color = Color(0xFFBE5DBA),
             darkColor = Color(0xFFBD99BB),
+            category = EventCategory.Event,
             defaultAlias = "FairyFogEvent",
             defaultObjClass = "FairyTaleFogWaveActionProps",
             initialDataFactory = { FairyTaleFogWaveActionData() },
@@ -455,6 +593,7 @@ object EventRegistry {
             icon = Icons.Default.Air,
             color = Color(0xFFBE5DBA),
             darkColor = Color(0xFFBD99BB),
+            category = EventCategory.Event,
             defaultAlias = "WindEvent",
             defaultObjClass = "FairyTaleWindWaveActionProps",
             initialDataFactory = { FairyTaleWindWaveActionData() },
@@ -473,9 +612,10 @@ object EventRegistry {
             icon = Icons.Default.BugReport,
             color = Color(0xFF9C27B0),
             darkColor = Color(0xFFB39DDB),
+            category = EventCategory.Spawn,
             defaultAlias = "SpiderRainEvent",
             defaultObjClass = "SpiderRainZombieSpawnerProps",
-            initialDataFactory = { ParachuteRainEventData() },
+            initialDataFactory = { ParachuteRainEventData(waveStartMessage = "[WARNING_SPIDERRAIN]") },
             summaryProvider = { context, obj ->
                 try {
                     val data = Gson().fromJson(obj.objData, ParachuteRainEventData::class.java)
@@ -491,9 +631,10 @@ object EventRegistry {
             icon = Icons.Default.AirplanemodeActive,
             color = Color(0xFF9C27B0),
             darkColor = Color(0xFFB39DDB),
+            category = EventCategory.Spawn,
             defaultAlias = "ParachuteRainEvent",
             defaultObjClass = "ParachuteRainZombieSpawnerProps",
-            initialDataFactory = { ParachuteRainEventData() },
+            initialDataFactory = { ParachuteRainEventData(waveStartMessage = "[WARNING_PARACHUTERAIN]") },
             summaryProvider = { context, obj ->
                 try {
                     val data = Gson().fromJson(obj.objData, ParachuteRainEventData::class.java)
@@ -509,9 +650,10 @@ object EventRegistry {
             icon = Icons.Default.Speaker,
             color = Color(0xFF9C27B0),
             darkColor = Color(0xFFB39DDB),
+            category = EventCategory.Spawn,
             defaultAlias = "BassRainEvent",
             defaultObjClass = "BassRainZombieSpawnerProps",
-            initialDataFactory = { ParachuteRainEventData() },
+            initialDataFactory = { ParachuteRainEventData(waveStartMessage = "[WARNING_BASSRAIN]") },
             summaryProvider = { context, obj ->
                 try {
                     val data = Gson().fromJson(obj.objData, ParachuteRainEventData::class.java)
@@ -527,6 +669,7 @@ object EventRegistry {
             icon = Icons.Default.BlurCircular,
             color = Color(0xFF7C30D9),
             darkColor = Color(0xFFA179D2),
+            category = EventCategory.Event,
             defaultAlias = "BlackHoleEvent",
             defaultObjClass = "BlackHoleWaveActionProps",
             initialDataFactory = { BlackHoleEventData() },
@@ -545,6 +688,7 @@ object EventRegistry {
             icon = Icons.AutoMirrored.Filled.CompareArrows,
             color = Color(0xFF7C30D9),
             darkColor = Color(0xFFA179D2),
+            category = EventCategory.Environment,
             defaultAlias = "MirrorEvent",
             defaultObjClass = "WaveActionMagicMirrorTeleportationArrayProps2",
             initialDataFactory = { MagicMirrorWaveActionData() },
@@ -577,6 +721,7 @@ enum class ModuleCategory(@StringRes val titleRes: Int) {
     Base(R.string.module_category_base),
     Mode(R.string.module_category_mode),
     Scene(R.string.module_category_scene),
+    Special(R.string.module_category_special),
 }
 
 data class ModuleMetadata(
@@ -870,6 +1015,17 @@ object ModuleRegistry {
             defaultAlias = "ZombossBattleIntro",
             defaultSource = "CurrentLevel",
             initialDataFactory = { ZombossBattleIntroData() },
+            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
+        ),
+        "SingleHandedProperties" to ModuleMetadata(
+            titleRes = R.string.module_single_handed_title,
+            descriptionRes = R.string.module_single_handed_desc,
+            icon = Icons.Default.Rocket,
+            isCore = false,
+            category = ModuleCategory.Mode,
+            defaultAlias = "SingleHanded",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { SingleHandedPropertiesData() },
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
         ),
         "SeedRainProperties" to ModuleMetadata(
@@ -1187,6 +1343,63 @@ object ModuleRegistry {
             defaultAlias = "DefaultSnow",
             defaultSource = "LevelModules",
             navigationFactory = { rtid -> EditorSubScreen.RainDarkProperties(rtid) }
+        ),
+
+        // === 特殊设置 ===
+        "RocketZombieFlickModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_rocket_zombie_flick_title,
+            descriptionRes = R.string.module_rocket_zombie_flick_desc,
+            icon = Icons.Default.Rocket,
+            isCore = false,
+            category = ModuleCategory.Special,
+            defaultAlias = "RocketZombieFlickModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { RocketZombieFlickModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
+        ),
+        "LunarTerminalModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_lunar_terminal_title,
+            descriptionRes = R.string.module_lunar_terminal_desc,
+            icon = Icons.Default.Terminal,
+            isCore = true,
+            category = ModuleCategory.Special,
+            defaultAlias = "LunarTerminalModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { LunarTerminalModuleData() },
+            navigationFactory = { rtid -> EditorSubScreen.LunarTerminalModule(rtid) }
+        ),
+        "MoonLifeSupportSystemProperties" to ModuleMetadata(
+            titleRes = R.string.module_moon_life_support_title,
+            descriptionRes = R.string.module_moon_life_support_desc,
+            icon = Icons.Default.BatteryChargingFull,
+            isCore = true,
+            category = ModuleCategory.Special,
+            defaultAlias = "MoonLifeSupportSystemModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { MoonLifeSupportSystemPropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.MoonLifeSupportSystem(rtid) }
+        ),
+        "LunarMineVeinModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_lunar_mine_vein_title,
+            descriptionRes = R.string.module_lunar_mine_vein_desc,
+            icon = Icons.Default.Landscape,
+            isCore = true,
+            category = ModuleCategory.Special,
+            defaultAlias = "LunarMineVeinModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { LunarMineVeinModulePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.LunarMineVeins(rtid) }
+        ),
+        "RadiationMeteorModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_radiation_meteor_title,
+            descriptionRes = R.string.module_radiation_meteor_desc,
+            icon = Icons.Default.Star,
+            isCore = true,
+            category = ModuleCategory.Special,
+            defaultAlias = "RadiationMeteorModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { RadiationMeteorModulePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.RadiationMeteorModule(rtid) }
         ),
 
         )

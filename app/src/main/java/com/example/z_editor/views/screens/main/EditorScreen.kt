@@ -177,6 +177,7 @@ fun EditorScreen(
             if (existingClasses.contains("EvilDaveProperties")) newTabs.add(EditorTabType.IZombie)
             if (existingClasses.contains("VaseBreakerPresetProperties")) newTabs.add(EditorTabType.VaseBreaker)
             if (existingClasses.contains("ZombossBattleModuleProperties")) newTabs.add(EditorTabType.BossFight)
+            if (existingClasses.contains("SingleHandedProperties")) newTabs.add(EditorTabType.SingleHanded)
             availableTabs = newTabs
 
             val isVaseBreaker = existingClasses.contains("VaseBreakerPresetProperties") ||
@@ -186,6 +187,7 @@ fun EditorScreen(
                     existingClasses.contains("ZombossBattleIntroProperties")
             val isLastStand = existingClasses.contains("LastStandMinigameProperties")
             val isEvilDave = existingClasses.contains("EvilDaveProperties")
+            val isSingleHanded = existingClasses.contains("SingleHandedProperties")
 
             val missingList = mutableListOf<String>()
             if (!existingClasses.contains("CustomLevelModuleProperties")) missingList.add("CustomLevelModuleProperties")
@@ -216,6 +218,9 @@ fun EditorScreen(
             if (isLastStand) {
                 if (!existingClasses.contains("SeedBankProperties")) missingList.add("SeedBankProperties")
             }
+            if (isSingleHanded) {
+                if (!existingClasses.contains("RailcartProperties")) missingList.add("RailcartProperties")
+            }
 
             missingModules = missingList.mapNotNull { objClass ->
                 val meta = ModuleRegistry.getMetadata(objClass)
@@ -223,7 +228,10 @@ fun EditorScreen(
                 if (context.getString(meta.titleRes) == unknownLabel && objClass != "Unknown") null else meta
             }
 
-            invalidLevelModuleRefs = LevelParser.findInvalidLevelModuleReferences(rootLevelFile!!)
+            invalidLevelModuleRefs = LevelParser.findInvalidLevelModuleReferences(
+                rootLevelFile!!,
+                ReferenceRepository.getLevelModuleAliases()
+            )
         }
 
         fun injectCustomZombie(originalAlias: String): String? {
@@ -465,6 +473,57 @@ fun EditorScreen(
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+                },
+
+                onRenameModule = { oldRtid, newAlias ->
+                    val info = RtidParser.parse(oldRtid)
+                    // 仅本地自定义模块(@CurrentLevel)且对象存在时允许改名；@LevelModules 由 UI 置灰确认键
+                    if (info?.source != "CurrentLevel") return@EditorActions
+                    val newName = newAlias.trim()
+                    if (newName.isBlank()) return@EditorActions
+
+                    val levelDef = parsedData?.levelDef ?: return@EditorActions
+                    val obj = rootLevelFile?.objects?.find { it.aliases?.contains(info.alias) == true }
+                        ?: return@EditorActions
+
+                    // 防御性重名检查（UI 已校验，这里兜底防越权调用）
+                    val otherModuleAliases = levelDef.modules
+                        .filter { it != oldRtid }
+                        .mapNotNull { RtidParser.parse(it)?.alias }
+                    if (newName in otherModuleAliases) return@EditorActions
+                    val otherObjectAliases = rootLevelFile!!.objects
+                        .filterNot { it === obj }
+                        .flatMap { it.aliases ?: emptyList() }
+                    if (newName in otherObjectAliases) return@EditorActions
+
+                    // 模块 RTID 改名：RTID(Old@CurrentLevel) → RTID(New@CurrentLevel)
+                    val moduleIdx = levelDef.modules.indexOf(oldRtid)
+                    if (moduleIdx >= 0) {
+                        levelDef.modules[moduleIdx] = RtidParser.build(newName, "CurrentLevel")
+                    }
+
+                    // 对象代号同步改名
+                    obj.aliases = obj.aliases?.map { if (it == info.alias) newName else it }
+
+                    // 同步 LevelDefinition 对象里的 Modules JSON
+                    rootLevelFile!!.objects.find { it.objClass == "LevelDefinition" }?.let {
+                        it.objData = gson.toJsonTree(levelDef)
+                    }
+
+                    // 重建 objectMap + parsedData，触发重算
+                    val newObjectMap = rootLevelFile!!.objects.associateBy {
+                        it.aliases?.firstOrNull() ?: "unknown"
+                    }
+                    parsedData = parsedData!!.copy(
+                        objectMap = newObjectMap,
+                        levelDef = levelDef
+                    )
+                    refreshTrigger++
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.editor_screen_msg_module_renamed, newName),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 },
 
                 onAddModule = { meta ->
