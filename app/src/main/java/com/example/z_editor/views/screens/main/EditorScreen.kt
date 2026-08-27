@@ -25,7 +25,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.AlertDialog
@@ -33,7 +32,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
@@ -41,6 +39,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -423,9 +422,11 @@ fun EditorScreen(
                         ?: ReferenceRepository.getObjClass(alias)
 
                     // 移除前记录可达集合与模块对象本身，用于之后"顺藤摸瓜"级联删除内联子对象
-                    val reachableBefore = rootLevelFile?.let { LevelParser.computeReachableObjects(it) }
-                        ?: emptySet()
-                    val moduleObj = rootLevelFile?.objects?.find { it.aliases?.contains(alias) == true }
+                    val reachableBefore =
+                        rootLevelFile?.let { LevelParser.computeReachableObjects(it) }
+                            ?: emptySet()
+                    val moduleObj =
+                        rootLevelFile?.objects?.find { it.aliases?.contains(alias) == true }
 
                     val removed = parsedData!!.levelDef!!.modules.remove(rtid)
 
@@ -499,8 +500,9 @@ fun EditorScreen(
                     if (newName.isBlank()) return@EditorActions
 
                     val levelDef = parsedData?.levelDef ?: return@EditorActions
-                    val obj = rootLevelFile?.objects?.find { it.aliases?.contains(info.alias) == true }
-                        ?: return@EditorActions
+                    val obj =
+                        rootLevelFile?.objects?.find { it.aliases?.contains(info.alias) == true }
+                            ?: return@EditorActions
 
                     // 防御性重名检查（UI 已校验，这里兜底防越权调用）
                     val otherModuleAliases = levelDef.modules
@@ -620,7 +622,10 @@ fun EditorScreen(
                         refreshTrigger++
                         Toast.makeText(
                             context,
-                            context.getString(R.string.editor_screen_msg_module_added, context.getString(meta.titleRes)),
+                            context.getString(
+                                R.string.editor_screen_msg_module_added,
+                                context.getString(meta.titleRes)
+                            ),
                             Toast.LENGTH_SHORT
                         ).show()
                         currentSubScreen = EditorSubScreen.None
@@ -1160,7 +1165,9 @@ fun EditorScreen(
                                 currentGridItemFilterMode = currentGridItemFilterMode,
                                 actions = actions,
                                 starChallengeEditingPair = starChallengeEditingPair,
-                                onStarChallengeEditingPairChange = { starChallengeEditingPair = it },
+                                onStarChallengeEditingPairChange = {
+                                    starChallengeEditingPair = it
+                                },
                                 selectorCategoryIndices = selectorCategoryIndices,
                                 selectorSubTagIndices = selectorSubTagIndices,
                                 selectorGridStates = selectorGridStates,
