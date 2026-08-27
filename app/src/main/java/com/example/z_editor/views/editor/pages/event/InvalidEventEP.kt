@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.z_editor.data.LevelParser
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 
@@ -66,6 +67,7 @@ fun InvalidEventEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "引用失效提示",

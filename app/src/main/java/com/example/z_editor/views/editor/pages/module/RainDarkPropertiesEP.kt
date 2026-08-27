@@ -41,6 +41,7 @@ import com.example.z_editor.ui.theme.LocalDarkTheme
 import com.example.z_editor.ui.theme.PvzGrayDark
 import com.example.z_editor.ui.theme.PvzGrayLight
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 
@@ -118,6 +119,7 @@ fun RainDarkPropertiesEP(
     }
 
     Scaffold(
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "环境天气设置",

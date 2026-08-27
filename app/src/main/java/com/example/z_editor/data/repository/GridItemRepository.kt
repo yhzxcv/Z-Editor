@@ -74,6 +74,9 @@ object GridItemRepository {
         GridItemInfo("slider_down", "下行冰河浮冰", GridItemCategory.Trap, "slider_down.webp"),
         GridItemInfo("slider_up_modern", "上行摩登浮标", GridItemCategory.Trap, "slider_up_modern.webp"),
         GridItemInfo("slider_down_modern", "下行摩登浮标", GridItemCategory.Trap, "slider_down_modern.webp"),
+        GridItemInfo("renai_roller", "复兴滚轮", GridItemCategory.Trap, null),
+        GridItemInfo("renai_tile_left", "左行复兴开关", GridItemCategory.Trap, null),
+        GridItemInfo("renai_tile_right", "右行复兴开关", GridItemCategory.Trap, null),
 
         GridItemInfo("christmas_protect", "元宝", GridItemCategory.Trap, null, GridItemTag.Special),
         GridItemInfo("dumpling", "饺子", GridItemCategory.Trap, null),

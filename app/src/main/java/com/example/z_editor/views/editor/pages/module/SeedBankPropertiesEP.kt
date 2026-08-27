@@ -65,6 +65,7 @@ import com.example.z_editor.ui.theme.PvzLightGreenLight
 import com.example.z_editor.ui.theme.PvzPurpleDark
 import com.example.z_editor.ui.theme.PvzPurpleLight
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -105,6 +106,7 @@ fun SeedBankPropertiesEP(
                 focusManager.clearFocus()
             })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = if (isZombieMode) "种子库 (我是僵尸)" else "种子库设置",

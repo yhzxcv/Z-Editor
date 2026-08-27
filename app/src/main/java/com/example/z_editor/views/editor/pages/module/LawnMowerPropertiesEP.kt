@@ -44,6 +44,7 @@ import com.example.z_editor.ui.theme.PvzLightGreenDark
 import com.example.z_editor.ui.theme.PvzLightGreenLight
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 
@@ -125,6 +126,7 @@ fun LawnMowerPropertiesEP(
     }
 
     Scaffold(
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "小推车样式设置",

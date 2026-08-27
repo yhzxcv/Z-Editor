@@ -286,7 +286,7 @@ private fun WeaponCard(
 
             Spacer(Modifier.height(4.dp))
             Text(
-                "初始植物为开局武器，达到击杀数后自动升级植物。",
+                "初始植物为开局武器，达到击杀数后自动升级植物。\n初始植物会出现在场地左上角第一格，需要把矿车放置于此处，否则会直接判定游戏失败。",
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

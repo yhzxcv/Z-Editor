@@ -423,6 +423,20 @@ data class RadiationMeteorSpawnData(
     @SerializedName("GridY") var gridY: Int = 0
 )
 
+// === 金手指（关卡手势技能）模块 ===
+data class LevelPowerupModulePropertiesData(
+    @SerializedName("Powerups") var powerups: MutableList<LevelPowerupData> = mutableListOf(
+        LevelPowerupData(typeName = "powerupflickzombie", freeUseCount = 3),
+        LevelPowerupData(typeName = "powerupwizardfinger", freeUseCount = 3),
+        LevelPowerupData(typeName = "poweruppinchzombie", freeUseCount = 3)
+    )
+)
+
+data class LevelPowerupData(
+    @SerializedName("TypeName") var typeName: String = "powerupflickzombie",
+    @SerializedName("FreeUseCount") var freeUseCount: Int = 3
+)
+
 // === 单枪匹马模块 ===
 data class SingleHandedPropertiesData(
     @SerializedName("ResourceGroupNames") var resourceGroupNames: MutableList<String> = mutableListOf("SingleHandedGroup"),
@@ -765,8 +779,8 @@ data class ParachuteRainEventData(
     @SerializedName("SpiderCount") var spiderCount: Int = 1,
     @SerializedName("SpiderZombieName") var spiderZombieName: String = "",
     @SerializedName("TimeBeforeFullSpawn") var timeBeforeFullSpawn: Double = 1.0,
-    @SerializedName("TimeBetweenGroups") var timeBetweenGroups: Double = 1.5,
-    @SerializedName("ZombieFallTime") var zombieFallTime: Double = 4.5,
+    @SerializedName("TimeBetweenGroups") var timeBetweenGroups: Double = 1.0,
+    @SerializedName("ZombieFallTime") var zombieFallTime: Double = 1.0,
     @SerializedName("WaveStartMessage") var waveStartMessage: String = ""
 )
 

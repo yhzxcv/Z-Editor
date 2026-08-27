@@ -116,6 +116,7 @@ fun LevelDefinitionEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             TopAppBar(
                 title = { Text("关卡基本信息", fontWeight = FontWeight.Bold, fontSize = 22.sp) },

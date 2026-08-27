@@ -112,7 +112,5 @@ fun IZombieTab(
                 }
             }
         }
-
-        Spacer(Modifier.height(32.dp))
     }
 }

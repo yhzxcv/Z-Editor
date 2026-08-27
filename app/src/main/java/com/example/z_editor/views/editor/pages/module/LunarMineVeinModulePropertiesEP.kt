@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -66,6 +67,7 @@ import com.example.z_editor.ui.theme.PvzBluePrimary
 import com.example.z_editor.ui.theme.PvzGridHighLight
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -168,6 +170,7 @@ fun LunarMineVeinModulePropertiesEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "月球矿脉布局",
@@ -305,6 +308,27 @@ fun LunarMineVeinModulePropertiesEP(
                 }
             }
 
+            item (span = { GridItemSpan(maxLineSpan) }) {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(2.dp)
+                ) {
+                    Row(modifier = Modifier.padding(16.dp)) {
+                        Icon(Icons.Default.Info, null, tint = themeColor)
+                        Spacer(Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "矿脉出现波次不能填0。此模块仅用于配置可生长矿脉，配置战斗开始时已有的矿脉需要在预置障碍物模块里添加。",
+                                fontSize = 12.sp,
+                                color = themeColor,
+                                lineHeight = 16.sp
+                            )
+                        }
+                    }
+                }
+            }
+
             // === 区域 2: 标题 (作为列表头，跨满全宽) ===
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
@@ -330,6 +354,10 @@ fun LunarMineVeinModulePropertiesEP(
                     onWaveChange = { wave -> updateWave(item, wave) },
                     onDelete = { itemToDelete = item }
                 )
+            }
+
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Spacer(Modifier.height(300.dp))
             }
         }
     }

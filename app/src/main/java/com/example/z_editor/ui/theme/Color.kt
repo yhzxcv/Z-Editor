@@ -32,6 +32,8 @@ val PvzPinkLight = Color(0xFFBE5DBA)
 val PvzPinkDark = Color(0xFFAF84AC)
 val PvzBrownLight = Color(0xFF795548)
 val PvzBrownDark = Color(0xFF6E5E57)
+val PvzYellowLight = Color(0xFFF9A825)
+val PvzYellowDark = Color(0xFFBBA052)
 val PvzGrayLight = Color(0xFF607D8B)
 val PvzGrayDark = Color(0xFF818C91)
 

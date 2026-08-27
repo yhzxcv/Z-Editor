@@ -134,6 +134,7 @@ fun WaveManagerPropertiesEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             TopAppBar(
                 title = {
@@ -428,8 +429,6 @@ fun WaveManagerPropertiesEP(
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-
-            Spacer(Modifier.height(48.dp))
         }
     }
 }

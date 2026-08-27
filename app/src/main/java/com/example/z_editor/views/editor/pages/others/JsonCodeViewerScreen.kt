@@ -93,6 +93,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.data.LevelParser
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.ui.theme.DarkBlueBg
 import com.example.z_editor.ui.theme.LightBlueBg
@@ -359,8 +360,12 @@ fun JsonCodeViewerScreen(
             Toast.makeText(context, "保存失败", Toast.LENGTH_SHORT).show()
             return
         }
+        // Gson 对数组多余逗号宽容（[a,,b]→[a,null,b] / [a,b,]→[a,b,null]），objects 列表与各对象
+        // objData 的嵌套数组（如 "Waves":[1,2,]）里都可能留 null 元素；关卡对象不可能为 null，深清后再写入，
+        // 避免 null 落盘、主解析器对 null 取属性闪退。
+        val cleanObjects = LevelParser.sanitizeLevelObjects(newObjects)
         levelFile.objects.clear()
-        levelFile.objects.addAll(newObjects)
+        levelFile.objects.addAll(cleanObjects)
 
         onPersistLevel()
         refreshTrigger++

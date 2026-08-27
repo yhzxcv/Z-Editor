@@ -47,6 +47,7 @@ import com.example.z_editor.views.editor.pages.module.ConveyorSeedBankProperties
 import com.example.z_editor.views.editor.pages.module.DeathHoleModuleEP
 import com.example.z_editor.views.editor.pages.module.LunarMineVeinModulePropertiesEP
 import com.example.z_editor.views.editor.pages.module.LunarTerminalModuleEP
+import com.example.z_editor.views.editor.pages.module.LevelPowerupModulePropertiesEP
 import com.example.z_editor.views.editor.pages.module.MoonLifeSupportSystemEP
 import com.example.z_editor.views.editor.pages.module.RadiationMeteorModuleEP
 import com.example.z_editor.views.editor.pages.module.IncreasedCostModulePropertiesEP
@@ -584,7 +585,6 @@ fun EditorContentRouter(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile,
-            levelDef = parsedData.levelDef!!,
             scrollState = getScrollState("LunarTerminalModule")
         )
 
@@ -592,7 +592,6 @@ fun EditorContentRouter(
             rtid = targetState.rtid,
             rootLevelFile = rootLevelFile,
             onBack = actions.navigateBack,
-            levelDef = parsedData.levelDef!!,
             onRequestPlantSelection = actions.onLaunchMultiPlantSelector,
             scrollState = getScrollState("MoonLifeSupportSystem")
         )
@@ -604,6 +603,12 @@ fun EditorContentRouter(
         )
 
         is EditorSubScreen.RadiationMeteorModule -> RadiationMeteorModuleEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile
+        )
+
+        is EditorSubScreen.LevelPowerups -> LevelPowerupModulePropertiesEP(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile

@@ -71,6 +71,7 @@ import com.example.z_editor.ui.theme.PvzLightOrangeDark
 import com.example.z_editor.ui.theme.PvzLightOrangeLight
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
@@ -150,6 +151,7 @@ fun SpawnModernPortalsWaveActionPropsEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "编辑 $currentAlias",

@@ -54,6 +54,7 @@ import com.example.z_editor.ui.theme.PvzBrownLight
 import com.example.z_editor.ui.theme.PvzGridBgDark
 import com.example.z_editor.ui.theme.PvzGridBorder
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.StepperControl
@@ -114,6 +115,7 @@ fun RoofPropertiesEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "屋顶花盆设置",
@@ -338,8 +340,6 @@ fun RoofPropertiesEP(
                     }
                 }
             }
-
-            Spacer(Modifier.height(32.dp))
         }
     }
 }

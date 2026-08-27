@@ -53,6 +53,7 @@ import com.example.z_editor.data.FrostWindWaveActionPropsData
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.StepperControl
@@ -84,6 +85,7 @@ fun FrostWindEventEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "编辑 $currentAlias",

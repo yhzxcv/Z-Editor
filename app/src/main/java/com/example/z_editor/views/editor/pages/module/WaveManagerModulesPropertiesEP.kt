@@ -69,6 +69,7 @@ import com.example.z_editor.ui.theme.PvzPurpleDark
 import com.example.z_editor.ui.theme.PvzPurpleLight
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -157,6 +158,7 @@ fun WaveManagerModulePropertiesEP(
                 focusManager.clearFocus()
             })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "波次管理器设置",

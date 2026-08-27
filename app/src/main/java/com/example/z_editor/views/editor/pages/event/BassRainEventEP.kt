@@ -47,6 +47,7 @@ import com.example.z_editor.ui.theme.LocalDarkTheme
 import com.example.z_editor.ui.theme.PvzLightPurpleDark
 import com.example.z_editor.ui.theme.PvzLightPurpleLight
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputDouble
@@ -88,6 +89,7 @@ fun BassRainEventEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "编辑 $currentAlias",
@@ -337,8 +339,6 @@ fun BassRainEventEP(
                     }
                 }
             }
-
-            item { Spacer(Modifier.height(32.dp)) }
         }
     }
 }

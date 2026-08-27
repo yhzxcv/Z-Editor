@@ -73,6 +73,7 @@ import com.example.z_editor.ui.theme.PvzGrayDark
 import com.example.z_editor.ui.theme.PvzGrayLight
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -282,6 +283,7 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "编辑 $currentAlias",
@@ -762,8 +764,6 @@ fun SpawnZombiesFromGridItemSpawnerEventEP(
                     }
                 }
             }
-
-            item { Spacer(Modifier.height(48.dp)) }
         }
     }
 }

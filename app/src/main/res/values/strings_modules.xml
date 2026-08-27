@@ -4,6 +4,8 @@
     <string name="module_category_mode">特殊模式</string>
     <string name="module_category_scene">场地配置</string>
     <string name="module_category_special">特殊设置</string>
+    <string name="module_level_powerups_title">金手指</string>
+    <string name="module_level_powerups_desc">配置关卡内可免费使用的手势技能</string>
     <string name="module_rocket_zombie_flick_title">火箭筒手势响应</string>
     <string name="module_rocket_zombie_flick_desc">让火箭筒小鬼僵尸响应手指划走的动作</string>
     <string name="module_lunar_terminal_title">月球基地采集器</string>

@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -66,6 +67,7 @@ import com.example.z_editor.ui.theme.PvzBluePrimary
 import com.example.z_editor.ui.theme.PvzGridHighLight
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -73,7 +75,6 @@ import rememberJsonSync
 
 private const val METEOR_ICON_PATH = "images/griditems/radiation_meteor.webp"
 private const val METEOR_COLOR = 0xFFF57F17
-private const val METEOR_LIST_BOTTOM_SPACER_DP = 300
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -174,6 +175,7 @@ fun RadiationMeteorModuleEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "放射性陨石布局",
@@ -199,7 +201,7 @@ fun RadiationMeteorModuleEP(
                 )
                 HelpSection(
                     title = "格点坐标",
-                    body = "陨石位置用网格坐标显示，每个格子允许多颗陨石在不同波次降落。"
+                    body = "陨石位置用网格坐标显示，每个格子允许多颗陨石在不同波次降落。降落波次指开局后经过多少波出现。"
                 )
             }
         }
@@ -416,6 +418,27 @@ fun RadiationMeteorModuleEP(
                 }
             }
 
+            item (span = { GridItemSpan(maxLineSpan) }) {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(2.dp)
+                ) {
+                    Row(modifier = Modifier.padding(16.dp)) {
+                        Icon(Icons.Default.Info, null, tint = themeColor)
+                        Spacer(Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "陨石的降落波次参数表示距开始多少波，例如填0则会出现在关卡第一波。",
+                                fontSize = 12.sp,
+                                color = themeColor,
+                                lineHeight = 16.sp
+                            )
+                        }
+                    }
+                }
+            }
+
             // === 区域 3: 标题 (作为列表头，跨满全宽) ===
             item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
@@ -443,11 +466,6 @@ fun RadiationMeteorModuleEP(
                 )
             }
 
-            // === 区域 5: 底部留白（跨满全宽）===
-            // 键盘弹起时会遮挡列表底部，这里留一段空白让最后一行陨石卡片能滚动到键盘上方
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Spacer(Modifier.height(METEOR_LIST_BOTTOM_SPACER_DP.dp))
-            }
         }
     }
 }

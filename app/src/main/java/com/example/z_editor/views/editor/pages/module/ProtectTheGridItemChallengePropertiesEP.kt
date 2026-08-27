@@ -73,6 +73,7 @@ import com.example.z_editor.ui.theme.PvzBlueLight
 import com.example.z_editor.ui.theme.PvzGridHighLight
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
@@ -173,6 +174,7 @@ fun ProtectTheGridItemChallengePropertiesEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "保护物品挑战",

@@ -197,8 +197,6 @@ fun DinoRunEventEP(
                     }
                 }
             }
-
-            item { Spacer(Modifier.height(72.dp)) }
         }
     }
 }

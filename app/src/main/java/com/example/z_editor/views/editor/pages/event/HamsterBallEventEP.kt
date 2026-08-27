@@ -760,8 +760,6 @@ fun HamsterBallEventEP(
                     }
                 }
             }
-
-            item { Spacer(Modifier.height(96.dp)) }
         }
     }
 }

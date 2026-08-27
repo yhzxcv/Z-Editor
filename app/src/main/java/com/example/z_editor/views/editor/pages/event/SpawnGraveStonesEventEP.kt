@@ -66,6 +66,7 @@ import com.example.z_editor.ui.theme.PvzGrayLight
 import com.example.z_editor.ui.theme.PvzGridBorder
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -133,6 +134,7 @@ fun SpawnGraveStonesEventEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "编辑 $currentAlias",
@@ -410,8 +412,6 @@ fun SpawnGraveStonesEventEP(
                     }
                 }
             }
-
-            item { Spacer(Modifier.height(32.dp)) }
         }
     }
 }

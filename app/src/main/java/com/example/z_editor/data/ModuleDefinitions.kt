@@ -49,6 +49,7 @@ import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.filled.Thunderstorm
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.Transform
 import androidx.compose.material.icons.filled.TripOrigin
 import androidx.compose.material.icons.filled.Tsunami
@@ -116,6 +117,7 @@ sealed class EditorSubScreen {
     data class MoonLifeSupportSystem(val rtid: String) : EditorSubScreen()
     data class LunarMineVeins(val rtid: String) : EditorSubScreen()
     data class RadiationMeteorModule(val rtid: String) : EditorSubScreen()
+    data class LevelPowerups(val rtid: String) : EditorSubScreen()
     data class ZombieMoveFastModule(val rtid: String) : EditorSubScreen()
     data class ZombieRushModule(val rtid: String) : EditorSubScreen()
     data class MaxSunModule(val rtid: String) : EditorSubScreen()
@@ -1346,8 +1348,41 @@ object ModuleRegistry {
             defaultSource = "LevelModules",
             navigationFactory = { rtid -> EditorSubScreen.RainDarkProperties(rtid) }
         ),
+        "LunarMineVeinModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_lunar_mine_vein_title,
+            descriptionRes = R.string.module_lunar_mine_vein_desc,
+            icon = Icons.Default.Landscape,
+            isCore = true,
+            category = ModuleCategory.Scene,
+            defaultAlias = "LunarMineVeinModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { LunarMineVeinModulePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.LunarMineVeins(rtid) }
+        ),
+        "RadiationMeteorModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_radiation_meteor_title,
+            descriptionRes = R.string.module_radiation_meteor_desc,
+            icon = Icons.Default.Star,
+            isCore = true,
+            category = ModuleCategory.Scene,
+            defaultAlias = "RadiationMeteorModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { RadiationMeteorModulePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.RadiationMeteorModule(rtid) }
+        ),
 
         // === 特殊设置 ===
+        "LevelPowerupModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_level_powerups_title,
+            descriptionRes = R.string.module_level_powerups_desc,
+            icon = Icons.Default.TouchApp,
+            isCore = true,
+            category = ModuleCategory.Special,
+            defaultAlias = "LevelPowerups",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { LevelPowerupModulePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.LevelPowerups(rtid) }
+        ),
         "RocketZombieFlickModuleProperties" to ModuleMetadata(
             titleRes = R.string.module_rocket_zombie_flick_title,
             descriptionRes = R.string.module_rocket_zombie_flick_desc,
@@ -1380,28 +1415,6 @@ object ModuleRegistry {
             defaultSource = "CurrentLevel",
             initialDataFactory = { MoonLifeSupportSystemPropertiesData() },
             navigationFactory = { rtid -> EditorSubScreen.MoonLifeSupportSystem(rtid) }
-        ),
-        "LunarMineVeinModuleProperties" to ModuleMetadata(
-            titleRes = R.string.module_lunar_mine_vein_title,
-            descriptionRes = R.string.module_lunar_mine_vein_desc,
-            icon = Icons.Default.Landscape,
-            isCore = true,
-            category = ModuleCategory.Special,
-            defaultAlias = "LunarMineVeinModule",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { LunarMineVeinModulePropertiesData() },
-            navigationFactory = { rtid -> EditorSubScreen.LunarMineVeins(rtid) }
-        ),
-        "RadiationMeteorModuleProperties" to ModuleMetadata(
-            titleRes = R.string.module_radiation_meteor_title,
-            descriptionRes = R.string.module_radiation_meteor_desc,
-            icon = Icons.Default.Star,
-            isCore = true,
-            category = ModuleCategory.Special,
-            defaultAlias = "RadiationMeteorModule",
-            defaultSource = "CurrentLevel",
-            initialDataFactory = { RadiationMeteorModulePropertiesData() },
-            navigationFactory = { rtid -> EditorSubScreen.RadiationMeteorModule(rtid) }
         ),
 
         )

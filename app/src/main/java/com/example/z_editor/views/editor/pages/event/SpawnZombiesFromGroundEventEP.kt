@@ -67,6 +67,7 @@ import com.example.z_editor.ui.theme.LocalDarkTheme
 import com.example.z_editor.ui.theme.PvzBrownDark
 import com.example.z_editor.ui.theme.PvzBrownLight
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.LaneRow
@@ -312,6 +313,7 @@ fun SpawnZombiesFromGroundEventEP(
                 focusManager.clearFocus()
             })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "编辑 $currentAlias",
@@ -347,8 +349,7 @@ fun SpawnZombiesFromGroundEventEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            contentPadding = PaddingValues(bottom = 32.dp)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // === 区域 1: 出怪范围设置 ===
             item {

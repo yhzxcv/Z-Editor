@@ -48,6 +48,7 @@ fun UnknownEP(rtid: String, onBack: () -> Unit, scrollState: ScrollState) {
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             TopAppBar(
                 title = { Text("模块编辑器开发中", fontWeight = FontWeight.Bold, fontSize = 22.sp) },

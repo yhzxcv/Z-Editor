@@ -304,8 +304,6 @@ fun SpawnRocketLandingEventEP(
                     }
                 }
             }
-
-            item { Spacer(Modifier.height(72.dp)) }
         }
     }
 }

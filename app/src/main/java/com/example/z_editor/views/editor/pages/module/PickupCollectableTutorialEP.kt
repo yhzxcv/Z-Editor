@@ -52,6 +52,7 @@ import com.example.z_editor.ui.theme.PvzPurpleDark
 import com.example.z_editor.ui.theme.PvzPurpleLight
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import rememberJsonSync
@@ -85,6 +86,7 @@ fun PickupCollectableTutorialEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "捡取教程属性",
@@ -284,8 +286,6 @@ fun PickupCollectableTutorialEP(
                     )
                 }
             }
-
-            Spacer(Modifier.height(32.dp))
         }
     }
 }

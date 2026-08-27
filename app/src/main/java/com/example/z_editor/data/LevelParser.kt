@@ -1,7 +1,10 @@
 package com.example.z_editor.data
 
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonElement
+import com.google.gson.JsonNull
+import com.google.gson.JsonObject
 
 data class ParsedLevelData(
     val levelDef: LevelDefinitionData?,
@@ -13,21 +16,82 @@ data class ParsedLevelData(
 object LevelParser {
     private val gson = Gson()
 
-    fun parseLevel(levelFile: PvzLevelFile): ParsedLevelData {
-        val objectMap = levelFile.objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
+    /**
+     * 剔除 objects 里的 null 元素并容忍 objects 整体为 null。
+     * Gson 对数组多余逗号宽容（[a,,b]→[a,null,b]、[a,b,]→[a,b,null]），会解析出 null 元素；
+     * 关卡对象不可能为 null，统一剔除防下游 NPE。返回无 null 的新列表，不改原列表。
+     */
+    fun sanitizeObjectList(objects: List<PvzObject?>?): List<PvzObject> =
+        objects?.filterNotNull() ?: emptyList()
 
-        val levelDefObj = levelFile.objects.find { it.objClass == "LevelDefinition" }
+    /**
+     * 递归剔除 JsonElement 树中数组里的 null 元素，并深清 objData 嵌套数组（如 "Waves":[1,2,] → [1,2,null]）。
+     * 多余逗号只在**数组**里产生 null 元素；对象值 "k":null 需显式写出、不会由此产生，予以保留
+     * （可能是有意为之）。返回重建的新树，不改原树。
+     */
+    fun sanitizeJsonElement(json: JsonElement?): JsonElement {
+        if (json == null || json.isJsonNull) return json ?: JsonNull.INSTANCE
+        if (json.isJsonArray) {
+            val out = JsonArray()
+            for (e in json.asJsonArray) {
+                if (e.isJsonNull) continue
+                out.add(sanitizeJsonElement(e))
+            }
+            return out
+        }
+        if (json.isJsonObject) {
+            val out = JsonObject()
+            for ((k, v) in json.asJsonObject.entrySet()) {
+                out.add(k, sanitizeJsonElement(v))
+            }
+            return out
+        }
+        return json
+    }
+
+    /**
+     * 深清关卡对象：剔除 objects 列表里的 null 元素，并对每个对象的 objData 递归剔除数组中的 null 元素
+     * （多余逗号在 objData 嵌套数组里也会留 null，仅清列表清不干净，落盘与下游解析仍会炸）。
+     * 就地重建 objData（同一 PvzObject 实例，加载端 retainAll 就地剔除才能生效），返回无 null 的新列表。
+     */
+    fun sanitizeLevelObjects(objects: List<PvzObject?>?): List<PvzObject> {
+        val clean = objects?.filterNotNull() ?: return emptyList()
+        for (obj in clean) {
+            obj.objData = sanitizeJsonElement(obj.objData)
+        }
+        return clean
+    }
+
+    fun parseLevel(levelFile: PvzLevelFile): ParsedLevelData {
+        val objects = sanitizeObjectList(levelFile.objects)
+        val objectMap = objects.associateBy { it.aliases?.firstOrNull() ?: "unknown" }
+
+        val levelDefObj = objects.find { it.objClass == "LevelDefinition" }
+        // objData 结构损坏（如字段类型错配、objdata 是数字/数组而非对象）时 Gson 抛 JsonSyntaxException；
+        // 容错返回 null 让编辑器降级显示而非闪退。
         val levelDefData = if (levelDefObj != null) {
-            gson.fromJson(levelDefObj.objData, LevelDefinitionData::class.java)
+            try {
+                gson.fromJson(levelDefObj.objData, LevelDefinitionData::class.java)
+            } catch (_: Exception) {
+                null
+            }
         } else null
 
-        val waveModObj = levelFile.objects.find { it.objClass == "WaveManagerModuleProperties" }
+        val waveModObj = objects.find { it.objClass == "WaveManagerModuleProperties" }
         val waveModData =
-            waveModObj?.let { gson.fromJson(it.objData, WaveManagerModuleData::class.java) }
+            try {
+                waveModObj?.let { gson.fromJson(it.objData, WaveManagerModuleData::class.java) }
+            } catch (_: Exception) {
+                null
+            }
 
-        val waveMgrObj = levelFile.objects.find { it.objClass == "WaveManagerProperties" }
+        val waveMgrObj = objects.find { it.objClass == "WaveManagerProperties" }
         val waveMgrData = if (waveMgrObj != null) {
-            gson.fromJson(waveMgrObj.objData, WaveManagerData::class.java)
+            try {
+                gson.fromJson(waveMgrObj.objData, WaveManagerData::class.java)
+            } catch (_: Exception) {
+                null
+            }
         } else null
 
         return ParsedLevelData(levelDefData, waveMgrData, waveModData, objectMap)
@@ -48,9 +112,10 @@ object LevelParser {
      * （实际文件不应出现，防御性保留以防误删）。
      */
     fun findOrphanedObjects(levelFile: PvzLevelFile): List<PvzObject> {
-        if (levelFile.objects.none { it.objClass == "LevelDefinition" }) return emptyList()
+        val objects = sanitizeObjectList(levelFile.objects)
+        if (objects.none { it.objClass == "LevelDefinition" }) return emptyList()
         val reachable = computeReachableObjects(levelFile)
-        return levelFile.objects.filter { it !in reachable }
+        return objects.filter { it !in reachable }
     }
 
     /**
@@ -62,7 +127,7 @@ object LevelParser {
      * 因该次删除而失去所有引用的内联子对象（挑战任务实体、波次容器/事件等）。
      */
     fun computeReachableObjects(levelFile: PvzLevelFile): Set<PvzObject> {
-        val objects = levelFile.objects
+        val objects = sanitizeObjectList(levelFile.objects)
         val rootIndex = objects.indexOfFirst { it.objClass == "LevelDefinition" }
         if (rootIndex < 0) return emptySet()
         // 别名 → 对象索引；同一别名多个对象时后者覆盖（与编辑器 objectMap 语义一致）
@@ -102,7 +167,8 @@ object LevelParser {
         levelFile: PvzLevelFile,
         levelModuleAliases: Set<String>? = null
     ): List<String> {
-        val levelDefObj = levelFile.objects.find { it.objClass == "LevelDefinition" }
+        val objects = sanitizeObjectList(levelFile.objects)
+        val levelDefObj = objects.find { it.objClass == "LevelDefinition" }
             ?: return emptyList()
         val modules = try {
             val json = levelDefObj.objData
@@ -116,7 +182,7 @@ object LevelParser {
             return emptyList()
         }
         if (modules.isEmpty()) return emptyList()
-        val fileAliases = levelFile.objects.flatMap { it.aliases ?: emptyList() }.toHashSet()
+        val fileAliases = objects.flatMap { it.aliases ?: emptyList() }.toHashSet()
         return modules.filter { rtid ->
             val info = RtidParser.parse(rtid) ?: return@filter false
             when (info.source) {

@@ -383,7 +383,7 @@ fun WaveTimelineTab(
     // --- A. 期望展示 ---
     if (showExpectationDialog != null) {
         val waveIdx = showExpectationDialog!!
-        val isFlag = (waveIdx % interval == 0 || waveIdx == waveManager.waves.size)
+        val isFlag = isFlagWave(waveIdx, waveManager.waves.size, interval)
         val currentPoints = calculatePoints(waveIdx, isFlag, waveModule)
         val expectationMap = remember(waveIdx, refreshTrigger) {
             val tempParsedData = ParsedLevelData(null, waveManager, waveModule, objectMap)
@@ -1149,8 +1149,8 @@ fun WaveTimelineTab(
                 items = waveManager.waves,
                 key = { index, _ -> "wave_row_${index}_${refreshTrigger}" }) { index, waveEvents ->
                 val waveIndex = index + 1
-                val isFlagWave = (waveIndex % interval == 0)
-                val points = calculatePoints(waveIndex, isFlagWave, waveModule)
+                val flagWave = isFlagWave(waveIndex, waveManager.waves.size, interval)
+                val points = calculatePoints(waveIndex, flagWave, waveModule)
                 val dismissState = rememberSwipeToDismissBoxState(
                     confirmValueChange = { value ->
                         when (value) {
@@ -1191,7 +1191,7 @@ fun WaveTimelineTab(
                 ) {
                     WaveRowItem(
                         waveIndex = waveIndex,
-                        isFlagWave = isFlagWave,
+                        isFlagWave = flagWave,
                         rtidList = waveEvents,
                         objectMap = objectMap,
                         points = points,
@@ -1428,6 +1428,16 @@ fun DrawerEventItem(
             }
         }
     }
+}
+
+/**
+ * 判定某波是否为旗帜波：每 flagWaveInterval 波一个，且每关最后一波也必定是旗帜波
+ * （PvZ2 规则：除旗帜间隔外，最后一波也是旗帜波，见 WaveManagerPropertiesEP 说明）。
+ * waveIndex 从 1 开始；interval 为已归一化的旗帜间隔（<=0 按 10 处理，与调用处一致）。
+ */
+fun isFlagWave(waveIndex: Int, totalWaves: Int, interval: Int): Boolean {
+    val effInterval = if (interval <= 0) 10 else interval
+    return (waveIndex % effInterval == 0 || waveIndex == totalWaves)
 }
 
 fun calculatePoints(waveIndex: Int, isFlag: Boolean, waveModule: WaveManagerModuleData?): Int {

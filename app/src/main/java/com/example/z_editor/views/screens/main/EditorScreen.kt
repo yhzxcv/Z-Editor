@@ -77,6 +77,7 @@ import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.ReferenceRepository
 import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.repository.ZombieRepository
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.google.gson.Gson
 import java.io.File
 
@@ -309,7 +310,22 @@ fun EditorScreen(
             PlantRepository.init(context)
             if (file != null) {
                 rootLevelFile = file
-                rootLevelFile = file
+                // Gson 对多余逗号宽容，objects 列表与各对象 objData 嵌套数组里都可能留 null 元素
+                // （[a,,b]→[a,null,b] / "Waves":[1,2,]→[1,2,null]），就地剔除，否则 recalculateLevelState /
+                // 各 Tab / 清理功能对 null 取属性 NPE 闪退。objData 就地重建为新树。
+                // 注意：objects 声明为非空，但 Gson 缺 objects 键时运行时为 null，此处防御处理。
+                val objects = file.objects
+                @Suppress("SENSELESS_COMPARISON")
+                if (objects == null) {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.editor_screen_error_load_failed),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    onBack()
+                    return@LaunchedEffect
+                }
+                objects.retainAll(LevelParser.sanitizeLevelObjects(objects))
                 parsedData = LevelParser.parseLevel(file)
                 recalculateLevelState()
                 selectedTabIndex = 0
@@ -1033,6 +1049,7 @@ fun EditorScreen(
             ) { targetState ->
                 if (targetState == EditorSubScreen.None) {
                     Scaffold(
+                        contentWindowInsets = EditorContentWindowInsets(),
                         topBar = {
                             TopAppBar(
                                 title = {

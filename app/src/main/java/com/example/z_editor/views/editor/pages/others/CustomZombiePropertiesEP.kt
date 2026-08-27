@@ -225,6 +225,7 @@ fun CustomZombiePropertiesEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             TopAppBar(
                 title = {

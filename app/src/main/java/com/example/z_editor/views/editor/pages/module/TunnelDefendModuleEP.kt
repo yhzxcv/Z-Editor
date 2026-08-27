@@ -63,6 +63,7 @@ import com.example.z_editor.ui.theme.PvzBrownLight
 import com.example.z_editor.ui.theme.PvzGridBorder
 import com.example.z_editor.views.components.AssetImage
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputDouble
@@ -184,6 +185,7 @@ fun TunnelDefendModuleEP(
 
     Scaffold(
         modifier = Modifier.pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "地宫坑道设置",

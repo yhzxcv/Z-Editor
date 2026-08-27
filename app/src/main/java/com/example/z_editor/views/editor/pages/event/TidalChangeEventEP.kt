@@ -52,6 +52,7 @@ import com.example.z_editor.ui.theme.PvzGridBorder
 import com.example.z_editor.ui.theme.PvzLightBlueDark
 import com.example.z_editor.ui.theme.PvzLightBlueLight
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.NumberInputInt
@@ -97,6 +98,7 @@ fun TidalChangeEventEP(
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(onTap = { focusManager.clearFocus() })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "编辑 $currentAlias",
@@ -320,8 +322,6 @@ fun TidalChangeEventEP(
                     }
                 }
             }
-
-            Spacer(Modifier.height(32.dp))
         }
     }
 }

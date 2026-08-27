@@ -72,6 +72,7 @@ import com.example.z_editor.data.repository.PlantRepository
 import com.example.z_editor.data.repository.ZombiePropertiesRepository
 import com.example.z_editor.data.repository.ZombieRepository
 import com.example.z_editor.views.editor.pages.others.CommonEditorTopAppBar
+import com.example.z_editor.views.editor.pages.others.EditorContentWindowInsets
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import com.example.z_editor.views.editor.pages.others.LaneRow
@@ -315,6 +316,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                 focusManager.clearFocus()
             })
         },
+        contentWindowInsets = EditorContentWindowInsets(),
         topBar = {
             CommonEditorTopAppBar(
                 title = "编辑 $currentAlias",
@@ -350,8 +352,7 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
-            contentPadding = PaddingValues(bottom = 32.dp)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             item {
                 val jamOptions = listOf(

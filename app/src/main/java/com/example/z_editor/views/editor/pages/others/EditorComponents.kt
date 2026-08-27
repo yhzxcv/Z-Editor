@@ -12,12 +12,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -86,6 +90,15 @@ import com.example.z_editor.data.ZombieSpawnData
 import com.example.z_editor.data.repository.ZombieRepository
 import com.example.z_editor.ui.theme.LocalDarkTheme
 import com.example.z_editor.views.components.AssetImage
+
+/**
+ * 所有编辑页共用的内容 insets：系统栏（顶部状态栏/底部导航栏）+ 软键盘。
+ * 由各页 Scaffold 的 contentWindowInsets 引用；edge-to-edge 下 adjustResize 被忽略，
+ * 不加这个键盘会直接盖住底部输入框。注意：应在滚动容器外层收缩视口，
+ * 而非在容器内部放 Spacer(imePadding)（那不会缩小视口，自动滚动仍落在键盘后）。
+ */
+@Composable
+fun EditorContentWindowInsets(): WindowInsets = WindowInsets.systemBars.union(WindowInsets.ime)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
