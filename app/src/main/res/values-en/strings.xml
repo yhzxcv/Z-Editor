@@ -377,6 +377,8 @@
     <string name="module_category_mode">Special Modes</string>
     <string name="module_category_scene">Scene Config</string>
     <string name="module_category_special">Special Settings</string>
+    <string name="module_level_powerups_title">Level Powerups</string>
+    <string name="module_level_powerups_desc">Configures the free-use gesture skills in the level</string>
     <string name="module_rocket_zombie_flick_title">Rocket Zombie Flick</string>
     <string name="module_rocket_zombie_flick_desc">Rocket Zombie responds to finger-flick-away actions</string>
     <string name="module_lunar_terminal_title">Lunar Terminal</string>
