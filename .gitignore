@@ -14,3 +14,9 @@
 .cxx
 local.properties
 /app/src/main/assets/reference/
+
+# PTX→PNG 逆向工具的临时产物与测试数据包（勿入库）
+/_ptx_out/
+*.rsb.smf
+*.smf
+!app/src/main/assets/**

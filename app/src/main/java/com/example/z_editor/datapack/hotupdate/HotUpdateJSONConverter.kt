@@ -2,9 +2,10 @@ package com.example.z_editor.datapack.hotupdate
 
 import android.content.Context
 import android.net.Uri
-import android.util.Base64
 import androidx.documentfile.provider.DocumentFile
 import com.example.z_editor.datapack.crypto.Pvz2Crypto
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * Hot-update JSON ↔ normal JSON file converter, SAF-aware.
@@ -13,7 +14,14 @@ import com.example.z_editor.datapack.crypto.Pvz2Crypto
  * The encryption is the same as RTON but with a different pipeline order.
  *
  * Ported from scripts/hujson/PvZ2_Level_Tool.py + packer.py
+ *
+ * Base64 用的是 Kotlin 标准库而非 `android.util.Base64`，**这是有意的**：
+ * 后者在 JVM 单测里只有 stub（函数体是 `throw RuntimeException("Stub!")`），
+ * 会把这几个纯逻辑函数全部拖成"not mocked"失败，13 个用例一起红。
+ * 换成 stdlib 后无 Android 依赖，单测能真跑；且不引入新依赖、与 API level 无关。
+ * 注意**不能**换成 `java.util.Base64`——那是 API 26+，本项目 minSdk 是 24。
  */
+@OptIn(ExperimentalEncodingApi::class)
 object HotUpdateJSONConverter {
 
     fun convertToNormalJson(
@@ -105,7 +113,7 @@ object HotUpdateJSONConverter {
         val trimmed = content.trim()
         // Hot-update format is base64-encoded binary, try to decode
         return try {
-            val decoded = Base64.decode(trimmed, Base64.DEFAULT)
+            val decoded = Base64.Mime.decode(trimmed)
             // Should start with 0x1000 header
             decoded.size >= 2 && decoded[0] == 0x10.toByte() && decoded[1] == 0x00.toByte()
         } catch (_: Exception) {
@@ -119,7 +127,10 @@ object HotUpdateJSONConverter {
         val trimmed = input.trim()
         return try {
             // Step 1: Base64 decode
-            val raw = Base64.decode(trimmed, Base64.DEFAULT)
+            // Mime 而非 Default：Mime 会忽略折行，与原先 android 的 DEFAULT 一致。
+            // 本项目的编码器用 NO_WRAP（不折行），但外部工具产出的热更新文件可能是
+            // 折行的，用 Default 解会丢这个容忍度。
+            val raw = Base64.Mime.decode(trimmed)
 
             // Step 2: Strip 0x1000 header
             val data = if (raw.size >= 2 && raw[0] == 0x10.toByte() && raw[1] == 0x00.toByte()) {
@@ -161,6 +172,7 @@ object HotUpdateJSONConverter {
         val withHeader = header + encrypted
 
         // Step 4: Base64 encode
-        return Base64.encodeToString(withHeader, Base64.NO_WRAP)
+        // Default 不折行也不加尾随换行，等价于原来的 NO_WRAP。
+        return Base64.Default.encode(withHeader)
     }
 }

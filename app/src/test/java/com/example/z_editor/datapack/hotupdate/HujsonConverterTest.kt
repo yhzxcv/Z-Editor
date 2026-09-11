@@ -3,6 +3,8 @@ package com.example.z_editor.datapack.hotupdate
 import com.example.z_editor.datapack.crypto.Pvz2Crypto
 import org.junit.Assert.*
 import org.junit.Test
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
  * Round-trip tests for HujsonConverter encode/decode.
@@ -130,24 +132,37 @@ class HujsonConverterTest {
         assertEquals(original, decoded)
     }
 
-    @Test(expected = Exception::class)
-    fun decode_withWrongKey_shouldFail() {
+    @Test
+    fun decode_withWrongKey_doesNotReproduceOriginal() {
         val original = """{"test":1}"""
         val encoded = HotUpdateJSONConverter.encodeHotUpdateString(original, defaultKey)
-        // Use a different key — should produce garbage that zlib can't decompress
-        HotUpdateJSONConverter.decodeHotUpdateString(encoded, "wrong_key_string_here")
+
+        // ⚠️ 用错 key **不会抛异常**。Pvz2Crypto.popcapZlibDecompress 在 magic 对不上时
+        // 是"原样返回"而不是抛（见 Pvz2Crypto.kt 末尾的 `return data`），所以这里
+        // 拿到的是解密后的乱码，一路静默返回，decodeHotUpdateString 里的 try/catch
+        // 实际上几乎碰不到。
+        //
+        // 这条用例原先写的是 @Test(expected = Exception::class)，且长期是"绿的"
+        // ——但那个异常是 android.util.Base64 的 stub 抛的 "not mocked"，
+        // 跟 key 对不对毫无关系。把 Base64 换成 Kotlin stdlib 之后才露出真面目。
+        // 所以这里改成钉住**现状**：至少不能原样还原出原文。
+        val decoded = HotUpdateJSONConverter.decodeHotUpdateString(encoded, "wrong_key_string_here")
+        assertNotEquals("用错 key 不该还原出原文", original, decoded)
     }
 
     // ---- Base64 output format ----
 
     @Test
+    @OptIn(ExperimentalEncodingApi::class)
     fun encode_outputIsBase64() {
         val encoded = HotUpdateJSONConverter.encodeHotUpdateString("""{"a":1}""", defaultKey)
         // Should be valid Base64 without line wraps
         assertFalse("Output should not contain newlines", encoded.contains("\n"))
         assertFalse("Output should not contain carriage returns", encoded.contains("\r"))
-        // Should decode back to binary starting with 0x1000
-        val decoded = android.util.Base64.decode(encoded, android.util.Base64.DEFAULT)
+        // Should decode back to binary starting with 0x1000.
+        // 这里用 stdlib 的 Base64 而不是 android.util.Base64 —— 后者在 JVM 单测里
+        // 只有 stub，一调用就 "not mocked" 抛异常。
+        val decoded = Base64.Mime.decode(encoded)
         assertEquals(0x10.toByte(), decoded[0])
         assertEquals(0x00.toByte(), decoded[1])
     }

@@ -1,6 +1,7 @@
 package com.example.z_editor.datapack.smf
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import java.io.ByteArrayOutputStream
@@ -30,7 +31,21 @@ object SmfUnpacker {
         /** Skip image entries entirely (still counted in progress). */
         val skipImages: Boolean = false,
         /** Only process subgroups whose name starts with this prefix. */
-        val subgroupFilterPrefix: String? = null
+        val subgroupFilterPrefix: String? = null,
+        /**
+         * 把 .ptx 图像条目解码成 PNG 写出（同名 .png），而不是原样落地 .ptx。
+         *
+         * 解不出来的（格式未支持、PTX_INFO 对不上）**回退为写原始 .ptx**，绝不静默丢文件
+         * —— 见 [UnpackResult.pngFallback]。独立的 RSGP 没有 PTX_INFO 表，全部回退。
+         */
+        val convertPtxToPng: Boolean = false,
+        /**
+         * 转 PNG 的同时**保留原 .ptx**（.png 与 .ptx 并存）。
+         *
+         * 仅在 [convertPtxToPng] 为真时有意义；关闭时 .ptx 本来就会原样落地，无需再留。
+         * 解码失败的那部分不受影响——它们无论开关如何都只有 .ptx。
+         */
+        val keepPtx: Boolean = false
     )
 
     data class UnpackResult(
@@ -50,6 +65,10 @@ object SmfUnpacker {
         val sanitizedCount: Int,
         /** Number of subgroups actually processed (after filter + bounds checks). */
         val subgroupsProcessed: Int,
+        /** .ptx 成功解码并按 .png 写出的数量（仅 convertPtxToPng 时非零）。 */
+        val pngWritten: Int,
+        /** .ptx 解不出来、按原样写回 .ptx 的数量（未支持格式 / 无 PTX_INFO / 解码失败）。 */
+        val pngFallback: Int,
         val outputDir: File
     )
 
@@ -125,6 +144,8 @@ object SmfUnpacker {
                     skippedInvalid = state.skippedInvalid,
                     sanitizedCount = state.sanitizedCount,
                     subgroupsProcessed = state.subgroupsProcessed,
+                    pngWritten = state.pngWritten,
+                    pngFallback = state.pngFallback,
                     outputDir = outputRootDir
                 )
             )
@@ -142,6 +163,11 @@ object SmfUnpacker {
         val sgInfoOffset = rawData.readU32LE(44)
         val sgInfoEntrySize = rawData.readU32LE(48)
         val stride = sgInfoEntrySize.coerceIn(1, 65536)
+
+        // 纹理表（PTX→PNG 用）。解析失败/不存在时为空表，此时所有 .ptx 都回退成原样落地。
+        state.ptxInfos = RsbTextureIndex.parseHeader(rawData)
+            ?.let { RsbTextureIndex.parsePtxInfos(rawData, it) }
+            ?: emptyList()
 
         val subgroups = mutableListOf<Subgroup>()
 
@@ -183,6 +209,8 @@ object SmfUnpacker {
                 rsgOffset, rsgSize, compFlags,
                 dataOffset, compDataSize, decompDataSize,
                 imageOffset, compImageSize, decompImageSize,
+                // 本子组第一张纹理在全局 PTX_INFO 表里的起始下标
+                rawData.readU32LE(infoStart + 200),
                 entries
             )
             state.subgroupsProcessed++
@@ -213,8 +241,11 @@ object SmfUnpacker {
             0, rawData.size.toLong(), compFlags,
             dataOffset, compDataSize, decompDataSize,
             imageOffset, compImageSize, decompImageSize,
+            // 独立 RSGP 没有 PTX_INFO 表 → 无法解码纹理，.ptx 一律原样落地
+            0,
             entries
         )
+        state.ptxInfos = emptyList()
         state.subgroupsProcessed = 1
 
         countTotal(state, listOf(sg))
@@ -308,6 +339,19 @@ object SmfUnpacker {
                 state.skippedUnsafePaths++
                 continue
             }
+            // ---- .ptx → PNG（可选） ----
+            // 解码失败一律回退成原样写 .ptx：宁可给用户原始文件，也不能静默丢。
+            if (options.convertPtxToPng && e.isImage && safeRel.endsWith(".ptx", true)) {
+                val pngRel = safeRel.substringBeforeLast('.') + ".png"
+                if (writePtxPng(section, e, safeRel, pngRel, sg, state, outputRootDir)) {
+                    // 解码成功、PNG 已落盘。keepPtx 时继续往下按原路径补写一份 .ptx，否则到此为止。
+                    if (!options.keepPtx) continue
+                } else {
+                    state.pngFallback++
+                    // fall through：按原路径写回 .ptx
+                }
+            }
+
             val target = File(outputRootDir, safeRel)
             target.parentFile?.mkdirs()
             try {
@@ -319,6 +363,59 @@ object SmfUnpacker {
                 Log.w(TAG, "write failed: $safeRel", e2)
                 state.skippedInvalid++
             }
+        }
+    }
+
+    // ---- PTX → PNG ----
+
+    /**
+     * 尝试把一条 .ptx 条目解码成 PNG 写出。
+     * @return true = PNG 已写出（调用方应跳过原始 .ptx）；false = 解不出来，调用方回退写 .ptx。
+     *
+     * 三道闸：没有 part1Index / PTX_INFO 下标越界 / 格式未实现 —— 任一不过都回退，不猜。
+     */
+    private fun writePtxPng(
+        section: ByteArray,
+        e: SmfPacker.RsgpFileEntry,
+        safeRel: String,
+        pngRel: String,
+        sg: Subgroup,
+        state: State,
+        outputRootDir: File
+    ): Boolean {
+        if (e.part1Index < 0) return false
+        val info = state.ptxInfos.getOrNull(sg.ptxBeforeNumber + e.part1Index) ?: return false
+        if (!PtxDecoder.isSupported(info.format)) return false
+
+        val pixels = try {
+            PtxDecoder.decode(section.copyOfRange(e.offset, e.offset + e.size), info) ?: return false
+        } catch (ex: Exception) {
+            Log.w(
+                TAG,
+                "PTX 解码失败 $safeRel (${PtxDecoder.formatName(info.format)} " +
+                    "${info.width}x${info.height})",
+                ex
+            )
+            return false
+        }
+
+        val target = File(outputRootDir, pngRel)
+        return try {
+            target.parentFile?.mkdirs()
+            val bitmap = Bitmap.createBitmap(pixels, info.width, info.height, Bitmap.Config.ARGB_8888)
+            val ok = FileOutputStream(target).use {
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, it)
+            }
+            bitmap.recycle()
+            if (!ok) return false
+            state.fileCount++
+            state.bytesWritten += target.length()
+            state.pngWritten++
+            if (pngRel != e.name) state.sanitizedCount++
+            true
+        } catch (ex: Exception) {
+            Log.w(TAG, "PNG 写入失败: $pngRel", ex)
+            false
         }
     }
 
@@ -478,6 +575,8 @@ object SmfUnpacker {
         val imageOffset: Int,
         val compImageSize: Int,
         val decompImageSize: Int,
+        /** 本子组第一张纹理在全局 PTX_INFO 表里的起始下标（0 = 独立 RSGP，无表）。 */
+        val ptxBeforeNumber: Int,
         val entries: List<SmfPacker.RsgpFileEntry>
     )
 
@@ -496,5 +595,9 @@ object SmfUnpacker {
         var skippedInvalid = 0
         var sanitizedCount = 0
         var subgroupsProcessed = 0
+        var pngWritten = 0
+        var pngFallback = 0
+        /** RSB 的 PTX_INFO 表；独立 RSGP 恒为空表。 */
+        var ptxInfos: List<PtxDecoder.PtxInfo> = emptyList()
     }
 }

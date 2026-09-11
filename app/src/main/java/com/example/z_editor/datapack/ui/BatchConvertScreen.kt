@@ -555,6 +555,8 @@ fun BatchConvertScreen(onBack: () -> Unit) {
                 )
             }
             item {
+                // 与上面的输入框拉开：LazyColumn 的 spacedBy 只有 8dp，按钮会显得贴在输入框上
+                Spacer(Modifier.height(12.dp))
                 Button(
                     onClick = { analyzePath() },
                     enabled = !isConverting,
@@ -898,6 +900,8 @@ private fun EmptyHint(
 private fun ErrorBanner(title: String, body: String) {
     // 纯色 error 容器 + onError 内容，与 SmfUnpackerScreen 解包失败样式一致
     Card(
+        // 不 fillMaxWidth 的话，短标题（如「无法解析路径」）会让卡片缩成一个窄块
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error),
         shape = RoundedCornerShape(12.dp)
     ) {

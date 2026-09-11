@@ -7,6 +7,11 @@ import android.os.Environment
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +37,7 @@ import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.FolderOff
 import androidx.compose.material.icons.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -45,6 +51,8 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -72,6 +80,7 @@ import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.example.z_editor.data.repository.LevelRepository
 import com.example.z_editor.datapack.smf.SmfUnpacker
+import com.example.z_editor.datapack.smf.AtlasSplitRunner
 import com.example.z_editor.ui.theme.PvzBluePrimary
 import com.example.z_editor.views.components.GateCard
 import com.example.z_editor.views.components.OpenDocumentTreeFixed
@@ -87,9 +96,24 @@ import java.io.File
 
 /** 自定义输出目录在 `datapack_prefs` 里的键，存的是**真实路径字符串**。 */
 private const val KEY_OUTPUT_DIR = "smf_unpack_output_dir"
+private const val KEY_PTX_TO_PNG = "smf_unpack_ptx_to_png"
+private const val KEY_KEEP_PTX = "smf_unpack_keep_ptx"
+private const val KEY_SPLIT_ATLASES = "smf_unpack_split_atlases"
 
 /** 默认输出目录名，落在外部存储根下 —— 与加自定义目录之前的行为一致。 */
 private const val DEFAULT_OUTPUT_DIR_NAME = "Z_editor"
+
+/** 拆分产物在解包根下的固定子目录，与独立拆分页同名同位置。 */
+private const val IMAGE_DIR = "_images"
+
+/**
+ * 解包页的两阶段。勾了「顺带拆分图集」时先是解包、再是拆分，两阶段共用同一块进度区，
+ * 靠这个枚举切换标题，免得拆分阶段还显示「解包中」。
+ */
+private enum class UnpackStage(val idleLabel: String) {
+    Unpacking("解包中..."),
+    Splitting("正在拆分图集...")
+}
 
 /**
  * SMF/RSB Unpacker screen.
@@ -154,6 +178,21 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
     var customOutputBasePath by remember {
         mutableStateOf(prefs.getString(KEY_OUTPUT_DIR, null))
     }
+
+    // PTX → PNG：默认关，行为与老版本逐字节一致
+    var ptxToPng by remember { mutableStateOf(prefs.getBoolean(KEY_PTX_TO_PNG, false)) }
+    // 保留原 PTX：只在转 PNG 开启时才有意义，UI 上也只在那种情况下露出来
+    var keepPtx by remember { mutableStateOf(prefs.getBoolean(KEY_KEEP_PTX, false)) }
+
+    // 密钥不在这里配置：解包产物里的 RESOURCES*.RTON 本身就是普通 RTON，
+    // 拆分不需要密钥。真碰上加密的（非解包产物）才借用批量转换页那份。
+    // 顺带拆分图集：默认关。开了就在解包成功后接着拆，产物落 <解包目录>/_images/
+    var splitAtlases by remember { mutableStateOf(prefs.getBoolean(KEY_SPLIT_ATLASES, false)) }
+    // 拆分统计与错误**独立于 unpackResult**：UnpackResult 是不可变 data class，
+    // 且拆分失败不该把整次解包报成失败（产物已经落盘了）。
+    var splitStats by remember { mutableStateOf<AtlasSplitRunner.Stats?>(null) }
+    var splitError by remember { mutableStateOf<String?>(null) }
+    var stage by remember { mutableStateOf(UnpackStage.Unpacking) }
     val outputBaseDir = customOutputBasePath?.let { File(it) }
         ?: File(Environment.getExternalStorageDirectory(), DEFAULT_OUTPUT_DIR_NAME)
     val baseName = selectedTemplate?.name?.substringBeforeLast('.')?.ifBlank { "unpacked" } ?: ""
@@ -232,6 +271,46 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
         }
     }
 
+    /**
+     * 解包产物就地拆分，返回 `(统计, 错误文案)`，两者互斥（成功时后者为 null）。
+     *
+     * 走的是与独立拆分页同一个 [AtlasSplitRunner]，区别只是这里图集目录与 RTON 都由
+     * 解包产物决定，用户不必再填一遍。
+     */
+    fun runSplit(unpackRoot: File): Pair<AtlasSplitRunner.Stats?, String?> {
+        val rton = findResourcesRton(unpackRoot)
+            ?: return null to "解包产物里没有 PROPERTIES/RESOURCES*.RTON，未执行拆分"
+
+        // 借用「批量文件格式转换」页已配置的密钥（若有）。解包产物本不该走到这一步
+        val key = prefs.getString("encryption_key", "") ?: ""
+        return when (val pr = AtlasSplitRunner.planFromFile(rton, key)) {
+            is AtlasSplitRunner.PlanResult.EncryptedNoKey ->
+                null to "RESOURCES 清单是加密的。密钥在「批量文件格式转换」页设置，" +
+                        "设好后重新解包即可"
+
+            is AtlasSplitRunner.PlanResult.Failed -> null to pr.message
+
+            is AtlasSplitRunner.PlanResult.Ok -> {
+                val prepared = AtlasSplitRunner.prepare(
+                    plan = pr.plan,
+                    atlasDir = File(unpackRoot, "ATLASES"),
+                    outputRoot = File(unpackRoot, IMAGE_DIR),
+                )
+                val blocking = prepared.blockingErrors()
+                if (blocking.isNotEmpty()) {
+                    null to blocking.joinToString("\n")
+                } else {
+                    val stats = AtlasSplitRunner.run(prepared) { d, t, n ->
+                        progressDone = d
+                        progressTotal = t
+                        progressName = n
+                    }
+                    stats to null
+                }
+            }
+        }
+    }
+
     fun doUnpack() {
         val template = selectedTemplate ?: return
         if (!hasManageStorage) {
@@ -245,6 +324,9 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
         clearingDir = true
         unpackResult = null
         unpackError = null
+        splitStats = null
+        splitError = null
+        stage = UnpackStage.Unpacking
         progressDone = 0
         progressTotal = 0
         progressName = null
@@ -259,7 +341,11 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                     context = context,
                     inputUri = template.uri,
                     outputRootDir = targetDir,
-                    options = SmfUnpacker.UnpackOptions()
+                    options = SmfUnpacker.UnpackOptions(
+                        convertPtxToPng = ptxToPng,
+                        // keepPtx 只在转 PNG 时有意义：关掉转换就别再传，免得留下无效组合
+                        keepPtx = ptxToPng && keepPtx
+                    )
                 ) { d, t, n ->
                     progressDone = d
                     progressTotal = t
@@ -267,18 +353,31 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                 }
             }
 
-            isUnpacking = false
-
             result.fold(
                 onSuccess = { r ->
                     unpackResult = r
+                    // 拆分在同一协程里接着做：只有解包成功才谈得上拆分。
+                    // isUnpacking 到这里先不置 false —— 两阶段共用一块进度区，
+                    // 中途松开会让进度卡片闪一下。
+                    if (splitAtlases) {
+                        stage = UnpackStage.Splitting
+                        progressDone = 0
+                        progressTotal = 0
+                        progressName = null
+                        val (stats, err) = withContext(Dispatchers.IO) { runSplit(targetDir) }
+                        splitStats = stats
+                        splitError = err
+                    }
+                    isUnpacking = false
                     Toast.makeText(
                         context,
-                        "解包完成！已写入 ${r.fileCount} 个文件",
+                        "解包完成！已写入 ${r.fileCount} 个文件" +
+                                (splitStats?.let { "，拆出 ${it.split} 张图片" } ?: ""),
                         Toast.LENGTH_LONG
                     ).show()
                 },
                 onFailure = { e ->
+                    isUnpacking = false
                     val msg = e.message ?: "未知错误"
                     unpackError = msg
                     Toast.makeText(context, "解包失败: $msg", Toast.LENGTH_LONG).show()
@@ -443,6 +542,70 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                 }
             }
 
+            // ---- 解包选项 ----
+            // 三个开关都作用于解包产物、且互不冲突（可同时开），所以合成一张卡，
+            // 而不是各占一个 SectionHeader —— 后者会让人以为必须二选一。
+            // 行距交给 Column 的 spacedBy，行自己不带内边距、行间不加分隔线
+            // （同 CustomZombiePropertiesEP 的密排开关组）。「保留原 PTX」依附于
+            // 「PTX 转 PNG」，只在后者开启时展开，展开/收起带高度动画。
+            item {
+                Spacer(Modifier.height(8.dp))
+                SectionHeader(
+                    icon = Icons.Default.Tune, title = "解包选项",
+                    subtitle = "作用于产物，处理用时会显著增加"
+                )
+            }
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        SwitchRow(
+                            title = "PTX 转 PNG",
+                            subtitle = "解码 .ptx 为同名 .png",
+                            checked = ptxToPng,
+                            themeColor = themeColor,
+                            onCheckedChange = {
+                                ptxToPng = it
+                                prefs.edit { putBoolean(KEY_PTX_TO_PNG, it) }
+                            }
+                        )
+                        AnimatedVisibility(
+                            visible = ptxToPng,
+                            enter = expandVertically() + fadeIn(),
+                            exit = shrinkVertically() + fadeOut()
+                        ) {
+                            SwitchRow(
+                                title = "保留原 PTX 文件",
+                                subtitle = "转换成功时 .ptx 也一并留下",
+                                checked = keepPtx,
+                                themeColor = themeColor,
+                                onCheckedChange = {
+                                    keepPtx = it
+                                    prefs.edit { putBoolean(KEY_KEEP_PTX, it) }
+                                }
+                            )
+                        }
+                        SwitchRow(
+                            title = "图集拆分",
+                            subtitle = "按 RTON 清单拆出每张图片",
+                            checked = splitAtlases,
+                            themeColor = themeColor,
+                            onCheckedChange = {
+                                splitAtlases = it
+                                prefs.edit { putBoolean(KEY_SPLIT_ATLASES, it) }
+                            }
+                        )
+                    }
+                }
+            }
+
             // ---- Progress ----
             if (isUnpacking) {
                 item {
@@ -454,7 +617,7 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                if (clearingDir) "正在清除原有文件..." else "解包中...",
+                                if (clearingDir) "正在清除原有文件..." else stage.idleLabel,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 15.sp
                             )
@@ -519,6 +682,14 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                             ResultRow("解包文件", "${result.fileCount} 个")
                             ResultRow("写入大小", formatSize(result.bytesWritten))
                             ResultRow("子组处理", "${result.subgroupsProcessed} 个")
+                            if (result.pngWritten > 0) ResultRow(
+                                "纹理转 PNG",
+                                "${result.pngWritten} 张"
+                            )
+                            if (result.pngFallback > 0) ResultRow(
+                                "保持原始 PTX",
+                                "${result.pngFallback} 张（格式未支持或缺少纹理信息）"
+                            )
                             if (result.skippedImages > 0) ResultRow(
                                 "跳过图片",
                                 "${result.skippedImages} 个"
@@ -544,8 +715,41 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                                 "${result.sanitizedCount} 个"
                             )
                             ResultRow("输出目录", result.outputDir.absolutePath)
+
+                            // 拆分统计作为独立 state 追加在同一张结果卡里
+                            // （UnpackResult 是不可变 data class，不为它加字段）
+                            splitStats?.let { s ->
+                                Spacer(Modifier.height(8.dp))
+                                ResultRow("拆出图片", "${s.split} 张")
+                                ResultRow("使用图集", "${s.atlasUsed} 张")
+                                if (s.fromPtx5x5 > 0) ResultRow("ASTC 5x5", "${s.fromPtx5x5} 张")
+                                if (s.fromPtx6x6 > 0) ResultRow("ASTC 6x6", "${s.fromPtx6x6} 张")
+                                if (s.fromPng > 0) ResultRow("来自 PNG", "${s.fromPng} 张")
+                                // 刻意显示跳过数：否则用户会疑惑「为什么比预期少几张」
+                                if (s.skippedPlaceholder > 0) ResultRow(
+                                    "跳过占位图",
+                                    "${s.skippedPlaceholder} 张（1×1 全透明）"
+                                )
+                                if (s.failed > 0) ResultRow("拆分失败", "${s.failed} 张")
+                                ResultRow("图片目录", s.outputDir.absolutePath)
+                            }
                         }
                     }
+                }
+            }
+
+            // 拆分失败与解包失败分开报：解包产物是好的，拆分挂了不影响它们
+            splitStats?.takeIf { it.failures.isNotEmpty() }?.let { s ->
+                item {
+                    ErrorBanner(
+                        title = "有 ${s.failed} 张图片未能拆出",
+                        body = s.failures.joinToString("\n")
+                    )
+                }
+            }
+            splitError?.let { err ->
+                item {
+                    ErrorBanner(title = "拆分未完成", body = err)
                 }
             }
 
@@ -596,7 +800,7 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                         )
                         Spacer(Modifier.width(12.dp))
                         Text(
-                            if (clearingDir) "正在清除原有文件..." else "解包中...",
+                            if (clearingDir) "正在清除原有文件..." else stage.idleLabel,
                             fontSize = 16.sp
                         )
                     } else {
@@ -650,12 +854,21 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                         "可以换成任意可写的本地文件夹。"
             )
             HelpSection(
-                title = "不要选成存放关卡的目录",
+                title = "注意输出位置",
                 body = "输出目录不要选成主界面存放关卡的那个文件夹（也包括它的子目录）。\n" +
                         "一个数据包解包后会产生成千上万个文件，堆在关卡库里会让主界面的" +
                         "关卡列表渲染失败。\n" +
                         "本工具会直接拒绝这类选择并提示。若确实想放在附近，请选一个和关卡库" +
                         "平级、而不是嵌套在其中的目录。"
+            )
+            HelpSection(
+                title = "解包选项",
+                body = "• PTX 转 PNG：把 .ptx 纹理解码成同名 .png。解不出来的（格式未支持等）" +
+                        "会原样写回 .ptx，不会静默丢文件\n" +
+                        "• 保留原 PTX 文件：开了上面的转换后才会出现。勾上则 .png 与 .ptx 并存，" +
+                        "不勾只留 .png\n" +
+                        "• 图集拆分：按 PROPERTIES/RESOURCES*.RTON 的记录，从 ATLASES/ 里" +
+                        "把每张图片拆出来写入 _images/"
             )
             HelpSection(
                 title = "注意事项",
@@ -682,7 +895,7 @@ private data class UnpackDisplayFile(
 private fun SectionHeader(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     title: String,
-    subtitle: String
+    subtitle: String = ""
 ) {
     Column(modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -698,11 +911,14 @@ private fun SectionHeader(
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
-        Spacer(Modifier.height(2.dp))
-        Text(
-            subtitle, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = 26.dp)
-        )
+        // 空 subtitle 不留占位（不留 2dp + 一行文字的高度）
+        if (subtitle.isNotEmpty()) {
+            Spacer(Modifier.height(2.dp))
+            Text(
+                subtitle, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 26.dp)
+            )
+        }
     }
 }
 
@@ -816,7 +1032,110 @@ private fun ResultRow(label: String, value: String) {
     }
 }
 
+@Composable
+private fun ErrorBanner(title: String, body: String) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    Icons.Default.Error,
+                    null,
+                    tint = MaterialTheme.colorScheme.onError,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    title, fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onError, fontSize = 16.sp
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            Text(body, fontSize = 13.sp, color = MaterialTheme.colorScheme.onError)
+        }
+    }
+}
+
 // ---- Utilities ----
+
+/**
+ * 「解包选项」卡里的一行：左标题、右开关。
+ *
+ * 行内**不带内边距**，内边距与行距都由外层 `Column` 统一给（见调用处）——
+ * 照 CustomZombiePropertiesEP 的密排开关组来，页面里多个开关挨着时最紧凑。
+ *
+ * 开关名（黑）与其下的一行灰色小字竖直叠放，开关右侧垂直居中。
+ * 说明是**必填**的：这儿的三个开关光看名字分不清差别（尤其「保留原 PTX 文件」
+ * 在没开转换时毫无意义），一句小字比让用户去翻帮助弹窗划算。
+ */
+@Composable
+private fun SwitchRow(
+    title: String,
+    subtitle: String,
+    checked: Boolean,
+    themeColor: Color,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // 标题与灰色说明竖直叠放（同 SectionHeader 的两行式），随开关一起垂直居中。
+        // 说明只占一行，所以间距压到 2dp —— 两行文字要读起来是一组，不是两段。
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Text(
+                title,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                subtitle,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Spacer(Modifier.width(12.dp))
+        Switch(
+            checked = checked,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = MaterialTheme.colorScheme.onSecondary,
+                checkedTrackColor = themeColor,
+                checkedBorderColor = Color.Transparent,
+
+                uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                uncheckedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
+            onCheckedChange = onCheckedChange
+        )
+    }
+}
+
+/**
+ * 找解包产物里的资源清单（`PROPERTIES/RESOURCES*.RTON`）。
+ *
+ * 目录名与文件名都按大小写不敏感匹配：写出来的是容器内的原始路径，不保证与惯例一致。
+ * 理论上只有一个，多于一个时取名字最小的，稳定性比"报错让用户选"更符合这里的场景
+ * （顺带拆分是附加功能，不该因为清扫不出唯一候选就整个卡住）。
+ */
+private fun findResourcesRton(unpackRoot: File): File? {
+    val props = unpackRoot.listFiles()
+        ?.firstOrNull { it.isDirectory && it.name.equals("PROPERTIES", ignoreCase = true) }
+        ?: return null
+    return props.listFiles()
+        ?.filter {
+            it.isFile && it.name.uppercase().let { n ->
+                n.startsWith("RESOURCES") && n.endsWith(".RTON")
+            }
+        }
+        ?.minByOrNull { it.name }
+}
 
 private fun formatSize(bytes: Long): String {
     return when {

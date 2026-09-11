@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Autorenew
+import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.FolderZip
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Unarchive
@@ -71,6 +72,7 @@ private enum class DataPackToolScreen {
     FileManager,
     Smf,
     SmfUnpack,
+    AtlasSplit,
     BatchConvert
 }
 
@@ -144,6 +146,12 @@ fun DataPackToolsScreen(
 
             DataPackToolScreen.BatchConvert -> {
                 BatchConvertScreen(
+                    onBack = { currentTool = DataPackToolScreen.Main }
+                )
+            }
+
+            DataPackToolScreen.AtlasSplit -> {
+                AtlasSplitScreen(
                     onBack = { currentTool = DataPackToolScreen.Main }
                 )
             }
@@ -263,6 +271,15 @@ private fun DataPackToolsMainContent(
                         onClick = { onToolClick(DataPackToolScreen.Smf) }
                     )
                 }
+                item {
+                    ToolCard(
+                        icon = Icons.Default.ContentCut,
+                        title = "图集拆分",
+                        subtitle = "按清单从图集里拆出每张独立图片",
+                        themeColor = themeColor,
+                        onClick = { onToolClick(DataPackToolScreen.AtlasSplit) }
+                    )
+                }
 
                 item {
                     Text(
@@ -309,6 +326,13 @@ private fun DataPackToolsMainContent(
                     title = "SMF 解包",
                     body = "将 RSB/RSGP 数据包解包为独立文件，结果写入公共目录 /storage/emulated/0/Z_editor/<模板名>/。\n" +
                             "需要「所有文件访问」权限（Android 11+），在系统设置中开启后即可使用。"
+                )
+                HelpSection(
+                    title = "图集拆分",
+                    body = "解包出来的 ATLASES/ 是许多图片挤在一起的大图，每张图片该取哪一块记录在 " +
+                            "PROPERTIES/RESOURCES*.RTON 里，本工具按这份记录把它们逐张拆出来。\n" +
+                            "• 手动指定图集目录与 RTON 文件两个路径\n" +
+                            "• 产物写入推导出的解包根目录下的 _images/，目录结构与游戏内资源路径一致"
                 )
                 HelpSection(
                     title = "批量文件格式转换",

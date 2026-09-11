@@ -72,6 +72,13 @@ object SmfPacker {
      * @param infoPos byte position immediately AFTER the size field in subdata.
      *   Equivalent to Python's `entry_pos = file.tell()` after reading fsize.
      *   Used by the legacy patcher for `subdata[file_info - 4:file_info]` etc.
+     * @param part1Index first u32 of the RsgpPart1ExtraInfo trailer, present only
+     *   when [isImage]; -1 otherwise. This is the image's index **within its
+     *   subgroup's PTX range** — the global PTX_INFO row is
+     *   `rsgpInfo[subgroup].ptx_BeforeNumber + part1Index`. The patcher ignores
+     *   it; it exists for texture (PTX→PNG) extraction. The trailing
+     *   `[+12]width [+16]height` of that trailer are NOT authoritative — the
+     *   RSB's PTX_INFO table is (see [PtxDecoder]).
      */
     internal data class RsgpFileEntry(
         val name: String,
@@ -79,7 +86,8 @@ object SmfPacker {
         val offset: Int,
         val size: Int,
         val sizePos: Int,
-        val offsetPos: Int
+        val offsetPos: Int,
+        val part1Index: Int = -1
     ) {
         /** Position after the size field (= sizePos + 4). Python `entry_pos`. */
         val infoPos: Int get() = sizePos + 4
@@ -548,8 +556,14 @@ object SmfPacker {
             val sizePos = pos
             pos += 4
 
+            // RsgpPart1ExtraInfo trailer (image entries only):
+            //   +0 index  +4 empty1  +8 empty2  +12 width  +16 height
+            // Only `index` is meaningful; width/height here are copies that do
+            // not always agree with the RSB's PTX_INFO table.
+            var part1Index = -1
             if (isImage) {
-                pos += 20  // RsgpPart1ExtraInfo
+                part1Index = subdata.readU32LE(pos)
+                pos += 20
             }
 
             val decodedName = fileName.replace('\\', '/')
@@ -562,7 +576,8 @@ object SmfPacker {
                         offset = foffset,
                         size = fsize,
                         sizePos = sizePos,
-                        offsetPos = sizePos - 4
+                        offsetPos = sizePos - 4,
+                        part1Index = part1Index
                     )
                 )
             }

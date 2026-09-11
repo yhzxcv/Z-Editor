@@ -311,8 +311,9 @@ fun SmfPackerScreen(onBack: () -> Unit) {
                     }
                     IconButton(onClick = { keyInput = encryptionKey; showKeyDialog = true }) {
                         Icon(
-                            Icons.Default.Key, "密钥",
-                            tint = if (encryptionKey.isNotBlank()) MaterialTheme.colorScheme.tertiary
+                            Icons.Default.Key,
+                            "密钥",
+                            tint = if (encryptionKey.isNotBlank()) Color(0xFFFFD54F)
                             else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
                         )
                     }
