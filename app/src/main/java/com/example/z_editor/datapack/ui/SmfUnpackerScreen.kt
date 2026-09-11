@@ -1,13 +1,12 @@
 package com.example.z_editor.datapack.ui
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +33,6 @@ import androidx.compose.material.icons.filled.FolderOff
 import androidx.compose.material.icons.filled.InsertDriveFile
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Unarchive
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -45,12 +43,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -65,18 +63,21 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
+import com.example.z_editor.data.repository.LevelRepository
 import com.example.z_editor.datapack.smf.SmfUnpacker
 import com.example.z_editor.ui.theme.PvzBluePrimary
+import com.example.z_editor.views.components.GateCard
+import com.example.z_editor.views.components.OpenDocumentTreeFixed
+import com.example.z_editor.views.components.openManageAllFilesSettings
 import com.example.z_editor.views.components.rememberDebouncedClick
+import com.example.z_editor.views.components.rememberManageStorageGranted
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import kotlinx.coroutines.Dispatchers
@@ -84,13 +85,22 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
+/** 自定义输出目录在 `datapack_prefs` 里的键，存的是**真实路径字符串**。 */
+private const val KEY_OUTPUT_DIR = "smf_unpack_output_dir"
+
+/** 默认输出目录名，落在外部存储根下 —— 与加自定义目录之前的行为一致。 */
+private const val DEFAULT_OUTPUT_DIR_NAME = "Z_editor"
+
 /**
  * SMF/RSB Unpacker screen.
  *
  * Reads the template via SAF from packer/original/ (same input as the packer),
- * writes the extracted files with java.io.File into a FIXED public directory:
+ * writes the extracted files with java.io.File into:
  *
- *   /storage/emulated/0/Z_editor/<模板名>/
+ *   <输出目录>/<模板名>/
+ *
+ * 输出目录默认是 /storage/emulated/0/Z_editor/，可用「更改输出目录」换成任意可写的
+ * 本地目录（存真实路径，不存 tree uri —— 写入根本不经过 provider）。
  *
  * Writes to a real public folder need MANAGE_EXTERNAL_STORAGE (Android 11+,
  * granted only through system Settings — no runtime dialog).  The permission
@@ -136,34 +146,53 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
     val themeColor = PvzBluePrimary
 
     // ---- Permission ----
-    fun storagePermissionGranted(): Boolean =
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()
+    val hasManageStorage = rememberManageStorageGranted()
 
-    var hasManageStorage by remember { mutableStateOf(storagePermissionGranted()) }
-
-    fun openManageAllFilesSettings() {
-        val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-            .setData(Uri.parse("package:${context.packageName}"))
-        runCatching { context.startActivity(intent) }
-            .onFailure { context.startActivity(Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)) }
+    // ---- Output dir ----
+    // 存的是**真实路径字符串**而不是 tree uri：解包本来就靠 java.io.File 直接写、不经过
+    // provider，所以不需要 SAF 授权；而未持久化的 uri 重启后就是死的，存它反而是个陷阱。
+    var customOutputBasePath by remember {
+        mutableStateOf(prefs.getString(KEY_OUTPUT_DIR, null))
     }
-
-    // Settings activity doesn't return a result — re-check on every resume.
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                hasManageStorage = storagePermissionGranted()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
-
-    // ---- Output dir (fixed) ----
-    val outputBaseDir = File(Environment.getExternalStorageDirectory(), "Z_editor")
+    val outputBaseDir = customOutputBasePath?.let { File(it) }
+        ?: File(Environment.getExternalStorageDirectory(), DEFAULT_OUTPUT_DIR_NAME)
     val baseName = selectedTemplate?.name?.substringBeforeLast('.')?.ifBlank { "unpacked" } ?: ""
     val outputDir = File(outputBaseDir, baseName)
+
+    /**
+     * 关卡库目录的真实路径 —— `rootFolderUri` 就是主界面存关卡的那个目录
+     * （`mainPrefs.folder_uri`，回落 `datapack_folder_uri`）。解包产物堆进去会让主界面
+     * 列表渲染失败，选目录时要挡住。换算不出来（云盘）时为 null，此时只剩文案提示。
+     */
+    val levelLibraryPath = rootFolderUri?.let { LevelRepository.realPathStringOf(it) }
+
+    val outputDirPickerLauncher = rememberLauncherForActivityResult(
+        contract = OpenDocumentTreeFixed()
+    ) { picked ->
+        val path = picked?.let { LevelRepository.realPathStringOf(it) }
+        when {
+            picked == null -> Unit
+
+            path == null || !LevelRepository.isRawPathUsable(picked) ->
+                Toast.makeText(
+                    context, "该目录无法换算为本地路径或不可写，请换一个", Toast.LENGTH_SHORT
+                ).show()
+
+            // 子目录同样要拦：产物写成 <输出目录>/<模板名>/，选在关卡库下面照样塞爆它
+            levelLibraryPath != null && LevelRepository.isSameOrInsidePath(path, levelLibraryPath) ->
+                Toast.makeText(
+                    context,
+                    "不能选关卡库目录（含其子目录）：大量解包文件堆积会让主界面列表渲染失败",
+                    Toast.LENGTH_LONG
+                ).show()
+
+            else -> {
+                prefs.edit { putString(KEY_OUTPUT_DIR, path) }
+                customOutputBasePath = path
+                Toast.makeText(context, "输出目录已更改", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     // ---- Helpers ----
 
@@ -326,10 +355,10 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                 item {
                     GateCard(
                         title = "需要「所有文件访问」权限",
-                        body = "解包结果将写入公共目录 /storage/emulated/0/Z_editor/，该权限允许应用直接写入。" +
+                        body = "解包结果需要按真实路径写入本地目录，该权限允许应用直接写入。" +
                                 "请到系统设置中开启。",
                         buttonLabel = "去授权",
-                        onButton = { openManageAllFilesSettings() }
+                        onButton = { openManageAllFilesSettings(context) }
                     )
                 }
             }
@@ -362,12 +391,13 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                 }
             }
 
-            // ---- Output dir (fixed, read-only) ----
+            // ---- Output dir ----
             item {
                 Spacer(Modifier.height(8.dp))
                 SectionHeader(
                     icon = Icons.Default.Folder, title = "输出目录",
-                    subtitle = "固定写入公共目录"
+                    subtitle = if (customOutputBasePath == null) "默认目录，可自定义"
+                    else "已自定义"
                 )
             }
             item {
@@ -379,18 +409,36 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            outputDir.absolutePath,
+                            outputBaseDir.absolutePath,
                             fontSize = 13.sp,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(Modifier.height(6.dp))
                         Text(
-                            "位于设备公共目录，解包后可用系统文件管理器直接访问。" +
-                                    "重复解包会先清空该目录。",
+                            "本次将写入 $baseName/ ，重复解包同一模板会先清空该子目录，其余内容不动。",
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                         )
+
+                        Spacer(Modifier.height(12.dp))
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Button(
+                                onClick = { outputDirPickerLauncher.launch(null) },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(containerColor = themeColor)
+                            ) { Text("更改输出目录") }
+                            // 只有自定义过才给「恢复默认」，否则是个点了没反应的按钮
+                            if (customOutputBasePath != null) {
+                                OutlinedButton(onClick = {
+                                    prefs.edit { remove(KEY_OUTPUT_DIR) }
+                                    customOutputBasePath = null
+                                }) { Text("恢复默认") }
+                            }
+                        }
                     }
                 }
             }
@@ -596,11 +644,23 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
             )
             HelpSection(
                 title = "输出目录",
-                body = "解包结果固定写入 /storage/emulated/0/Z_editor/<模板名>/，重复解包同一模板会先清空该目录。"
+                body = "解包结果写入 <输出目录>/<模板名>/，重复解包同一模板会先清空该子目录，" +
+                        "输出目录下的其他内容不受影响。\n" +
+                        "默认输出目录是 /storage/emulated/0/Z_editor/，点「更改输出目录」" +
+                        "可以换成任意可写的本地文件夹。"
+            )
+            HelpSection(
+                title = "不要选成存放关卡的目录",
+                body = "输出目录不要选成主界面存放关卡的那个文件夹（也包括它的子目录）。\n" +
+                        "一个数据包解包后会产生成千上万个文件，堆在关卡库里会让主界面的" +
+                        "关卡列表渲染失败。\n" +
+                        "本工具会直接拒绝这类选择并提示。若确实想放在附近，请选一个和关卡库" +
+                        "平级、而不是嵌套在其中的目录。"
             )
             HelpSection(
                 title = "注意事项",
                 body = "• 需要 Android 11（API 30）或更高版本\n" +
+                        "• 输出目录必须能换算成本地真实路径，云盘类目录选不了\n" +
                         "• 解包会提取数据包内全部文件，原样保留加密的 .rton 密文\n" +
                         "• 越界、空文件、非法路径的条目会被跳过并在结果卡中计数"
             )
@@ -617,51 +677,6 @@ private data class UnpackDisplayFile(
 )
 
 // ---- Components ----
-
-@Composable
-private fun GateCard(
-    title: String,
-    body: String,
-    buttonLabel: String?,
-    onButton: () -> Unit
-) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.Warning,
-                    null,
-                    tint = MaterialTheme.colorScheme.onError,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    title, fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onError
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-            Text(
-                body, fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onError.copy(alpha = 0.85f)
-            )
-            if (buttonLabel != null) {
-                Spacer(Modifier.height(12.dp))
-                Button(
-                    onClick = onButton,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.onError,
-                        contentColor = MaterialTheme.colorScheme.error
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) { Text(buttonLabel) }
-            }
-        }
-    }
-}
 
 @Composable
 private fun SectionHeader(

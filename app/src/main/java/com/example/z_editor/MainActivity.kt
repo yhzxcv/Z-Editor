@@ -34,6 +34,7 @@ import com.example.z_editor.datapack.ui.DataPackToolsScreen
 import com.example.z_editor.views.screens.main.AboutScreen
 import com.example.z_editor.views.screens.main.EditorScreen
 import com.example.z_editor.views.screens.main.LevelListScreen
+import com.example.z_editor.views.screens.main.StorageSettingsScreen
 
 class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
@@ -95,7 +96,8 @@ enum class ScreenState {
     LevelList,
     Editor,
     About,
-    DataPackTools
+    DataPackTools,
+    StorageSettings
 }
 
 @Composable
@@ -114,7 +116,7 @@ fun AppNavigation(
         targetState = currentScreen,
         label = "MainNavigationTransition",
         transitionSpec = {
-            if (targetState == ScreenState.Editor || targetState == ScreenState.About || targetState == ScreenState.DataPackTools) {
+            if (targetState != ScreenState.LevelList) {
                 (slideInHorizontally { width -> width } + fadeIn())
                     .togetherWith(
                         slideOutHorizontally { width -> -width / 3 } + fadeOut()
@@ -146,6 +148,9 @@ fun AppNavigation(
                         currentScreen = ScreenState.DataPackTools
                     },
                     onLanguageChange = onLanguageChange,
+                    onStorageSettingsClick = {
+                        currentScreen = ScreenState.StorageSettings
+                    },
                 )
             }
 
@@ -171,6 +176,14 @@ fun AppNavigation(
 
             ScreenState.DataPackTools -> {
                 DataPackToolsScreen(
+                    onBack = {
+                        currentScreen = ScreenState.LevelList
+                    }
+                )
+            }
+
+            ScreenState.StorageSettings -> {
+                StorageSettingsScreen(
                     onBack = {
                         currentScreen = ScreenState.LevelList
                     }

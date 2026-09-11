@@ -1103,6 +1103,7 @@ fun ZombieSpeedEditDialog(
                 )
                 Spacer(Modifier.height(16.dp))
                 NumberInputDouble(
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = speedModifier,
                     onValueChange = { speedModifier = it },
                     label = "增幅倍率 (SpeedModifier)",
@@ -1160,6 +1161,7 @@ fun SunReducedEditDialog(
                 )
                 Spacer(Modifier.height(16.dp))
                 NumberInputDouble(
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = sunModifier,
                     onValueChange = { sunModifier = it },
                     label = "降低倍率 (SunModifier)",
@@ -1213,6 +1215,7 @@ fun PlantsLostEditDialog(
                 Text("损失的植物不能超过一定限额", fontSize = 14.sp, color = Color.Gray)
                 Spacer(Modifier.height(16.dp))
                 NumberInputInt(
+                    color = MaterialTheme.colorScheme.onTertiary,
                     value = maximumPlantsLost,
                     onValueChange = { maximumPlantsLost = it },
                     label = "损失上限 (MaximumPlantsLost)",

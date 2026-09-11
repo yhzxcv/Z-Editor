@@ -4,7 +4,7 @@
 
     <!-- Level List -->
     <string name="level_list_screen_title">My Level Library</string>
-    <string name="level_list_screen_item_menu">Switch Folder</string>
+    <string name="level_list_screen_item_menu">Storage Settings</string>
     <string name="level_list_screen_item_size">UI Resize</string>
     <string name="level_list_screen_item_language">Language</string>
     <string name="level_list_screen_item_about">About</string>
@@ -50,9 +50,10 @@
     <string name="level_list_screen_size_done">Done</string>
     <string name="level_list_screen_size_reset">Reset</string>
     <string name="level_list_screen_jsonfile">json file</string>
-    <string name="level_list_screen_toast_create_fail">Create failed, name already exist</string>
+    <string name="level_list_screen_toast_create_fail">Create failed: %1$s</string>
     <string name="level_list_screen_toast_create_success">Create level success</string>
-    <string name="level_list_screen_toast_folder_fail">Create failed</string>
+    <string name="level_list_screen_toast_name_exists">An item with this name already exists</string>
+    <string name="level_list_screen_toast_no_write_permission">This folder is not writable. Pick the folder again and allow write access.</string>
     <string name="level_list_screen_toast_folder_success">Create folder success</string>
     <string name="level_list_screen_toast_template_fail">Couldn\'t find the template</string>
     <string name="level_list_screen_toast_move_success">Move success</string>
@@ -495,4 +496,28 @@
     <string name="module_rift_theme_demo_desc">Select active rift themes for Penny\'s Pursuit</string>
     <string name="module_mold_colony_title">mold area</string>
     <string name="module_mold_colony_desc">Set areas that cannot plant on</string>
+
+    <!-- Storage settings -->
+    <string name="storage_settings_title">Storage Settings</string>
+    <string name="storage_settings_back">Back</string>
+    <string name="storage_settings_unsupported_title">Unsupported system version</string>
+    <string name="storage_settings_unsupported_body">Direct write requires Android 11 (API 30) or newer. This device can only use SAF mode.</string>
+    <string name="storage_settings_permission_title">"All files access" permission required</string>
+    <string name="storage_settings_permission_body">Direct write mode requires the "All files access" permission. Enable it in system Settings, then return here — the switch becomes available automatically.</string>
+    <string name="storage_settings_permission_button">Grant</string>
+    <string name="storage_settings_mode_title">Write method</string>
+    <string name="storage_settings_mode_saf_title">Use SAF</string>
+    <string name="storage_settings_mode_saf_summary">Read and write through the system file access framework. Best compatibility; keep this on for most devices.</string>
+    <string name="storage_settings_mode_raw_title">Direct write</string>
+    <string name="storage_settings_mode_raw_summary">Bypass the system framework and read/write files by real path. Only needed when SAF cannot write on this device. Folders that cannot be mapped to a local path (such as cloud drives) become invisible.</string>
+    <string name="storage_settings_mode_disabled_hint">Grant "All files access" above before switching the write method.</string>
+    <string name="storage_settings_folder_title">Current folder</string>
+    <string name="storage_settings_folder_none">No folder selected</string>
+    <string name="storage_settings_folder_reselect">Choose SAF folder again</string>
+    <string name="storage_settings_raw_path_label">Real path: %1$s</string>
+    <string name="storage_settings_raw_path_unknown">not mappable</string>
+    <string name="storage_settings_toast_raw_unmappable">This folder cannot be mapped to a local path; staying in SAF mode</string>
+    <string name="storage_settings_toast_no_settings_app">Cannot open system Settings. Go to Settings → Apps → All files access manually.</string>
+    <string name="storage_settings_toast_pick_failed">Could not obtain access to that folder. Please choose another one.</string>
+    <string name="storage_settings_toast_folder_changed">Current folder updated</string>
 </resources>

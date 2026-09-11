@@ -1,11 +1,8 @@
 package com.example.z_editor.datapack.ui
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
-import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -36,7 +33,6 @@ import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.SwapHoriz
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -55,7 +51,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -70,18 +65,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import com.example.z_editor.datapack.hotupdate.HotUpdateJSONConverter
 import com.example.z_editor.datapack.rton.RtonConverter
 import com.example.z_editor.ui.theme.PvzBluePrimary
+import com.example.z_editor.views.components.GateCard
+import com.example.z_editor.views.components.openManageAllFilesSettings
 import com.example.z_editor.views.components.rememberDebouncedClick
+import com.example.z_editor.views.components.rememberManageStorageGranted
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
 import kotlinx.coroutines.Dispatchers
@@ -244,30 +239,8 @@ fun BatchConvertScreen(onBack: () -> Unit) {
 
     val themeColor = PvzBluePrimary
 
-    // ---- Permission gate (reuses SmfUnpackerScreen pattern) ----
-
-    fun storagePermissionGranted(): Boolean =
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Environment.isExternalStorageManager()
-
-    var hasManageStorage by remember { mutableStateOf(storagePermissionGranted()) }
-
-    fun openManageAllFilesSettings() {
-        val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-            .setData(Uri.parse("package:${context.packageName}"))
-        runCatching { context.startActivity(intent) }
-            .onFailure { context.startActivity(Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)) }
-    }
-
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                hasManageStorage = storagePermissionGranted()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
+    // ---- Permission gate ----
+    val hasManageStorage = rememberManageStorageGranted()
 
     // ---- Analysis ----
 
@@ -548,7 +521,7 @@ fun BatchConvertScreen(onBack: () -> Unit) {
                         body = "转换结果将直接写入源文件所在目录（原位写回 / 文件夹名~ 目录），该权限允许应用直接读写。" +
                                 "请到系统设置中开启。",
                         buttonLabel = "去授权",
-                        onButton = { openManageAllFilesSettings() }
+                        onButton = { openManageAllFilesSettings(context) }
                     )
                 }
             }
@@ -855,51 +828,6 @@ fun BatchConvertScreen(onBack: () -> Unit) {
 }
 
 // ---- Display helpers ----
-
-@Composable
-private fun GateCard(
-    title: String,
-    body: String,
-    buttonLabel: String?,
-    onButton: () -> Unit
-) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.error),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Default.Warning,
-                    null,
-                    tint = MaterialTheme.colorScheme.onError,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(Modifier.width(12.dp))
-                Text(
-                    title, fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onError
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-            Text(
-                body, fontSize = 13.sp,
-                color = MaterialTheme.colorScheme.onError.copy(alpha = 0.85f)
-            )
-            if (buttonLabel != null) {
-                Spacer(Modifier.height(12.dp))
-                Button(
-                    onClick = onButton,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.onError,
-                        contentColor = MaterialTheme.colorScheme.error
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) { Text(buttonLabel) }
-            }
-        }
-    }
-}
 
 @Composable
 private fun SectionHeader(

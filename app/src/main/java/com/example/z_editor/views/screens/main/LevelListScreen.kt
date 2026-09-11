@@ -1,14 +1,11 @@
 package com.example.z_editor.views.screens.main
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.provider.DocumentsContract
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -84,6 +81,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -98,46 +96,27 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
 import androidx.core.net.toUri
-import androidx.documentfile.provider.DocumentFile
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.example.z_editor.R
 import com.example.z_editor.data.repository.FileItem
+import com.example.z_editor.data.repository.FileOpResult
 import com.example.z_editor.data.repository.LevelRepository
 import com.example.z_editor.data.repository.TemplateEntry
 import com.example.z_editor.views.components.LocaleUtils
+import com.example.z_editor.views.components.OpenDocumentTreeFixed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 data class Breadcrumb(val name: String, val uri: Uri)
-
-class OpenDocumentTreeFixed : ActivityResultContract<Uri?, Uri?>() {
-    override fun createIntent(context: Context, input: Uri?): Intent {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-        intent.addFlags(
-            Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        )
-        if (input != null) {
-            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, input)
-        } else {
-            val primaryRootUri =
-                Uri.parse("content://com.android.externalstorage.documents/tree/primary%3A")
-            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, primaryRootUri)
-        }
-        return intent
-    }
-
-    override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
-        return if (resultCode == Activity.RESULT_OK) intent?.data else null
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -149,7 +128,8 @@ fun LevelListScreen(
     onLanguageChange: (String) -> Unit,
     onLevelClick: (String, Uri) -> Unit,
     onAboutClick: () -> Unit,
-    onDataPackToolsClick: () -> Unit = {}
+    onDataPackToolsClick: () -> Unit = {},
+    onStorageSettingsClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -169,6 +149,11 @@ fun LevelListScreen(
             context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
                 .getString("folder_uri", null)?.toUri()
         )
+    }
+
+    // 存储模式。直写模式下根目录句柄会被换算成 file://，见 rootBreadcrumbFor。
+    var activeStorageMode by remember {
+        mutableStateOf(LevelRepository.effectiveStorageMode(context))
     }
 
     var itemToMove by remember { mutableStateOf<FileItem?>(null) }
@@ -221,6 +206,17 @@ fun LevelListScreen(
         }
     }
 
+    /**
+     * 根面包屑。名字从 `content://` 树 URI 取，**句柄**按当前模式换算 —— 直写模式下是
+     * `file://`。这同时是防止 `file://` 流进 `DocumentFile` 的一环：`fromTreeUri` 对
+     * file scheme 会直接抛 IllegalArgumentException，不能在别处再碰它。
+     */
+    fun rootBreadcrumbFor(uri: Uri): Breadcrumb {
+        val name = LevelRepository.directoryDisplayName(context, uri)
+            .ifBlank { context.getString(R.string.level_list_screen_toast_root_folder) }
+        return Breadcrumb(name, LevelRepository.rawDirectoryUri(context, uri) ?: uri)
+    }
+
     val folderPickerLauncher = rememberLauncherForActivityResult(
         contract = OpenDocumentTreeFixed()
     ) { uri ->
@@ -233,11 +229,7 @@ fun LevelListScreen(
                 .edit { putString("folder_uri", uri.toString()) }
 
             rootFolderUri = uri
-
-            val docFile = DocumentFile.fromTreeUri(context, uri)
-            val rootName =
-                docFile?.name ?: context.getString(R.string.level_list_screen_toast_root_folder)
-            pathStack = listOf(Breadcrumb(rootName, uri))
+            pathStack = listOf(rootBreadcrumbFor(uri))
 
             showNoFolderDialog = false
             loadCurrentDirectory()
@@ -274,13 +266,38 @@ fun LevelListScreen(
             showNoFolderDialog = true
         } else {
             if (pathStack.isEmpty()) {
-                val docFile = DocumentFile.fromTreeUri(context, rootFolderUri!!)
-                val rootName =
-                    docFile?.name ?: context.getString(R.string.level_list_screen_toast_root_folder)
-                pathStack = listOf(Breadcrumb(rootName, rootFolderUri!!))
+                pathStack = listOf(rootBreadcrumbFor(rootFolderUri!!))
             }
             loadCurrentDirectory()
         }
+    }
+
+    // 从存储设置页返回时 prefs 里的目录或模式可能已经变了。AnimatedContent 在转场结束后
+    // 会移除旧内容，所以 remember 大概率本来就会重读 —— 但那依赖未文档化的实现细节，
+    // 而 stale 的 rootFolderUri 会静默地继续浏览旧目录。值没变就零开销不重载。
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                val stored = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+                    .getString("folder_uri", null)?.toUri()
+                val mode = LevelRepository.effectiveStorageMode(context)
+                when {
+                    stored != rootFolderUri -> {
+                        activeStorageMode = mode
+                        rootFolderUri = stored
+                        pathStack = stored?.let { listOf(rootBreadcrumbFor(it)) } ?: emptyList()
+                        if (stored == null) showNoFolderDialog = true else loadCurrentDirectory()
+                    }
+                    mode != activeStorageMode -> {
+                        activeStorageMode = mode
+                        loadCurrentDirectory()
+                    }
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
     // 返回键处理
@@ -298,10 +315,9 @@ fun LevelListScreen(
     fun handleRenameConfirm() {
         val target = itemToRename ?: return
         val currentUri = pathStack.last().uri
-        var finalName = renameInput.trim()
-        if (!target.isDirectory && !finalName.endsWith(".json", ignoreCase = true)) {
-            finalName += ".json"
-        }
+        val finalName =
+            LevelRepository.normalizeFileName(renameInput, forceJsonExt = !target.isDirectory)
+        if (finalName.isEmpty()) return
         if (LevelRepository.renameItem(
                 context,
                 currentUri,
@@ -402,21 +418,40 @@ fun LevelListScreen(
     }
 
     fun handleNewFolder() {
-        if (newFolderNameInput.isBlank()) return
+        val folderName = LevelRepository.normalizeFileName(newFolderNameInput, forceJsonExt = false)
+        if (folderName.isEmpty()) return
         val currentUri = pathStack.last().uri
-        if (LevelRepository.createDirectory(context, currentUri, newFolderNameInput)) {
-            Toast.makeText(
+        when (val result = LevelRepository.createDirectory(context, currentUri, folderName)) {
+            FileOpResult.Success -> {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.level_list_screen_toast_folder_success),
+                    Toast.LENGTH_SHORT
+                ).show()
+                showNewFolderDialog = false
+                newFolderNameInput = ""
+                loadCurrentDirectory()
+            }
+
+            FileOpResult.NameExists -> Toast.makeText(
                 context,
-                context.getString(R.string.level_list_screen_toast_folder_success),
+                context.getString(R.string.level_list_screen_toast_name_exists),
                 Toast.LENGTH_SHORT
             ).show()
-            showNewFolderDialog = false
-            newFolderNameInput = ""
-            loadCurrentDirectory()
-        } else {
-            Toast.makeText(
+
+            FileOpResult.NoWritePermission -> Toast.makeText(
                 context,
-                context.getString(R.string.level_list_screen_toast_folder_fail), Toast.LENGTH_SHORT
+                context.getString(R.string.level_list_screen_toast_no_write_permission),
+                Toast.LENGTH_LONG
+            ).show()
+
+            is FileOpResult.Failure -> Toast.makeText(
+                context,
+                context.getString(
+                    R.string.level_list_screen_toast_create_fail,
+                    result.cause.orEmpty()
+                ),
+                Toast.LENGTH_LONG
             ).show()
         }
     }
@@ -437,21 +472,40 @@ fun LevelListScreen(
     fun handleCreateLevelConfirm() {
         val currentUri = pathStack.lastOrNull()?.uri ?: return
         val template = selectedTemplate ?: return
-        var name = newLevelNameInput
-        if (!name.endsWith(".json", true)) name += ".json"
+        val name = LevelRepository.normalizeFileName(newLevelNameInput, forceJsonExt = true)
+        if (name.isEmpty()) return
 
-        if (LevelRepository.createLevelFromTemplate(context, currentUri, template, name)) {
-            Toast.makeText(
+        when (val result =
+            LevelRepository.createLevelFromTemplate(context, currentUri, template, name)) {
+            FileOpResult.Success -> {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.level_list_screen_toast_create_success),
+                    Toast.LENGTH_SHORT
+                ).show()
+                showCreateNameDialog = false
+                loadCurrentDirectory()
+            }
+
+            FileOpResult.NameExists -> Toast.makeText(
                 context,
-                context.getString(R.string.level_list_screen_toast_create_success),
+                context.getString(R.string.level_list_screen_toast_name_exists),
                 Toast.LENGTH_SHORT
             ).show()
-            showCreateNameDialog = false
-            loadCurrentDirectory()
-        } else {
-            Toast.makeText(
+
+            FileOpResult.NoWritePermission -> Toast.makeText(
                 context,
-                context.getString(R.string.level_list_screen_toast_create_fail), Toast.LENGTH_SHORT
+                context.getString(R.string.level_list_screen_toast_no_write_permission),
+                Toast.LENGTH_LONG
+            ).show()
+
+            is FileOpResult.Failure -> Toast.makeText(
+                context,
+                context.getString(
+                    R.string.level_list_screen_toast_create_fail,
+                    result.cause.orEmpty()
+                ),
+                Toast.LENGTH_LONG
             ).show()
         }
     }
@@ -526,7 +580,10 @@ fun LevelListScreen(
                         ) {
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.level_list_screen_item_menu)) },
-                                onClick = { folderPickerLauncher.launch(null) },
+                                onClick = {
+                                    showMenu = false
+                                    onStorageSettingsClick()
+                                },
                                 leadingIcon = {
                                     Icon(
                                         Icons.Default.FolderOpen,

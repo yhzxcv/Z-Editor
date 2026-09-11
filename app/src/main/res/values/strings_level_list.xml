@@ -1,6 +1,6 @@
 <resources>
     <string name="level_list_screen_title">我的关卡库</string>
-    <string name="level_list_screen_item_menu">切换目录</string>
+    <string name="level_list_screen_item_menu">存储设置</string>
     <string name="level_list_screen_item_size">界面大小</string>
     <string name="level_list_screen_item_language">语言设置</string>
     <string name="level_list_screen_item_about">关于软件</string>
@@ -46,9 +46,10 @@
     <string name="level_list_screen_size_done">完成</string>
     <string name="level_list_screen_size_reset">重置</string>
     <string name="level_list_screen_jsonfile">json 文件</string>
-    <string name="level_list_screen_toast_create_fail">创建失败，已有同名文件</string>
+    <string name="level_list_screen_toast_create_fail">创建失败：%1$s</string>
     <string name="level_list_screen_toast_create_success">创建成功</string>
-    <string name="level_list_screen_toast_folder_fail">创建失败</string>
+    <string name="level_list_screen_toast_name_exists">已存在同名项，请换一个名字</string>
+    <string name="level_list_screen_toast_no_write_permission">该文件夹没有写入权限，请重新选择文件夹，并在弹窗中允许写入</string>
     <string name="level_list_screen_toast_folder_success">文件夹创建成功</string>
     <string name="level_list_screen_toast_template_fail">未找到模板</string>
     <string name="level_list_screen_toast_move_success">移动成功</string>
@@ -70,5 +71,29 @@
     <string name="level_list_screen_template_rename_title">重命名模板</string>
     <string name="level_list_screen_template_delete_title">删除模板</string>
     <string name="level_list_screen_template_delete_tips">确定要删除模板 \"%1$s\" 吗？</string>
+
+    <!-- 存储设置页 -->
+    <string name="storage_settings_title">存储设置</string>
+    <string name="storage_settings_back">返回</string>
+    <string name="storage_settings_unsupported_title">系统版本过低</string>
+    <string name="storage_settings_unsupported_body">直接写入需要 Android 11（API 30）及以上。当前系统只能使用 SAF 模式。</string>
+    <string name="storage_settings_permission_title">需要「所有文件访问」权限</string>
+    <string name="storage_settings_permission_body">直接写入模式需要「所有文件访问」权限。请在系统设置中开启后返回本页，开关会自动变为可用。</string>
+    <string name="storage_settings_permission_button">去授权</string>
+    <string name="storage_settings_mode_title">写入方式</string>
+    <string name="storage_settings_mode_saf_title">使用 SAF </string>
+    <string name="storage_settings_mode_saf_summary">通过系统文件访问框架读写，兼容性最好。绝大多数设备应保持此项。</string>
+    <string name="storage_settings_mode_raw_title">直接写入</string>
+    <string name="storage_settings_mode_raw_summary">绕开系统框架，按真实路径直接读写文件。仅当 SAF 在本机无法写入时才需要开启；云盘等无法换算为本地路径的目录将不可见。</string>
+    <string name="storage_settings_mode_disabled_hint">请先在上方开启「所有文件访问」权限，再切换写入方式。</string>
+    <string name="storage_settings_folder_title">当前目录</string>
+    <string name="storage_settings_folder_none">尚未选择目录</string>
+    <string name="storage_settings_folder_reselect">重新选择 SAF 文件夹</string>
+    <string name="storage_settings_raw_path_label">真实路径：%1$s</string>
+    <string name="storage_settings_raw_path_unknown">无法换算</string>
+    <string name="storage_settings_toast_raw_unmappable">该目录无法换算为本地路径，已保持 SAF 模式</string>
+    <string name="storage_settings_toast_no_settings_app">无法打开系统设置，请手动前往「设置 → 应用 → 所有文件访问」开启</string>
+    <string name="storage_settings_toast_pick_failed">无法获取该文件夹的访问权限，请换一个目录</string>
+    <string name="storage_settings_toast_folder_changed">已更新当前目录</string>
 
 </resources>

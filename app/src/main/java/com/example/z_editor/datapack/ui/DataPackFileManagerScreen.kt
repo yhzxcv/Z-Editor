@@ -1,14 +1,11 @@
 package com.example.z_editor.datapack.ui
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.provider.DocumentsContract
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -90,9 +87,11 @@ import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import com.example.z_editor.data.repository.FileItem
+import com.example.z_editor.data.repository.FileOpResult
 import com.example.z_editor.data.repository.LevelRepository
 import com.example.z_editor.datapack.hotupdate.HotUpdateJSONConverter
 import com.example.z_editor.datapack.rton.RtonConverter
+import com.example.z_editor.views.components.OpenDocumentTreeFixed
 import com.example.z_editor.views.components.rememberDebouncedClick
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
@@ -150,26 +149,6 @@ private fun stripTildeSuffix(name: String): String {
     var n = name
     while (n.endsWith("~")) n = n.dropLast(1)
     return n
-}
-
-// ---- SAF Launcher ----
-private class OpenDocumentTreeFixed : ActivityResultContract<Uri?, Uri?>() {
-    override fun createIntent(context: Context, input: Uri?): Intent {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-        intent.addFlags(
-            Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION or
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-        )
-        if (input != null) {
-            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, input)
-        }
-        return intent
-    }
-
-    override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
-        return if (resultCode == Activity.RESULT_OK) intent?.data else null
-    }
 }
 
 // ---- Main Screen ----
@@ -524,15 +503,30 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
     }
 
     fun handleNewFolder() {
-        if (newFolderNameInput.isBlank()) return
+        val folderName = LevelRepository.normalizeFileName(newFolderNameInput, forceJsonExt = false)
+        if (folderName.isEmpty()) return
         val currentUri = pathStack.lastOrNull()?.uri ?: return
-        if (LevelRepository.createDirectory(context, currentUri, newFolderNameInput.trim())) {
-            Toast.makeText(context, "创建文件夹成功", Toast.LENGTH_SHORT).show()
-            showNewFolderDialog = false
-            newFolderNameInput = ""
-            loadCurrentDirectory()
-        } else {
-            Toast.makeText(context, "创建文件夹失败（可能已存在）", Toast.LENGTH_SHORT).show()
+        when (val result = LevelRepository.createDirectory(context, currentUri, folderName)) {
+            FileOpResult.Success -> {
+                Toast.makeText(context, "创建文件夹成功", Toast.LENGTH_SHORT).show()
+                showNewFolderDialog = false
+                newFolderNameInput = ""
+                loadCurrentDirectory()
+            }
+
+            FileOpResult.NameExists ->
+                Toast.makeText(context, "已存在同名项，请换一个名字", Toast.LENGTH_SHORT).show()
+
+            FileOpResult.NoWritePermission ->
+                Toast.makeText(
+                    context,
+                    "该文件夹没有写入权限，请重新选择文件夹，并在弹窗中允许写入",
+                    Toast.LENGTH_LONG
+                ).show()
+
+            is FileOpResult.Failure ->
+                Toast.makeText(context, "创建失败：${result.cause.orEmpty()}", Toast.LENGTH_LONG)
+                    .show()
         }
     }
 

@@ -3451,15 +3451,6 @@
         "icon": "zombie_moon_gargantuar.webp"
     },
     {
-        "id": "moon_gargantuar_beacon",
-        "name": "信标宇航员巨人僵尸",
-        "tags": [
-            "Moon",
-            "Gargantuar"
-        ],
-        "icon": "zombie_moon_gargantuar.webp"
-    },
-    {
         "id": "zombie_supernova_gargantuar",
         "name": "超新星巨人僵尸",
         "tags": [
