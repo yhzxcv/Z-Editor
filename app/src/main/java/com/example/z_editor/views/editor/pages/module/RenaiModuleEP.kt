@@ -210,27 +210,30 @@ fun RenaiModuleEP(
     }
 
     // key = row * 9 + col。两张表合起来数，才能抓出跨表的坐标重复
-    val cellCounts = remember(moduleDataState.value.statueInfos, moduleDataState.value.statueNightInfos) {
-        val counts = HashMap<Int, Int>()
-        fun bump(x: Int, y: Int) {
-            val key = y * 9 + x
-            counts[key] = (counts[key] ?: 0) + 1
+    val cellCounts =
+        remember(moduleDataState.value.statueInfos, moduleDataState.value.statueNightInfos) {
+            val counts = HashMap<Int, Int>()
+            fun bump(x: Int, y: Int) {
+                val key = y * 9 + x
+                counts[key] = (counts[key] ?: 0) + 1
+            }
+            moduleDataState.value.statueInfos.orEmpty().forEach { bump(it.gridX, it.gridY) }
+            moduleDataState.value.statueNightInfos.orEmpty().forEach { bump(it.gridX, it.gridY) }
+            counts
         }
-        moduleDataState.value.statueInfos.orEmpty().forEach { bump(it.gridX, it.gridY) }
-        moduleDataState.value.statueNightInfos.orEmpty().forEach { bump(it.gridX, it.gridY) }
-        counts
-    }
     val duplicatedCells = remember(cellCounts) { cellCounts.filterValues { it > 1 }.keys }
 
     // 已有雕像里的非标准 TypeName 也放进弹窗选项，免得手工写的类型被静默改写
-    val typeOptions = remember(moduleDataState.value.statueInfos, moduleDataState.value.statueNightInfos) {
-        val known = RENAI_STATUES.map { it.typeName }.toSet()
-        val unknown = (moduleDataState.value.statueInfos.orEmpty() + moduleDataState.value.statueNightInfos.orEmpty())
-            .map { it.typeName }
-            .filter { it !in known }
-            .distinct()
-        RENAI_STATUES + unknown.map { renaiStatueType(it) }
-    }
+    val typeOptions =
+        remember(moduleDataState.value.statueInfos, moduleDataState.value.statueNightInfos) {
+            val known = RENAI_STATUES.map { it.typeName }.toSet()
+            val unknown =
+                (moduleDataState.value.statueInfos.orEmpty() + moduleDataState.value.statueNightInfos.orEmpty())
+                    .map { it.typeName }
+                    .filter { it !in known }
+                    .distinct()
+            RENAI_STATUES + unknown.map { renaiStatueType(it) }
+        }
 
     var selectedX by remember { mutableIntStateOf(0) }
     var selectedY by remember { mutableIntStateOf(0) }
@@ -362,7 +365,12 @@ fun RenaiModuleEP(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        addStatue(pending.target, pending.type.typeName, pending.gridX, pending.gridY)
+                        addStatue(
+                            pending.target,
+                            pending.type.typeName,
+                            pending.gridX,
+                            pending.gridY
+                        )
                         pendingAdd = null
                     },
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onError)
@@ -454,7 +462,7 @@ fun RenaiModuleEP(
                 )
                 HelpSection(
                     title = "开关",
-                    body = "关闭开关时不写入任何参数，游戏内不进行昼夜更替；打开后才会写入起始波次与两张雕像表。"
+                    body = "关闭开关时不写入任何参数，仅作为圆环工作的依赖项，游戏内不进行昼夜更替；打开后才会写入起始波次与两张雕像表。"
                 )
                 HelpSection(
                     title = "雕像表",
@@ -505,9 +513,9 @@ fun RenaiModuleEP(
                             Spacer(Modifier.height(4.dp))
                             Text(
                                 text = if (isNightEnabled)
-                                    "已写入 NightStartWaveNum 与两张雕像表"
+                                    "随波次进行昼夜更替，需要复兴地图"
                                 else
-                                    "关闭时不写入任何键，游戏内不进行昼夜更替",
+                                    "游戏内不进行昼夜更替",
                                 fontSize = 12.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 lineHeight = 16.sp
@@ -519,9 +527,12 @@ fun RenaiModuleEP(
                             onCheckedChange = { checked ->
                                 if (checked) {
                                     moduleDataState.value = moduleDataState.value.copy(
-                                        nightStartWaveNum = moduleDataState.value.nightStartWaveNum ?: 1,
-                                        statueInfos = moduleDataState.value.statueInfos ?: mutableListOf(),
-                                        statueNightInfos = moduleDataState.value.statueNightInfos ?: mutableListOf()
+                                        nightStartWaveNum = moduleDataState.value.nightStartWaveNum
+                                            ?: 1,
+                                        statueInfos = moduleDataState.value.statueInfos
+                                            ?: mutableListOf(),
+                                        statueNightInfos = moduleDataState.value.statueNightInfos
+                                            ?: mutableListOf()
                                     )
                                     sync()
                                 } else {
@@ -538,6 +549,29 @@ fun RenaiModuleEP(
                                 uncheckedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         )
+                    }
+                }
+            }
+
+            if (!isNightEnabled) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                        elevation = CardDefaults.cardElevation(2.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(modifier = Modifier.padding(16.dp)) {
+                            Icon(Icons.Default.Info, null, tint = themeColor)
+                            Spacer(Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "关卡中的圆环必须添加此模块才能正常生效。",
+                                    fontSize = 12.sp,
+                                    color = themeColor,
+                                    lineHeight = 16.sp
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -650,7 +684,11 @@ fun RenaiModuleEP(
                                         .fillMaxWidth()
                                         .aspectRatio(1.8f)
                                         .clip(RoundedCornerShape(6.dp))
-                                        .background(if (isDark) Color(0xFF31383B) else Color(0xFFD7ECF1))
+                                        .background(
+                                            if (isDark) Color(0xFF31383B) else Color(
+                                                0xFFD7ECF1
+                                            )
+                                        )
                                         .border(1.dp, Color(0xFF6B899A), RoundedCornerShape(6.dp))
                                 ) {
                                     Column(Modifier.fillMaxSize()) {
@@ -700,7 +738,9 @@ fun RenaiModuleEP(
                                                         if (total > 0 && iconType != null) {
                                                             RenaiStatueIcon(
                                                                 typeName = iconType,
-                                                                modifier = Modifier.fillMaxSize(0.86f),
+                                                                modifier = Modifier.fillMaxSize(
+                                                                    0.86f
+                                                                ),
                                                                 cornerRadius = 4.dp,
                                                                 fontSize = 9.sp
                                                             )
@@ -755,7 +795,7 @@ fun RenaiModuleEP(
                             Spacer(Modifier.width(12.dp))
                             Column {
                                 Text(
-                                    text = "网格里标「昼」的是昼间雕像（关卡开始就在场上），标「夜」的是夜间雕像（昼夜更替开始后出现）。点击卡片可以把它在网格上选中，点击卡片上的图标可以更换雕像种类。",
+                                    text = "标「昼」的是昼间雕像（关卡开始就在场上），标「夜」的是夜间雕像（昼夜更替开始后出现）。点击卡片上的图标可以更换雕像种类。",
                                     fontSize = 12.sp,
                                     color = themeColor,
                                     lineHeight = 16.sp
