@@ -461,11 +461,11 @@ fun RenaiModuleEP(
                     body = "用于复兴地图的昼夜更替与雕像玩法：到达指定波次后地图在白天与黑夜之间切换，并在指定格点生成雕像，雕像被破坏后会在设定的波次复活。"
                 )
                 HelpSection(
-                    title = "开关",
-                    body = "关闭开关时不写入任何参数，仅作为圆环工作的依赖项，游戏内不进行昼夜更替；打开后才会写入起始波次与两张雕像表。"
+                    title = "昼夜更替",
+                    body = "关闭开关时不写入任何参数，仅作为复兴圆环工作的依赖项，游戏内不进行昼夜更替；打开后才会写入起始波次与两张雕像表。"
                 )
                 HelpSection(
-                    title = "雕像表",
+                    title = "雕像位置",
                     body = "昼间雕像在关卡开始时就在场上，夜间雕像在昼夜更替开始后出现。同一个格点的坐标原则上不要重复，重复时格子会标红提醒。卡片上的图标就是雕像本身，点击即可更换种类。"
                 )
                 HelpSection(
@@ -549,29 +549,6 @@ fun RenaiModuleEP(
                                 uncheckedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         )
-                    }
-                }
-            }
-
-            if (!isNightEnabled) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        elevation = CardDefaults.cardElevation(2.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(modifier = Modifier.padding(16.dp)) {
-                            Icon(Icons.Default.Info, null, tint = themeColor)
-                            Spacer(Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = "关卡中的圆环必须添加此模块才能正常生效。",
-                                    fontSize = 12.sp,
-                                    color = themeColor,
-                                    lineHeight = 16.sp
-                                )
-                            }
-                        }
                     }
                 }
             }
