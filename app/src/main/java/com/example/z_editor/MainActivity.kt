@@ -176,6 +176,8 @@ fun AppNavigation(
 
             ScreenState.DataPackTools -> {
                 DataPackToolsScreen(
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = onToggleTheme,
                     onBack = {
                         currentScreen = ScreenState.LevelList
                     }

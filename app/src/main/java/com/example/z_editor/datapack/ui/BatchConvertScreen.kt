@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -59,6 +58,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -213,7 +213,6 @@ fun BatchConvertScreen(onBack: () -> Unit) {
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
     val handleBack = rememberDebouncedClick { onBack() }
-    BackHandler(onBack = handleBack)
 
     val prefs = remember { context.getSharedPreferences("datapack_prefs", Context.MODE_PRIVATE) }
 
@@ -231,6 +230,9 @@ fun BatchConvertScreen(onBack: () -> Unit) {
     var progressTotal by remember { mutableIntStateOf(0) }
     var progressName by remember { mutableStateOf<String?>(null) }
     var result by remember { mutableStateOf<BatchResult?>(null) }
+
+    // 放在 isConverting 声明之后：这里和顶部箭头的置灰读的是同一个标志
+    BusyBackHandler(busy = isConverting, busyMessage = "转换中，完成前无法返回", onBack = handleBack)
 
     var encryptionKey by remember { mutableStateOf(prefs.getString("encryption_key", "") ?: "") }
     var showKeyDialog by remember { mutableStateOf(false) }
@@ -461,7 +463,14 @@ fun BatchConvertScreen(onBack: () -> Unit) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = handleBack) {
+                    // 跑动中不给走：任务跑在页面的 scope 上，走了就既没结果也没提示
+                    IconButton(
+                        onClick = handleBack,
+                        // 跟下面的 enabled 一起压 alpha 才看得出灰：Icon 写死了 tint，
+                        // 光靠 enabled=false 压不动它。
+                        modifier = Modifier.alpha(if (isConverting) DISABLED_ALPHA else 1f),
+                        enabled = !isConverting
+                    ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             "返回",

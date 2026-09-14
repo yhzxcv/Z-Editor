@@ -31,7 +31,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Autorenew
 import androidx.compose.material.icons.filled.ContentCut
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.FolderZip
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material.icons.filled.Warning
@@ -56,10 +58,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
 import com.example.z_editor.views.components.rememberDebouncedClick
 import com.example.z_editor.views.editor.pages.others.EditorHelpDialog
 import com.example.z_editor.views.editor.pages.others.HelpSection
@@ -82,6 +86,8 @@ private enum class DataPackToolScreen {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DataPackToolsScreen(
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit,
     onBack: () -> Unit
 ) {
     val handleBack = rememberDebouncedClick { onBack() }
@@ -121,6 +127,8 @@ fun DataPackToolsScreen(
         when (targetState) {
             DataPackToolScreen.Main -> {
                 DataPackToolsMainContent(
+                    isDarkTheme = isDarkTheme,
+                    onToggleTheme = onToggleTheme,
                     onBack = handleBack,
                     onToolClick = { currentTool = it }
                 )
@@ -162,6 +170,8 @@ fun DataPackToolsScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DataPackToolsMainContent(
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit,
     onBack: () -> Unit,
     onToolClick: (DataPackToolScreen) -> Unit
 ) {
@@ -196,6 +206,13 @@ private fun DataPackToolsMainContent(
                         Icon(
                             imageVector = Icons.Default.Warning,
                             contentDescription = "风险提示",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    IconButton(onClick = onToggleTheme) {
+                        Icon(
+                            imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            contentDescription = stringResource(R.string.level_list_screen_btn_theme),
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }

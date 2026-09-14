@@ -390,6 +390,8 @@
     <string name="module_lunar_mine_vein_desc">Places mine vein resources on the moon base map and sets emergence waves</string>
     <string name="module_radiation_meteor_title">Radiation Meteor</string>
     <string name="module_radiation_meteor_desc">Configures radioactive meteors falling from the sky and their spawn parameters</string>
+    <string name="module_renai_statue_title">Renai Statues</string>
+    <string name="module_renai_statue_desc">Configures the day-night switch wave and statue revival waves on the Renai map</string>
     <string name="module_unknown_title">Unknown Module</string>
     <string name="module_unknown_desc">General Parameter Editor</string>
     <string name="module_wave_manager_title">Wave Manager</string>

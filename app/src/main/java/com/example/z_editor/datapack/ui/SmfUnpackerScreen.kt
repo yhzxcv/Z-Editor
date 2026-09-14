@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -66,6 +65,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInput
@@ -106,6 +106,8 @@ private const val DEFAULT_OUTPUT_DIR_NAME = "Z_editor"
 /** 拆分产物在解包根下的固定子目录，与独立拆分页同名同位置。 */
 private const val IMAGE_DIR = "_images"
 
+// 置灰用的 DISABLED_ALPHA 挪到了 BusyBackHandler.kt：这五个页面共用同一个值。
+
 /**
  * 解包页的两阶段。勾了「顺带拆分图集」时先是解包、再是拆分，两阶段共用同一块进度区，
  * 靠这个枚举切换标题，免得拆分阶段还显示「解包中」。
@@ -138,7 +140,6 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
     val handleBack = rememberDebouncedClick { onBack() }
-    BackHandler(onBack = handleBack)
 
     val prefs = remember { context.getSharedPreferences("datapack_prefs", Context.MODE_PRIVATE) }
     val mainPrefs = remember { context.getSharedPreferences("prefs", Context.MODE_PRIVATE) }
@@ -164,6 +165,9 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
     var progressDone by remember { mutableIntStateOf(0) }
     var progressTotal by remember { mutableIntStateOf(0) }
     var progressName by remember { mutableStateOf<String?>(null) }
+
+    // 放在 isUnpacking 声明之后：这里和顶部箭头的置灰读的是同一个标志
+    BusyBackHandler(busy = isUnpacking, busyMessage = "解包中，完成前无法返回", onBack = handleBack)
 
     var showHelpDialog by remember { mutableStateOf(false) }
 
@@ -401,7 +405,16 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
             TopAppBar(
                 title = { Text("SMF 解包", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
                 navigationIcon = {
-                    IconButton(onClick = handleBack) {
+                    // 解包途中不给走：任务跑在页面的 scope 上，走了就既没结果也没提示
+                    // （文件照样落盘）。这里置灰只拦住"点得到"这条路径，系统返回键由
+                    // 上面的 BusyBackHandler 拦 —— 两处必须用同一个 isUnpacking。
+                    IconButton(
+                        onClick = handleBack,
+                        // 跟下面的 enabled 一起压 alpha 才看得出灰：Icon 写死了 tint，
+                        // 光靠 enabled=false 压不动它。
+                        modifier = Modifier.alpha(if (isUnpacking) DISABLED_ALPHA else 1f),
+                        enabled = !isUnpacking
+                    ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             "返回",
@@ -410,7 +423,7 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                     }
                 },
                 actions = {
-                    IconButton(onClick = { scanTemplates() }) {
+                    IconButton(onClick = { scanTemplates() }, enabled = !isUnpacking) {
                         Icon(
                             Icons.Default.Refresh,
                             "刷新",
@@ -485,6 +498,8 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                         file = file,
                         isSelected = isSelected,
                         themeColor = themeColor,
+                        // 跑起来之后换模板只影响"下一次"，但列表突然换选中项会让人以为换了当前这次
+                        enabled = !isUnpacking,
                         onClick = { selectedTemplate = file }
                     )
                 }
@@ -528,14 +543,19 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                             Button(
                                 onClick = { outputDirPickerLauncher.launch(null) },
                                 modifier = Modifier.weight(1f),
+                                // 上面那行"本次将写入 X"是照当前选择写的，跑动中让它变就等于对不上正在写的那次
+                                enabled = !isUnpacking,
                                 colors = ButtonDefaults.buttonColors(containerColor = themeColor)
                             ) { Text("更改输出目录") }
                             // 只有自定义过才给「恢复默认」，否则是个点了没反应的按钮
                             if (customOutputBasePath != null) {
-                                OutlinedButton(onClick = {
-                                    prefs.edit { remove(KEY_OUTPUT_DIR) }
-                                    customOutputBasePath = null
-                                }) { Text("恢复默认") }
+                                OutlinedButton(
+                                    onClick = {
+                                        prefs.edit { remove(KEY_OUTPUT_DIR) }
+                                        customOutputBasePath = null
+                                    },
+                                    enabled = !isUnpacking
+                                ) { Text("恢复默认") }
                             }
                         }
                     }
@@ -571,6 +591,8 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                             subtitle = "解码 .ptx 为同名 .png",
                             checked = ptxToPng,
                             themeColor = themeColor,
+                            // 三个开关都只在解包**开始前**有意义：跑起来后再拨，改的只是下一次
+                            enabled = !isUnpacking,
                             onCheckedChange = {
                                 ptxToPng = it
                                 prefs.edit { putBoolean(KEY_PTX_TO_PNG, it) }
@@ -586,6 +608,7 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                                 subtitle = "转换成功时 .ptx 也一并留下",
                                 checked = keepPtx,
                                 themeColor = themeColor,
+                                enabled = !isUnpacking,
                                 onCheckedChange = {
                                     keepPtx = it
                                     prefs.edit { putBoolean(KEY_KEEP_PTX, it) }
@@ -597,6 +620,7 @@ fun SmfUnpackerScreen(onBack: () -> Unit) {
                             subtitle = "按 RTON 清单拆出每张图片",
                             checked = splitAtlases,
                             themeColor = themeColor,
+                            enabled = !isUnpacking,
                             onCheckedChange = {
                                 splitAtlases = it
                                 prefs.edit { putBoolean(KEY_SPLIT_ATLASES, it) }
@@ -964,12 +988,15 @@ private fun TemplateCard(
     file: UnpackDisplayFile,
     isSelected: Boolean,
     themeColor: Color,
+    /** 解包途中禁用：换选中项只影响下一次，但列表当场换样会让人以为换了正在跑的这次。 */
+    enabled: Boolean,
     onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick),
+            .alpha(if (enabled) 1f else DISABLED_ALPHA)
+            .clickable(enabled = enabled, onClick = onClick),
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) themeColor.copy(alpha = 0.1f)
             else MaterialTheme.colorScheme.surface
@@ -1076,6 +1103,8 @@ private fun SwitchRow(
     subtitle: String,
     checked: Boolean,
     themeColor: Color,
+    /** 解包途中禁用：这三个开关作用于解包产物，跑起来后拨动只影响下一次。 */
+    enabled: Boolean,
     onCheckedChange: (Boolean) -> Unit,
 ) {
     Row(
@@ -1084,8 +1113,11 @@ private fun SwitchRow(
     ) {
         // 标题与灰色说明竖直叠放（同 SectionHeader 的两行式），随开关一起垂直居中。
         // 说明只占一行，所以间距压到 2dp —— 两行文字要读起来是一组，不是两段。
+        // 整列一起压 alpha：文字本来就是灰的，只压 Switch 的话关掉前后几乎看不出差别。
         Column(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .alpha(if (enabled) 1f else DISABLED_ALPHA),
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             Text(
@@ -1103,6 +1135,7 @@ private fun SwitchRow(
         Spacer(Modifier.width(12.dp))
         Switch(
             checked = checked,
+            enabled = enabled,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = MaterialTheme.colorScheme.onSecondary,
                 checkedTrackColor = themeColor,

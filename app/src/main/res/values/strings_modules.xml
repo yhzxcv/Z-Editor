@@ -16,6 +16,8 @@
     <string name="module_lunar_mine_vein_desc">在月球基地地图上放置矿脉并设置出现波次</string>
     <string name="module_radiation_meteor_title">放射性陨石</string>
     <string name="module_radiation_meteor_desc">配置从天而降的放射性陨石及其降落参数</string>
+    <string name="module_renai_statue_title">复兴雕像</string>
+    <string name="module_renai_statue_desc">配置复兴地图的昼夜交替起始波次</string>
     <string name="module_unknown_title">未知模块</string>
     <string name="module_unknown_desc">通用参数编辑器</string>
     <string name="module_wave_manager_title">波次管理器</string>

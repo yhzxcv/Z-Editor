@@ -117,6 +117,7 @@ sealed class EditorSubScreen {
     data class MoonLifeSupportSystem(val rtid: String) : EditorSubScreen()
     data class LunarMineVeins(val rtid: String) : EditorSubScreen()
     data class RadiationMeteorModule(val rtid: String) : EditorSubScreen()
+    data class RenaiModule(val rtid: String) : EditorSubScreen()
     data class LevelPowerups(val rtid: String) : EditorSubScreen()
     data class ZombieMoveFastModule(val rtid: String) : EditorSubScreen()
     data class ZombieRushModule(val rtid: String) : EditorSubScreen()
@@ -1393,6 +1394,17 @@ object ModuleRegistry {
             defaultSource = "CurrentLevel",
             initialDataFactory = { RocketZombieFlickModuleData() },
             navigationFactory = { rtid -> EditorSubScreen.UnknownDetail(rtid) }
+        ),
+        "RenaiModuleProperties" to ModuleMetadata(
+            titleRes = R.string.module_renai_statue_title,
+            descriptionRes = R.string.module_renai_statue_desc,
+            icon = Icons.Default.BrightnessHigh,
+            isCore = true,
+            category = ModuleCategory.Special,
+            defaultAlias = "RenaiModule",
+            defaultSource = "CurrentLevel",
+            initialDataFactory = { RenaiModulePropertiesData() },
+            navigationFactory = { rtid -> EditorSubScreen.RenaiModule(rtid) }
         ),
         "LunarTerminalModuleProperties" to ModuleMetadata(
             titleRes = R.string.module_lunar_terminal_title,

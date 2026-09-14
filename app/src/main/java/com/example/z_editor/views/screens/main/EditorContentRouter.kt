@@ -50,6 +50,7 @@ import com.example.z_editor.views.editor.pages.module.LunarTerminalModuleEP
 import com.example.z_editor.views.editor.pages.module.LevelPowerupModulePropertiesEP
 import com.example.z_editor.views.editor.pages.module.MoonLifeSupportSystemEP
 import com.example.z_editor.views.editor.pages.module.RadiationMeteorModuleEP
+import com.example.z_editor.views.editor.pages.module.RenaiModuleEP
 import com.example.z_editor.views.editor.pages.module.IncreasedCostModulePropertiesEP
 import com.example.z_editor.views.editor.pages.module.InitialGridItemEntryEP
 import com.example.z_editor.views.editor.pages.module.InitialPlantEntryEP
@@ -606,6 +607,13 @@ fun EditorContentRouter(
             rtid = targetState.rtid,
             onBack = actions.navigateBack,
             rootLevelFile = rootLevelFile
+        )
+
+        is EditorSubScreen.RenaiModule -> RenaiModuleEP(
+            rtid = targetState.rtid,
+            onBack = actions.navigateBack,
+            rootLevelFile = rootLevelFile,
+            levelDef = parsedData.levelDef!!
         )
 
         is EditorSubScreen.LevelPowerups -> LevelPowerupModulePropertiesEP(

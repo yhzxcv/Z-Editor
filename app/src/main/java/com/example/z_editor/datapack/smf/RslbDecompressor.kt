@@ -1,8 +1,8 @@
 package com.example.z_editor.datapack.smf
 
 import org.tukaani.xz.LZMAInputStream
-import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.OutputStream
 
 /**
  * RSLB outer-layer decompressor — pure Kotlin (JVM LZMA via org.tukaani:xz).
@@ -32,12 +32,18 @@ import java.io.ByteArrayOutputStream
  * in the stream), so LZMAInputStream's known-size path is used.
  *
  * Decompression only — the app does not re-encode RSLB.
+ *
+ * **流式**：逐块解压直接写进调用方的 [OutputStream]，峰值内存是"一个块"
+ * （≤ [MAX_BLOCK_SIZE]）而不是整个解压结果。原先的
+ * `ByteArrayOutputStream(totalUncomp.toInt())` 本身就是一次几百 MB 的分配，
+ * 是 500M 级数据包闪退的一环。[decompress] 那个 ByteArray 入口只是薄封装，
+ * 仅供 packer 与单测使用。
  */
 object RslbDecompressor {
 
     private const val MAGIC = 0x424C5352 // "RSLB" little-endian
-    private const val HEADER_SIZE = 0x20
-    private const val BLOCK_ENTRY_SIZE = 0x24
+    private const val HEADER_SIZE = 0x20L
+    private const val BLOCK_ENTRY_SIZE = 0x24L
     private const val LZMA_PROPS_SIZE = 5
 
     /** Whole-file sanity bound (matches SmfUnpacker's MAX_DECOMP_SIZE). */
@@ -51,6 +57,10 @@ object RslbDecompressor {
             data[0] == 'R'.code.toByte() && data[1] == 'S'.code.toByte() &&
             data[2] == 'L'.code.toByte() && data[3] == 'B'.code.toByte()
 
+    /** 同上，但只看前 4 字节，不把文件读进内存。 */
+    internal fun isRslb(src: ByteSource): Boolean =
+        src.size >= 4 && src.u32LE(0) == MAGIC
+
     /**
      * Decompress an RSLB container into its inner SMF/RSB/RSGP payload.
      *
@@ -58,16 +68,35 @@ object RslbDecompressor {
      * @throws IllegalStateException corrupt structure, truncated data, LZMA failure
      */
     fun decompress(data: ByteArray): ByteArray {
-        if (data.size < HEADER_SIZE) throw IllegalArgumentException("RSLB 文件过小")
-        val magic = data.readU32LE(0)
+        val src = data.asByteSource()
+        // 预分配（与老实现一致）；越界的声明尺寸留给 decompressTo 里的检查去拒
+        val declared = src.u64LE(0x08)
+        val out = if (declared in 1..Int.MAX_VALUE.toLong()) {
+            ByteArrayOutputStream(declared.toInt())
+        } else {
+            ByteArrayOutputStream()
+        }
+        decompressTo(src, out)
+        return out.toByteArray()
+    }
+
+    /**
+     * 流式解压进 [sink]。同一套校验，只是不再把结果攒在内存里。
+     *
+     * @throws IllegalArgumentException header 不合法 / magic 不符
+     * @throws IllegalStateException 结构损坏、数据截断、LZMA 失败
+     */
+    internal fun decompressTo(src: ByteSource, sink: OutputStream) {
+        if (src.size < HEADER_SIZE) throw IllegalArgumentException("RSLB 文件过小")
+        val magic = src.u32LE(0)
         if (magic != MAGIC) {
             throw IllegalArgumentException("不是 RSLB 格式 (magic=0x%08X)".format(magic))
         }
 
-        val totalUncomp = data.readU64LE(0x08)
-        val blockCount = data.readU32LE(0x1C)
+        val totalUncomp = src.u64LE(0x08)
+        val blockCount = src.u32LE(0x1C)
         val headerEnd = HEADER_SIZE + blockCount.toLong() * BLOCK_ENTRY_SIZE
-        if (headerEnd > data.size) throw IllegalStateException("RSLB 块表越界")
+        if (headerEnd > src.size) throw IllegalStateException("RSLB 块表越界")
 
         if (blockCount < 1 || blockCount > 1_000_000) {
             throw IllegalStateException("RSLB 块数非法: $blockCount")
@@ -76,14 +105,13 @@ object RslbDecompressor {
             throw IllegalStateException("RSLB 解压尺寸非法: $totalUncomp")
         }
 
-        val out = ByteArrayOutputStream(totalUncomp.toInt())
         var produced = 0L
         for (i in 0 until blockCount) {
-            val entry = HEADER_SIZE + i * BLOCK_ENTRY_SIZE
-            val cumOff = data.readU64LE(entry + 0x00)
-            val uSize = data.readU32LE(entry + 0x08)
-            val dataOff = data.readU64LE(entry + 0x10)
-            val cSize = data.readU32LE(entry + 0x18)
+            val entry = HEADER_SIZE + i.toLong() * BLOCK_ENTRY_SIZE
+            val cumOff = src.u64LE(entry)
+            val uSize = src.u32LE(entry + 0x08)
+            val dataOff = src.u64LE(entry + 0x10)
+            val cSize = src.u32LE(entry + 0x18)
 
             if (cumOff != produced) {
                 throw IllegalStateException("块 $i 累计偏移不连续 ($cumOff != $produced)")
@@ -94,26 +122,36 @@ object RslbDecompressor {
             if (cSize < LZMA_PROPS_SIZE) {
                 throw IllegalStateException("块 $i 压缩尺寸非法: $cSize")
             }
-            if (dataOff + cSize > data.size) {
+            if (dataOff + cSize > src.size) {
                 throw IllegalStateException("块 $i 数据越界")
             }
 
-            val dataStart = dataOff.toInt()
-            val props = data.copyOfRange(dataStart, dataStart + LZMA_PROPS_SIZE)
-            val src = data.copyOfRange(dataStart + LZMA_PROPS_SIZE, dataStart + cSize)
-
-            out.write(decodeLzma(src, props, uSize))
+            val props = src.readFully(dataOff, LZMA_PROPS_SIZE)
+                ?: throw IllegalStateException("块 $i LZMA props 越界")
+            decodeLzmaTo(
+                src = src,
+                compStart = dataOff + LZMA_PROPS_SIZE,
+                compLen = (cSize - LZMA_PROPS_SIZE).toLong(),
+                props = props,
+                expectedSize = uSize,
+                sink = sink
+            )
             produced += uSize
         }
 
-        val result = out.toByteArray()
-        if (result.size.toLong() != totalUncomp) {
-            throw IllegalStateException("RSLB 解压总大小 ${result.size} != 期望 $totalUncomp")
+        if (produced != totalUncomp) {
+            throw IllegalStateException("RSLB 解压总大小 $produced != 期望 $totalUncomp")
         }
-        return result
     }
 
-    private fun decodeLzma(compressed: ByteArray, props: ByteArray, expectedSize: Int): ByteArray {
+    private fun decodeLzmaTo(
+        src: ByteSource,
+        compStart: Long,
+        compLen: Long,
+        props: ByteArray,
+        expectedSize: Int,
+        sink: OutputStream
+    ) {
         // 5-byte props layout: [0] = LZMA props byte (lc/lp/pb), [1..4] = dict_size (LE).
         // xz 1.10's LZMAInputStream has no (InputStream, long, byte[]) ctor — the
         // props must be decomposed into (propsByte, dictSize). Validate dictSize
@@ -126,17 +164,19 @@ object RslbDecompressor {
         if (dictSize < 0 || dictSize > MAX_BLOCK_SIZE) {
             throw IllegalStateException("LZMA dict_size 非法: $dictSize")
         }
+        if (compLen <= 0) throw IllegalStateException("LZMA 压缩数据为空")
 
-        val out = ByteArrayOutputStream(expectedSize)
+        var total = 0L
         try {
-            LZMAInputStream(ByteArrayInputStream(compressed), expectedSize.toLong(), propsByte, dictSize).use { lzma ->
+            LZMAInputStream(
+                src.window(compStart, compLen), expectedSize.toLong(), propsByte, dictSize
+            ).use { lzma ->
                 val buf = ByteArray(65536)
-                var total = 0
                 while (total < expectedSize) {
                     val n = lzma.read(buf)
                     if (n < 0) throw IllegalStateException("LZMA 流提前结束")
                     if (n > 0) {
-                        out.write(buf, 0, n)
+                        sink.write(buf, 0, n)
                         total += n
                     }
                 }
@@ -147,26 +187,8 @@ object RslbDecompressor {
             throw IllegalStateException("LZMA 解压失败: ${e.message}", e)
         }
 
-        val result = out.toByteArray()
-        if (result.size != expectedSize) {
+        if (total != expectedSize.toLong()) {
             throw IllegalStateException("LZMA 解压大小不符")
         }
-        return result
     }
-
-    private fun ByteArray.readU32LE(offset: Int): Int =
-        (this[offset].toInt() and 0xFF) or
-            ((this[offset + 1].toInt() and 0xFF) shl 8) or
-            ((this[offset + 2].toInt() and 0xFF) shl 16) or
-            ((this[offset + 3].toInt() and 0xFF) shl 24)
-
-    private fun ByteArray.readU64LE(offset: Int): Long =
-        (this[offset].toLong() and 0xFF) or
-            ((this[offset + 1].toLong() and 0xFF) shl 8) or
-            ((this[offset + 2].toLong() and 0xFF) shl 16) or
-            ((this[offset + 3].toLong() and 0xFF) shl 24) or
-            ((this[offset + 4].toLong() and 0xFF) shl 32) or
-            ((this[offset + 5].toLong() and 0xFF) shl 40) or
-            ((this[offset + 6].toLong() and 0xFF) shl 48) or
-            ((this[offset + 7].toLong() and 0xFF) shl 56)
 }

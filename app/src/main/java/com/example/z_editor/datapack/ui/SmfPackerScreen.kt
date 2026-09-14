@@ -3,7 +3,6 @@ package com.example.z_editor.datapack.ui
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -61,6 +60,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -99,7 +99,6 @@ fun SmfPackerScreen(onBack: () -> Unit) {
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
     val handleBack = rememberDebouncedClick { onBack() }
-    BackHandler(onBack = handleBack)
 
     val prefs = remember { context.getSharedPreferences("datapack_prefs", Context.MODE_PRIVATE) }
     val mainPrefs = remember { context.getSharedPreferences("prefs", Context.MODE_PRIVATE) }
@@ -132,6 +131,9 @@ fun SmfPackerScreen(onBack: () -> Unit) {
     var isPacking by remember { mutableStateOf(false) }
     var packResult by remember { mutableStateOf<SmfPacker.PackResult?>(null) }
     var packError by remember { mutableStateOf<String?>(null) }
+
+    // 放在 isPacking 声明之后：这里和顶部箭头的置灰读的是同一个标志
+    BusyBackHandler(busy = isPacking, busyMessage = "打包中，完成前无法返回", onBack = handleBack)
 
     // Key dialog
     var encryptionKey by remember { mutableStateOf(prefs.getString("encryption_key", "") ?: "") }
@@ -290,7 +292,14 @@ fun SmfPackerScreen(onBack: () -> Unit) {
             TopAppBar(
                 title = { Text("数据包补丁", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
                 navigationIcon = {
-                    IconButton(onClick = handleBack) {
+                    // 跑动中不给走：任务跑在页面的 scope 上，走了就既没结果也没提示
+                    IconButton(
+                        onClick = handleBack,
+                        // 跟下面的 enabled 一起压 alpha 才看得出灰：Icon 写死了 tint，
+                        // 光靠 enabled=false 压不动它。
+                        modifier = Modifier.alpha(if (isPacking) DISABLED_ALPHA else 1f),
+                        enabled = !isPacking
+                    ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             "返回",

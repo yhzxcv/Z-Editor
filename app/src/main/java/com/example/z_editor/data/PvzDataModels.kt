@@ -423,6 +423,22 @@ data class RadiationMeteorSpawnData(
     @SerializedName("GridY") var gridY: Int = 0
 )
 
+// === 复兴地图特殊玩法（昼夜交替与雕像）模块 ===
+// 三个字段全部可空是刻意的：JsonSyncManager.sync() 会把"数据类声明了、但新数据里为 null"的键
+// 从 objdata 中删除，于是三者皆 null 时 objdata 就是 {} —— 即"不做昼夜更替"的写法。
+data class RenaiModulePropertiesData(
+    @SerializedName("NightStartWaveNum") var nightStartWaveNum: Int? = null,
+    @SerializedName("StatueInfos") var statueInfos: MutableList<RenaiStatueData>? = null,
+    @SerializedName("StatueNightInfos") var statueNightInfos: MutableList<RenaiStatueData>? = null
+)
+
+data class RenaiStatueData(
+    @SerializedName("GridX") var gridX: Int = 0,
+    @SerializedName("GridY") var gridY: Int = 0,
+    @SerializedName("WaveNumber") var waveNumber: Int = 1,
+    @SerializedName("TypeName") var typeName: String = "renai_statue_zombie1"
+)
+
 // === 金手指（关卡手势技能）模块 ===
 data class LevelPowerupModulePropertiesData(
     @SerializedName("Powerups") var powerups: MutableList<LevelPowerupData> = mutableListOf(

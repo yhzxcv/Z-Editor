@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -158,7 +157,6 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val handleBack = rememberDebouncedClick { onBack() }
-    BackHandler(onBack = handleBack)
 
     val prefs = remember { context.getSharedPreferences("datapack_prefs", Context.MODE_PRIVATE) }
     val mainPrefs = remember { context.getSharedPreferences("prefs", Context.MODE_PRIVATE) }
@@ -216,6 +214,9 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
     var convertTargetItem by remember { mutableStateOf<FileItem?>(null) }
     var availableTargets by remember { mutableStateOf<List<ConvertTarget>>(emptyList()) }
     var isProcessing by remember { mutableStateOf(false) }
+
+    // 放在 isProcessing 声明之后：这里和顶部箭头的置灰读的是同一个标志
+    BusyBackHandler(busy = isProcessing, busyMessage = "处理中，完成前无法返回", onBack = handleBack)
 
     // 文件操作状态（复制、删除、重命名、移动）
     var itemToDelete by remember { mutableStateOf<FileItem?>(null) }
@@ -538,7 +539,14 @@ fun DataPackFileManagerScreen(onBack: () -> Unit) {
             TopAppBar(
                 title = { Text("文件格式转换", fontWeight = FontWeight.Bold, fontSize = 22.sp) },
                 navigationIcon = {
-                    IconButton(onClick = handleBack) {
+                    // 跑动中不给走：转换/识别跑在页面的 scope 上，走了就既没结果也没提示
+                    IconButton(
+                        onClick = handleBack,
+                        // 跟下面的 enabled 一起压 alpha 才看得出灰：Icon 写死了 tint，
+                        // 光靠 enabled=false 压不动它。
+                        modifier = Modifier.alpha(if (isProcessing) DISABLED_ALPHA else 1f),
+                        enabled = !isProcessing
+                    ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             "返回",
