@@ -1,0 +1,17 @@
+# Cloudflare Pages 响应头（放在输出目录根部，CF 会自己吃掉这个文件、不对外提供）
+# 语法：第一行是路径匹配，下面缩进的是响应头。
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+
+# 站点没有构建步骤、文件名也不带哈希，所以缓存靠部署来失效：
+# CF Pages 每次部署都会清掉自己的缓存，改了东西推上去就会立刻生效。
+/css/*
+  Cache-Control: public, max-age=3600
+
+/js/*
+  Cache-Control: public, max-age=3600
+
+/data/*
+  Cache-Control: public, max-age=3600

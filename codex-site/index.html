@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>代码图鉴 · PvZ2 关卡编辑器</title>
+<meta name="description" content="植物大战僵尸 2 关卡编辑器代码图鉴：按主题分类，支持中文名、代码、拼音首字母检索，点击即复制。">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c2024" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app">
+  <!-- 宽屏常驻；窄屏由 ☰ 唤出，同一份 DOM -->
+  <aside class="sidebar" id="sidebar" aria-label="章节与目录"></aside>
+
+  <div class="pane">
+    <header class="topbar">
+      <button class="icon-btn" id="btn-menu" type="button" aria-label="章节与目录">☰</button>
+      <div class="brand">代码图鉴</div>
+      <div class="search">
+        <span class="search-ico" aria-hidden="true">🔍</span>
+        <input id="q" type="search" placeholder="搜索名称、代码或拼音首字母"
+               autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+               aria-label="搜索条目">
+        <button class="search-clear" id="q-clear" type="button" aria-label="清空搜索" hidden>✕</button>
+      </div>
+      <button class="icon-btn" id="btn-settings" type="button" aria-label="设置" aria-haspopup="true">⚙</button>
+    </header>
+
+    <nav class="chapterbar" id="chapterbar" aria-label="章节"></nav>
+    <nav class="groupbar" id="groupbar" aria-label="分组"></nav>
+
+    <main class="content" id="content" tabindex="-1"></main>
+  </div>
+</div>
+
+<div class="scrim" id="scrim" aria-hidden="true"></div>
+
+<div class="popover" id="settings" hidden>
+  <div class="pop-title">设置</div>
+  <div class="pop-row">
+    <span>复制格式</span>
+    <div class="seg" data-key="format">
+      <button type="button" data-val="plain">纯代码</button>
+      <button type="button" data-val="quoted">带引号</button>
+    </div>
+  </div>
+  <div class="pop-row">
+    <span>主题</span>
+    <div class="seg" data-key="theme">
+      <button type="button" data-val="auto">系统</button>
+      <button type="button" data-val="light">浅色</button>
+      <button type="button" data-val="dark">深色</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<!-- 数据文件清单：新增章节先跑迁移生成 data/ch-xxx.js，再来这里加一行 -->
+<script src="js/chapters.js"></script>
+<script src="js/pinyin-table.js"></script>
+<script src="js/codex.js"></script>
+<script src="js/search.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
