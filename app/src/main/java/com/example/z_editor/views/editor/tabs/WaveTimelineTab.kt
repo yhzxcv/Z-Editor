@@ -31,6 +31,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DriveFileMove
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.CheckCircle
@@ -47,6 +48,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Science
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
@@ -136,7 +138,8 @@ fun WaveTimelineTab(
     onCreateContainer: () -> Unit,
     onDeleteContainer: () -> Unit,
     parsedData: ParsedLevelData?,
-    onEditCustomZombie: (String) -> Unit
+    onEditCustomZombie: (String) -> Unit,
+    onEditJitterOffsets: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -244,6 +247,22 @@ fun WaveTimelineTab(
                 }
             }
             ZombieUsageInfo(rtid, alias, baseType, locations.distinct())
+        }
+    }
+
+    // 出怪间隔偏移预设：入口卡片只关心「有几组、几组没人用」
+    val jitterPresets = remember(rootLevelFile, refreshTrigger) {
+        rootLevelFile?.objects?.filter { it.objClass == "ZombieJitterOffsets" } ?: emptyList()
+    }
+    val jitterUnreferencedCount = remember(jitterPresets, rootLevelFile, refreshTrigger) {
+        val file = rootLevelFile
+        if (file == null) {
+            0
+        } else {
+            jitterPresets.count { preset ->
+                val alias = preset.aliases?.firstOrNull().orEmpty()
+                alias.isEmpty() || LevelParser.findJitterOffsetsReferrers(file, alias).isEmpty()
+            }
         }
     }
 
@@ -567,7 +586,7 @@ fun WaveTimelineTab(
                         onValueChange = { newAliasInput = it },
                         label = { Text(stringResource(R.string.wave_timeline_label_new_alias)) },
                         isError = isConflict,
-                        supportingText = { if (isConflict) Text(stringResource(R.string.wave_timeline_error_alias_taken)) },
+                        supportingText = { if (isConflict) Text(stringResource(R.string.wave_timeline_error_alias_taken),color = MaterialTheme.colorScheme.onError) },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -1024,6 +1043,60 @@ fun WaveTimelineTab(
             }
         }
 
+
+        item {
+            Card(
+                onClick = onEditJitterOffsets,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                // 与上方「自定义僵尸管理」卡片同一套配色（tertiary 底 + onTertiary 描边）
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.tertiary),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onTertiary)
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.Speed, null)
+                    Spacer(Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            stringResource(R.string.wave_timeline_mgmt_jitter_offsets),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            if (jitterPresets.isEmpty()) {
+                                stringResource(R.string.wave_timeline_jitter_subtitle_none)
+                            } else {
+                                stringResource(
+                                    R.string.wave_timeline_jitter_subtitle,
+                                    jitterPresets.size,
+                                    jitterUnreferencedCount
+                                )
+                            },
+                            fontSize = 12.sp
+                        )
+                    }
+                    if (jitterUnreferencedCount > 0) {
+                        Icon(
+                            Icons.Default.Warning,
+                            null,
+                            tint = MaterialTheme.colorScheme.onTertiary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(Modifier.width(4.dp))
+                    }
+                    Icon(
+                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        null,
+                        tint = MaterialTheme.colorScheme.onTertiary
+                    )
+                }
+            }
+        }
 
         if (deadLinks.isNotEmpty()) {
             item {

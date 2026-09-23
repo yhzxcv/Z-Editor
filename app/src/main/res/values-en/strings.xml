@@ -266,6 +266,65 @@
     <string name="wave_timeline_empty_wave_hint">Empty Wave (Swipe to operate)</string>
     <string name="wave_timeline_location_format">Wave %1$d</string>
 
+    <!-- Spawn Jitter Offsets -->
+    <string name="wave_timeline_mgmt_jitter_offsets">Spawn Jitter Offsets</string>
+    <string name="wave_timeline_jitter_subtitle_none">No presets yet</string>
+    <string name="wave_timeline_jitter_subtitle">%1$d preset(s), %2$d unreferenced</string>
+
+    <string name="jitter_page_title">Spawn Jitter Offsets</string>
+    <string name="jitter_page_subtitle">%1$d preset(s)</string>
+    <string name="jitter_btn_add">New Preset</string>
+    <string name="jitter_empty">No presets yet. Create one, then bind it in a natural spawn event.</string>
+    <string name="jitter_label_no_alias">(no alias)</string>
+    <string name="jitter_status_unused">Not referenced by any natural spawn event</string>
+    <string name="jitter_status_referenced">Referenced by %1$d natural spawn event(s)</string>
+    <string name="jitter_label_increment">Same-row spawn interval (ZombieSpawningOffsetIncrement)</string>
+    <string name="jitter_label_jitter">Random jitter (ZombieSpawningRandomJitter)</string>
+    <string name="jitter_cd_rename">Rename</string>
+    <string name="jitter_cd_delete">Delete</string>
+
+    <string name="jitter_msg_created">Created preset %1$s</string>
+    <string name="jitter_msg_renamed">Updated references in %1$d event(s)</string>
+
+    <string name="jitter_rename_title">Rename Preset</string>
+    <string name="jitter_rename_desc">Renaming also updates every event that references it.</string>
+    <string name="jitter_rename_label">Alias</string>
+    <string name="jitter_rename_err_empty">Alias cannot be empty</string>
+    <string name="jitter_rename_err_bad_chars">Alias cannot contain @ ( ) — it would break the RTID statement</string>
+    <string name="jitter_rename_err_taken">Alias %1$s is already used by another object</string>
+
+    <string name="jitter_delete_title">Delete Preset?</string>
+    <string name="jitter_delete_desc">Preset %1$s will be deleted. No event references it, so no wave is affected.</string>
+    <string name="jitter_delete_blocked_title">Cannot Delete</string>
+    <string name="jitter_delete_blocked_desc">Preset %1$s is still referenced by %2$d natural spawn event(s). Unbind them first.</string>
+    <string name="jitter_delete_blocked_hint">Open those events in the wave container and switch "Spawn Jitter Offset" to another preset or off:</string>
+
+    <string name="jitter_btn_confirm">Confirm</string>
+    <string name="jitter_btn_cancel">Cancel</string>
+    <string name="jitter_btn_delete">Delete</string>
+    <string name="jitter_btn_got_it">Got it</string>
+
+    <string name="jitter_event_label">Spawn Jitter Offset</string>
+    <string name="jitter_event_none">Off (use game default)</string>
+    <string name="jitter_event_manage">Manage Presets</string>
+    <string name="jitter_event_desc">Controls the interval and jitter between zombies of the same row. Unbound events use the game default.</string>
+    <string name="jitter_event_no_presets">No presets yet — create one under "Spawn Jitter Offsets" first.</string>
+    <string name="jitter_event_dangling">%1$s (missing)</string>
+
+    <string name="jitter_help_title">Spawn Jitter Offsets</string>
+    <string name="jitter_help_intro_title">What it does</string>
+    <string name="jitter_help_intro_body">In a natural spawn event, zombies of the same row enter one after another. This preset controls the interval and jitter between them.</string>
+    <string name="jitter_help_increment_title">Same-row spawn interval</string>
+    <string name="jitter_help_increment_body">Maps to ZombieSpawningOffsetIncrement, 80 (pixels) by default. Believed to be the delay between two consecutive zombies of the same row — not confirmed in game yet.</string>
+    <string name="jitter_help_jitter_title">Random jitter</string>
+    <string name="jitter_help_jitter_body">Maps to ZombieSpawningRandomJitter, commonly 10. Believed to be random variation added on top of that interval — not confirmed in game yet.</string>
+    <string name="jitter_help_usage_title">How to use</string>
+    <string name="jitter_help_usage_body">Create presets here, then open a natural spawn event in the wave container and pick one under "Spawn Jitter Offset".</string>
+    <string name="jitter_help_optional_title">Optional feature</string>
+    <string name="jitter_help_optional_body">Spawning works fine without binding one — the game falls back to its own defaults. That is why this is off by default.</string>
+    <string name="jitter_help_ref_title">References and deletion</string>
+    <string name="jitter_help_ref_body">One preset can be shared by many events; editing it changes every wave that uses it. A preset that is still referenced cannot be deleted — switch those events to another preset or off first.</string>
+
     <!-- Vase Breaker -->
     <string name="vase_breaker_error_no_module">Data error: Vase configuration module not found</string>
     <string name="vase_breaker_range_title">Generation Range &amp; Blacklist</string>

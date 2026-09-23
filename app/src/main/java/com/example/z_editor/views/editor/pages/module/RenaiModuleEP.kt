@@ -641,7 +641,7 @@ fun RenaiModuleEP(
                                         fontSize = 12.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
-                                    StatueTarget.values().forEach { target ->
+                                    StatueTarget.entries.forEach { target ->
                                         FilterChip(
                                             selected = addTarget == target,
                                             onClick = { addTarget = target },

@@ -687,6 +687,17 @@ fun EditorScreen(
                     refreshTrigger++
                 },
 
+                // 页面直接改 rootLevelFile.objects（增删对象/改别名）后走这里，
+                // 让 objectMap 等派生数据跟着刷新
+                onLevelObjectsChanged = {
+                    val newObjectMap =
+                        rootLevelFile!!.objects.associateBy {
+                            it.aliases?.firstOrNull() ?: "unknown"
+                        }
+                    parsedData = parsedData!!.copy(objectMap = newObjectMap)
+                    refreshTrigger++
+                },
+
                 onDeleteEventReference = { rtid ->
                     parsedData?.waveManager?.waves?.forEach { wave -> wave.removeAll { it == rtid } }
                     rootLevelFile?.objects?.find { it.objClass == "WaveManagerProperties" }

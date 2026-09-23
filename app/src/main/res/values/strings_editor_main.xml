@@ -123,6 +123,65 @@
     <string name="wave_timeline_empty_wave_hint">空波次 (左右划操作)</string>
     <string name="wave_timeline_location_format">第 %1$d 波</string>
 
+    <!-- 出怪间隔偏移预设 -->
+    <string name="wave_timeline_mgmt_jitter_offsets">出怪间隔偏移预设</string>
+    <string name="wave_timeline_jitter_subtitle_none">未创建预设</string>
+    <string name="wave_timeline_jitter_subtitle">共 %1$d 组，其中 %2$d 组未被引用</string>
+
+    <string name="jitter_page_title">出怪间隔偏移预设</string>
+    <string name="jitter_page_subtitle">共 %1$d 组</string>
+    <string name="jitter_btn_add">新建预设</string>
+    <string name="jitter_empty">还没有预设。新建一组后，到自然出怪事件里绑定它。</string>
+    <string name="jitter_label_no_alias">（无别名）</string>
+    <string name="jitter_status_unused">未被任何自然出怪事件引用</string>
+    <string name="jitter_status_referenced">被 %1$d 个自然出怪事件引用</string>
+    <string name="jitter_label_increment">同一行出怪间隔 (ZombieSpawningOffsetIncrement)</string>
+    <string name="jitter_label_jitter">浮动范围 (ZombieSpawningRandomJitter)</string>
+    <string name="jitter_cd_rename">重命名</string>
+    <string name="jitter_cd_delete">删除</string>
+
+    <string name="jitter_msg_created">已新建预设 %1$s</string>
+    <string name="jitter_msg_renamed">已同步更新 %1$d 个事件的引用</string>
+
+    <string name="jitter_rename_title">重命名预设</string>
+    <string name="jitter_rename_desc">改名会自动同步所有引用它的事件。</string>
+    <string name="jitter_rename_label">别名</string>
+    <string name="jitter_rename_err_empty">别名不能为空</string>
+    <string name="jitter_rename_err_bad_chars">别名不能包含 @ ( ) —— 会破坏 RTID 语句</string>
+    <string name="jitter_rename_err_taken">别名 %1$s 已被其它对象占用</string>
+
+    <string name="jitter_delete_title">删除预设？</string>
+    <string name="jitter_delete_desc">将删除预设 %1$s。当前没有事件引用它，删除不影响任何波次。</string>
+    <string name="jitter_delete_blocked_title">无法删除</string>
+    <string name="jitter_delete_blocked_desc">预设 %1$s 还被 %2$d 个自然出怪事件引用，先解绑再删。</string>
+    <string name="jitter_delete_blocked_hint">到波次容器里打开这些事件，把「出怪间隔偏移」改成别的预设或不启用：</string>
+
+    <string name="jitter_btn_confirm">确定</string>
+    <string name="jitter_btn_cancel">取消</string>
+    <string name="jitter_btn_delete">删除</string>
+    <string name="jitter_btn_got_it">知道了</string>
+
+    <string name="jitter_event_label">出怪间隔偏移</string>
+    <string name="jitter_event_none">不启用（用游戏默认值）</string>
+    <string name="jitter_event_manage">管理预设</string>
+    <string name="jitter_event_desc">控制同一行僵尸的出场间隔与浮动。不绑定则用游戏缺省值。</string>
+    <string name="jitter_event_no_presets">还没有预设，先在「出怪间隔偏移预设」里建一组。</string>
+    <string name="jitter_event_dangling">%1$s（已失效）</string>
+
+    <string name="jitter_help_title">出怪间隔偏移说明</string>
+    <string name="jitter_help_intro_title">作用</string>
+    <string name="jitter_help_intro_body">自然出怪事件里同一行的僵尸会按顺序陆续出场，这个预设控制它们之间的间隔与浮动。</string>
+    <string name="jitter_help_increment_title">同一行出怪间隔</string>
+    <string name="jitter_help_increment_body">对应 ZombieSpawningOffsetIncrement，默认 80（像素）。推测为同一行相邻两只僵尸的出场间隔，未经实测确认。</string>
+    <string name="jitter_help_jitter_title">浮动范围</string>
+    <string name="jitter_help_jitter_body">对应 ZombieSpawningRandomJitter，常用值 10。推测为在上述间隔上叠加的随机浮动，未经实测确认。</string>
+    <string name="jitter_help_usage_title">怎么用</string>
+    <string name="jitter_help_usage_body">这里建好预设后，到波次容器里打开一个自然出怪事件，在「出怪间隔偏移」里选一组绑定即可。</string>
+    <string name="jitter_help_optional_title">可选功能</string>
+    <string name="jitter_help_optional_body">不绑定也能正常出怪，游戏会使用自带的缺省值。所以本功能默认关闭，按需开启。</string>
+    <string name="jitter_help_ref_title">引用与删除</string>
+    <string name="jitter_help_ref_body">一个预设可以被多个事件共用，改一处所有引用它的波次一起变。还被引用着的预设不能删除，需要先把相关事件改成别的预设或不启用。</string>
+
     <string name="vase_breaker_error_no_module">数据异常：未找到罐子配置模块</string>
     <string name="vase_breaker_range_title">罐子生成范围与禁用格点</string>
     <string name="vase_breaker_min_col">起始列 (Min)</string>

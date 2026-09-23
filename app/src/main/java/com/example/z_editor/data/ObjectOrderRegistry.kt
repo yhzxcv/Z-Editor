@@ -4,6 +4,12 @@ object ObjectOrderRegistry {
     private val ORDER_LIST = listOf(
         "LevelDefinition",
 
+        "StandardLevelIntroProperties",
+        "CustomLevelModuleProperties",
+        "LawnMowerProperties",
+        "ZombiesDeadWinConProperties",
+        "ZombiesAteYourBrainsProperties",
+
         "SeedBankProperties",
         "ConveyorSeedBankProperties",
         "SeedRainProperties",
@@ -28,6 +34,10 @@ object ObjectOrderRegistry {
         "TunnelDefendModuleProperties",
         "ZombiePotionModuleProperties",
         "WarMistProperties",
+        "RainDarkProperties",
+        "RadiationMeteorModuleProperties",
+        "ManholePipelineModuleProperties",
+        "LunarMineVeinModuleProperties",
 
         "ZombieMoveFastModuleProperties",
         "ZombieRushModuleProperties",
@@ -37,6 +47,7 @@ object ObjectOrderRegistry {
         "LevelMutatorStartingPlantfoodProps",
         "LevelMutatorMaxSunProps",
         "LevelMutatorRiftTimedSunProps",
+        "RocketZombieFlickModuleProperties",
 
         "InitialPlantProperties",
         "InitialPlantEntryProperties",
@@ -48,6 +59,9 @@ object ObjectOrderRegistry {
         "ZombossBattleIntroProperties",
         "ZombossBattleModuleProperties",
         "VaseBreakerPresetProperties",
+        "VaseBreakerArcadeModuleProperties",
+        "VaseBreakerFlowModuleProperties",
+        "PVZ1OverwhelmModuleProperties",
         "EvilDaveProperties",
         "SingleHandedProperties",
 
@@ -74,13 +88,20 @@ object ObjectOrderRegistry {
 
         "PickupCollectableTutorialProperties",
 
+        "MoonLifeSupportSystemProperties",
+        "LunarTerminalModuleProperties",
+        "RenaiModuleProperties",
+        "LevelPowerupModuleProperties",
+
         "WaveManagerModuleProperties",
         "WaveManagerProperties",
 
+        "ZombieJitterOffsets",
         "SpawnZombiesJitteredWaveActionProps",
         "SpawnZombiesFromGroundSpawnerProps",
         "SpawnZombiesFromGridItemSpawnerProps",
         "BeachStageEventZombieSpawnerProps",
+        "BungeeWaveActionProps",
 
         "StormZombieSpawnerProps",
         "HamsterZombieSpawnerProps",
@@ -92,6 +113,8 @@ object ObjectOrderRegistry {
 
         "SpawnModernPortalsWaveActionProps",
         "FrostWindWaveActionProps",
+        "FairyTaleWindWaveActionProps",
+        "FairyTaleFogWaveActionProps",
         "DinoWaveActionProps",
         "DinoTreadActionProps",
         "DinoRunActionProps",
@@ -99,6 +122,7 @@ object ObjectOrderRegistry {
 
         "TidalChangeWaveActionProps",
         "BlackHoleWaveActionProps",
+        "WaveActionMagicMirrorTeleportationArrayProps2",
 
         "ZombiePotionActionProps",
         "SpawnGravestonesWaveActionProps",
@@ -162,6 +186,15 @@ object ObjectOrderRegistry {
     }
 
     /**
+     * 按 Alias 的自然序比较两个对象。没有别名的对象视为空串。
+     */
+    private fun compareAlias(o1: PvzObject, o2: PvzObject): Int {
+        val alias1 = o1.aliases?.firstOrNull() ?: ""
+        val alias2 = o2.aliases?.firstOrNull() ?: ""
+        return naturalStringComparator.compare(alias1, alias2)
+    }
+
+    /**
      * 比较器：用于 List<PvzObject> 的排序
      */
     val comparator = Comparator<PvzObject> { o1, o2 ->
@@ -169,8 +202,11 @@ object ObjectOrderRegistry {
         val p2 = getPriority(o2.objClass)
 
         when {
-            // 1. 两个都在白名单里，按白名单顺序排
-            p1 != Int.MAX_VALUE && p2 != Int.MAX_VALUE -> p1 - p2
+            // 1. 两个都在白名单里，按白名单顺序排。
+            //    同一个 objClass 的优先级必然相等，此时必须再按 Alias 比较：
+            //    返回 0 的话稳定排序会保留插入顺序，波次就会按添加先后而不是序号排。
+            p1 != Int.MAX_VALUE && p2 != Int.MAX_VALUE ->
+                if (p1 != p2) p1 - p2 else compareAlias(o1, o2)
 
             // 2. 只有一个在白名单，白名单的排前面
             p1 != Int.MAX_VALUE -> -1
@@ -179,12 +215,8 @@ object ObjectOrderRegistry {
             // 3. 两个都不在白名单 (Unknown)，按 objClass 字母顺序排，方便归类
             o1.objClass != o2.objClass -> o1.objClass.compareTo(o2.objClass)
 
-            // 4. objClass 也一样（比如多个 JitteredWave），按 Alias 字母顺序排，保证稳定性
-            else -> {
-                val alias1 = o1.aliases?.firstOrNull() ?: ""
-                val alias2 = o2.aliases?.firstOrNull() ?: ""
-                naturalStringComparator.compare(alias1, alias2)
-            }
+            // 4. objClass 也一样（比如多个 JitteredWave），按 Alias 自然序排
+            else -> compareAlias(o1, o2)
         }
     }
 }

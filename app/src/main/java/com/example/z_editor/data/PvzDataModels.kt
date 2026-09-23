@@ -717,8 +717,18 @@ data class LocationData(
 // ======================== 3. 具体事件定义 ========================
 
 
+// === 出怪间隔偏移预设 ===
+// 独立于模块体系：作为关卡内对象被自然出怪事件用 JitterOffsets 引用，
+// 不写进 LevelDefinition.Modules。对象不存在时游戏用缺省值。
+data class ZombieJitterOffsetsData(
+    @SerializedName("ZombieSpawningOffsetIncrement") var offsetIncrement: Int = 80,
+    @SerializedName("ZombieSpawningRandomJitter") var randomJitter: Int = 10
+)
+
 // === 自然出怪事件 ===
 data class WaveActionData(
+    // 指向 ZombieJitterOffsets 预设的 RTID；null = 不启用，键不写入
+    @SerializedName("JitterOffsets") var jitterOffsets: String? = null,
     @SerializedName("NotificationEvents") var notificationEvents: MutableList<String>? = null,
     @SerializedName("AdditionalPlantfood") var additionalPlantFood: Int? = null,
     @SerializedName("SpawnPlantName") var spawnPlantName: MutableList<String>? = null,

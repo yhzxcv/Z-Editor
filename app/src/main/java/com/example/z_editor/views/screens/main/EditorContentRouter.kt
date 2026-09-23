@@ -89,6 +89,7 @@ import com.example.z_editor.views.editor.pages.others.JsonCodeViewerScreen
 import com.example.z_editor.views.editor.pages.others.LevelDefinitionEP
 import com.example.z_editor.views.editor.pages.others.UnknownEP
 import com.example.z_editor.views.editor.pages.others.WaveManagerPropertiesEP
+import com.example.z_editor.views.editor.pages.others.ZombieJitterOffsetsEP
 import com.example.z_editor.views.editor.tabs.IZombieTab
 import com.example.z_editor.views.editor.tabs.LevelSettingsTab
 import com.example.z_editor.views.editor.tabs.SingleHandedTab
@@ -322,7 +323,10 @@ fun EditorContentRouter(
                         onCreateContainer = actions.onCreateWaveContainer,
                         onDeleteContainer = actions.onDeleteWaveContainer,
                         parsedData = parsedData,
-                        onEditCustomZombie = actions.onEditCustomZombie
+                        onEditCustomZombie = actions.onEditCustomZombie,
+                        onEditJitterOffsets = {
+                            actions.navigateTo(EditorSubScreen.ZombieJitterOffsets)
+                        }
                     )
                 }
 
@@ -386,6 +390,13 @@ fun EditorContentRouter(
                 scrollState = getScrollState("WaveManagerSettings")
             )
         }
+
+        EditorSubScreen.ZombieJitterOffsets -> ZombieJitterOffsetsEP(
+            rootLevelFile = rootLevelFile,
+            onBack = actions.navigateBack,
+            onObjectsChanged = actions.onLevelObjectsChanged,
+            scrollState = getScrollState("ZombieJitterOffsets")
+        )
 
         is EditorSubScreen.WaveManagerModule -> WaveManagerModulePropertiesEP(
             rtid = targetState.rtid,
@@ -730,7 +741,10 @@ fun EditorContentRouter(
             onRequestPlantSelection = actions.onLaunchPlantSelector,
             scrollState = getLazyState(targetState.rtid),
             onInjectZombie = actions.onInjectZombie,
-            onEditCustomZombie = actions.onEditCustomZombie
+            onEditCustomZombie = actions.onEditCustomZombie,
+            onEditJitterOffsets = {
+                actions.navigateTo(EditorSubScreen.ZombieJitterOffsets)
+            }
         )
 
         is EditorSubScreen.GroundWaveDetail -> SpawnZombiesFromGroundEventEP(

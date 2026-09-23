@@ -42,6 +42,8 @@ data class EditorActions(
     val onAddEvent: (EventMetadata, Int) -> Unit,
     val onWavesChanged: () -> Unit,
     val onLevelDefChanged: () -> Unit,
+    // objects 列表被增删改（新增/删除对象、改别名）后调用，用于刷新 objectMap 与界面
+    val onLevelObjectsChanged: () -> Unit = {},
     val onDeleteEventReference: (String) -> Unit,
     val onSaveWaveManager: () -> Unit,
     val onCreateWaveContainer: () -> Unit,

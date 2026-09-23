@@ -29,8 +29,12 @@ object RtonConverter {
             val inputStr = context.contentResolver.openInputStream(inputUri)!!.use {
                 it.readBytes().toString(Charsets.UTF_8)
             }
-            writeFile(context, outputDirUri, outputName, jsonTextToRtonBytes(inputStr), "application/octet-stream")
-            Result.success(outputName)
+            Result.success(
+                writeFile(
+                    context, outputDirUri, outputName,
+                    jsonTextToRtonBytes(inputStr), "application/octet-stream"
+                )
+            )
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -48,14 +52,16 @@ object RtonConverter {
         return try {
             val inputBytes =
                 context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
-            writeFile(
+            // 用 octet-stream 而非 application/json：DocumentsProvider 会按 MIME 给扩展名对不上的
+            // 名字补扩展名，导致产物变成 level.json.json（同 HotUpdateJSONConverter）
+            val actualName = writeFile(
                 context,
                 outputDirUri,
                 outputName,
                 rtonBytesToJsonText(inputBytes).toByteArray(Charsets.UTF_8),
-                "application/json"
+                "application/octet-stream"
             )
-            Result.success(outputName)
+            Result.success(actualName)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -74,8 +80,12 @@ object RtonConverter {
         return try {
             val inputBytes =
                 context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
-            writeFile(context, outputDirUri, outputName, encryptRtonBytes(inputBytes, key), "application/octet-stream")
-            Result.success(outputName)
+            Result.success(
+                writeFile(
+                    context, outputDirUri, outputName,
+                    encryptRtonBytes(inputBytes, key), "application/octet-stream"
+                )
+            )
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -94,8 +104,12 @@ object RtonConverter {
         return try {
             val inputBytes =
                 context.contentResolver.openInputStream(inputUri)!!.use { it.readBytes() }
-            writeFile(context, outputDirUri, outputName, decryptRtonBytes(inputBytes, key), "application/octet-stream")
-            Result.success(outputName)
+            Result.success(
+                writeFile(
+                    context, outputDirUri, outputName,
+                    decryptRtonBytes(inputBytes, key), "application/octet-stream"
+                )
+            )
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -136,13 +150,20 @@ object RtonConverter {
 
     // ---- Internal ----
 
+    /**
+     * 写入产物，返回它落盘后的实际显示名。
+     *
+     * mimeType 只是给 DocumentsProvider 的提示，个别 provider 会照它改写文件名（补扩展名），
+     * 所以创建后核对一次实际名字，不一致就改回来；改不动也只能照实返回，免得调用方
+     * toast 出去的名字和磁盘上的文件对不上。
+     */
     private fun writeFile(
         context: Context,
         dirUri: Uri,
         fileName: String,
         data: ByteArray,
         mimeType: String
-    ) {
+    ): String {
         val dir = DocumentFile.fromTreeUri(context, dirUri)!!
         val existing = dir.findFile(fileName)
         if (existing != null) {
@@ -150,6 +171,17 @@ object RtonConverter {
         }
         val file = dir.createFile(mimeType, fileName)
             ?: throw Exception("Failed to create file $fileName")
+        var actualName = file.name ?: fileName
+        if (actualName != fileName) {
+            // renameTo 成功时内部 mUri 会换成改名后的 URI，因此 file.uri 要在这之后再取
+            val renamed = try {
+                file.renameTo(fileName)
+            } catch (_: Exception) {
+                false
+            }
+            if (renamed) actualName = fileName
+        }
         context.contentResolver.openOutputStream(file.uri)!!.use { it.write(data) }
+        return actualName
     }
 }

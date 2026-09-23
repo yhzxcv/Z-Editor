@@ -129,11 +129,12 @@ private fun ConvertTarget.formatColor(themeColor: Color): Color = when (this) {
 
 /**
  * 与批量文件格式转换一致的产物命名：基名 + 目标扩展名（如 foo.rton → foo.json）；
+ * 基名已带目标扩展名时不重复追加（level.json.rton → level.json 而非 level.json.json，见 [withTargetExtension]）；
  * 目标已存在（冲突，如加密 RTON 仍是 .rton、JSON→热更新仍是 .json）时在文件名
  * 末尾追加 `~` 直到不冲突（如 foo.rton → foo.rton~）。放弃 _enc/_plain/_decoded/_encoded 后缀。
  */
 private fun resolveUniqueOutputName(docDir: DocumentFile?, baseName: String, target: ConvertTarget): String {
-    var name = "${baseName}.${target.extension}"
+    var name = withTargetExtension(baseName, target.extension)
     while (docDir?.findFile(name) != null) {
         name += "~"
     }

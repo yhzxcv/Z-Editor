@@ -76,6 +76,7 @@ sealed class EditorSubScreen {
     object None : EditorSubScreen()
     object BasicInfo : EditorSubScreen()
     object WaveManagerSettings : EditorSubScreen()
+    object ZombieJitterOffsets : EditorSubScreen()
     object ModuleSelection : EditorSubScreen()
     object StageSelection : EditorSubScreen()
     object GridItemSelection : EditorSubScreen()

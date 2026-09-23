@@ -153,11 +153,12 @@ private data class BatchResult(
 
 /**
  * 产物命名规则：扩展名改变时直接用新扩展名（如 foo.rton → foo.json）；
+ * 基名已带目标扩展名时不重复追加（level.json.rton → level.json 而非 level.json.json，见 [withTargetExtension]）；
  * 扩展名不变或目标已存在（冲突）时，在文件名末尾追加 `~` 直到不冲突
  * （如 foo.rton → foo.rton~）。放弃原先 _enc/_plain/_decoded/_encoded 后缀。
  */
 private fun resolveUniqueOutputName(dir: File?, baseName: String, d: ConvertDirection): String {
-    var name = "$baseName.${d.outputExtension}"
+    var name = withTargetExtension(baseName, d.outputExtension)
     while (dir != null && File(dir, name).exists()) {
         name += "~"
     }

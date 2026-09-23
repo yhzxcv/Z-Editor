@@ -194,6 +194,54 @@ object LevelParser {
         }.distinct()
     }
 
+    /** 列出关卡里所有出怪间隔偏移预设，保持 objects 中的原顺序。 */
+    fun listJitterOffsetsPresets(levelFile: PvzLevelFile): List<PvzObject> =
+        sanitizeObjectList(levelFile.objects).filter { it.objClass == "ZombieJitterOffsets" }
+
+    /**
+     * 读取对象 `JitterOffsets` 键的值。没有该键、或值不是字符串时返回 null。
+     * 只认这一个键 —— 别的字段里出现同名 RTID 不算引用。
+     */
+    fun jitterOffsetsValue(obj: PvzObject): String? = try {
+        val json = obj.objData
+        if (json.isJsonObject && json.asJsonObject.has("JitterOffsets")) {
+            json.asJsonObject.get("JitterOffsets")
+                .takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString }?.asString
+        } else null
+    } catch (_: Exception) {
+        null
+    }
+
+    /**
+     * 收集所有把 `JitterOffsets` 指向该预设别名的对象（即绑定了这个预设的自然出怪事件）。
+     * 按**别名**匹配而不是整串 RTID，`@CurrentLevel` 与其它 source 写法都能认出来。
+     */
+    fun findJitterOffsetsReferrers(levelFile: PvzLevelFile, presetAlias: String): List<PvzObject> =
+        sanitizeObjectList(levelFile.objects).filter { obj ->
+            val rtid = jitterOffsetsValue(obj) ?: return@filter false
+            RtidParser.parse(rtid)?.alias == presetAlias
+        }
+
+    /**
+     * 预设改名后同步所有引用：把指向 oldAlias 的 `JitterOffsets` 改成 newAlias，保留原 source。
+     * 只改这一个键、不整包重写 objData，避免吞掉未建模的键。返回改动的对象数。
+     */
+    fun renameJitterOffsetsReferences(
+        levelFile: PvzLevelFile,
+        oldAlias: String,
+        newAlias: String
+    ): Int {
+        var changed = 0
+        for (obj in findJitterOffsetsReferrers(levelFile, oldAlias)) {
+            val info = RtidParser.parse(jitterOffsetsValue(obj) ?: continue) ?: continue
+            val json = obj.objData
+            if (!json.isJsonObject) continue
+            json.asJsonObject.addProperty("JitterOffsets", RtidParser.build(newAlias, info.source))
+            changed++
+        }
+        return changed
+    }
+
     /** 递归遍历 objData（JsonElement），收集所有字符串里 RTID(...) 的别名（@ 前部分）。 */
     private fun collectRtidAliases(
         json: JsonElement,

@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -61,9 +62,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.R
+import com.example.z_editor.data.LevelParser
 import com.example.z_editor.data.PvzLevelFile
 import com.example.z_editor.data.RtidParser
 import com.example.z_editor.data.WaveActionData
@@ -93,7 +97,8 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
     onRequestPlantSelection: ((String) -> Unit) -> Unit,
     scrollState: LazyListState,
     onInjectZombie: (String) -> String?,
-    onEditCustomZombie: (String) -> Unit
+    onEditCustomZombie: (String) -> Unit,
+    onEditJitterOffsets: () -> Unit
 ) {
     val currentAlias = RtidParser.parse(rtid)?.alias ?: ""
     val focusManager = LocalFocusManager.current
@@ -433,6 +438,126 @@ fun SpawnZombiesJitteredWaveActionPropsEP(
                     }
                 }
             }
+
+            item {
+                val jitterPresets = remember(rootLevelFile.objects, localRefreshTrigger) {
+                    LevelParser.listJitterOffsetsPresets(rootLevelFile)
+                }
+                val boundRtid = actionDataState.value.jitterOffsets
+                val boundInfo = boundRtid?.let { RtidParser.parse(it) }
+                val boundAlias = boundInfo?.alias
+                val noneLabel = stringResource(R.string.jitter_event_none)
+                val boundPreset = jitterPresets.firstOrNull {
+                    it.aliases?.firstOrNull() == boundAlias
+                }
+                val isDangling = boundAlias != null && boundPreset == null
+                val currentLabel = when {
+                    boundAlias == null -> noneLabel
+                    boundPreset != null -> boundAlias
+                    else -> stringResource(R.string.jitter_event_dangling, boundAlias)
+                }
+                var jitterExpanded by remember { mutableStateOf(false) }
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Speed, null, tint = themeColor)
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                stringResource(R.string.jitter_event_label),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp,
+                                color = themeColor,
+                                modifier = Modifier.weight(1f, fill = false)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            TextButton(
+                                onClick = onEditJitterOffsets,
+                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+                            ) {
+                                Text(stringResource(R.string.jitter_event_manage), color = themeColor)
+                            }
+                        }
+                        Spacer(Modifier.height(12.dp))
+
+                        ExposedDropdownMenuBox(
+                            expanded = jitterExpanded,
+                            onExpandedChange = { jitterExpanded = !jitterExpanded },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            OutlinedTextField(
+                                value = currentLabel,
+                                onValueChange = {},
+                                readOnly = true,
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = jitterExpanded)
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = themeColor,
+                                    focusedLabelColor = themeColor
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .menuAnchor()
+                            )
+                            ExposedDropdownMenu(
+                                expanded = jitterExpanded,
+                                onDismissRequest = { jitterExpanded = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(noneLabel) },
+                                    onClick = {
+                                        sync(actionDataState.value.copy(jitterOffsets = null))
+                                        jitterExpanded = false
+                                    },
+                                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                )
+                                jitterPresets.forEach { preset ->
+                                    val alias = preset.aliases?.firstOrNull().orEmpty()
+                                    if (alias.isEmpty()) return@forEach
+                                    DropdownMenuItem(
+                                        text = { Text(alias) },
+                                        onClick = {
+                                            // 已经绑过就沿用原来的 source，新绑的一律 @CurrentLevel
+                                            val source = boundInfo?.source ?: "CurrentLevel"
+                                            sync(
+                                                actionDataState.value.copy(
+                                                    jitterOffsets = RtidParser.build(alias, source)
+                                                )
+                                            )
+                                            jitterExpanded = false
+                                        },
+                                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = if (jitterPresets.isEmpty()) {
+                                stringResource(R.string.jitter_event_no_presets)
+                            } else {
+                                stringResource(R.string.jitter_event_desc)
+                            },
+                            fontSize = 12.sp,
+                            color = if (isDangling) {
+                                MaterialTheme.colorScheme.error
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                        )
+                    }
+                }
+            }
+
+            // 与下面的逐行出怪配置留出间隔，别糊成一片
+            item { Spacer(Modifier.height(12.dp)) }
 
             items(5) { index ->
                 val rowNum = index + 1
