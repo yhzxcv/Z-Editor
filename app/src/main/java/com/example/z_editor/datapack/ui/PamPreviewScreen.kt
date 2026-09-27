@@ -1101,7 +1101,7 @@ private fun LayerDialog(
                     if (query.isNotBlank()) {
                         // 有搜索时按钮的作用范围变了，不写出来会让人以为点错了
                         Spacer(Modifier.width(4.dp))
-                        Text("只作用于搜出的 ${shown.size} 层", fontSize = 11.sp, color = muted)
+                        Text("共${shown.size}个结果", fontSize = 11.sp, color = muted)
                     }
                 }
                 // 普通 Column + 滚动，不用 LazyColumn：弹窗内容槽本身已在滚动容器里，
