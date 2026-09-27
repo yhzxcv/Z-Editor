@@ -35,8 +35,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -276,22 +274,17 @@ fun AtlasSplitScreen(onBack: () -> Unit) {
                 )
             }
             item {
-                OutlinedTextField(
+                PathInputField(
                     value = atlasPath,
                     onValueChange = {
                         atlasPath = it
                         pathError = null
                         resetAnalysis()
                     },
-                    placeholder = { Text("输入 ATLASES 目录的完整路径") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                        focusedBorderColor = themeColor,
-                        focusedLabelColor = themeColor,
-                        cursorColor = themeColor
-                    )
+                    placeholder = "输入 ATLASES 目录的完整路径",
+                    themeColor = themeColor,
+                    pick = PathPick.Directory,
+                    enabled = !isSplitting
                 )
             }
 
@@ -304,22 +297,17 @@ fun AtlasSplitScreen(onBack: () -> Unit) {
                 )
             }
             item {
-                OutlinedTextField(
+                PathInputField(
                     value = rtonPath,
                     onValueChange = {
                         rtonPath = it
                         pathError = null
                         resetAnalysis()
                     },
-                    placeholder = { Text("输入 RESOURCES*.RTON 的完整路径") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                        focusedBorderColor = themeColor,
-                        focusedLabelColor = themeColor,
-                        cursorColor = themeColor
-                    )
+                    placeholder = "输入 RESOURCES*.RTON 的完整路径",
+                    themeColor = themeColor,
+                    pick = PathPick.File,
+                    enabled = !isSplitting
                 )
             }
             item {

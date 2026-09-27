@@ -546,22 +546,17 @@ fun BatchConvertScreen(onBack: () -> Unit) {
                 )
             }
             item {
-                OutlinedTextField(
+                PathInputField(
                     value = inputPath,
                     onValueChange = {
                         inputPath = it
                         pathError = null
                         resetAnalysis()
                     },
-                    placeholder = { Text("输入待处理文件（夹）路径") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                        focusedBorderColor = themeColor,
-                        focusedLabelColor = themeColor,
-                        cursorColor = themeColor
-                    )
+                    placeholder = "输入待处理文件（夹）路径",
+                    themeColor = themeColor,
+                    pick = PathPick.FileOrDirectory,
+                    enabled = !isConverting
                 )
             }
             item {

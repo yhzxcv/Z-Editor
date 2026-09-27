@@ -34,6 +34,8 @@ import androidx.compose.material.icons.filled.ContentCut
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.FolderZip
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Unarchive
 import androidx.compose.material.icons.filled.Warning
@@ -77,6 +79,8 @@ private enum class DataPackToolScreen {
     Smf,
     SmfUnpack,
     AtlasSplit,
+    PamConvert,
+    PamPreview,
     BatchConvert
 }
 
@@ -160,6 +164,18 @@ fun DataPackToolsScreen(
 
             DataPackToolScreen.AtlasSplit -> {
                 AtlasSplitScreen(
+                    onBack = { currentTool = DataPackToolScreen.Main }
+                )
+            }
+
+            DataPackToolScreen.PamConvert -> {
+                PamConvertScreen(
+                    onBack = { currentTool = DataPackToolScreen.Main }
+                )
+            }
+
+            DataPackToolScreen.PamPreview -> {
+                PamPreviewScreen(
                     onBack = { currentTool = DataPackToolScreen.Main }
                 )
             }
@@ -297,6 +313,24 @@ private fun DataPackToolsMainContent(
                         onClick = { onToolClick(DataPackToolScreen.AtlasSplit) }
                     )
                 }
+                item {
+                    ToolCard(
+                        icon = Icons.Default.Movie,
+                        title = "动画转换",
+                        subtitle = "PAM 动画与 JSON 相互转换",
+                        themeColor = themeColor,
+                        onClick = { onToolClick(DataPackToolScreen.PamConvert) }
+                    )
+                }
+                item {
+                    ToolCard(
+                        icon = Icons.Default.PlayArrow,
+                        title = "动画预览",
+                        subtitle = "接入图集播放 PAM 动画，查看效果",
+                        themeColor = themeColor,
+                        onClick = { onToolClick(DataPackToolScreen.PamPreview) }
+                    )
+                }
 
                 item {
                     Text(
@@ -350,6 +384,23 @@ private fun DataPackToolsMainContent(
                             "PROPERTIES/RESOURCES*.RTON 里，本工具按这份记录把它们逐张拆出来。\n" +
                             "• 手动指定图集目录与 RTON 文件两个路径\n" +
                             "• 产物写入推导出的解包根目录下的 _images/，目录结构与游戏内资源路径一致"
+                )
+                HelpSection(
+                    title = "动画转换",
+                    body = "PAM 是宝开自家的动画格式，数据包解出来的 .PAM 是二进制、打不开也改不了，" +
+                            "本工具把它与 JSON 相互转换。\n" +
+                            "• 输入可以是一个文件，也可以是一个目录（递归处理）\n" +
+                            "• 方向按文件内容预选，可以手动改；转换不替换原文件，产物写在旁边\n" +
+                            "• 只支持 PAM v4–v6，JSON 比 PAM 大约 12.7 倍"
+                )
+                HelpSection(
+                    title = "动画预览",
+                    body = "把 PAM 动画播出来，改完当场看效果。需要三份输入：\n" +
+                            "• PAM 文件\n" +
+                            "• 图集目录（ATLASES/）\n" +
+                            "• RTON 清单（PROPERTIES/RESOURCES*.RTON）\n" +
+                            "PAM 不含图片本身，这三份配齐才画得出画面。图集档位要与 PAM 一致" +
+                            "（768 的 PAM 配 768 的图集），配错会直接报错而不是画错。"
                 )
                 HelpSection(
                     title = "批量文件格式转换",

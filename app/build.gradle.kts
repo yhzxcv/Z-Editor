@@ -21,6 +21,14 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // 诊断夹具（PamDumpTest 等）靠系统属性开关，而 `gradle -Dfoo=1` 只落在 Gradle 自己的 JVM 上，
+    // 不会传给 fork 出来的测试 JVM —— 不转发的话文档里那条命令永远静默跳过。
+    testOptions {
+        unitTests.all {
+            it.systemProperty("pam.dump", System.getProperty("pam.dump") ?: "")
+        }
+    }
+
     signingConfigs {
         create("release") {
             val keystorePropertiesFile = rootProject.file("local.properties")
