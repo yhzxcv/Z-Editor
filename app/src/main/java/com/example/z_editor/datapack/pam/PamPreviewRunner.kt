@@ -7,6 +7,7 @@ import com.example.z_editor.datapack.smf.AtlasSplitRunner
 import com.example.z_editor.datapack.smf.AtlasSplitter
 import com.example.z_editor.datapack.smf.PtxDecoder
 import java.io.File
+import kotlin.math.roundToInt
 
 /**
  * PAM 预览的 Android 侧编排：把三份输入（PAM / 图集目录 / RTON 清单）变成「可画的帧」。
@@ -16,8 +17,19 @@ import java.io.File
  * `testOptions { isReturnDefaultValues = true }`，一调 Android stub 就抛 `not mocked`。
  * 形态照 `AtlasSplitRunner`。
  *
- * **内存**：一张 4096×4096 图集结成 ARGB 是 64 MB，所以逐张解码、裁完即弃，
- * 峰值为单张图集加几十张裁好的小图。整批不缓存。
+ * **内存**（4096×4096 图集下从前会直接 OOM）。三份开销，分别由下面两道各压一份：
+ *
+ *  1. **载入期"所有部件的像素同时活着"** —— [PamAssets.resolve] 走流式回调，裁一张就转一张
+ *     位图，那个 `IntArray` 随即失去引用。于是这份从 Σ裁片 变成 1 张裁片。
+ *  2. **播放期常驻位图** —— 位图要留到预览关掉为止，这是**播放时**真正吃内存的那份。按
+ *     `PamAssets.previewScale` 的全局系数缩小（像素预算 + 取景框长边两道上限）；系数为 1.0
+ *     时输出与从前逐像素一致。
+ *  3. **单张图集本身** —— PTX 只能整张解（4096² = 67 MB），PNG 还要多一份 `Bitmap`。
+ *
+ * 注意 1 与 2 的**峰值**是持平的：`Bitmap.createBitmap` 是拷贝，所以从前那份"裁片"在建成
+ * 位图之前一直活着，峰值为 `图集 + Σ裁片`；现在换成 `图集 + Σ位图`。真正让峰值掉下来的是 2
+ * （把 Σ位图 压到像素预算以内）。3 才是剩下的大头，要按块区域解码才消得掉 —— ASTC 无行填充、
+ * 块行连续，理论上可行，见 `AtlasSplitter.inferAstcBlock` 那条精确相等的判据。
  */
 object PamPreviewRunner {
 
@@ -64,6 +76,9 @@ object PamPreviewRunner {
      * @param key `datapack_prefs` 里的 `encryption_key`，与批量转换、图集拆分共用同一份
      */
     fun load(input: Input, key: String?): LoadResult {
+        // 分阶段计时：实机"加载非常久"到底卡在哪一段，只有 logcat 能回答 —— 桌面 JVM 上没有
+        // .PTX 样本，ASTC 解码那段本地量不出来。四个阶段各记一次，最后打一行。
+        val t0 = System.nanoTime()
         val pamBytes = try {
             input.pamFile.readBytes()
         } catch (ex: Exception) {
@@ -77,17 +92,22 @@ object PamPreviewRunner {
             Log.w(TAG, "解析 PAM 失败: ${input.pamFile.absolutePath}", ex)
             return LoadResult.Failed("解析 PAM 失败：${ex.message ?: ex.javaClass.simpleName}")
         }
+        val tParse = System.nanoTime()
 
         val timelines = PamTimeline.sprites(pam)
         if (timelines.isEmpty()) {
             return LoadResult.Failed("这份 PAM 里既没有精灵也没有主时间线，没有可播放的内容")
         }
 
-        // 取景框要在载入时一次算好：逐帧扫是 O(帧数²)（最坏约 100ms），放进合成里每帧重算
-        // 会直接把播放卡死。只管几何、不碰图集，所以放在加载图集之前。
+        // 取景框要在载入时一次算好：放进合成里每帧重算会直接把播放卡死。
+        // 这正是"载入非常久"的头号开销 —— 从前它是 O(帧数²)，对**每条**时间线都要跑一遍
+        // （预览只显示一条，可取景框得知道所有候选的尺寸才能定缩放）。现已改走
+        // `PamTimeline.replay` 推进式重放，见 `PamTimeline.bounds` 的注释。只管几何、不碰
+        // 图集，所以放在加载图集之前。
         val bounds = timelines.map {
             PamTimeline.bounds(pam, it.index, it.index == PamTimeline.MAIN_SPRITE)
         }
+        val tBounds = System.nanoTime()
 
         if (!PamAssets.needsAtlas(pam)) {
             return LoadResult.Ok(
@@ -107,24 +127,59 @@ object PamPreviewRunner {
         if (onDisk.isEmpty()) {
             return LoadResult.Failed("图集目录里没有 .PTX / .png 文件：${input.atlasDir.absolutePath}")
         }
+        val tPlan = System.nanoTime()
 
-        val assets = PamAssets.resolve(pam, plan) { _, atlas ->
-            val f = onDisk[atlas.name.lowercase()] ?: return@resolve null
-            decodeAtlas(f, atlas)
-        }
+        // 限分辨率：部件位图要常驻到预览关掉为止，4096² 图集切出来的几十个部件按原尺寸全留着
+        // 就是几百 MB。取景框用各条时间线里最大的那个 —— 系数必须**全局唯一**，因为 `images`
+        // 是按 image 下标共享的，逐帧/逐时间线各缩一个系数会让同一张图有两个尺寸。
+        val viewW = bounds.filterNotNull().maxOfOrNull { it.width } ?: 0.0
+        val viewH = bounds.filterNotNull().maxOfOrNull { it.height } ?: 0.0
+        val imageScale = PamAssets.previewScale(pam, viewW, viewH)
 
-        // `PamAssets` 交出来的图**已经是 PAM 声明的尺寸**（它负责把 RTON 各档裁出的矩形
-        // 统一缩到标称尺寸，见 PamAssets.rescale），所以这里直接建位图。
+        // 流式：`PamAssets` 裁好一张就回调一张，这里立刻转成位图，那个 `IntArray` 随即失去引用。
+        // 于是"所有部件的**像素**同时活着"那份内存消失（图集本身仍在，见类注释）。
+        //
+        // `PamAssets` 交出来的图**已经是目标尺寸**（它负责把 RTON 各档裁出的矩形统一缩到
+        // 标称尺寸，见 PamAssets.rescale），所以这里直接建位图。
         //
         // 早先这里有一道 `w * h != px.size` 的严格相等守卫，因为 PAM 记的是 1200 基准档的
         // 标称尺寸、而裁切矩形是「标称 × 档位/1200」，非 1200 档必然不等 —— 于是部件被一个个
         // 丢掉，实机上就是"缺胳膊少腿、腿接不上"。守卫已删，别再加回来。
         val bitmaps = HashMap<Int, Bitmap>()
-        for ((index, crop) in assets.crops) {
-            bitmaps[index] = Bitmap.createBitmap(crop.pixels, crop.width, crop.height, Bitmap.Config.ARGB_8888)
-        }
+        val assets = PamAssets.resolve(
+            pam = pam,
+            plan = plan,
+            loadAtlas = { _, atlas ->
+                val f = onDisk[atlas.name.lowercase()] ?: return@resolve null
+                decodeAtlas(f, atlas)
+            },
+            imageScale = imageScale,
+            onCrop = { index, crop ->
+                bitmaps[index] =
+                    Bitmap.createBitmap(crop.pixels, crop.width, crop.height, Bitmap.Config.ARGB_8888)
+            },
+        )
 
-        val note = when {
+        // 实机冒烟时从 logcat 里就能看出哪一份开销是大头：常驻位图（限分辨率管这份）对
+        // 最大单张图集的瞬时缓冲（要区域解码才压得下去，见类注释 3）。
+        val tAssets = System.nanoTime()
+        val pixels = bitmaps.values.sumOf { it.width.toLong() * it.height }
+        val biggestAtlas = plan.atlases.values.maxOfOrNull { it.width.toLong() * it.height } ?: 0L
+        val ms = { from: Long, to: Long -> (to - from) / 1_000_000 }
+        Log.i(
+            TAG,
+            "解析到 ${assets.resolvedCount} 个部件，预览分辨率 ${(imageScale * 100).roundToInt()}%；" +
+                "常驻位图 $pixels 像素（约 ${pixels * 4 / 1024 / 1024} MB）；" +
+                "最大图集 $biggestAtlas 像素（约 ${biggestAtlas * 4 / 1024 / 1024} MB，瞬时）",
+        )
+        Log.i(
+            TAG,
+            "分阶段耗时（ms）：读+解析 PAM ${ms(t0, tParse)}；算取景框 ${ms(tParse, tBounds)}" +
+                "（${timelines.size} 条时间线）；读 RTON+扫图集 ${ms(tBounds, tPlan)}；" +
+                "解图集+裁切建位图 ${ms(tPlan, tAssets)}；合计 ${ms(t0, tAssets)}",
+        )
+
+        val base = when {
             bitmaps.isEmpty() -> "一张图都没解析出来，预览只会显示变换后的空框"
             assets.skippedPlaceholders > 0 && assets.scaleFactor != null ->
                 PamAssets.describeScale(assets.scaleFactor) +
@@ -137,6 +192,13 @@ object PamPreviewRunner {
 
             else -> null
         }
+        val note = listOfNotNull(
+            base,
+            // 一张都没解析出来时别提分辨率 —— 那会读成"已经渲染了，只是糊"，与实情相反
+            if (imageScale < 1.0 && bitmaps.isNotEmpty()) {
+                "部件过大，预览已按 %.0f%% 分辨率渲染以控制内存".format(imageScale * 100)
+            } else null,
+        ).joinToString("；").ifEmpty { null }
 
         return LoadResult.Ok(
             Preview(

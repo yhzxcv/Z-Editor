@@ -97,9 +97,10 @@ object PamTimeline {
      * 就会把内容裁掉，实机上正是"动画一大半超出屏幕"。（声明尺寸本身也有坑，见
      * `PamBinaryReader.decode` 里 position 有符号 / size 无符号那段。）
      *
-     * 逐帧调用 [evaluate] 是 O(帧数²)（每帧都要从第 0 帧重放），但实测最坏一例
-     * （CRAZYDAVE 的 803 帧主时间线）在 Python 里 4.1s、折算 Kotlin 约 100ms，而本函数只在
-     * **载入时对每条时间线各跑一次**、且在 `Dispatchers.IO` 上，付得起。
+     * 逐帧调用 [evaluate] 是 O(帧数²)（每帧都要从第 0 帧重放），而真样本推翻了早先"最坏约
+     * 100ms、付得起"的估算：**565 个样本的全部时间线扫一遍要 116.7 秒**，最坏的
+     * `ZOMBIE_DINO_STEGOSAURUS` 单这一个调用就 6.1 秒 —— 实机上就是"载入非常久"。
+     * 现已改走 [replay] 推进式重放，同一份数据降到毫秒级。
      *
      * @param includeDeclaredCanvas 是否把 `pam.size` 那块矩形也并进来。**主时间线给 true**：
      *   声明尺寸描述的就是它，一并显示才知道动画对不对得上画布。**子精灵给 false**：子精灵是
@@ -112,26 +113,48 @@ object PamTimeline {
         var maxX = -Double.MAX_VALUE
         var maxY = -Double.MAX_VALUE
 
-        for (f in 0 until frameCount(pam, spriteIndex)) {
-            for (op in evaluate(pam, spriteIndex, f)) {
-                val size = pam.image.getOrNull(op.imageIndex)?.size ?: continue
-                val w = size.getOrNull(0)?.toDouble() ?: 0.0
-                val h = size.getOrNull(1)?.toDouble() ?: 0.0
-                if (w <= 0.0 || h <= 0.0) continue
-                // 位图四角经仿射变换后的范围。写开是为了不在每个 op 上分配临时容器 ——
-                // 单帧最多 1447 个 op，逐帧扫下来这个循环很烫。
-                val x0 = op.tx
-                val y0 = op.ty
-                val x1 = op.m0 * w + op.tx
-                val y1 = op.m2 * w + op.ty
-                val x2 = op.m0 * w + op.m1 * h + op.tx
-                val y2 = op.m2 * w + op.m3 * h + op.ty
-                val x3 = op.m1 * h + op.tx
-                val y3 = op.m3 * h + op.ty
-                minX = minOf(minX, minOf(minOf(x0, x1), minOf(x2, x3)))
-                maxX = maxOf(maxX, maxOf(maxOf(x0, x1), maxOf(x2, x3)))
-                minY = minOf(minY, minOf(minOf(y0, y1), minOf(y2, y3)))
-                maxY = maxOf(maxY, maxOf(maxOf(y0, y1), maxOf(y2, y3)))
+        // 各 image 声明尺寸的 w/h 预先摊平成一对 DoubleArray。逐条 op 去
+        // `pam.image[i].size.getOrNull(0)?.toDouble()` 每取一次就装箱一个 `Int?`，而下面那圈
+        // 是热点：最坏的样本（BACKGROUND_EIGHTIES_..._TOP）合计要折 540 万个四边形。
+        //
+        // **这一项的收益没有单独量出来**，别把它当成已验证的优化：本机 profiler 的噪声底
+        // （同一份代码前后两遍的差）有 1.5 秒，比它的效应还大。留着是因为它同时把"越界下标"
+        // 和"没记尺寸"两条跳过路径并成了一条，读起来更直白。
+        val dims = DoubleArray(pam.image.size * 2)
+        for (i in pam.image.indices) {
+            val s = pam.image[i].size
+            dims[i * 2] = s?.getOrNull(0)?.toDouble() ?: 0.0
+            dims[i * 2 + 1] = s?.getOrNull(1)?.toDouble() ?: 0.0
+        }
+
+        // 精灵下标不存在时**不早退**：从前 frameCount 会给 0、循环空转，于是 includeDeclaredCanvas
+        // 仍能把声明画布并进来。这里保持同样的行为。
+        val sprite = spriteAt(pam, spriteIndex)
+        if (sprite != null) {
+            // 只取几何、不留帧，所以回调里就地折叠，不materialize 任何列表
+            replay(pam, sprite, 0, HashMap()) { _, ops ->
+                for (op in ops) {
+                    // 越界下标与"没记尺寸"都归到 w/h <= 0 那一支，与从前的 `?: continue` 等价
+                    val ii = op.imageIndex * 2
+                    if (ii < 0 || ii + 1 >= dims.size) continue
+                    val w = dims[ii]
+                    val h = dims[ii + 1]
+                    if (w <= 0.0 || h <= 0.0) continue
+                    // 位图四角经仿射变换后的范围。写开是为了不在每个 op 上分配临时容器 ——
+                    // 单帧最多 1447 个 op，逐帧扫下来这个循环很烫。
+                    val x0 = op.tx
+                    val y0 = op.ty
+                    val x1 = op.m0 * w + op.tx
+                    val y1 = op.m2 * w + op.ty
+                    val x2 = op.m0 * w + op.m1 * h + op.tx
+                    val y2 = op.m2 * w + op.m3 * h + op.ty
+                    val x3 = op.m1 * h + op.tx
+                    val y3 = op.m3 * h + op.ty
+                    minX = minOf(minX, minOf(minOf(x0, x1), minOf(x2, x3)))
+                    maxX = maxOf(maxX, maxOf(maxOf(x0, x1), maxOf(x2, x3)))
+                    minY = minOf(minY, minOf(minOf(y0, y1), minOf(y2, y3)))
+                    maxY = maxOf(maxY, maxOf(maxOf(y0, y1), maxOf(y2, y3)))
+                }
             }
         }
 
@@ -282,10 +305,80 @@ object PamTimeline {
     fun evaluate(pam: PamInfo, spriteIndex: Int, frame: Int): List<DrawOp> {
         val sprite = spriteAt(pam, spriteIndex)
             ?: throw IllegalArgumentException("PAM 里没有下标为 $spriteIndex 的精灵")
-        return evaluateSprite(pam, sprite, frame, 0)
+        return evaluateSprite(pam, sprite, frame, 0, spriteIndex, HashMap())
     }
 
-    private fun evaluateSprite(pam: PamInfo, sprite: PamSprite, frame: Int, depth: Int): List<DrawOp> {
+    /**
+     * 把一条时间线的**每一帧**都算出来，按帧序返回；等价于
+     * `(0 until frameCount).map { evaluate(pam, spriteIndex, it) }`，但**只重放一遍**。
+     *
+     * 为什么要单开这个入口：[evaluate] 的语义是"从第 0 帧重放到第 f 帧"（槽位状态是累积的），
+     * 于是逐帧调用就是 O(帧数²)。实测 565 个真样本里最坏的一例 ——
+     * `ZOMBIE_DINO_STEGOSAURUS` 的 1936 帧时间线 —— 桌面 JVM 上要 6.2 秒，全部样本合计
+     * 117 秒；手机只会更慢，实机"载入要非常久"就是这里。推进式重放把同一份数据压到毫秒级。
+     *
+     * 结果与逐帧调用**完全相同**，有对拍测试守着（`PamTimelineTest`，以及真样本上的
+     * `PamTimelineRealTest`）。返回的 List 会被内部缓存共享，调用方**不得修改**。
+     *
+     * @throws IllegalArgumentException 精灵下标不存在
+     */
+    fun evaluateAll(pam: PamInfo, spriteIndex: Int): List<List<DrawOp>> {
+        val sprite = spriteAt(pam, spriteIndex)
+            ?: throw IllegalArgumentException("PAM 里没有下标为 $spriteIndex 的精灵")
+        val out = ArrayList<List<DrawOp>>(sprite.frame.size)
+        replay(pam, sprite, 0, HashMap()) { _, ops -> out += ops }
+        return out
+    }
+
+    /**
+     * 逐帧推进一条时间线，每帧回调一次当帧的绘制指令。**整个求值链上唯一的重放实现**：
+     * [evaluateAll] 与 [bounds] 都走它，于是"怎么重放"只有一处定义。
+     *
+     * 之所以是"推进"而不是每帧从第 0 帧重放，见 [evaluateAll]。
+     *
+     * **还没做的那一步**：这里每帧仍会把指令 materialize 成一个 `List<DrawOp>`（`bounds` 只要
+     * 几何，根本不需要对象）。profiler 显示剩下的开销以**分配**为主而不是算术 —— 最坏的样本
+     * （`BACKGROUND_EIGHTIES_..._TOP`，单帧上千条 op）在热堆上反而更慢。要再快就得让 `bounds`
+     * 走一条标量 sink 的路（`emit(imageIndex, tx, ty, m0..m3, alpha, tint, additive)`），
+     * 顺带把嵌套缓存里的子级指令也按标量存。**代价是求值链又多一条路径**，而当初 `bounds` 与
+     * `evaluate` 两份实现分叉正是这一轮要修的毛病，所以没有确凿的设备数据前不要动。
+     *
+     * @param cache 嵌套精灵的帧结果缓存，**跨帧复用** —— 这是 [expand] 那层 O(帧数²) 的解药，
+     *   见 [evaluateSprite]
+     */
+    private fun replay(
+        pam: PamInfo,
+        sprite: PamSprite,
+        depth: Int,
+        cache: MutableMap<Long, List<DrawOp>>,
+        onFrame: (frame: Int, ops: List<DrawOp>) -> Unit,
+    ) {
+        // 槽位表在帧之间**累积**（applyFrame 一路叠上去），这正是"推进"能等价于"每帧重放"
+        // 的原因：第 f 帧的状态就是重放 0..f 的结果。
+        val slots = sortedMapOf<Int, Slot>()
+        for (i in sprite.frame.indices) {
+            applyFrame(pam, sprite.frame[i], i, slots)
+            onFrame(i, slots.entries.flatMap { (index, slot) -> expand(pam, slot, i, depth, index, cache) })
+        }
+    }
+
+    /**
+     * @param spriteIndex 只用于 [frameKey] 组装缓存键
+     * @param cache 见 [replay]。命中就不必从第 0 帧重放 —— 这是嵌套精灵那层 O(帧数²) 的解药：
+     *   子时间线的帧号随父帧反复回到同一批值（`(elapsed × timescale + preload) % 子帧数`），
+     *   不缓存的话父级每推一帧都要把子时间线整个重放一遍。
+     */
+    private fun evaluateSprite(
+        pam: PamInfo,
+        sprite: PamSprite,
+        frame: Int,
+        depth: Int,
+        spriteIndex: Int,
+        cache: MutableMap<Long, List<DrawOp>>,
+    ): List<DrawOp> {
+        val key = frameKey(spriteIndex, depth, frame)
+        cache[key]?.let { return it }
+
         // 用有序表：绘制序就是 index 升序，而 LinkedHashMap 是插入序，两者不同
         val slots = sortedMapOf<Int, Slot>()
         val last = minOf(frame, sprite.frame.size - 1)
@@ -293,8 +386,25 @@ object PamTimeline {
         // 用 entries 而不是 values：槽位下标要当图层号带下去。
         // （嵌套精灵自己也会走到这里，此时 index 是它的槽位号，但父级 expand 会把它换成
         //  父槽位号 —— 见 expand 里的 `layer = layer`。）
-        return slots.entries.flatMap { (index, slot) -> expand(pam, slot, frame, depth, index) }
+        val ops = slots.entries.flatMap { (index, slot) -> expand(pam, slot, frame, depth, index, cache) }
+        cache[key] = ops
+        return ops
     }
+
+    /**
+     * 缓存键：把 `(精灵下标, 层级, 帧号)` 打包进一个 Long，24/8/32 位分段。
+     *
+     *  * 精灵下标 **+1** 再取低 24 位 —— `+1` 是为了让 [MAIN_SPRITE] 的 `-1` 落到 0，不与任何
+     *    真实下标撞车（真样本最多 7242 个精灵，24 位还富余三个数量级）；
+     *  * 帧号取低 32 位 —— Int 本来就装得下，`and` 是为了挡住 [evaluate] 被传入负数帧的情形，
+     *    否则符号位会一路溢出到高位去和精灵下标混起来；
+     *  * **层级必须进键**：同一份子精灵理论上可以在不同层级被引用，而层级决定 [MAX_NEST_DEPTH]
+     *    的截断，混用会拿到错的展开结果。
+     */
+    private fun frameKey(spriteIndex: Int, depth: Int, frame: Int): Long =
+        (((spriteIndex + 1).toLong() and 0xFFFFFFL) shl 40) or
+            ((depth.toLong() and 0xFFL) shl 32) or
+            (frame.toLong() and 0xFFFFFFFFL)
 
     private fun spriteAt(pam: PamInfo, index: Int): PamSprite? =
         if (index == MAIN_SPRITE) pam.mainSprite else pam.sprite.getOrNull(index)
@@ -384,7 +494,14 @@ object PamTimeline {
      * @param layer 该槽位在**顶层**时间线上的下标。嵌套展开时子精灵自己算出来的图层号
      *   会被这里覆盖成父槽位号，这样界面上关一个图层就是关掉它的整棵子树。
      */
-    private fun expand(pam: PamInfo, slot: Slot, frame: Int, depth: Int, layer: Int): List<DrawOp> {
+    private fun expand(
+        pam: PamInfo,
+        slot: Slot,
+        frame: Int,
+        depth: Int,
+        layer: Int,
+        cache: MutableMap<Long, List<DrawOp>>,
+    ): List<DrawOp> {
         slot.image?.let { return applyImageTransform(pam, slot, it, layer) }
 
         val subIndex = slot.sprite ?: return emptyList()
@@ -396,7 +513,7 @@ object PamTimeline {
         val scaled = floor(elapsed * slot.timescale).toInt()
         val childFrame = (((scaled + slot.preloadFrames) % sub.frame.size) + sub.frame.size) % sub.frame.size
 
-        return evaluateSprite(pam, sub, childFrame, depth + 1).map { op ->
+        return evaluateSprite(pam, sub, childFrame, depth + 1, subIndex, cache).map { op ->
             // 父级变换套在子级之上：p -> M_child·p + t_child -> M_parent·(…) + t_parent
             op.copy(
                 m0 = slot.m0 * op.m0 + slot.m1 * op.m2,

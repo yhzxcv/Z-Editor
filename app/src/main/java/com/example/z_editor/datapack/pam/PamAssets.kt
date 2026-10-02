@@ -4,6 +4,7 @@ import com.example.z_editor.datapack.smf.AtlasSplitter
 import java.io.File
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 /**
  * 把 PAM 用到的图片，经 RTON 清单 + 图集，解析成 ARGB 像素。
@@ -27,15 +28,32 @@ object PamAssets {
     private const val MAX_REPORTED_FAILURES = 20
 
     /**
-     * 一张裁好、**并已缩放到 PAM 声明尺寸**的图。
+     * 预览常驻位图的**像素预算**：所有部件按目标尺寸算的像素数之和不超过它。
+     * 8M 像素 × 4 字节 ≈ 32 MB，见 [previewScale]。
+     */
+    private const val PREVIEW_BUDGET_PIXELS = 8.0 * 1024 * 1024
+
+    /** 取景框长边的**目标像素上限**：预览控件本身约一千像素宽，再细的分辨率也画不出来。 */
+    private const val PREVIEW_MAX_EDGE = 1536.0
+
+    /**
+     * 一张裁好、**并已缩放到目标尺寸**的图。
      *
-     * [width] / [height] 恒等于 `PamInfo.image[i].size`，所以调用方可以直接拿去建位图，
-     * 不需要（也不应该）再拿 PAM 的尺寸去核对 —— 见 [rescale] 的说明。
+     * 目标尺寸在没限分辨率时（`imageScale == 1`）恒等于 `PamInfo.image[i].size`；限了分辨率
+     * 时是它的 `imageScale` 倍（`roundToInt` 后至少 1 像素），见 [previewScale] 与 [resolve]
+     * 的 `imageScale` 参数。
+     *
+     * 所以调用方可以直接拿 [width]/[height] 去建位图，**但坐标必须按 `声明尺寸 ÷ 实际尺寸`
+     * 补一个缩放** —— 帧变换矩阵是按声明尺寸的像素空间定义的。预览侧的补法见
+     * `PamPreviewScreen.PreviewCanvas` 里的 `imageFit`。
      */
     class Crop(val width: Int, val height: Int, val pixels: IntArray)
 
     data class Result(
-        /** `PamInfo.image` 的下标 -> 已裁好并缩放的图。没有的项表示没解析出来。 */
+        /**
+         * `PamInfo.image` 的下标 -> 已裁好并缩放的图。没有的项表示没解析出来。
+         * **流式模式（[resolve] 传了 `onCrop`）下恒为空**，因为裁一张就交出去一张了。
+         */
         val crops: Map<Int, Crop>,
         /** 1×1 全透明占位图，按设计跳过。 */
         val skippedPlaceholders: Int,
@@ -43,21 +61,32 @@ object PamAssets {
         /**
          * 观测到的**档位系数**（裁切矩形 ÷ PAM 声明尺寸）的中位数；一张都没裁出来时为 null。
          * 约 1.28 / 0.64 / 0.32 分别对应 1536 / 768 / 384 档，见 [describeScale]。
+         *
+         * 注意它**与 `imageScale` 无关**：算的是裁切矩形对声明尺寸的比，限分辨率不改这个比，
+         * 所以提示语里的档位判断不会被限分辨率带偏。
          */
         val scaleFactor: Double?,
-    ) {
-        val resolvedCount: Int get() = crops.size
-    }
+        /** 成功解析出的部件数。流式模式下 [crops] 是空的，只能看这个。 */
+        val resolvedCount: Int = crops.size,
+    )
 
     /**
      * @param loadAtlas 给定图集，返回**整张**图集的像素（行主序、长度 `width * height`）；
      *   返回 null 表示这张图集读不出来（文件缺失、块尺寸推不出、解码失败……），
      *   该图集下的所有图片会统一计入 [Result.failures]。
+     * @param imageScale 目标尺寸的全局缩小系数，取值见 [previewScale]；`1.0` 表示按 PAM 声明的
+     *   原尺寸出图。**只影响位图分辨率，不影响几何**：调用方按 `声明尺寸 ÷ 实际尺寸` 把变换
+     *   矩阵补回来即可（见 [Crop] 的说明）。
+     * @param onCrop 流式消费：每裁好一张立刻回调，**且不再攒进 [Result.crops]**。回调返回后
+     *   这张图的 `IntArray` 就已无人引用，可以立刻被回收 —— 于是"载入期所有部件的像素同时
+     *   活着"那份内存整个消失。预览走的就是这条路（回调里直接建位图）。
      */
     fun resolve(
         pam: PamInfo,
         plan: AtlasSplitter.Plan,
         loadAtlas: (atlasId: String, atlas: AtlasSplitter.Atlas) -> IntArray?,
+        imageScale: Double = 1.0,
+        onCrop: ((imageIndex: Int, crop: Crop) -> Unit)? = null,
     ): Result {
         val index = resourceIndex(plan)
 
@@ -87,6 +116,11 @@ object PamAssets {
 
         val crops = HashMap<Int, Crop>()
         val ratios = ArrayList<Double>()
+        var resolved = 0
+
+        // 按图集分组，一张图集**整批裁完就丢**：`full` 出了这轮循环体就再没有引用，下一张图集
+        // 可以立刻复用这块内存。峰值因此是「单张图集 + 该图集的一张裁片」，而不是「单张图集 +
+        // 所有图集的所有裁片」—— 后者在 4096² 图集上就是几百 MB 的瞬时尖峰。
         for ((atlasId, entries) in targets.entries.groupBy { it.value.first }) {
             val atlas = plan.atlases[atlasId]
             if (atlas == null) {
@@ -109,16 +143,21 @@ object PamAssets {
                     failures += "image[$imageIndex] ${rect.id}: PAM 没记这个部件的尺寸（${dw}x$dh），无法确定该缩到多大"
                     continue
                 }
+                // 目标尺寸 = 声明尺寸 × imageScale。系数为 1 时逐字节等于从前。
+                val tw = scaledSize(dw, imageScale)
+                val th = scaledSize(dh, imageScale)
                 try {
                     require(AtlasSplitter.isRectInBounds(rect, atlas)) {
                         "矩形 (${rect.ax},${rect.ay},${rect.aw},${rect.ah}) 超出 ${atlas.name} ${atlas.width}x${atlas.height}"
                     }
                     val raw = AtlasSplitter.crop(full, atlas.width, rect)
-                    crops[imageIndex] = if (rect.aw == dw && rect.ah == dh) {
-                        Crop(dw, dh, raw)
+                    val crop = if (rect.aw == tw && rect.ah == th) {
+                        Crop(tw, th, raw)
                     } else {
-                        Crop(dw, dh, rescale(raw, rect.aw, rect.ah, dw, dh))
+                        Crop(tw, th, resize(raw, rect.aw, rect.ah, tw, th))
                     }
+                    resolved++
+                    if (onCrop != null) onCrop(imageIndex, crop) else crops[imageIndex] = crop
                     if (rect.aw > 0 && rect.ah > 0) {
                         ratios += (rect.aw.toDouble() / dw + rect.ah.toDouble() / dh) / 2.0
                     }
@@ -133,8 +172,13 @@ object PamAssets {
             skippedPlaceholders = skipped,
             failures = failures.take(MAX_REPORTED_FAILURES),
             scaleFactor = ratios.takeIf { it.isNotEmpty() }?.sorted()?.let { it[it.size / 2] },
+            resolvedCount = resolved,
         )
     }
+
+    /** 声明尺寸 × 系数，至少 1 像素；系数 ≥ 1 时原样返回（不做放大）。 */
+    private fun scaledSize(v: Int, scale: Double): Int =
+        if (scale >= 1.0) v else (v * scale).roundToInt().coerceAtLeast(1)
 
     /**
      * 把裁出来的 [src]（[sw]×[sh]）等比缩放到 PAM 声明的 [dw]×[dh]。
@@ -181,6 +225,64 @@ object PamAssets {
     }
 
     /**
+     * 裁出来的 [src]（[sw]×[sh]）缩到 [dw]×[dh]，按缩小倍数挑一条重采样路径。
+     *
+     * 缩小 **2 倍以上**走 [rescaleBox]（方框平均），否则走 [rescale]（2×2 双线性）。
+     * 分界线卡在 2 倍是有意的：`imageScale == 1` 时唯一的缩小是「1536 档裁出来的 1.28 倍」，
+     * 落在双线性那边 —— 于是**限分辨率整个关掉时，输出与从前逐像素一致**。
+     */
+    private fun resize(src: IntArray, sw: Int, sh: Int, dw: Int, dh: Int): IntArray =
+        if (sw >= dw * 2 || sh >= dh * 2) rescaleBox(src, sw, sh, dw, dh)
+        else rescale(src, sw, sh, dw, dh)
+
+    /**
+     * 方框平均缩小：每个目标像素取源图里落进它方框的**全部**像素平均（按 alpha 预乘）。
+     *
+     * [rescale] 只读 2×2 邻域，缩 2.56 倍时有 61% 的源像素一次都没被读过，高频细节会闪成
+     * 摩尔纹 —— 而预览限分辨率后正好落在那个区间，所以另开一条。方框全采，缩多少倍都不漏。
+     *
+     * 预乘的理由与 [rescale] 相同：不预乘的话，半透明边缘会把透明像素的黑色一起平均进来。
+     */
+    private fun rescaleBox(src: IntArray, sw: Int, sh: Int, dw: Int, dh: Int): IntArray {
+        val out = IntArray(dw * dh)
+        val stepX = sw.toDouble() / dw
+        val stepY = sh.toDouble() / dh
+        for (y in 0 until dh) {
+            // 方框取 [y·step, (y+1)·step) 的**整数像素**边界；退化成空框时兜到 1 像素高。
+            val y0 = (y * stepY).toInt().coerceIn(0, sh - 1)
+            val y1 = ((y + 1) * stepY).toInt().coerceIn(y0 + 1, sh)
+            for (x in 0 until dw) {
+                val x0 = (x * stepX).toInt().coerceIn(0, sw - 1)
+                val x1 = ((x + 1) * stepX).toInt().coerceIn(x0 + 1, sw)
+                var sa = 0L
+                var sr = 0L
+                var sg = 0L
+                var sb = 0L
+                for (sy in y0 until y1) {
+                    val row = sy * sw
+                    for (sx in x0 until x1) {
+                        val p = src[row + sx]
+                        val a = (p ushr 24) and 0xFF
+                        sa += a
+                        sr += ((p ushr 16) and 0xFF) * a
+                        sg += ((p ushr 8) and 0xFF) * a
+                        sb += (p and 0xFF) * a
+                    }
+                }
+                // sa == 0 时整框全透明，out 本来就是 0，跳过省一次除法
+                if (sa == 0L) continue
+                val n = ((y1 - y0) * (x1 - x0)).toLong()
+                val ai = (sa.toDouble() / n).roundToInt().coerceIn(0, 255)
+                out[y * dw + x] = if (ai == 0) 0 else (ai shl 24) or
+                    ((sr.toDouble() / sa).roundToInt().coerceIn(0, 255) shl 16) or
+                    ((sg.toDouble() / sa).roundToInt().coerceIn(0, 255) shl 8) or
+                    (sb.toDouble() / sa).roundToInt().coerceIn(0, 255)
+            }
+        }
+        return out
+    }
+
+    /**
      * 四邻域双线性混合。**先按 alpha 预乘再插值**：直接对 ARGB 分量插值的话，
      * 半透明边缘会把透明像素的黑色也混进来，剪纸动画的柔边会整圈发黑。
      */
@@ -221,6 +323,44 @@ object PamAssets {
             ?: return "档位系数 %.3f".format(scale)
         val base = "图集按 %d 档裁出（%.3f 倍），已缩到 PAM 声明的尺寸".format(tier, scale)
         return if (tier < 1536) "$base —— 换 1536 档的图集会更清晰" else base
+    }
+
+    /**
+     * 预览该把部件缩到多小：返回一个 `0 < s ≤ 1` 的全局系数，[resolve] 的 `imageScale` 直接吃它。
+     *
+     * 两道上限取**更紧的那个**：
+     *
+     *  * **像素预算** [PREVIEW_BUDGET_PIXELS] —— 所有部件按目标尺寸算的像素数之和不超过它。
+     *    这是真正兜住 OOM 的那道：一张 4096² 图集切出来的几十个部件，声明尺寸之和轻易上千万
+     *    像素，全按原尺寸常驻就是几百 MB。因为面积按 s² 缩，所以取平方根。
+     *
+     *  * **取景框长边** [PREVIEW_MAX_EDGE] —— 预览控件只有一千来像素宽，比这更细的分辨率在屏幕
+     *    上根本体现不出来。部件多而碎的 PAM 靠这道压得更狠。
+     *
+     * 两道都不紧张时返回 `1.0`，即**出图与加限分辨率之前逐像素一致**（[resize] 的分流保证了
+     * 这一点）。真正紧张时的观感与"该不该换 1536 档图集"由 [describeScale] 那条提示负责，
+     * 这里不重复报。
+     *
+     * 只看**声明尺寸**、不看部件到底有没有被画到：没被引用的图片也照样算进预算。偏保守，
+     * 但省得为了几 MB 去穿整条求值链。
+     *
+     * @param viewWidth / @param viewHeight 取景框（`PamTimeline.bounds` 的并集）的宽高；传 0
+     *   表示未知，那道上限就不生效。
+     */
+    fun previewScale(pam: PamInfo, viewWidth: Double, viewHeight: Double): Double {
+        var total = 0.0
+        for (im in pam.image) {
+            val w = im.size?.getOrNull(0) ?: continue
+            val h = im.size?.getOrNull(1) ?: continue
+            if (w > 0 && h > 0) total += w.toDouble() * h
+        }
+        val byBudget =
+            if (total <= PREVIEW_BUDGET_PIXELS) 1.0 else sqrt(PREVIEW_BUDGET_PIXELS / total)
+
+        val edge = maxOf(viewWidth, viewHeight)
+        val byEdge = if (edge <= PREVIEW_MAX_EDGE) 1.0 else PREVIEW_MAX_EDGE / edge
+
+        return minOf(1.0, byBudget, byEdge)
     }
 
     /**

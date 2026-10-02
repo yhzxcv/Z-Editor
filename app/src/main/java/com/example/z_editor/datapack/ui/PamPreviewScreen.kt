@@ -1,12 +1,8 @@
 package com.example.z_editor.datapack.ui
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.ColorMatrix
-import android.graphics.ColorMatrixColorFilter
-import android.graphics.Matrix
-import android.graphics.Paint
 import android.os.Build
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -41,6 +37,7 @@ import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -89,6 +86,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.z_editor.datapack.pam.PamGifExporter
 import com.example.z_editor.datapack.pam.PamPreviewRunner
 import com.example.z_editor.datapack.pam.PamTimeline
 import com.example.z_editor.datapack.pam.PamUnpackScan
@@ -106,9 +104,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-/** 原色的 tint，与 `PamTimeline` 里同一个约定：等于它就不必挂颜色滤镜。 */
-private const val NO_TINT = 0xFFFFFF
-
 /**
  * 忙碌提示的默认文案（解析）。扫描、识别各有一句，都写进 `busyText`，
  * 因为三者共用 `isLoading` 这一个闸门。
@@ -118,11 +113,21 @@ private const val LOADING_TEXT = "正在解析..."
 /** 「解包产物目录」在 `datapack_prefs` 里的键。下次进页面直接回填，省得再翻一遍文件管理器。 */
 private const val PREFS_UNPACK_ROOT = "pam_preview_unpack_root"
 
-/**
- * 连一条可用取景框都拿不到时的兜底画布边长（时间线为空、PAM 既没声明尺寸又一帧画不出东西）。
- * 正常路径不会走到这里 —— 取景框由 `PamTimeline.bounds` 按内容并集算，见 [PreviewCanvas]。
- */
-private const val FALLBACK_CANVAS = 768.0
+/** 导出最长边候选：null = 同取景框（原始尺寸，不缩放）。 */
+private val GIF_LONG_EDGES: List<Pair<Int?, String>> = listOf(
+    360 to "360",
+    480 to "480",
+    720 to "720",
+    1080 to "1080",
+    null to "同取景框",
+)
+
+/** 导出背景色候选。透明是默认（GIF 的透明是二值的，软边会被硬切）。 */
+private val GIF_BACKGROUNDS: List<Pair<PamGifExporter.Background, String>> = listOf(
+    PamGifExporter.Background.TRANSPARENT to "透明",
+    PamGifExporter.Background.WHITE to "白",
+    PamGifExporter.Background.BLACK to "黑",
+)
 
 /**
  * 一条时间线的三份求值产物，一起算、一起落 state。
@@ -149,7 +154,11 @@ private class TimelineData(
  * [PamTimeline]。
  *
  * **内存**：一张图集整张解码是 64 MB 级，所以 [PamPreviewRunner.load] 逐张解码、裁完即弃，
+ * 并且按 `PamAssets.previewScale` 给部件限了分辨率（4096² 图集下这是不 OOM 的关键）。
  * 位图用完必须 `close()`（见下面的 `DisposableEffect`）。
+ *
+ * 限了分辨率之后**位图比 `pam.image[].size` 小**，所以 [PreviewCanvas] 画之前要按
+ * 「声明 ÷ 实际」把矩阵补回来，否则所有部件会一起缩到左上角。
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -199,8 +208,35 @@ fun PamPreviewScreen(onBack: () -> Unit) {
     // PAM 里的同一条时间线有意义，跨 PAM 沿用会张冠李戴。
     var hiddenByTimeline by remember { mutableStateOf<Map<Int, Set<Int>>>(emptyMap()) }
 
+    // ---- GIF 导出 ----
+    // 导出遵循**当前时间线选择与当前隐藏图层**（所见即所得），并以载入时那个 PAM 的所在目录
+    // 作为落盘位置 —— 所以载入成功时要把目录留下来（pamPath 之后可能被用户改掉）。
+    var loadedPamDir by remember { mutableStateOf<File?>(null) }
+    var isExporting by remember { mutableStateOf(false) }
+    // 进度与结果：只有导出卡片里的 item 读它们，重组范围被限制在那一张卡内
+    var exportPhase by remember { mutableIntStateOf(1) }
+    var exportDone by remember { mutableIntStateOf(0) }
+    var exportTotal by remember { mutableIntStateOf(0) }
+    var exportResult by remember { mutableStateOf<PamGifExporter.Result.Ok?>(null) }
+    var exportError by remember { mutableStateOf<String?>(null) }
+
+    // 导出选项
+    var gifRange by remember { mutableIntStateOf(-1) } // -1 = 全部；否则是 labelSpans 的下标
+    var gifLongEdge by remember { mutableStateOf<Int?>(720) } // null = 同取景框（原始尺寸）
+    var gifBackground by remember { mutableStateOf(PamGifExporter.Background.TRANSPARENT) }
+    var gifDither by remember { mutableStateOf(false) }
+    var gifLoop by remember { mutableStateOf(true) }
+
+    // 导出中也算忙碌 —— 这是**正确性**要求，不只是 UX：路径输入框的 onValueChange 会把
+    // preview 置空，DisposableEffect 随即 close() 回收位图，而导出协程正在往那张位图上画。
+    val busy = isLoading || isExporting
+
     // 放在 isLoading 声明之后：这里和顶部箭头置灰读的是同一个标志
-    BusyBackHandler(busy = isLoading, busyMessage = "解析中，完成前无法返回", onBack = handleBack)
+    BusyBackHandler(
+        busy = busy,
+        busyMessage = if (isExporting) "导出中，完成前无法返回" else "解析中，完成前无法返回",
+        onBack = handleBack,
+    )
 
     val themeColor = PvzBluePrimary
     val hasManageStorage = rememberManageStorageGranted()
@@ -213,6 +249,10 @@ fun PamPreviewScreen(onBack: () -> Unit) {
 
     // 求值：切换 PAM 或切换精灵时，把它这条时间线的每一帧都先算好。
     // 纯算术（几十万次浮点），但帧数可达 2200+，所以放 Default 而不是主线程。
+    //
+    // 走 `evaluateAll` 而不是 `(0 until frameCount).map { evaluate(...) }`：后者每帧都从第 0 帧
+    // 重放，是 O(帧数²)，实测最坏一例（`ZOMBIE_DINO_STEGOSAURUS` 的 1936 帧）要 6.2 秒 ——
+    // 这正是实机上"切个精灵就卡很久"的来源。切精灵本来就会重跑这一整段，所以换个精灵卡一次。
     LaunchedEffect(preview, spriteSel) {
         val p = preview ?: return@LaunchedEffect
         val ref = p.timelines.getOrNull(spriteSel) ?: return@LaunchedEffect
@@ -220,7 +260,7 @@ fun PamPreviewScreen(onBack: () -> Unit) {
         val computed = withContext(Dispatchers.Default) {
             try {
                 TimelineData(
-                    frames = (0 until ref.frameCount).map { PamTimeline.evaluate(p.pam, ref.index, it) },
+                    frames = PamTimeline.evaluateAll(p.pam, ref.index),
                     labels = PamTimeline.labels(p.pam, ref.index),
                     layers = PamTimeline.layers(p.pam, ref.index),
                     error = null,
@@ -242,6 +282,13 @@ fun PamPreviewScreen(onBack: () -> Unit) {
     // 换 PAM 才清空隐藏记录（切精灵不清，见 hiddenByTimeline 的说明）
     LaunchedEffect(preview) { hiddenByTimeline = emptyMap() }
 
+    // 换 PAM 或换时间线：上一次的导出结果与范围选择都失效 —— 帧号与标签段都是**那条**时间线的
+    LaunchedEffect(preview, spriteSel) {
+        exportResult = null
+        exportError = null
+        gifRange = -1
+    }
+
     // 当前这条时间线的隐藏集合 + 两个写入口。写的时候只动当前这条的记录，别的原样留着。
     val currentTimelineIndex = preview?.timelines?.getOrNull(spriteSel)?.index
     val hiddenLayers = currentTimelineIndex?.let { hiddenByTimeline[it] } ?: emptySet()
@@ -256,6 +303,83 @@ fun PamPreviewScreen(onBack: () -> Unit) {
     fun setHiddenSet(next: Set<Int>) {
         val key = currentTimelineIndex ?: return
         hiddenByTimeline = hiddenByTimeline + (key to next)
+    }
+
+    /**
+     * 导出 GIF。产物写在 PAM 源文件旁，重名加 `~`。
+     *
+     * 范围、图层、时间线都取自**当前选择**（所见即所得）；帧数据用当前已求值好的 `frames`，
+     * 不重算。真正干活在 `Dispatchers.Default` 上（渲染两遍 + 量化 + LZW，中端机上秒级到分钟级）。
+     */
+    fun startExport() {
+        val p = preview ?: return
+        val dir = loadedPamDir ?: run {
+            exportError = "拿不到 PAM 所在目录，无法确定写到哪里"
+            return
+        }
+        val total = frames.size
+        if (total == 0) return
+        val span = labelSpans.getOrNull(gifRange)
+        val start = (span?.start ?: 0).coerceIn(0, total - 1)
+        val end = (span?.endInclusive ?: total - 1).coerceIn(start, total - 1)
+
+        playing = false
+        isExporting = true
+        exportResult = null
+        exportError = null
+        exportPhase = 1
+        exportDone = 0
+        exportTotal = end - start + 1
+
+        val options = PamGifExporter.Options(
+            longEdge = gifLongEdge,
+            background = gifBackground,
+            dither = gifDither,
+            loopForever = gifLoop,
+        )
+        val timelineName = p.timelines.getOrNull(spriteSel)?.name.orEmpty()
+        val hidden = hiddenLayers
+        val ops = frames
+        val sel = spriteSel
+        val fps = rateOf(p, spriteSel)
+        // pamPath 此刻已被 !busy 闸住不可编辑，直接读就是"载入时那一份"
+        val base = pamPath.trim()
+            .removePrefix("file://").removePrefix("content://")
+            .substringAfterLast('/').substringBeforeLast('.')
+
+        scope.launch {
+            val result = withContext(Dispatchers.Default) {
+                val name = resolveUniqueOutputName(dir, gifBaseName(base, timelineName, span?.label), "gif")
+                PamGifExporter.export(
+                    preview = p,
+                    timelineIndex = sel,
+                    frames = ops,
+                    hiddenLayers = hidden,
+                    startFrame = start,
+                    endInclusive = end,
+                    fps = fps,
+                    options = options,
+                    output = File(dir, name),
+                ) { phase, done, tot ->
+                    // 与 SmfUnpackerScreen 同一个写法：回调在工作线程上直接落 state
+                    exportPhase = phase
+                    exportDone = done
+                    exportTotal = tot
+                }
+            }
+            isExporting = false
+            when (result) {
+                is PamGifExporter.Result.Ok -> {
+                    exportResult = result
+                    Toast.makeText(context, "已导出 ${result.file.name}", Toast.LENGTH_SHORT).show()
+                }
+
+                is PamGifExporter.Result.Failed -> {
+                    exportError = result.message
+                    Toast.makeText(context, "导出失败：${result.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     // 按精灵自己的帧率推进。playing / frames 一变就重启，所以暂停即取消。
@@ -312,6 +436,8 @@ fun PamPreviewScreen(onBack: () -> Unit) {
                 is PamPreviewRunner.LoadResult.Ok -> {
                     spriteSel = 0
                     frame = 0
+                    // 导出产物写在 PAM 源文件旁边：记下这一份的目录，之后用户改 pamPath 也不影响
+                    loadedPamDir = pamFile.parentFile
                     preview = result.preview
                 }
 
@@ -410,8 +536,8 @@ fun PamPreviewScreen(onBack: () -> Unit) {
                 navigationIcon = {
                     IconButton(
                         onClick = handleBack,
-                        modifier = Modifier.alpha(if (isLoading) DISABLED_ALPHA else 1f),
-                        enabled = !isLoading
+                        modifier = Modifier.alpha(if (busy) DISABLED_ALPHA else 1f),
+                        enabled = !busy
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
@@ -446,12 +572,13 @@ fun PamPreviewScreen(onBack: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // ---- Permission gate ----
-            // 本页只读文件、不写盘，但读的是 /sdcard 下的真实路径，仍需该权限
+            // 读写都是 /sdcard 下的真实路径（读 PAM/图集/RTON，**导出 GIF 时要写盘**），
+            // 所以仍然需要这个权限 —— 文案里"只读"的说法随导出功能一起去掉了。
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
                 item {
                     GateCard(
                         title = "需要 Android 11（API 30）或更高版本",
-                        body = "预览需要按真实路径读取解包产物，仅 Android 11+ 支持。",
+                        body = "预览与导出需要按真实路径读写解包产物，仅 Android 11+ 支持。",
                         buttonLabel = null,
                         onButton = {}
                     )
@@ -460,7 +587,8 @@ fun PamPreviewScreen(onBack: () -> Unit) {
                 item {
                     GateCard(
                         title = "需要「所有文件访问」权限",
-                        body = "预览需要按真实路径读取 PAM、图集与 RTON。请到系统设置中开启。",
+                        body = "预览需要按真实路径读取 PAM、图集与 RTON；导出 GIF 时还要把产物写在 " +
+                                "PAM 源文件旁边。请到系统设置中开启。",
                         buttonLabel = "去授权",
                         onButton = { openManageAllFilesSettings(context) }
                     )
@@ -487,13 +615,13 @@ fun PamPreviewScreen(onBack: () -> Unit) {
                     placeholder = "输入解包产物根目录的完整路径",
                     themeColor = themeColor,
                     pick = PathPick.Directory,
-                    enabled = !isLoading
+                    enabled = !busy
                 )
             }
             item {
                 Button(
                     onClick = { scanForPams() },
-                    enabled = !isLoading,
+                    enabled = !busy,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(44.dp),
@@ -550,7 +678,7 @@ fun PamPreviewScreen(onBack: () -> Unit) {
                     placeholder = "输入 .PAM 文件的完整路径",
                     themeColor = themeColor,
                     pick = PathPick.File,
-                    enabled = !isLoading
+                    enabled = !busy
                 )
             }
 
@@ -569,7 +697,7 @@ fun PamPreviewScreen(onBack: () -> Unit) {
                     placeholder = "输入 ATLASES 目录的完整路径",
                     themeColor = themeColor,
                     pick = PathPick.Directory,
-                    enabled = !isLoading
+                    enabled = !busy
                 )
             }
 
@@ -588,7 +716,7 @@ fun PamPreviewScreen(onBack: () -> Unit) {
                     placeholder = "输入 RESOURCES*.RTON 的完整路径",
                     themeColor = themeColor,
                     pick = PathPick.File,
-                    enabled = !isLoading
+                    enabled = !busy
                 )
             }
 
@@ -596,7 +724,7 @@ fun PamPreviewScreen(onBack: () -> Unit) {
                 Spacer(Modifier.height(12.dp))
                 Button(
                     onClick = { load() },
-                    enabled = !isLoading,
+                    enabled = !busy,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(44.dp),
@@ -699,7 +827,10 @@ fun PamPreviewScreen(onBack: () -> Unit) {
                                 p.timelines.forEachIndexed { i, ref ->
                                     FilterChip(
                                         selected = i == spriteSel,
+                                        // 导出中不许切：切精灵会触发重量级的 evaluateAll 抢 CPU，
+                                        // 而且会把导出脚下的 frames 换掉
                                         onClick = { spriteSel = i; playing = false },
+                                        enabled = !busy,
                                         label = { Text("${ref.name} (${ref.frameCount})", fontSize = 12.sp) },
                                         colors = FilterChipDefaults.filterChipColors(
                                             selectedContainerColor = themeColor,
@@ -727,7 +858,8 @@ fun PamPreviewScreen(onBack: () -> Unit) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 IconButton(
                                     onClick = { playing = !playing },
-                                    enabled = frames.isNotEmpty()
+                                    // 导出中不转播放：播放循环每帧改 state，会和导出抢渲染
+                                    enabled = frames.isNotEmpty() && !busy
                                 ) {
                                     Icon(
                                         if (playing) Icons.Default.Pause else Icons.Default.PlayArrow,
@@ -810,6 +942,183 @@ fun PamPreviewScreen(onBack: () -> Unit) {
                     }
                 }
 
+                // ---- Export GIF ----
+                // 范围与帧数：范围下拉选「全部」或某个标签段。带标签切分后动画通常很短
+                // （见帮助文案），"固定全帧不抽帧"才不会导出成几百帧的巨物。
+                val gifSpan = labelSpans.getOrNull(gifRange)
+                val gifStart = (gifSpan?.start ?: 0).coerceIn(0, (frames.size - 1).coerceAtLeast(0))
+                val gifEnd = (gifSpan?.endInclusive ?: (frames.size - 1))
+                    .coerceIn(gifStart, (frames.size - 1).coerceAtLeast(0))
+                val gifFrameCount = if (frames.isEmpty()) 0 else gifEnd - gifStart + 1
+
+                item {
+                    Spacer(Modifier.height(8.dp))
+                    SectionHeader(
+                        icon = Icons.Default.Save,
+                        title = "导出 GIF",
+                        subtitle = "按当前时间线与当前隐藏图层导出，产物写在 PAM 源文件旁边"
+                    )
+                }
+                item {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("范围", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                                Spacer(Modifier.width(8.dp))
+                                GifRangeMenu(
+                                    labels = labelSpans,
+                                    frameCount = frames.size,
+                                    selected = gifRange,
+                                    themeColor = themeColor,
+                                    enabled = !busy,
+                                    onSelect = { gifRange = it },
+                                )
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+                            Text("最长边", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                            Spacer(Modifier.height(4.dp))
+                            Row(
+                                modifier = Modifier.horizontalScroll(rememberScrollState()),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                GIF_LONG_EDGES.forEach { (edge, label) ->
+                                    FilterChip(
+                                        selected = gifLongEdge == edge,
+                                        onClick = { gifLongEdge = edge },
+                                        enabled = !busy,
+                                        label = { Text(label, fontSize = 12.sp) },
+                                        colors = FilterChipDefaults.filterChipColors(
+                                            selectedContainerColor = themeColor,
+                                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                    )
+                                }
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+                            Text("背景", fontSize = 13.sp, fontWeight = FontWeight.Medium)
+                            Spacer(Modifier.height(4.dp))
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                GIF_BACKGROUNDS.forEach { (bg, label) ->
+                                    FilterChip(
+                                        selected = gifBackground == bg,
+                                        onClick = { gifBackground = bg },
+                                        enabled = !busy,
+                                        label = { Text(label, fontSize = 12.sp) },
+                                        colors = FilterChipDefaults.filterChipColors(
+                                            selectedContainerColor = themeColor,
+                                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                    )
+                                }
+                            }
+
+                            Spacer(Modifier.height(6.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = gifDither,
+                                    onCheckedChange = { gifDither = it },
+                                    enabled = !busy
+                                )
+                                Text("抖动（渐变更平滑，文件略大）", fontSize = 12.sp)
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Checkbox(
+                                    checked = gifLoop,
+                                    onCheckedChange = { gifLoop = it },
+                                    enabled = !busy
+                                )
+                                Text("无限循环", fontSize = 12.sp)
+                            }
+
+                            Spacer(Modifier.height(8.dp))
+                            Button(
+                                onClick = { startExport() },
+                                enabled = !busy && frames.isNotEmpty(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(44.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = themeColor),
+                                shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Icon(Icons.Default.Save, null, modifier = Modifier.size(18.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    if (gifFrameCount == frames.size) "导出 GIF（全部 $gifFrameCount 帧）"
+                                    else "导出 GIF（$gifFrameCount 帧）",
+                                    fontSize = 15.sp
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (isExporting) {
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            // 进度只在这一张卡里读 —— 重组范围被限制在这，不惊动整屏
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    if (exportPhase == 1) "正在分析调色板…" else "正在写入 GIF…",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp
+                                )
+                                Spacer(Modifier.height(8.dp))
+                                LinearProgressIndicator(
+                                    progress = {
+                                        if (exportTotal <= 0) 0f
+                                        else ((exportPhase - 1) + exportDone.toFloat() / exportTotal) / 2f
+                                    },
+                                    color = themeColor,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(Modifier.height(6.dp))
+                                Text(
+                                    "第 $exportDone / $exportTotal 帧",
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
+
+                exportResult?.let { r ->
+                    item {
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text("导出完成", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                Spacer(Modifier.height(6.dp))
+                                ResultRow("文件", r.file.name)
+                                ResultRow("大小", formatSize(r.byteSize))
+                                ResultRow("帧数", "${r.frames} 帧")
+                                ResultRow("尺寸", "${r.width} × ${r.height}")
+                                ResultRow("每帧", "${r.delayCs * 10} 毫秒")
+                            }
+                        }
+                    }
+                }
+
+                exportError?.let { err ->
+                    item { ErrorBanner(title = "导出失败", body = err) }
+                }
+
                 framesError?.let { err ->
                     item { ErrorBanner(title = "求值失败", body = err) }
                 }
@@ -868,6 +1177,16 @@ fun PamPreviewScreen(onBack: () -> Unit) {
                 body = "图层数超过 1 时，播放卡底部会出现「图层管理」按钮，" +
                         "勾掉某一层就不画它，方便看清被挡住的部分。"
             )
+            HelpSection(
+                title = "导出 GIF",
+                body = "把当前这条时间线导成 GIF 动图，画面与预览所见一致（含当前隐藏的图层）。\n" +
+                        "• 范围：选「全部」或某个标签段。整条时间线可能上千帧，按标签切开后一段通常很短。\n" +
+                        "• 固定全帧导出，不做抽帧 —— 帧数与播放完全一致。\n" +
+                        "• 最长边决定画幅大小（同取景框 = 不缩放）。文件写在 PAM 源文件旁边，重名会自动加 `~`。\n" +
+                        "GIF 格式本身的限制：最多 256 色，且**透明只有开或关两档** —— " +
+                        "部件边缘的半透明会被切成硬边，需要干净边缘时请选白底或黑底。\n" +
+                        "导出过程要渲染两遍（先分析调色板再写盘），画面大、帧数多时会花上一些时间，期间不能返回。"
+            )
         }
     }
 }
@@ -890,7 +1209,8 @@ private fun rateOf(preview: PamPreviewRunner.Preview, sel: Int): Double {
  * **必须用 `nativeCanvas.drawBitmap(bmp, Matrix, Paint)`**：真样本里 move 的矩阵位
  * 534,009 个、单位矩阵 0 个，`DrawScope.drawImage` 那种只支持平移缩放的 API 不够用。
  *
- * 坐标链：位图像素 → 帧变换（[PamTimeline.DrawOp]）→ 整个 PAM 空间等比缩放到控件、居中。
+ * 坐标链：位图像素 →（限分辨率时按 [imageFit] 放大回声明尺寸）→ 帧变换（[PamTimeline.DrawOp]）
+ * → 整个 PAM 空间等比缩放到控件、居中。
  */
 @Composable
 private fun PreviewCanvas(
@@ -899,69 +1219,25 @@ private fun PreviewCanvas(
     ops: List<PamTimeline.DrawOp>,
 ) {
     val view = remember(preview, timelineIndex) {
-        val b = preview.bounds.getOrNull(timelineIndex) ?: return@remember null
-        val pad = maxOf(b.width, b.height) * 0.02
-        PamTimeline.Bounds(b.minX - pad, b.minY - pad, b.maxX + pad, b.maxY + pad)
+        PreviewTransform.paddedView(preview.bounds.getOrNull(timelineIndex))
     }
     val viewW = view?.width?.takeIf { it > 0.0 } ?: FALLBACK_CANVAS
     val viewH = view?.height?.takeIf { it > 0.0 } ?: FALLBACK_CANVAS
     val ratio = (viewW / viewH).coerceIn(0.25, 4.0)
 
-    val paint = remember {
-        Paint(Paint.ANTI_ALIAS_FLAG).apply { isFilterBitmap = true }
-    }
-    val matrix = remember { Matrix() }
-    val values = remember { FloatArray(9) }
+    // 预览与导出共用同一个绘制器（见 [PamFramePainter] 类注释）：导出另建一个自己的实例。
+    val painter = remember(preview) { PamFramePainter(preview) }
 
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(ratio.toFloat())
     ) {
-        if (ops.isEmpty()) return@Canvas
-
-        val scale = minOf(size.width / viewW, size.height / viewH)
-        val offsetX = (size.width - viewW * scale) / 2.0
-        val offsetY = (size.height - viewH * scale) / 2.0
-        val originX = view?.minX ?: 0.0
-        val originY = view?.minY ?: 0.0
-
         drawIntoCanvas { canvas ->
-            val native = canvas.nativeCanvas
-            for (op in ops) {
-                val bmp: Bitmap = preview.images[op.imageIndex] ?: continue
-
-                values[0] = op.m0.toFloat(); values[1] = op.m1.toFloat(); values[2] = op.tx.toFloat()
-                values[3] = op.m2.toFloat(); values[4] = op.m3.toFloat(); values[5] = op.ty.toFloat()
-                values[6] = 0f; values[7] = 0f; values[8] = 1f
-                matrix.setValues(values)
-                matrix.postScale(scale.toFloat(), scale.toFloat())
-                matrix.postTranslate(
-                    (offsetX - originX * scale).toFloat(),
-                    (offsetY - originY * scale).toFloat(),
-                )
-
-                paint.alpha = op.alpha
-                paint.colorFilter =
-                    if (op.tint == NO_TINT) null else tintFilter(op.tint)
-
-                native.drawBitmap(bmp, matrix, paint)
-            }
+            painter.draw(canvas.nativeCanvas, ops, size.width, size.height, view)
         }
     }
 }
-
-/** 逐通道乘算的染色滤镜。只有非原色时才建（真样本里约 0.3% 的帧会用到）。 */
-private fun tintFilter(tint: Int): ColorMatrixColorFilter = ColorMatrixColorFilter(
-    ColorMatrix(
-        floatArrayOf(
-            (tint shr 16 and 0xFF) / 255f, 0f, 0f, 0f, 0f,
-            0f, (tint shr 8 and 0xFF) / 255f, 0f, 0f, 0f,
-            0f, 0f, (tint and 0xFF) / 255f, 0f, 0f,
-            0f, 0f, 0f, 1f, 0f,
-        ),
-    ),
-)
 
 // ---- 标签菜单 ----
 
@@ -1015,6 +1291,91 @@ private fun LabelMenu(
                 )
             }
         }
+    }
+}
+
+// ---- 导出辅助 ----
+
+/**
+ * 导出范围下拉：「全部（N 帧）」+ 各标签段。形态照 [LabelMenu] 的 TextButton+DropdownMenu。
+ *
+ * 带标签切分是有实际意义的：整条时间线可能有上千帧（最长实测 1936 帧），而按标签切开后
+ * 一段通常只有几十帧 —— 导出的是"某段动作"而不是"整个动画"。
+ */
+@Composable
+private fun GifRangeMenu(
+    labels: List<PamTimeline.LabelSpan>,
+    frameCount: Int,
+    selected: Int,
+    themeColor: Color,
+    enabled: Boolean,
+    onSelect: (Int) -> Unit,
+) {
+    var menuOpen by remember { mutableStateOf(false) }
+    val span = labels.getOrNull(selected)
+
+    Box {
+        TextButton(
+            onClick = { menuOpen = true },
+            enabled = enabled,
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)
+        ) {
+            Text(
+                if (span == null) "全部（$frameCount 帧）"
+                else "${span.label ?: "（未命名段）"}（${span.endInclusive - span.start + 1} 帧）",
+                fontSize = 12.sp,
+                color = themeColor,
+                fontWeight = FontWeight.Medium
+            )
+            Icon(
+                Icons.Default.ArrowDropDown, "选择导出范围",
+                tint = themeColor, modifier = Modifier.size(18.dp)
+            )
+        }
+        DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+            DropdownMenuItem(
+                text = { Text("全部（$frameCount 帧）", fontSize = 13.sp) },
+                onClick = {
+                    menuOpen = false
+                    onSelect(-1)
+                }
+            )
+            labels.forEachIndexed { i, s ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            "${s.label ?: "（未命名段）"}    ${s.start}–${s.endInclusive}",
+                            fontSize = 13.sp
+                        )
+                    },
+                    onClick = {
+                        menuOpen = false
+                        onSelect(i)
+                    }
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 目标文件名：换扩展名，已被占用就一路加 `~`。
+ *
+ * 本屏私有拷贝 —— 与「动画转换」页同款、同惯例（这几屏的这种小工具都是各自一份，
+ * 不是共享组件）。走直写而不是 SAF，理由与那页相同：产物要和源文件放在一起。
+ */
+private fun resolveUniqueOutputName(dir: File, baseName: String, extension: String): String {
+    var name = withTargetExtension(baseName, extension)
+    while (File(dir, name).exists()) name += "~"
+    return name
+}
+
+private fun formatSize(bytes: Long): String {
+    return when {
+        bytes < 1024 -> "$bytes B"
+        bytes < 1024 * 1024 -> "${"%.1f".format(bytes / 1024.0)} KB"
+        bytes < 1024 * 1024 * 1024 -> "${"%.1f".format(bytes / (1024.0 * 1024))} MB"
+        else -> "${"%.2f".format(bytes / (1024.0 * 1024 * 1024))} GB"
     }
 }
 
